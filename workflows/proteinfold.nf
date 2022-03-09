@@ -11,8 +11,8 @@ WorkflowProteinfold.initialise(params, log)
 
 // TODO nf-core: Add all file path parameters for the pipeline to the list below
 // Check input path parameters to see if they exist
-def checkPathParamList = [ 
-    params.input, 
+def checkPathParamList = [
+    params.input,
     params.db
 ]
 for (param in checkPathParamList) { if (param) { file(param, checkIfExists: true) } }
@@ -88,7 +88,7 @@ workflow PROTEINFOLD {
             RUN_AF2_MULTIFASTA(INPUT_CHECK.out.reads)
         }
         else {
-            RUN_AF2(INPUT_CHECK.out.reads)
+            RUN_AF2(INPUT_CHECK.out.reads, params.max_template_date, params.max_template_date, params.db_preset, params.model_preset)
         }
     }
     else if(params.mode == "colabfold") {
