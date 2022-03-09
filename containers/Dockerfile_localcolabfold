@@ -1,0 +1,25 @@
+FROM nvidia/cuda:11.4.2-cudnn8-runtime-ubuntu18.04
+LABEL authors="Athanasios Baltzis" \
+      title="nf-friendly Colabfold docker image" \
+      Version="v0.1" \
+      description="Docker image containing all software requirements to run Colabfold using the nf-core/proteinfold pipeline"
+
+ENV PATH="/colabfold_batch/bin:$PATH"
+ENV LD_LIBRARY_PATH="/colabfold_batch/colabfold-conda/lib:/usr/local/cuda/lib64"
+ENV PYTHONPATH="/colabfold_batch/colabfold-conda/lib"
+
+# Use bash to support string substitution.
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
+      build-essential \
+      cuda-command-line-tools-11-4 \
+      git \
+      hmmer \
+      kalign \
+      tzdata \
+      wget \
+      curl \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN cd / \
+  && wget https://raw.githubusercontent.com/YoshitakaMo/localcolabfold/main/install_colabbatch_linux.sh \
+  && bash install_colabbatch_linux.sh
