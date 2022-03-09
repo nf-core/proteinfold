@@ -88,7 +88,7 @@ workflow PROTEINFOLD {
             RUN_AF2_MULTIFASTA(INPUT_CHECK.out.reads)
         }
         else {
-            RUN_AF2(INPUT_CHECK.out.reads, params.max_template_date, params.max_template_date, params.db_preset, params.model_preset)
+            RUN_AF2(INPUT_CHECK.out.reads, params.max_template_date, params.db_preset, params.model_preset)
         }
     }
     else if(params.mode == "colabfold") {
