@@ -11,8 +11,7 @@
             "fa_icon": "fas fa-terminal",
             "description": "Define where the pipeline should find input data and save output data.",
             "required": [
-                "input",
-                "outdir"
+                "input"
             ],
             "properties": {
                 "input": {
@@ -45,73 +44,20 @@
                 }
             }
         },
-        "fold_options": {
-            "title": "Fold options",
-            "type": "object",
-            "fa_icon": "fab fa-acquisitions-incorporated",
-            "description": "Set the options for alphafold and collabfold.",
-            "properties": {
-                "mode": {
-                    "type": "string",
-                    "default": "AF2",
-                    "description": "Specifies the mode in which the pipeline will be run"
-                },
-                "multifasta": {
-                    "type": "boolean",
-                    "description": "Boolean to set the format of the fasta file"
-                },
-                "db": {
-                    "type": "string",
-                    "default": "/db/alphafold/202108",
-                    "description": "Specifies the DB used by 'AF2' mode"
-                },
-                "max_template_date": {
-                    "type": "string",
-                    "default": "2020-05-14",
-                    "description": "Maximum date of the PDB templates used by 'AF2' mode"
-                },
-                "db_preset": {
-                    "type": "string",
-                    "default": "full_dbs",
-                    "description": "Specifies whether to use the whole DBs or a reduced DBs by 'AF2' mode",
-                    "enum": [
-                        "full_dbs",
-                        "reduced_dbs"
-                    ]
-                },
-                "model_preset": {
-                    "type": "string",
-                    "default": "monomer",
-                    "description": "Model preset for 'AF2' mode",
-                    "enum": [
-                        "monomer",
-                        "monomer_casp14",
-                        "monomer_ptm",
-                        "multimer"
-                    ]
-                },
-                "model_type": {
-                    "type": "string",
-                    "default": "AlphaFold2-ptm",
-                    "description": "Model preset for 'colabfold' mode",
-                    "enum": [
-                        "auto",
-                        "AlphaFold2-ptm",
-                        "AlphaFold2-multimer"
-                    ]
-                },
-                "RunOnCpu": {
-                    "type": "string",
-                    "default": " ",
-                    "description": "Specifies whether to run ' colabfold' mode using cpus"
-                }
-            }
-        },
         "reference_genome_options": {
             "title": "Reference genome options",
             "type": "object",
             "fa_icon": "fas fa-dna",
-            "description": "Reference genome related files and options required for the workflow."
+            "description": "Reference genome related files and options required for the workflow.",
+            "properties": {
+                "igenomes_ignore": {
+                    "type": "boolean",
+                    "description": "Do not load the iGenomes reference config.",
+                    "fa_icon": "fas fa-ban",
+                    "hidden": true,
+                    "help_text": "Do not load `igenomes.config` when running the pipeline. You may choose this option if you observe clashes between custom parameters and those supplied in `igenomes.config`."
+                }
+            }
         },
         "institutional_config_options": {
             "title": "Institutional config options",
@@ -292,9 +238,6 @@
     "allOf": [
         {
             "$ref": "#/definitions/input_output_options"
-        },
-        {
-            "$ref": "#/definitions/fold_options"
         },
         {
             "$ref": "#/definitions/reference_genome_options"
