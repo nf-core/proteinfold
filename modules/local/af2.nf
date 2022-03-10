@@ -8,6 +8,9 @@ process RUN_AF2 {
 
 	input:
 	tuple val(seq_name), path(fasta)
+        val   max_template_date
+	val   db_preset
+	val   model_preset
 
 	output:
 	path ("*")
