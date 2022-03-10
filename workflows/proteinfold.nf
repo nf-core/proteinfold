@@ -92,7 +92,7 @@ workflow PROTEINFOLD {
         }
     }
     else if(params.mode == "colabfold") {
-        RUN_COLABFOLD(INPUT_CHECK.out.reads)
+        RUN_COLABFOLD(INPUT_CHECK.out.reads,params.model_type, params.RunOnCpu)
     }
 
     //
