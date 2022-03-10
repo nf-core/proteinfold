@@ -94,7 +94,7 @@ workflow ALPHAFOLD2 {
     //
     // MODULE: MultiQC
     //
-    workflow_summary    = WorkflowProteinfold.paramsSummaryMultiqc(workflow, summary_params)
+    workflow_summary    = WorkflowAlphafold2.paramsSummaryMultiqc(workflow, summary_params)
     ch_workflow_summary = Channel.value(workflow_summary)
 
     ch_multiqc_files = Channel.empty()

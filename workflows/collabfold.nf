@@ -7,7 +7,7 @@
 def summary_params = NfcoreSchema.paramsSummaryMap(workflow, params)
 
 // Validate input parameters
-WorkflowProteinfold.initialise(params, log)
+WorkflowCollabfold.initialise(params, log)
 
 // Check input path parameters to see if they exist
 def checkPathParamList = [
@@ -87,7 +87,7 @@ workflow COLLABFOLD {
     //
     // MODULE: MultiQC
     //
-    workflow_summary    = WorkflowProteinfold.paramsSummaryMultiqc(workflow, summary_params)
+    workflow_summary    = WorkflowCollabfold.paramsSummaryMultiqc(workflow, summary_params)
     ch_workflow_summary = Channel.value(workflow_summary)
 
     ch_multiqc_files = Channel.empty()
