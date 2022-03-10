@@ -7,9 +7,8 @@
 def summary_params = NfcoreSchema.paramsSummaryMap(workflow, params)
 
 // Validate input parameters
-WorkflowProteinfold.initialise(params, log)
+WorkflowAlphafold2.initialise(params, log)
 
-// TODO nf-core: Add all file path parameters for the pipeline to the list below
 // Check input path parameters to see if they exist
 def checkPathParamList = [
     params.input,
@@ -45,7 +44,6 @@ include { RUN_AF2_MULTIFASTA } from '../subworkflows/local/run_af2_multifasta.nf
 // MODULE: Local to the pipeline
 //
 include { RUN_AF2 } from '../modules/local/af2.nf'
-include { RUN_COLABFOLD } from '../modules/local/localcolabfold.nf'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -68,7 +66,7 @@ include { CUSTOM_DUMPSOFTWAREVERSIONS } from '../modules/nf-core/modules/custom/
 // Info required for completion email and summary
 def multiqc_report = []
 
-workflow PROTEINFOLD {
+workflow ALPHAFOLD2 {
 
     ch_versions = Channel.empty()
 
@@ -81,19 +79,38 @@ workflow PROTEINFOLD {
     ch_versions = ch_versions.mix(INPUT_CHECK.out.versions)
 
     //
-    // SUBWORKFLOW: Run prediction based on the selected mode
+    // SUBWORKFLOW: Run Alphafold2 when input is in multifasta format
+    //
+    if(params.multifasta == true) {
+        RUN_AF2_MULTIFASTA (INPUT_CHECK.out.reads)
+    }
+    //
+    // MODULE: Run alphafold2
+    //
+    else {
+        RUN_AF2 (INPUT_CHECK.out.reads, params.max_template_date, params.db_preset, params.model_preset)
+    }
 
-    if(params.mode == "AF2") {
-        if(params.multifasta == true) {
-            RUN_AF2_MULTIFASTA(INPUT_CHECK.out.reads)
-        }
-        else {
-            RUN_AF2(INPUT_CHECK.out.reads, params.max_template_date, params.db_preset, params.model_preset)
-        }
+    //
+    // WORKFLOW: Run alphafold2
+    //
+    // if(params.mode == "AF2") {
+    //     ALPHAFOLD2 ()
+        // if(params.multifasta == true) {
+        //     RUN_AF2_MULTIFASTA(INPUT_CHECK.out.reads)
+        // }
+        // else {
+        //     RUN_AF2(INPUT_CHECK.out.reads, params.max_template_date, params.db_preset, params.model_preset)
+        // }
     }
-    else if(params.mode == "colabfold") {
-        RUN_COLABFOLD(INPUT_CHECK.out.reads,params.model_type, params.RunOnCpu)
-    }
+
+    //
+    // WORKFLOW: Run colabfold
+    //
+    // else if(params.mode == "colabfold") {
+    //     // RUN_COLABFOLD(INPUT_CHECK.out.reads, params.model_type, params.RunOnCpu)
+    //     COLABFOLD ()
+    // }
 
     //
     // MODULE: MultiQC
