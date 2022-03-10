@@ -25,9 +25,6 @@ WorkflowMain.initialise(workflow, params, log)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-
-include { PROTEINFOLD } from './workflows/proteinfold'
-
 if (params.mode == "AF2") {
     include { ALPHAFOLD2 } from './workflows/alphafold2'
 } else if (params.mode == "colabfold") {
@@ -55,6 +52,7 @@ workflow NFCORE_PROTEINFOLD {
         // RUN_COLABFOLD(INPUT_CHECK.out.reads, params.model_type, params.RunOnCpu)
         COLABFOLD ()
     }
+}
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
