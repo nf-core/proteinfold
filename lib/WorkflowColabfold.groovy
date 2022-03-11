@@ -2,7 +2,7 @@
 // This file holds several functions specific to the workflow/proteinfold.nf in the nf-core/proteinfold pipeline
 //
 
-class WorkflowCollabfold {
+class WorkflowColabfold {
 
     //
     // Check and validate parameters

@@ -7,7 +7,7 @@
 def summary_params = NfcoreSchema.paramsSummaryMap(workflow, params)
 
 // Validate input parameters
-WorkflowCollabfold.initialise(params, log)
+WorkflowColabfold.initialise(params, log)
 
 // Check input path parameters to see if they exist
 def checkPathParamList = [
@@ -65,7 +65,7 @@ include { CUSTOM_DUMPSOFTWAREVERSIONS } from '../modules/nf-core/modules/custom/
 // Info required for completion email and summary
 def multiqc_report = []
 
-workflow COLLABFOLD {
+workflow COLABFOLD {
 
     ch_versions = Channel.empty()
 
@@ -80,14 +80,14 @@ workflow COLLABFOLD {
     //
     // WORKFLOW: Run colabfold
     //
-    else if(params.mode == "colabfold") {
+    if(params.mode == "colabfold") {
         RUN_COLABFOLD(INPUT_CHECK.out.reads, params.model_type, params.RunOnCpu)
     }
 
     //
     // MODULE: MultiQC
     //
-    workflow_summary    = WorkflowCollabfold.paramsSummaryMultiqc(workflow, summary_params)
+    workflow_summary    = WorkflowColabfold.paramsSummaryMultiqc(workflow, summary_params)
     ch_workflow_summary = Channel.value(workflow_summary)
 
     ch_multiqc_files = Channel.empty()

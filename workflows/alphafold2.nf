@@ -88,7 +88,7 @@ workflow ALPHAFOLD2 {
     // MODULE: Run alphafold2
     //
     else {
-        RUN_AF2 (INPUT_CHECK.out.reads, params.max_template_date, params.db_preset, params.model_preset)
+        RUN_AF2 (INPUT_CHECK.out.reads, params.max_template_date, params.db_preset, params.model_preset,params.gpu_relax)
     }
 
     //

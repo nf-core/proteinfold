@@ -1,7 +1,7 @@
 FROM nvidia/cuda:11.4.2-cudnn8-runtime-ubuntu18.04
 LABEL authors="Athanasios Baltzis" \
       title="nf-friendly Colabfold docker image" \
-      Version="v0.1" \
+      Version="v0.2" \
       description="Docker image containing all software requirements to run Colabfold using the nf-core/proteinfold pipeline"
 
 ENV PATH="/colabfold_batch/bin:$PATH"
@@ -21,5 +21,17 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 RUN cd / \
-  && wget https://raw.githubusercontent.com/YoshitakaMo/localcolabfold/main/install_colabbatch_linux.sh \
+  && wget https://raw.githubusercontent.com/YoshitakaMo/localcolabfold/7eed49bb4cd8b290ef9cfe1e543707f64907774e/install_colabbatch_linux.sh \
   && bash install_colabbatch_linux.sh
+
+#Download AF2 weights
+RUN  mkdir -p /colabfold_batch/colabfold/params
+RUN  wget https://storage.googleapis.com/alphafold/alphafold_params_colab_2021-10-27.tar \
+  && tar -xvf alphafold_params_colab_2021-10-27.tar
+RUN  wget https://storage.googleapis.com/alphafold/alphafold_params_2021-07-14.tar \
+  && tar -xvf alphafold_params_2021-07-14.tar
+RUN  rm *.tar
+RUN mv param* /colabfold_batch/colabfold/params/
+#Silence download function
+RUN  sed -i "s|download_alphafold_params(|#download_alphafold_params(|g" /colabfold_batch/colabfold-conda/lib/python3.7/site-packages/colabfold/batch.py
+

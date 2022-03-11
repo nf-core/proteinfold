@@ -26,14 +26,14 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
 # Clone AF2
 RUN git clone https://github.com/deepmind/alphafold.git /app/alphafold && \
 	cd /app/alphafold && \
-	git checkout be37a41d6f83e4145bd4912cbe8bf6a24af80c29 && \
+	git checkout 9c4ac8a92125942f73813649d9f6885532c1ee97 && \
 	cd -
  
 # Compile HHsuite from source
 RUN git clone --branch v3.3.0 https://github.com/soedinglab/hh-suite.git /tmp/hh-suite \
-    && mkdir /tmp/hh-suite/build
-	cd /tmp/hh-suite/build
-	cmake -DCMAKE_INSTALL_PREFIX=/opt/hhsuite .. \
+    && mkdir /tmp/hh-suite/build \
+    &&	cd /tmp/hh-suite/build \
+    &&	cmake -DCMAKE_INSTALL_PREFIX=/opt/hhsuite -DHAVE_AVX2=1 .. \
     && make -j 4 && make install \
     && ln -s /opt/hhsuite/bin/* /usr/bin \
     && cd - && rm -rf /tmp/hh-suite
@@ -61,16 +61,19 @@ RUN /conda/bin/pip3 install --upgrade pip \
     && /conda/bin/pip3 install -r /app/alphafold/requirements.txt \
     && /conda/bin/pip3 install --upgrade jax jaxlib==0.1.74 -f \
       https://storage.googleapis.com/jax-releases/jax_releases.html
-	ln -s /conda/lib/libcusolver.so.10 /conda/lib/libcusolver.so.11
+RUN ln -s /conda/lib/libcusolver.so.10 /conda/lib/libcusolver.so.11
 	#ln -s /conda/lib/libcudart.so.10.2 /conda/lib/libcudart.so.11.0
 	#ln -s /conda/lib/libcublas.so.10 /conda/lib/libcublas.so.11
 	#ln -s /conda/lib/libcublasLt.so.10 /conda/lib/libcublasLt.so.11
 	#ln -s /conda/lib/libcusparse.so.10 /conda/lib/libcusparse.so.11
 
 # Apply OpenMM patch
-RUN cd /conda/lib/python3.7/site-packages
+WORKDIR /conda/lib/python3.7/site-packages
 RUN patch -p0 < /app/alphafold/docker/openmm.patch
 RUN sed -i "s|alphafold/common/stereo_chemical_props.txt|/app/alphafold/alphafold/common/stereo_chemical_props.txt|g" /app/alphafold/alphafold/common/residue_constants.py
+
+# Add SETUID bit to the ldconfig binary so that non-root users can run it.
+RUN chmod u+s /sbin/ldconfig.real
 
 # We need to run `ldconfig` first to ensure GPUs are visible, due to some quirk
 # with Debian. See https://github.com/NVIDIA/nvidia-docker/issues/1399 for
