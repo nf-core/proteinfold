@@ -37,19 +37,12 @@ workflow NFCORE_PROTEINFOLD {
     //
     if(params.mode == "AF2") {
         ALPHAFOLD2 ()
-        // if(params.multifasta == true) {
-        //     RUN_AF2_MULTIFASTA(INPUT_CHECK.out.reads)
-        // }
-        // else {
-        //     RUN_AF2(INPUT_CHECK.out.reads, params.max_template_date, params.db_preset, params.model_preset)
-        // }
     }
 
     //
     // WORKFLOW: Run colabfold
     //
     else if(params.mode == "colabfold") {
-        // RUN_COLABFOLD(INPUT_CHECK.out.reads, params.model_type, params.RunOnCpu)
         COLABFOLD ()
     }
 }
