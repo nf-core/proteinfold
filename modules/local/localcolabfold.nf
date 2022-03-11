@@ -3,8 +3,8 @@ process RUN_COLABFOLD {
 	label 'customConf'
 //TODO
 	container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'depot.galaxyproject.org-singularity-python-3.8.3' :
-		'depot.galaxyproject.org-singularity-python-3.8.3' }"
+        'docker://athbaltzis/colabfold_proteinfold:v0.2' :
+		'docker://athbaltzis/colabfold_proteinfold:v0.2' }"
 
 	input:
 	tuple val(seq_name), path(fasta)
