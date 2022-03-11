@@ -13,5 +13,6 @@ workflow RUN_AF2_MULTIFASTA {
     main:
     //TODO function to test for multi-fasta
     SPLIT_MULTI_FASTA(input)
-    RUN_AF2(SPLIT_MULTI_FASTA.out.map{ it -> [it.baseName,it]})
+    // TODO wont work with parameters fix
+    RUN_AF2(SPLIT_MULTI_FASTA.out.map{ it -> [it.baseName,it]}, params.max_template_date, params.full_dbs, params.model_preset)
 }

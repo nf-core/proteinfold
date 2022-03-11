@@ -3,8 +3,8 @@ process RUN_COLABFOLD {
 	label 'customConf'
 //TODO
 	container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'docker://athbaltzis/colabfold_proteinfold:v0.2' :
-		'docker://athbaltzis/colabfold_proteinfold:v0.2' }"
+        'depot.galaxyproject.org-singularity-python-3.8.3' :
+		'depot.galaxyproject.org-singularity-python-3.8.3' }"
 
 	input:
 	tuple val(seq_name), path(fasta)
@@ -16,10 +16,23 @@ process RUN_COLABFOLD {
 	path ("*_alphafold.pdb")
 
 	script:
-    if (cpu_flag == true) {cpu_flag = '--cpu'}
-    else {cpu_flag = ' '}
+    def args = task.ext.args ?: ''
+    // def prefix = fasta.baseName //TODO ?
+    """
+	colabfold_batch \\
+        --amber \\
+        --templates \\
+        --num-recycle 3 \\
+        --model-type ${model_type} \\
+        ${fasta} \\
+        \$PWD \\
+        $args
+
+	for i in `find *_relaxed_rank_1*.pdb`; do cp \$i `echo \$i | sed "s|_relaxed_rank_|\t|g" | cut -f1`"_alphafold.pdb"; done
 	"""
-	colabfold_batch --amber --templates --num-recycle 3 --model-type ${model_type} ${fasta} \$PWD ${cpu_flag}
-	for i in `find *_relaxed_rank_1*.pdb`; do cp \$i `echo \$i | sed "s|_relaxed_rank_|\t|g" | cut -f1`"_alphafold.pdb"; done	
-	"""
+
+    stub:
+    """
+    touch *_alphafold.pdb
+    """
 }
