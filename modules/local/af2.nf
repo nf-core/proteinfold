@@ -4,8 +4,8 @@ process RUN_AF2 {
 
 //TODO
 	container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        		'depot.galaxyproject.org-singularity-python-3.8.3' :
-				'depot.galaxyproject.org-singularity-python-3.8.3' }"
+        'docker://athbaltzis/af2_proteinfold:v0.3' :
+		'docker://athbaltzis/af2_proteinfold:v0.3' }"
 
 	input:
 	tuple val(seq_name), path(fasta)
