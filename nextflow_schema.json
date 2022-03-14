@@ -78,7 +78,7 @@
                 "full_dbs": {
                     "type": "boolean",
                     "default": true,
-                    "description": "If true uses full DBs otherwise, usesa reduced version of  DBs",
+                    "description": "If true uses full DBs otherwise, usesa reduced version of  DBs"
                 },
                 "model_preset": {
                     "type": "string",
@@ -90,6 +90,11 @@
                         "monomer_ptm",
                         "multimer"
                     ]
+                },
+                "gpu_relax": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Use GPU for the relaxation step"
                 }
             }
         },
@@ -111,7 +116,9 @@
                 },
                 "RunOnCpu": {
                     "type": "string",
-                    "description": "Specifies whether to run ' colabfold' mode using cpus"
+                    "description": "Specifies whether to run 'colabfold' mode using cpus",
+                    "default": " ",
+                    "enum": [" ", "--cpu"]
                 }
             }
         },

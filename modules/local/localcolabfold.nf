@@ -19,14 +19,15 @@ process RUN_COLABFOLD {
     def args = task.ext.args ?: ''
     // def prefix = fasta.baseName //TODO ?
     """
-	colabfold_batch \\
-        --amber \\
-        --templates \\
-        --num-recycle 3 \\
-        --model-type ${model_type} \\
-        ${fasta} \\
-        \$PWD \\
-        $args
+	colabfold_batch \
+        --amber \
+        --templates \
+		$args \
+        --num-recycle 3 \
+        --model-type ${model_type} \
+        ${fasta} \
+        \$PWD
+        
 
 	for i in `find *_relaxed_rank_1*.pdb`; do cp \$i `echo \$i | sed "s|_relaxed_rank_|\t|g" | cut -f1`"_alphafold.pdb"; done
 	"""
