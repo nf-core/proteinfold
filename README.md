@@ -28,8 +28,12 @@ On release, automated continuous integration tests run the pipeline on a full-si
 
 <!-- TODO nf-core: Fill in short bullet-pointed list of the default steps in the pipeline -->
 
-1. Read QC ([`FastQC`](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/))
-2. Present QC for raw reads ([`MultiQC`](http://multiqc.info/))
+1. Choice of protein structure prediction method:
+    
+    i. [AlphaFold2](https://github.com/deepmind/alphafold) (default)
+    
+    ii. [LocalColabFold](https://github.com/YoshitakaMo/localcolabfold) - AlphaFold2 using MMseqs2
+
 
 ## Quick Start
 
@@ -37,7 +41,11 @@ On release, automated continuous integration tests run the pipeline on a full-si
 
 2. Install any of [`Docker`](https://docs.docker.com/engine/installation/), [`Singularity`](https://www.sylabs.io/guides/3.0/user-guide/), [`Podman`](https://podman.io/), [`Shifter`](https://nersc.gitlab.io/development/shifter/how-to-use/) or [`Charliecloud`](https://hpc.github.io/charliecloud/) for full pipeline reproducibility _(please only use [`Conda`](https://conda.io/miniconda.html) as a last resort; see [docs](https://nf-co.re/usage/configuration#basic-configuration-profiles))_
 
-3. Download the pipeline and test it on a minimal dataset with a single command:
+3. Download the required databases and parameters:
+    > * For AlphaFold2 using the instructions provided [here](https://github.com/deepmind/alphafold)
+    > * For Colabfold using the the following script (bin/download_colabfold_params.sh) 
+
+4. Download the pipeline and test it on a minimal dataset with a single command:
 
     ```console
     nextflow run nf-core/proteinfold -profile test,YOURPROFILE
@@ -55,7 +63,10 @@ On release, automated continuous integration tests run the pipeline on a full-si
     <!-- TODO nf-core: Update the example "typical command" below used to run the pipeline -->
 
     ```console
-    nextflow run nf-core/proteinfold -profile <docker/singularity/podman/shifter/charliecloud/conda/institute> --input samplesheet.csv --genome GRCh37
+    nextflow run nf-core/proteinfold -profile <docker/singularity/podman/shifter/charliecloud/conda/institute> --input samplesheet.csv --mode AF2 --db <PATH TO THE DOWNLOADED DBs AND PARAMS> --full_dbs <true/false - full or reduced version of dbs> --model_preset <model used ["monomer"(default),"monomer_casp14","monomer_ptm","multimer"]>
+    ```
+    ```console
+    nextflow run nf-core/proteinfold -profile <docker/singularity/podman/shifter/charliecloud/conda/institute> --input samplesheet.csv --mode colabfold --db <PATH TO THE DOWNLOADED DBS AND PARAMS> --model_type <["AlphaFold2-ptm"(default),"AlphaFold2-multimer-v1","AlphaFold2-multimer-v2"]> --RunOnCpu <[" ", "--cpu"]>
     ```
 
 ## Documentation
