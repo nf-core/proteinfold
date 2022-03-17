@@ -41,6 +41,11 @@
                         "stub"
                     ]
                 },
+                "db": {
+                    "type": "string",
+                    "default": "/nfs/users/cn/abaltzis/db/alphafold",
+                    "description": "Specifies the DB and PARAMS used by 'AF2' or 'colabfold'  mode"
+                },
                 "multifasta": {
                     "type": "boolean",
                     "description": "Boolean to set the format of the fasta file"
@@ -65,11 +70,6 @@
             "fa_icon": "fas fa-dna",
             "description": "Alphafold2 options.",
             "properties": {
-                "db": {
-                    "type": "string",
-                    "default": "/db/alphafold/202108",
-                    "description": "Specifies the DB used by 'AF2' mode"
-                },
                 "max_template_date": {
                     "type": "string",
                     "default": "2020-05-14",
@@ -78,7 +78,7 @@
                 "full_dbs": {
                     "type": "boolean",
                     "default": true,
-                    "description": "If true uses full DBs otherwise, usesa reduced version of  DBs",
+                    "description": "If true uses full DBs otherwise, otherwise it uses the reduced version of DBs"
                 },
                 "model_preset": {
                     "type": "string",
@@ -90,6 +90,11 @@
                         "monomer_ptm",
                         "multimer"
                     ]
+                },
+                "gpu_relax": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Use GPU for the relaxation step"
                 }
             }
         },
@@ -104,14 +109,16 @@
                     "default": "AlphaFold2-ptm",
                     "description": "Model preset for 'colabfold' mode",
                     "enum": [
-                        "auto",
                         "AlphaFold2-ptm",
-                        "AlphaFold2-multimer"
+                        "AlphaFold2-multimer-v1",
+                        "AlphaFold2-multimer-v2"
                     ]
                 },
                 "RunOnCpu": {
                     "type": "string",
-                    "description": "Specifies whether to run ' colabfold' mode using cpus"
+                    "description": "Specifies whether to run 'colabfold' mode using cpus",
+                    "default": " ",
+                    "enum": [" ", "--cpu"]
                 }
             }
         },
