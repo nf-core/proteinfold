@@ -29,7 +29,7 @@ process RUN_COLABFOLD {
         --model-type ${model_type} \
         ${fasta} \
         \$PWD
-	for i in `find *_relaxed_rank_1*.pdb`; do cp \$i `echo \$i | sed "s|_relaxed_rank_|\t|g" | cut -f1`"_alphafold.pdb"; done
+	for i in `find *_relaxed_rank_1*.pdb`; do cp \$i `echo \$i | sed "s|_relaxed_rank_|\t|g" | cut -f1`"_colabfold.pdb"; done
 	"""
 	}
 	else {
@@ -37,7 +37,7 @@ process RUN_COLABFOLD {
     // def prefix = fasta.baseName //TODO ?
     """
 	echo "id,sequence" >> input.csv
-	echo -e ${seq_name},`awk -F ' ' '!/^>/ {print \$0}' H1065.fasta | tr "\n" ":" | awk '{gsub(/:\$/,""); print}'` >> input.csv
+	echo -e ${seq_name},`awk -F ' ' '!/^>/ {print \$0}' ${fasta} | tr "\n" ":" | awk '{gsub(/:\$/,""); print}'` >> input.csv
 	colabfold_batch \
         --amber \
         --templates \
@@ -47,7 +47,7 @@ process RUN_COLABFOLD {
         --model-type ${model_type} \
         input.csv \
         \$PWD
-	for i in `find *_relaxed_rank_1*.pdb`; do cp \$i `echo \$i | sed "s|_relaxed_rank_|\t|g" | cut -f1`"_alphafold.pdb"; done
+	for i in `find *_relaxed_rank_1*.pdb`; do cp \$i `echo \$i | sed "s|_relaxed_rank_|\t|g" | cut -f1`"_colabfold.pdb"; done
 	"""
 	}
 
