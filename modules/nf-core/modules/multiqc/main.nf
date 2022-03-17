@@ -1,5 +1,5 @@
 process MULTIQC {
-    label 'process_medium'
+    //label 'process_medium'
 
     conda (params.enable_conda ? 'bioconda::multiqc=1.11' : null)
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?

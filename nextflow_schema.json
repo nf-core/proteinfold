@@ -8,7 +8,7 @@
         "input_output_options": {
             "title": "Input/output options",
             "type": "object",
-            "fa_icon": "fas fa-terminal",
+            "fa_icon": "fas fa-coins",
             "description": "Define where the pipeline should find input data and save output data.",
             "required": [
                 "input",
@@ -31,6 +31,25 @@
                     "description": "The output directory where the results will be saved. You have to use absolute paths to storage on Cloud infrastructure.",
                     "fa_icon": "fas fa-folder-open"
                 },
+                "mode": {
+                    "type": "string",
+                    "default": "AF2",
+                    "description": "Specifies the mode in which the pipeline will be run",
+                    "enum": [
+                        "AF2",
+                        "colabfold",
+                        "stub"
+                    ]
+                },
+                "db": {
+                    "type": "string",
+                    "default": "/nfs/users/cn/abaltzis/db/alphafold",
+                    "description": "Specifies the DB and PARAMS used by 'AF2' or 'colabfold'  mode"
+                },
+                "multifasta": {
+                    "type": "boolean",
+                    "description": "Boolean to set the format of the fasta file"
+                },
                 "email": {
                     "type": "string",
                     "description": "Email address for completion summary.",
@@ -45,41 +64,61 @@
                 }
             }
         },
-        "reference_genome_options": {
-            "title": "Reference genome options",
+        "alphafold2_options": {
+            "title": "Alphafold2 options",
             "type": "object",
             "fa_icon": "fas fa-dna",
-            "description": "Reference genome related files and options required for the workflow.",
+            "description": "Alphafold2 options.",
             "properties": {
-                "genome": {
+                "max_template_date": {
                     "type": "string",
-                    "description": "Name of iGenomes reference.",
-                    "fa_icon": "fas fa-book",
-                    "help_text": "If using a reference genome configured in the pipeline using iGenomes, use this parameter to give the ID for the reference. This is then used to build the full paths for all required reference genome files e.g. `--genome GRCh38`. \n\nSee the [nf-core website docs](https://nf-co.re/usage/reference_genomes) for more details."
+                    "default": "2020-05-14",
+                    "description": "Maximum date of the PDB templates used by 'AF2' mode"
                 },
-                "fasta": {
-                    "type": "string",
-                    "format": "file-path",
-                    "mimetype": "text/plain",
-                    "pattern": "^\\S+\\.fn?a(sta)?(\\.gz)?$",
-                    "description": "Path to FASTA genome file.",
-                    "help_text": "This parameter is *mandatory* if `--genome` is not specified. If you don't have a BWA index available this will be generated for you automatically. Combine with `--save_reference` to save BWA index for future runs.",
-                    "fa_icon": "far fa-file-code"
-                },
-                "igenomes_base": {
-                    "type": "string",
-                    "format": "directory-path",
-                    "description": "Directory / URL base for iGenomes references.",
-                    "default": "s3://ngi-igenomes/igenomes",
-                    "fa_icon": "fas fa-cloud-download-alt",
-                    "hidden": true
-                },
-                "igenomes_ignore": {
+                "full_dbs": {
                     "type": "boolean",
-                    "description": "Do not load the iGenomes reference config.",
-                    "fa_icon": "fas fa-ban",
-                    "hidden": true,
-                    "help_text": "Do not load `igenomes.config` when running the pipeline. You may choose this option if you observe clashes between custom parameters and those supplied in `igenomes.config`."
+                    "default": true,
+                    "description": "If true uses full DBs otherwise, otherwise it uses the reduced version of DBs"
+                },
+                "model_preset": {
+                    "type": "string",
+                    "default": "monomer",
+                    "description": "Model preset for 'AF2' mode",
+                    "enum": [
+                        "monomer",
+                        "monomer_casp14",
+                        "monomer_ptm",
+                        "multimer"
+                    ]
+                },
+                "gpu_relax": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Use GPU for the relaxation step"
+                }
+            }
+        },
+        "colabfold_options": {
+            "title": "Colabfold options",
+            "type": "object",
+            "fa_icon": "fas fa-coins",
+            "description": "Colabfold options.",
+            "properties": {
+                "model_type": {
+                    "type": "string",
+                    "default": "AlphaFold2-ptm",
+                    "description": "Model preset for 'colabfold' mode",
+                    "enum": [
+                        "AlphaFold2-ptm",
+                        "AlphaFold2-multimer-v1",
+                        "AlphaFold2-multimer-v2"
+                    ]
+                },
+                "RunOnCpu": {
+                    "type": "string",
+                    "description": "Specifies whether to run 'colabfold' mode using cpus",
+                    "default": " ",
+                    "enum": [" ", "--cpu"]
                 }
             }
         },
@@ -264,7 +303,10 @@
             "$ref": "#/definitions/input_output_options"
         },
         {
-            "$ref": "#/definitions/reference_genome_options"
+            "$ref": "#/definitions/alphafold2_options"
+        },
+        {
+            "$ref": "#/definitions/colabfold_options"
         },
         {
             "$ref": "#/definitions/institutional_config_options"
