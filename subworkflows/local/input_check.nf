@@ -12,8 +12,7 @@ workflow INPUT_CHECK {
     SAMPLESHEET_CHECK ( samplesheet )
         .csv
         .splitCsv ( header:true, sep:',' )
-        //.map { create_fastq_channels(it) }
-        .map {it -> [it.sequence,it.fasta]}
+        .map { create_fastq_channel(it) }
         .set { reads }
 
     emit:
@@ -22,7 +21,8 @@ workflow INPUT_CHECK {
 }
 
 // Function to get list of [ meta, [ fastq_1, fastq_2 ] ]
-def create_fastq_channels(LinkedHashMap row) {
+def create_fastq_channel(LinkedHashMap row) {
+    // create meta map
     def meta = [:]
     meta.sequence      = row.sequence
     meta.fasta   = row.fasta
@@ -32,7 +32,7 @@ def create_fastq_channels(LinkedHashMap row) {
         exit 1, "ERROR: Please check input samplesheet -> Read 1 FastQ file does not exist!\n${row.fastq_1}"
     }
     if (meta.single_end) {
-        array = [ meta, [ file(row.fastq_1) ] ]
+        fastq_meta = [ meta, [ file(row.fastq_1) ] ]
     } else {
         if (!file(row.fastq_2).exists()) {
             exit 1, "ERROR: Please check input samplesheet -> Read 2 FastQ file does not exist!\n${row.fastq_2}"

@@ -48,7 +48,7 @@ On release, automated continuous integration tests run the pipeline on a full-si
 4. Download the pipeline and test it on a minimal dataset with a single command:
 
     ```console
-    nextflow run nf-core/proteinfold -profile test,YOURPROFILE
+    nextflow run nf-core/proteinfold -profile test,YOURPROFILE --outdir <OUTDIR>
     ```
 
     Note that some form of configuration will be needed so that Nextflow knows how to fetch the required software. This is usually done in the form of a config profile (`YOURPROFILE` in the example command above). You can chain multiple config profiles in a comma-separated string.
@@ -60,13 +60,29 @@ On release, automated continuous integration tests run the pipeline on a full-si
 
 4. Start running your own analysis!
 
-    <!-- TODO nf-core: Update the example "typical command" below used to run the pipeline -->
+    * Typical command to run alphafold 2 mode:
+    
+    ```console
+    nextflow run nf-core/proteinfold \
+        --input samplesheet.csv \ 
+        --outdir <OUTDIR> \
+        --mode AF2 \
+        --db <DB_PATH> \
+        --full_dbs \ 
+        --model_preset monomer \
+        -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
+    ```
+
+    * Typical command to run Colabfold mode:
 
     ```console
-    nextflow run nf-core/proteinfold -profile <docker/singularity/podman/shifter/charliecloud/conda/institute> --input samplesheet.csv --mode AF2 --db <PATH TO THE DOWNLOADED DBs AND PARAMS> --full_dbs <true/false - full or reduced version of dbs> --model_preset <model used ["monomer"(default),"monomer_casp14","monomer_ptm","multimer"]>
-    ```
-    ```console
-    nextflow run nf-core/proteinfold -profile <docker/singularity/podman/shifter/charliecloud/conda/institute> --input samplesheet.csv --mode colabfold --db <PATH TO THE DOWNLOADED DBS AND PARAMS> --model_type <["AlphaFold2-ptm"(default),"AlphaFold2-multimer-v1","AlphaFold2-multimer-v2"]> --RunOnCpu <[" ", "--cpu"]>
+    nextflow run nf-core/proteinfold \
+        --input samplesheet.csv \ 
+        --outdir <OUTDIR> \
+        --mode colabfold \
+        --db <DB_PATH> \
+        --model_type "AlphaFold2-ptm" \
+        -profile <docker/singularity/podman/shifter/charliecloud/conda/institute> 
     ```
 
 ## Documentation
