@@ -37,8 +37,7 @@
                     "description": "Specifies the mode in which the pipeline will be run",
                     "enum": [
                         "AF2",
-                        "colabfold",
-                        "stub"
+                        "colabfold"
                     ]
                 },
                 "db": {
