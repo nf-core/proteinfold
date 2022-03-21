@@ -29,11 +29,10 @@ On release, automated continuous integration tests run the pipeline on a full-si
 <!-- TODO nf-core: Fill in short bullet-pointed list of the default steps in the pipeline -->
 
 1. Choice of protein structure prediction method:
-    
-    i. [AlphaFold2](https://github.com/deepmind/alphafold) (default)
-    
-    ii. [LocalColabFold](https://github.com/YoshitakaMo/localcolabfold) - AlphaFold2 using MMseqs2
 
+    i. [AlphaFold2](https://github.com/deepmind/alphafold) (default)
+
+    ii. [LocalColabFold](https://github.com/YoshitakaMo/localcolabfold) - AlphaFold2 using MMseqs2
 
 ## Quick Start
 
@@ -41,11 +40,7 @@ On release, automated continuous integration tests run the pipeline on a full-si
 
 2. Install any of [`Docker`](https://docs.docker.com/engine/installation/), [`Singularity`](https://www.sylabs.io/guides/3.0/user-guide/), [`Podman`](https://podman.io/), [`Shifter`](https://nersc.gitlab.io/development/shifter/how-to-use/) or [`Charliecloud`](https://hpc.github.io/charliecloud/) for full pipeline reproducibility _(please only use [`Conda`](https://conda.io/miniconda.html) as a last resort; see [docs](https://nf-co.re/usage/configuration#basic-configuration-profiles))_
 
-3. Download the required databases and parameters:
-    > * For AlphaFold2 using the instructions provided [here](https://github.com/deepmind/alphafold)
-    > * For Colabfold using the the following script (bin/download_colabfold_params.sh) 
-
-4. Download the pipeline and test it on a minimal dataset with a single command:
+3. Download the pipeline and test it on a minimal dataset with a single command:
 
     ```console
     nextflow run nf-core/proteinfold -profile test,YOURPROFILE --outdir <OUTDIR>
@@ -60,15 +55,18 @@ On release, automated continuous integration tests run the pipeline on a full-si
 
 4. Start running your own analysis!
 
+    > * For AlphaFold2 using the instructions provided [here](https://github.com/deepmind/alphafold)
+    > * For Colabfold using the the following script (bin/download_colabfold_params.sh)
+
     * Typical command to run alphafold 2 mode:
-    
+
     ```console
     nextflow run nf-core/proteinfold \
-        --input samplesheet.csv \ 
+        --input samplesheet.csv \
         --outdir <OUTDIR> \
         --mode AF2 \
         --db <DB_PATH> \
-        --full_dbs \ 
+        --full_dbs \
         --model_preset monomer \
         -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
     ```
@@ -77,12 +75,12 @@ On release, automated continuous integration tests run the pipeline on a full-si
 
     ```console
     nextflow run nf-core/proteinfold \
-        --input samplesheet.csv \ 
+        --input samplesheet.csv \
         --outdir <OUTDIR> \
         --mode colabfold \
         --db <DB_PATH> \
         --model_type "AlphaFold2-ptm" \
-        -profile <docker/singularity/podman/shifter/charliecloud/conda/institute> 
+        -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
     ```
 
 ## Documentation

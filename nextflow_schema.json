@@ -112,8 +112,8 @@
                 "RunOnCpu": {
                     "type": "string",
                     "description": "Specifies whether to run 'colabfold' mode using cpus",
-                    "default": " ",
-                    "enum": [" ", "--cpu"]
+                    "default": "",
+                    "enum": ["", "--cpu"]
                 }
             }
         },

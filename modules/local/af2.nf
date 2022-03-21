@@ -1,23 +1,23 @@
 process RUN_AF2 {
-	tag "${seq_name}"
-	label 'customConf'
+    tag "${seq_name}"
+    label 'customConf'
 
-//TODO
-	container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
+    //TODO
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'docker://athbaltzis/af2_proteinfold:v0.4' :
-		'athbaltzis/af2_proteinfold:v0.4' }"
+        'athbaltzis/af2_proteinfold:v0.4' }"
 
-	input:
-	tuple val(seq_name), path(fasta)
+    input:
+    tuple val(seq_name), path(fasta)
     val   max_template_date
-	val   db_preset
-	val   model_preset
-	val   gpu_relax
+    val   db_preset
+    val   model_preset
+    val   gpu_relax
 
-	output:
-	path ("*")
+    output:
+    path ("*")
 
-	script:
+    script:
     def args = task.ext.args ?: ''
     def db_preset = db_preset ? 'full_dbs --bfd_database_path=/db/bfd/bfd_metaclust_clu_complete_id30_c90_final_seq.sorted_opt --uniclust30_database_path=/db/uniclust30/uniclust30_2018_08/uniclust30_2018_08' :
         'reduced_dbs --small_bfd_database_path=/db/small_bfd/bfd-first_non_consensus_sequences.fasta'
