@@ -4,7 +4,7 @@ process RUN_COLABFOLD {
 //TODO
 	container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'docker://athbaltzis/colabfold_proteinfold:v0.4' :
-		'docker://athbaltzis/colabfold_proteinfold:v0.4' }"
+		'athbaltzis/colabfold_proteinfold:v0.4' }"
 
 	input:
 	tuple val(seq_name), path(fasta)
@@ -53,6 +53,6 @@ process RUN_COLABFOLD {
 
     stub:
     """
-    touch *_alphafold.pdb
+    touch ./"${fasta.baseName}"_alphafold.pdb
     """
 }

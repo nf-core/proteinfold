@@ -46,10 +46,6 @@
                     "default": "/nfs/users/cn/abaltzis/db/alphafold",
                     "description": "Specifies the DB and PARAMS used by 'AF2' or 'colabfold'  mode"
                 },
-                "multifasta": {
-                    "type": "boolean",
-                    "description": "Boolean to set the format of the fasta file"
-                },
                 "email": {
                     "type": "string",
                     "description": "Email address for completion summary.",

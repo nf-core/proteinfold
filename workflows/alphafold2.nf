@@ -38,7 +38,6 @@ ch_multiqc_custom_config = params.multiqc_config ? Channel.fromPath(params.multi
 // SUBWORKFLOW: Consisting of a mix of local and nf-core/modules
 //
 include { INPUT_CHECK } from '../subworkflows/local/input_check'
-include { RUN_AF2_MULTIFASTA } from '../subworkflows/local/run_af2_multifasta.nf'
 
 //
 // MODULE: Local to the pipeline
@@ -78,18 +77,28 @@ workflow ALPHAFOLD2 {
     )
     ch_versions = ch_versions.mix(INPUT_CHECK.out.versions)
 
-    //
-    // SUBWORKFLOW: Run Alphafold2 when input is in multifasta format
-    //
-    if(params.multifasta == true) {
-        RUN_AF2_MULTIFASTA (INPUT_CHECK.out.reads)
-    }
+    // here
+    INPUT_CHECK
+        .out
+        .reads
+        .map {
+            meta, fasta ->
+
+            [ meta, fasta.splitFasta(file:true) ]
+        }
+        .transpose()
+        .set { ch_fasta }
+
     //
     // MODULE: Run alphafold2
     //
-    else {
-        RUN_AF2 (INPUT_CHECK.out.reads, params.max_template_date, params.full_dbs , params.model_preset,params.gpu_relax)
-    }
+    RUN_AF2 (
+        ch_fasta,
+        params.max_template_date,
+        params.full_dbs,
+        params.model_preset,
+        params.gpu_relax
+    )
 
     //
     // MODULE: MultiQC
