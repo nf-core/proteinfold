@@ -75,22 +75,18 @@ workflow ALPHAFOLD2 {
     INPUT_CHECK (
         ch_input
     )
+    .reads
+    .map {
+        meta, fasta ->
+
+        [ meta, fasta.splitFasta(file:true) ]
+    }
+    .transpose()
+    .set { ch_fasta }
     ch_versions = ch_versions.mix(INPUT_CHECK.out.versions)
 
-    // here
-    INPUT_CHECK
-        .out
-        .reads
-        .map {
-            meta, fasta ->
-
-            [ meta, fasta.splitFasta(file:true) ]
-        }
-        .transpose()
-        .set { ch_fasta }
-
     //
-    // MODULE: Run alphafold2
+    // MODULE: Run Alphafold2
     //
     RUN_AF2 (
         ch_fasta,
