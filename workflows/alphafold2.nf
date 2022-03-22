@@ -93,8 +93,7 @@ workflow ALPHAFOLD2 {
             [ meta, fasta ]
         }
         .transpose()
-    
-    .set { ch_fasta }
+        .set { ch_fasta }
     }
     ch_versions = ch_versions.mix(INPUT_CHECK.out.versions)
 

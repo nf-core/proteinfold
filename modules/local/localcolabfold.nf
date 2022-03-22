@@ -52,6 +52,6 @@ process RUN_COLABFOLD {
 
     stub:
     """
-    touch ./"${fasta.baseName}"_alphafold.pdb
+    touch ./"${fasta.baseName}"_colabfold.pdb
     """
 }
