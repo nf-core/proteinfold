@@ -56,7 +56,7 @@ On release, automated continuous integration tests run the pipeline on a full-si
 4. Start running your own analysis!
 
     > * For AlphaFold2 using the instructions provided [here](https://github.com/deepmind/alphafold)
-    > * For Colabfold using the the following script (bin/download_colabfold_params.sh)
+    > * For Colabfold using the following script (bin/download_colabfold_params.sh)
 
     * Typical command to run alphafold 2 mode:
 
