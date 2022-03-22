@@ -81,8 +81,8 @@ workflow ALPHAFOLD2 {
             meta, fasta ->
             [ meta, fasta.splitFasta(file:true) ]
         }
-        .transpose().view()
-    //.set { ch_fasta }
+        .transpose()
+    .set { ch_fasta }
     } else {
         INPUT_CHECK (
             ch_input
@@ -92,20 +92,21 @@ workflow ALPHAFOLD2 {
             meta, fasta ->
             [ meta, fasta ]
         }
-        .transpose().view()
+        .transpose()
+    
+    .set { ch_fasta }
     }
-    //.set { ch_fasta }
     ch_versions = ch_versions.mix(INPUT_CHECK.out.versions)
 
     //
     // MODULE: Run Alphafold2
     //
-    /*RUN_AF2 (
+    RUN_AF2 (
         ch_fasta,
         params.max_template_date,
         params.full_dbs,
         params.model_preset,
-    )*/
+    )
 
     //
     // MODULE: MultiQC
