@@ -110,9 +110,9 @@
                     ]
                 },
                 "RunOnCpu": {
-                    "type": "string",
+                    "type": "boolean",
                     "description": "Specifies whether to run 'colabfold' mode using cpus",
-                    "default": " "
+                    "default": true
                 }
             }
         },

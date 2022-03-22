@@ -9,11 +9,10 @@ process RUN_COLABFOLD {
     input:
     tuple val(seq_name), path(fasta)
     val model_type
-    val	cpu_flag
 
     output:
     path ("*")
-    path ("*_alphafold.pdb")
+    path ("*_colabfold.pdb")
 
     script:
     if (model_type == 'AlphaFold2-ptm') {
