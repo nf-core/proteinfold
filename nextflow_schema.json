@@ -13,8 +13,7 @@
             "required": [
                 "input",
                 "outdir",
-                "db",
-                "useGPU"
+                "db"
             ],
             "properties": {
                 "input": {
