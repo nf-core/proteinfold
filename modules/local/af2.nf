@@ -12,7 +12,6 @@ process RUN_AF2 {
     val   max_template_date
     val   db_preset
     val   model_preset
-    val   gpu_relax
 
     output:
     path ("*")
@@ -39,7 +38,6 @@ process RUN_AF2 {
         --mgnify_database_path=/db/mgnify/mgy_clusters_2018_12.fa \
         --template_mmcif_dir=/db/pdb_mmcif/mmcif_files \
         --obsolete_pdbs_path=/db/pdb_mmcif/obsolete.dat \
-        --use_gpu_relax=${gpu_relax} \
         --random_seed=53343 \
         $args
 

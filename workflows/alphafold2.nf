@@ -72,29 +72,40 @@ workflow ALPHAFOLD2 {
     //
     // SUBWORKFLOW: Read in samplesheet, validate and stage input files
     //
-    INPUT_CHECK (
-        ch_input
-    )
-    .reads
-    .map {
-        meta, fasta ->
-
-        [ meta, fasta.splitFasta(file:true) ]
+    if (params.model_preset != 'multimer') {
+        INPUT_CHECK (
+            ch_input
+        )
+        .reads
+        .map {
+            meta, fasta ->
+            [ meta, fasta.splitFasta(file:true) ]
+        }
+        .transpose().view()
+    //.set { ch_fasta }
+    } else {
+        INPUT_CHECK (
+            ch_input
+        )
+        .reads
+        .map {
+            meta, fasta ->
+            [ meta, fasta ]
+        }
+        .transpose().view()
     }
-    .transpose()
-    .set { ch_fasta }
+    //.set { ch_fasta }
     ch_versions = ch_versions.mix(INPUT_CHECK.out.versions)
 
     //
     // MODULE: Run Alphafold2
     //
-    RUN_AF2 (
+    /*RUN_AF2 (
         ch_fasta,
         params.max_template_date,
         params.full_dbs,
         params.model_preset,
-        params.gpu_relax
-    )
+    )*/
 
     //
     // MODULE: MultiQC

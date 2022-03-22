@@ -6,13 +6,15 @@
     "type": "object",
     "definitions": {
         "input_output_options": {
-            "title": "Input/output options",
+            "title": "Global options",
             "type": "object",
             "fa_icon": "fas fa-coins",
             "description": "Define where the pipeline should find input data and save output data.",
             "required": [
                 "input",
-                "outdir"
+                "outdir",
+                "db",
+                "useGPU"
             ],
             "properties": {
                 "input": {
@@ -45,6 +47,12 @@
                     "default": "/nfs/users/cn/abaltzis/db/alphafold",
                     "description": "Specifies the DB and PARAMS used by 'AF2' or 'colabfold'  mode"
                 },
+                "useGPU": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Run on CPUs (default) or GPUs"
+                } ,
+
                 "email": {
                     "type": "string",
                     "description": "Email address for completion summary.",
@@ -85,11 +93,6 @@
                         "monomer_ptm",
                         "multimer"
                     ]
-                },
-                "gpu_relax": {
-                    "type": "boolean",
-                    "default": false,
-                    "description": "Use GPU for the relaxation step"
                 }
             }
         },
@@ -108,11 +111,6 @@
                         "AlphaFold2-multimer-v1",
                         "AlphaFold2-multimer-v2"
                     ]
-                },
-                "RunOnCpu": {
-                    "type": "boolean",
-                    "description": "Specifies whether to run 'colabfold' mode using cpus",
-                    "default": true
                 }
             }
         },
