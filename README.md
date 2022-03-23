@@ -66,8 +66,9 @@ On release, automated continuous integration tests run the pipeline on a full-si
         --outdir <OUTDIR> \
         --mode AF2 \
         --db <DB_PATH> \
-        --full_dbs \
+        --full_dbs <true/false> \
         --model_preset monomer \
+        --useGPU <true/false> \
         -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
     ```
 
@@ -80,6 +81,7 @@ On release, automated continuous integration tests run the pipeline on a full-si
         --mode colabfold \
         --db <DB_PATH> \
         --model_type "AlphaFold2-ptm" \
+        --useGPU <true/false> \
         -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
     ```
 
@@ -89,7 +91,7 @@ The nf-core/proteinfold pipeline comes with documentation about the pipeline [us
 
 ## Credits
 
-nf-core/proteinfold was originally written by Athanasios Baltzis, Harshil Patel.
+nf-core/proteinfold was originally written by Athanasios Baltzis, Jose Espinosa-Carrasco, Harshil Patel.
 
 We thank the following people for their extensive assistance in the development of this pipeline:
 
