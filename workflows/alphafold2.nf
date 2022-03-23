@@ -82,7 +82,7 @@ workflow ALPHAFOLD2 {
             [ meta, fasta.splitFasta(file:true) ]
         }
         .transpose()
-       .set { ch_fasta }
+        .set { ch_fasta }
     } else {
         INPUT_CHECK (
             ch_input
