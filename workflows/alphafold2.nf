@@ -88,11 +88,6 @@ workflow ALPHAFOLD2 {
             ch_input
         )
         .reads
-        .map {
-            meta, fasta ->
-            [ meta, fasta ]
-        }
-        .transpose()
         .set { ch_fasta }
     }
     ch_versions = ch_versions.mix(INPUT_CHECK.out.versions)
