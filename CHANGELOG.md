@@ -7,10 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Initial release of nf-core/proteinfold, created with the [nf-core](https://nf-co.re/) template.
 
-### `Added`
+### Enhancements & fixes
 
-### `Fixed`
-
-### `Dependencies`
-
-### `Deprecated`
+* Updated pipeline template to [nf-core/tools 2.3.2](https://github.com/nf-core/tools/releases/tag/2.3.2)
