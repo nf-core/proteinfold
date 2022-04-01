@@ -32,10 +32,7 @@
                     "type": "string",
                     "default": "AF2",
                     "description": "Specifies the mode in which the pipeline will be run",
-                    "enum": [
-                        "AF2",
-                        "colabfold"
-                    ]
+                    "enum": ["AF2", "colabfold"]
                 },
                 "db": {
                     "type": "string",
@@ -46,7 +43,7 @@
                     "type": "boolean",
                     "default": false,
                     "description": "Run on CPUs (default) or GPUs"
-                } ,
+                },
 
                 "email": {
                     "type": "string",
@@ -82,12 +79,7 @@
                     "type": "string",
                     "default": "monomer",
                     "description": "Model preset for 'AF2' mode",
-                    "enum": [
-                        "monomer",
-                        "monomer_casp14",
-                        "monomer_ptm",
-                        "multimer"
-                    ]
+                    "enum": ["monomer", "monomer_casp14", "monomer_ptm", "multimer"]
                 }
             }
         },
@@ -101,11 +93,7 @@
                     "type": "string",
                     "default": "AlphaFold2-ptm",
                     "description": "Model preset for 'colabfold' mode",
-                    "enum": [
-                        "AlphaFold2-ptm",
-                        "AlphaFold2-multimer-v1",
-                        "AlphaFold2-multimer-v2"
-                    ]
+                    "enum": ["AlphaFold2-ptm", "AlphaFold2-multimer-v1", "AlphaFold2-multimer-v2"]
                 }
             }
         },

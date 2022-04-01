@@ -32,9 +32,9 @@ On release, automated continuous integration tests run the pipeline on a full-si
 
 1. Choice of protein structure prediction method:
 
-    i. [AlphaFold2](https://github.com/deepmind/alphafold) (default)
+   i. [AlphaFold2](https://github.com/deepmind/alphafold) (default)
 
-    ii. [LocalColabFold](https://github.com/YoshitakaMo/localcolabfold) - AlphaFold2 using MMseqs2
+   ii. [LocalColabFold](https://github.com/YoshitakaMo/localcolabfold) - AlphaFold2 using MMseqs2
 
 ## Quick Start
 
@@ -57,35 +57,35 @@ On release, automated continuous integration tests run the pipeline on a full-si
 
 4. Start running your own analysis!
 
-    > * For AlphaFold2 using the instructions provided [here](https://github.com/deepmind/alphafold)
-    > * For Colabfold using the following script (bin/download_colabfold_params.sh)
+   > - For AlphaFold2 using the instructions provided [here](https://github.com/deepmind/alphafold)
+   > - For Colabfold using the following script (bin/download_colabfold_params.sh)
 
-    * Typical command to run alphafold 2 mode:
+   - Typical command to run alphafold 2 mode:
 
-    ```console
-    nextflow run nf-core/proteinfold \
-        --input samplesheet.csv \
-        --outdir <OUTDIR> \
-        --mode AF2 \
-        --db <DB_PATH> \
-        --full_dbs <true/false> \
-        --model_preset monomer \
-        --useGPU <true/false> \
-        -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
-    ```
+   ```console
+   nextflow run nf-core/proteinfold \
+       --input samplesheet.csv \
+       --outdir <OUTDIR> \
+       --mode AF2 \
+       --db <DB_PATH> \
+       --full_dbs <true/false> \
+       --model_preset monomer \
+       --useGPU <true/false> \
+       -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
+   ```
 
-    * Typical command to run Colabfold mode:
+   - Typical command to run Colabfold mode:
 
-    ```console
-    nextflow run nf-core/proteinfold \
-        --input samplesheet.csv \
-        --outdir <OUTDIR> \
-        --mode colabfold \
-        --db <DB_PATH> \
-        --model_type "AlphaFold2-ptm" \
-        --useGPU <true/false> \
-        -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
-    ```
+   ```console
+   nextflow run nf-core/proteinfold \
+       --input samplesheet.csv \
+       --outdir <OUTDIR> \
+       --mode colabfold \
+       --db <DB_PATH> \
+       --model_type "AlphaFold2-ptm" \
+       --useGPU <true/false> \
+       -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
+   ```
 
 ## Documentation
 
