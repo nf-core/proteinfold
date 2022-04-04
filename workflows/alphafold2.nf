@@ -100,6 +100,7 @@ workflow ALPHAFOLD2 {
         params.max_template_date,
         params.full_dbs,
         params.model_preset,
+        params.db
     )
 
     //
