@@ -9,6 +9,7 @@ process RUN_COLABFOLD {
     input:
     tuple val(seq_name), path(fasta)
     val model_type
+    path db
 
     output:
     path ("*")
@@ -24,7 +25,7 @@ process RUN_COLABFOLD {
         --templates \
         $args \
         --num-recycle 3 \
-        --data /db/${model_type} \
+        --data ${db}/${model_type} \
         --model-type ${model_type} \
         ${fasta} \
         \$PWD
@@ -42,7 +43,7 @@ process RUN_COLABFOLD {
         --templates \
         $args \
         --num-recycle 3 \
-        --data /db/${model_type} \
+        --data ${db}/${model_type} \
         --model-type ${model_type} \
         input.csv \
         \$PWD
