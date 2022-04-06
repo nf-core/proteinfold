@@ -5,7 +5,7 @@ LABEL authors="Athanasios Baltzis" \
     description="Docker image containing all software requirements to run Colabfold using the nf-core/proteinfold pipeline"
 
 ENV PATH="/colabfold_batch/bin:$PATH"
-ENV LD_LIBRARY_PATH="/colabfold_batch/colabfold-conda/lib:/usr/local/cuda/lib64"
+ENV LD_LIBRARY_PATH="/colabfold_batch/colabfold-conda/lib:/usr/local/cuda/lib64:/usr/local/cuda-11.4/compat"
 ENV PYTHONPATH="/colabfold_batch/colabfold-conda/lib"
 
 # Use bash to support string substitution.
