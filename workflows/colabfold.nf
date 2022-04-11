@@ -81,7 +81,7 @@ workflow COLABFOLD {
     // WORKFLOW: Run colabfold
     //
     if(params.mode == "colabfold") {
-        RUN_COLABFOLD(INPUT_CHECK.out.reads, params.model_type, params.db)
+        RUN_COLABFOLD(INPUT_CHECK.out.reads, params.model_type, params.db, params.num_recycle)
     }
 
     //

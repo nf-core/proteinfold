@@ -94,6 +94,16 @@
                     "default": "AlphaFold2-ptm",
                     "description": "Model preset for 'colabfold' mode",
                     "enum": ["AlphaFold2-ptm", "AlphaFold2-multimer-v1", "AlphaFold2-multimer-v2"]
+                },
+                "num_recycle": {
+                    "type": "integer",
+                    "default": 3,
+                    "description": "Number of recycles"
+                },
+                "useAmber": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Use Amber minimization to refine the predicted structures"
                 }
             }
         },
