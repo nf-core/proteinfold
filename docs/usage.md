@@ -28,10 +28,10 @@ T1024,https://raw.githubusercontent.com/nf-core/test-datasets/proteinfold/testda
 T1026,https://raw.githubusercontent.com/nf-core/test-datasets/proteinfold/testdata/sequences/T1026.fasta
 ```
 
-| Column    | Description                                                                                                                                                                            |
-| --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `sequence`  | Custom sequence name. Spaces in sequence names are automatically converted to underscores (`_`). |
-| `fasta` | Full path to fasta file for the provided sequence. File has to have the extension ".fasta" or "fa".                                                                                                                   |
+| Column     | Description                                                                                         |
+| ---------- | --------------------------------------------------------------------------------------------------- |
+| `sequence` | Custom sequence name. Spaces in sequence names are automatically converted to underscores (`_`).    |
+| `fasta`    | Full path to fasta file for the provided sequence. File has to have the extension ".fasta" or "fa". |
 
 An [example samplesheet](../assets/samplesheet.csv) has been provided with the pipeline.
 
