@@ -83,7 +83,7 @@ On release, automated continuous integration tests run the pipeline on a full-si
        --mode colabfold \
        --db <DB_PATH> \
        --num_recycle 3 \
-       --useAmber <true/false> \
+       --use_amber <true/false> \
        --model_type "AlphaFold2-ptm" \
        --useGPU <true/false> \
        -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
