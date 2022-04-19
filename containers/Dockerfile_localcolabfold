@@ -1,11 +1,11 @@
 FROM nvidia/cuda:11.4.2-cudnn8-runtime-ubuntu18.04
 LABEL authors="Athanasios Baltzis" \
     title="nf-friendly Colabfold docker image" \
-    Version="v0.4" \
+    Version="v0.5" \
     description="Docker image containing all software requirements to run Colabfold using the nf-core/proteinfold pipeline"
 
 ENV PATH="/colabfold_batch/bin:$PATH"
-ENV LD_LIBRARY_PATH="/colabfold_batch/colabfold-conda/lib:/usr/local/cuda/lib64"
+ENV LD_LIBRARY_PATH="/colabfold_batch/colabfold-conda/lib:/usr/local/cuda/lib64:/usr/local/cuda-11.4/compat"
 ENV PYTHONPATH="/colabfold_batch/colabfold-conda/lib"
 
 # Use bash to support string substitution.
@@ -36,4 +36,4 @@ RUN cd / \
 #RUN mv param* /colabfold_batch/colabfold/params/
 #Silence download function
 RUN  sed -i "s|download_alphafold_params(|#download_alphafold_params(|g" /colabfold_batch/colabfold-conda/lib/python3.7/site-packages/colabfold/batch.py
-
+RUN ldconfig

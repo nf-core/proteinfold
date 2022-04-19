@@ -1,7 +1,7 @@
-FROM nvidia/cuda:11.0-cudnn8-runtime-ubuntu18.04
+FROM nvidia/cuda:11.1.1-cudnn8-runtime-ubuntu18.04
 LABEL authors="Athanasios Baltzis" \
     title="nf-friendly AF2 docker image" \
-    Version="v0.4" \
+    Version="v0.6" \
     description="Docker image containing all software requirements to run AF2 using the nf-core/proteinfold pipeline"
 
 
@@ -9,13 +9,13 @@ LABEL authors="Athanasios Baltzis" \
 SHELL ["/bin/bash", "-c"]
 
 # Add env variables
-ENV LD_LIBRARY_PATH="/conda/lib:/usr/local/cuda-11.0/lib64:$LD_LIBRARY_PATH"
+ENV LD_LIBRARY_PATH="/conda/lib:/usr/local/cuda-11.1/lib64:$LD_LIBRARY_PATH"
 ENV PATH="/conda/bin:$PATH"
 
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
         build-essential \
         cmake \
-        cuda-command-line-tools-11-0 \
+        cuda-command-line-tools-11-1 \
         git \
         hmmer \
         kalign \
@@ -48,7 +48,7 @@ RUN wget -q -P /tmp \
 RUN /conda/bin/conda update -qy conda \
     && /conda/bin/conda install -y -c conda-forge \
         openmm=7.5.1 \
-        cudatoolkit==11.0.221 \
+        cudatoolkit==11.1.1 \
         pdbfixer \
         pip \
         python=3.7
@@ -59,9 +59,9 @@ RUN wget -q -P /app/alphafold/alphafold/common/ \
 # Install pip packages
 RUN /conda/bin/pip3 install --upgrade pip \
     && /conda/bin/pip3 install -r /app/alphafold/requirements.txt \
-    && /conda/bin/pip3 install --upgrade jax jaxlib==0.1.74 -f \
+    && /conda/bin/pip3 install --upgrade jax jaxlib==0.3.0 -f \
         https://storage.googleapis.com/jax-releases/jax_releases.html
-RUN ln -s /conda/lib/libcusolver.so.10 /conda/lib/libcusolver.so.11
+#RUN ln -s /conda/lib/libcusolver.so.10 /conda/lib/libcusolver.so.11
     #ln -s /conda/lib/libcudart.so.10.2 /conda/lib/libcudart.so.11.0
     #ln -s /conda/lib/libcublas.so.10 /conda/lib/libcublas.so.11
     #ln -s /conda/lib/libcublasLt.so.10 /conda/lib/libcublasLt.so.11

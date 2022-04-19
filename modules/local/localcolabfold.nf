@@ -10,10 +10,10 @@ process RUN_COLABFOLD {
     tuple val(seq_name), path(fasta)
     val model_type
     path db
+    val numRec
 
     output:
     path ("*")
-    path ("*_colabfold.pdb")
 
     script:
     if (model_type == 'AlphaFold2-ptm') {
@@ -21,15 +21,13 @@ process RUN_COLABFOLD {
     // def prefix = fasta.baseName //TODO ?
     """
     colabfold_batch \
-        --amber \
         --templates \
         $args \
-        --num-recycle 3 \
+        --num-recycle ${numRec} \
         --data ${db}/${model_type} \
         --model-type ${model_type} \
         ${fasta} \
         \$PWD
-    for i in `find *_relaxed_rank_1*.pdb`; do cp \$i `echo \$i | sed "s|_relaxed_rank_|\t|g" | cut -f1`"_colabfold.pdb"; done
     """
     }
     else {
@@ -39,7 +37,6 @@ process RUN_COLABFOLD {
     echo "id,sequence" >> input.csv
     echo -e ${seq_name},`awk -F ' ' '!/^>/ {print \$0}' ${fasta} | tr "\n" ":" | awk '{gsub(/:\$/,""); print}'` >> input.csv
     colabfold_batch \
-        --amber \
         --templates \
         $args \
         --num-recycle 3 \

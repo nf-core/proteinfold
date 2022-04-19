@@ -70,7 +70,7 @@ On release, automated continuous integration tests run the pipeline on a full-si
        --db <DB_PATH> \
        --full_dbs <true/false> \
        --model_preset monomer \
-       --useGPU <true/false> \
+       --use_gpu <true/false> \
        -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
    ```
 
@@ -82,8 +82,10 @@ On release, automated continuous integration tests run the pipeline on a full-si
        --outdir <OUTDIR> \
        --mode colabfold \
        --db <DB_PATH> \
+       --num_recycle 3 \
+       --use_amber <true/false> \
        --model_type "AlphaFold2-ptm" \
-       --useGPU <true/false> \
+       --use_gpu <true/false> \
        -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
    ```
 
