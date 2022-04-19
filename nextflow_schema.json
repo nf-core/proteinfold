@@ -100,7 +100,7 @@
                     "default": 3,
                     "description": "Number of recycles"
                 },
-                "useAmber": {
+                "use_amber": {
                     "type": "boolean",
                     "default": true,
                     "description": "Use Amber minimization to refine the predicted structures"
