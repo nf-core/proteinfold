@@ -39,7 +39,7 @@
                     "default": "/nfs/users/cn/abaltzis/db/alphafold",
                     "description": "Specifies the DB and PARAMS used by 'AF2' or 'colabfold'  mode"
                 },
-                "useGPU": {
+                "use_gpu": {
                     "type": "boolean",
                     "default": false,
                     "description": "Run on CPUs (default) or GPUs"

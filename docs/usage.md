@@ -47,7 +47,7 @@ nextflow run nf-core/proteinfold \
        --db <DB_PATH> \
        --full_dbs <true/false> \
        --model_preset monomer \
-       --useGPU <true/false> \
+       --use_gpu <true/false> \
        -profile <docker>
 ```
 
@@ -58,9 +58,9 @@ nextflow run nf-core/proteinfold \
        --mode colabfold \
        --db <DB_PATH> \
        --num_recycle 3 \
-       --useAmber <true/false> \
+       --use_amber <true/false> \
        --model_type "AlphaFold2-ptm" \
-       --useGPU <true/false> \
+       --use_gpu <true/false> \
        -profile <docker>
 ```
 
