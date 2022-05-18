@@ -31,8 +31,11 @@ On release, automated continuous integration tests run the pipeline on a full-si
 
 <!-- TODO nf-core: Fill in short bullet-pointed list of the default steps in the pipeline -->
 
-1. Read QC ([`FastQC`](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/))
-2. Present QC for raw reads ([`MultiQC`](http://multiqc.info/))
+1. Choice of protein structure prediction method:
+
+   i. [AlphaFold2](https://github.com/deepmind/alphafold) (default)
+
+   ii. [LocalColabFold](https://github.com/YoshitakaMo/localcolabfold) - AlphaFold2 using MMseqs2
 
 ## Quick Start
 
@@ -55,10 +58,36 @@ On release, automated continuous integration tests run the pipeline on a full-si
 
 4. Start running your own analysis!
 
-   <!-- TODO nf-core: Update the example "typical command" below used to run the pipeline -->
+   > - For AlphaFold2 using the instructions provided [here](https://github.com/deepmind/alphafold)
+   > - For Colabfold using the following script (bin/download_colabfold_params.sh)
+
+   - Typical command to run alphafold 2 mode:
 
    ```console
-   nextflow run nf-core/proteinfold --input samplesheet.csv --outdir <OUTDIR> --genome GRCh37 -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
+   nextflow run nf-core/proteinfold \
+       --input samplesheet.csv \
+       --outdir <OUTDIR> \
+       --mode AF2 \
+       --db <DB_PATH> \
+       --full_dbs <true/false> \
+       --model_preset monomer \
+       --use_gpu <true/false> \
+       -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
+   ```
+
+   - Typical command to run Colabfold mode:
+
+   ```console
+   nextflow run nf-core/proteinfold \
+       --input samplesheet.csv \
+       --outdir <OUTDIR> \
+       --mode colabfold \
+       --db <DB_PATH> \
+       --num_recycle 3 \
+       --use_amber <true/false> \
+       --model_type "AlphaFold2-ptm" \
+       --use_gpu <true/false> \
+       -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
    ```
 
 ## Documentation
