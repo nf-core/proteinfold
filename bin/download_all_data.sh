@@ -20,21 +20,21 @@
 set -e
 
 if [[ $# -eq 0 ]]; then
-  echo "Error: download directory must be provided as an input argument."
-  exit 1
+    echo "Error: download directory must be provided as an input argument."
+    exit 1
 fi
 
 if ! command -v aria2c &> /dev/null ; then
-  echo "Error: aria2c could not be found. Please install aria2c (sudo apt install aria2)."
-  exit 1
+    echo "Error: aria2c could not be found. Please install aria2c (sudo apt install aria2)."
+    exit 1
 fi
 
 DOWNLOAD_DIR="$1"
 DOWNLOAD_MODE="${2:-full_dbs}"  # Default mode to full_dbs.
 if [[ "${DOWNLOAD_MODE}" != full_dbs && "${DOWNLOAD_MODE}" != reduced_dbs ]]
 then
-  echo "DOWNLOAD_MODE ${DOWNLOAD_MODE} not recognized."
-  exit 1
+    echo "DOWNLOAD_MODE ${DOWNLOAD_MODE} not recognized."
+    exit 1
 fi
 
 SCRIPT_DIR="$(dirname "$(realpath "$0")")"
@@ -43,11 +43,11 @@ echo "Downloading AlphaFold parameters..."
 bash "${SCRIPT_DIR}/download_alphafold_params.sh" "${DOWNLOAD_DIR}"
 
 if [[ "${DOWNLOAD_MODE}" = reduced_dbs ]] ; then
-  echo "Downloading Small BFD..."
-  bash "${SCRIPT_DIR}/download_small_bfd.sh" "${DOWNLOAD_DIR}"
+    echo "Downloading Small BFD..."
+    bash "${SCRIPT_DIR}/download_small_bfd.sh" "${DOWNLOAD_DIR}"
 else
-  echo "Downloading BFD..."
-  bash "${SCRIPT_DIR}/download_bfd.sh" "${DOWNLOAD_DIR}"
+    echo "Downloading BFD..."
+    bash "${SCRIPT_DIR}/download_bfd.sh" "${DOWNLOAD_DIR}"
 fi
 
 echo "Downloading MGnify..."

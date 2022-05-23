@@ -1,8 +1,8 @@
 set -e
 
 if [[ $# -eq 0 ]]; then
-  echo "Error: download directory must be provided as an input argument."
-  exit 1
+    echo "Error: download directory must be provided as an input argument."
+    exit 1
 fi
 
 DOWNLOAD_DIR="$1"

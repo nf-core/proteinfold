@@ -47,7 +47,7 @@ echo "or see https://www.wwpdb.org/ftp/pdb-ftp-sites for more download options."
 mkdir --parents "${RAW_DIR}"
 rsync --recursive --links --perms --times --compress --info=progress2 --delete --port=33444 \
     rsync.rcsb.org::ftp_data/structures/divided/mmCIF/ \
-  "${RAW_DIR}"
+    "${RAW_DIR}"
 
 echo "Unzipping all mmCIF files..."
 find "${RAW_DIR}/" -type f -iname "*.gz" -exec gunzip {} +
