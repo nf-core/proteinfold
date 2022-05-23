@@ -27,7 +27,6 @@ def make_dir(path):
             if exception.errno != errno.EEXIST:
                 raise exception
 
-
 def print_error(error, context="Line", context_str=""):
     error_str = "ERROR: Please check samplesheet -> {}".format(error)
     if context != "" and context_str != "":
