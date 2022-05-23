@@ -36,7 +36,6 @@
                 },
                 "db": {
                     "type": "string",
-                    "default": "/nfs/users/cn/abaltzis/db/alphafold",
                     "description": "Specifies the DB and PARAMS used by 'AF2' or 'colabfold'  mode"
                 },
                 "use_gpu": {
@@ -44,7 +43,11 @@
                     "default": false,
                     "description": "Run on CPUs (default) or GPUs"
                 },
-
+                "skip_download": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Skip the automatic download of databases and parameters"
+                },
                 "email": {
                     "type": "string",
                     "description": "Email address for completion summary.",

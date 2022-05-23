@@ -12,7 +12,7 @@ WorkflowColabfold.initialise(params, log)
 // Check input path parameters to see if they exist
 def checkPathParamList = [
     params.input,
-    params.db
+    params.skip_download ? params.db : ''
 ]
 for (param in checkPathParamList) { if (param) { file(param, checkIfExists: true) } }
 
@@ -43,6 +43,7 @@ include { INPUT_CHECK } from '../subworkflows/local/input_check'
 // MODULE: Local to the pipeline
 //
 include { RUN_COLABFOLD } from '../modules/local/localcolabfold.nf'
+include { DOWNLOAD_COLABFOLD_PARAMS } from '../modules/local/prepare_db_and_params.nf'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -78,10 +79,31 @@ workflow COLABFOLD {
     ch_versions = ch_versions.mix(INPUT_CHECK.out.versions)
 
     //
+    // MODULE: Download params for LocalColabFold
+    //
+    if (!params.skip_download) {
+        DOWNLOAD_COLABFOLD_PARAMS (
+            params.db
+        )
+        DOWNLOAD_COLABFOLD_PARAMS.out.db_path.view()
+    //
     // WORKFLOW: Run colabfold
     //
-    if(params.mode == "colabfold") {
-        RUN_COLABFOLD(INPUT_CHECK.out.reads, params.model_type, params.db, params.num_recycle)
+        if(params.mode == "colabfold") {
+            RUN_COLABFOLD(
+                INPUT_CHECK.out.reads,
+                params.model_type,
+                DOWNLOAD_COLABFOLD_PARAMS.out.db_path,
+                params.num_recycle
+            )
+        }
+    } else {
+        RUN_COLABFOLD(
+                INPUT_CHECK.out.reads,
+                params.model_type,
+                params.db,
+                params.num_recycle
+            )
     }
 
     //
