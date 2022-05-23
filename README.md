@@ -56,9 +56,17 @@ On release, automated continuous integration tests run the pipeline on a full-si
    > - If you are using `conda`, it is highly recommended to use the [`NXF_CONDA_CACHEDIR` or `conda.cacheDir`](https://www.nextflow.io/docs/latest/conda.html) settings to store the environments in a central location for future pipeline runs.
 
 4. Start running your own analysis!
-
+   
+   Download the databases and params required by AlphaFold2 and Colabfold
    > - For AlphaFold2 using the instructions provided [here](https://github.com/deepmind/alphafold)
    > - For Colabfold using the following script (bin/download_colabfold_params.sh)
+   
+   or
+   
+   use the nextflow parameter: 
+   ```console
+   --skip_download
+   ```
 
    - Typical command to run alphafold 2 mode:
 
@@ -69,6 +77,7 @@ On release, automated continuous integration tests run the pipeline on a full-si
        --mode AF2 \
        --db <DB_PATH> \
        --full_dbs <true/false> \
+       --skip_download <true/false> \
        --model_preset monomer \
        --use_gpu <true/false> \
        -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
@@ -84,6 +93,7 @@ On release, automated continuous integration tests run the pipeline on a full-si
        --db <DB_PATH> \
        --num_recycle 3 \
        --use_amber <true/false> \
+       --skip_download <true/false> \
        --model_type "AlphaFold2-ptm" \
        --use_gpu <true/false> \
        -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
