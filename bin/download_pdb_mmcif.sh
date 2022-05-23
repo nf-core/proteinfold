@@ -56,7 +56,7 @@ echo "Flattening all mmCIF files..."
 mkdir --parents "${MMCIF_DIR}"
 find "${RAW_DIR}" -type d -empty -delete  # Delete empty directories.
 for subdir in "${RAW_DIR}"/*; do
-  mv "${subdir}/"*.cif "${MMCIF_DIR}"
+    mv "${subdir}/"*.cif "${MMCIF_DIR}"
 done
 
 # Delete empty download directory structure.
