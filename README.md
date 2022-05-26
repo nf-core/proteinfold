@@ -58,17 +58,17 @@ On release, automated continuous integration tests run the pipeline on a full-si
 
 4. Start running your own analysis!
 
-   Download the databases and params required by AlphaFold2 and Colabfold
+   Download the databases and params required by AlphaFold2 and Colabfold and provide the path using the parameter [`--db`]
 
    > - For AlphaFold2 using the instructions provided [here](https://github.com/deepmind/alphafold)
    > - For Colabfold using the following script (bin/download_colabfold_params.sh)
 
    or
 
-   use the following nextflow parameter:
+   use the following nextflow parameters so that the pipeline takes care of fetching the required databases and params:
 
    ```console
-   --skip_download
+   --skip_download --db <PATH_TO_STORE>
    ```
 
    - Typical command to run alphafold 2 mode:
