@@ -26,8 +26,8 @@ process DOWNLOAD_AF2_DB {
 
 process DOWNLOAD_COLABFOLD_PARAMS {
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'docker://athbaltzis/debian:11.3' :
-        'athbaltzis/debian:11.3' }"
+        'https://depot.galaxyproject.org/singularity/aria2:1.34.0--0' :
+        'quay.io/biocontainers/aria2:1.34.0--0' }"
 
     input:
     val db
