@@ -38,12 +38,12 @@ ch_multiqc_custom_config = params.multiqc_config ? Channel.fromPath(params.multi
 // SUBWORKFLOW: Consisting of a mix of local and nf-core/modules
 //
 include { INPUT_CHECK } from '../subworkflows/local/input_check'
+include { DOWNLOAD_AF2_DBS_AND_PARAMS } from '../subworkflows/local/download_af2_dbs_and_params.nf'
 
 //
 // MODULE: Local to the pipeline
 //
 include { RUN_AF2 } from '../modules/local/af2.nf'
-include { DOWNLOAD_AF2_DB } from '../modules/local/prepare_db_and_params.nf'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -94,12 +94,14 @@ workflow ALPHAFOLD2 {
     ch_versions = ch_versions.mix(INPUT_CHECK.out.versions)
 
     //
-    // MODULE: Download databases for Alphafold2
+    // SUBWORKFLOW: Download databases and params for Alphafold2
     //
     if (!params.skip_download) {
-        DOWNLOAD_AF2_DB (
-            params.db
+        DOWNLOAD_AF2_DBS_AND_PARAMS (
+            params.db,
+            params.full_dbs
         )
+
     //
     // MODULE: Run Alphafold2
     //
@@ -108,7 +110,7 @@ workflow ALPHAFOLD2 {
             params.max_template_date,
             params.full_dbs,
             params.model_preset,
-            DOWNLOAD_AF2_DB.out.db_path
+            DOWNLOAD_AF2_DBS_AND_PARAMS.out
         )
     } else {
         RUN_AF2 (

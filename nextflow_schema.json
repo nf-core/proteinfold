@@ -34,10 +34,6 @@
                     "description": "Specifies the mode in which the pipeline will be run",
                     "enum": ["AF2", "colabfold"]
                 },
-                "db": {
-                    "type": "string",
-                    "description": "Specifies the DB and PARAMS used by 'AF2' or 'colabfold'  mode"
-                },
                 "use_gpu": {
                     "type": "boolean",
                     "default": false,
@@ -73,6 +69,10 @@
                     "default": "2020-05-14",
                     "description": "Maximum date of the PDB templates used by 'AF2' mode"
                 },
+                "db": {
+                    "type": "string",
+                    "description": "Specifies the DB and PARAMS used by 'AF2' mode"
+                },
                 "full_dbs": {
                     "type": "boolean",
                     "default": true,
@@ -92,6 +92,10 @@
             "fa_icon": "fas fa-coins",
             "description": "Colabfold options.",
             "properties": {
+                "colabfold_params": {
+                    "type": "string",
+                    "description": "Specifies the PARAMS path used by 'colabfold'  mode"
+                },
                 "model_type": {
                     "type": "string",
                     "default": "AlphaFold2-ptm",
