@@ -93,7 +93,7 @@ On release, automated continuous integration tests run the pipeline on a full-si
        --input samplesheet.csv \
        --outdir <OUTDIR> \
        --mode colabfold \
-       --db <DB_PATH> \
+       --colabfold_params <PATH> \
        --num_recycle 3 \
        --use_amber <true/false> \
        --skip_download <true/false> \
