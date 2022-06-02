@@ -10,7 +10,7 @@ process DOWNLOAD_AF2_PARAMS {
     val db
 
     output:
-    path("*") 
+    path("*")
     tuple val(db), path("*"), emit: db_path
 
 

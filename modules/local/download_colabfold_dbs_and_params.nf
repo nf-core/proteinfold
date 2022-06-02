@@ -1,7 +1,7 @@
 
 process DOWNLOAD_COLABFOLD_PARAMS {
-    label 'long'    
-
+    label 'long'
+    
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'docker://athbaltzis/debian:11.3' :
         'athbaltzis/debian:11.3' }"
