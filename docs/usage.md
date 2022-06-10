@@ -46,6 +46,7 @@ nextflow run nf-core/proteinfold \
        --mode AF2 \
        --db <DB_PATH> \
        --full_dbs <true/false> \
+       --skip_download <true/false> \
        --model_preset monomer \
        --use_gpu <true/false> \
        -profile <docker>
@@ -56,9 +57,10 @@ nextflow run nf-core/proteinfold \
        --input samplesheet.csv \
        --outdir <OUTDIR> \
        --mode colabfold \
-       --db <DB_PATH> \
+       --colabfold_params <PATH> \
        --num_recycle 3 \
        --use_amber <true/false> \
+       --skip_download <true/false> \
        --model_type "AlphaFold2-ptm" \
        --use_gpu <true/false> \
        -profile <docker>

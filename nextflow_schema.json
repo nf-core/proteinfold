@@ -34,17 +34,16 @@
                     "description": "Specifies the mode in which the pipeline will be run",
                     "enum": ["AF2", "colabfold"]
                 },
-                "db": {
-                    "type": "string",
-                    "default": "/nfs/users/cn/abaltzis/db/alphafold",
-                    "description": "Specifies the DB and PARAMS used by 'AF2' or 'colabfold'  mode"
-                },
                 "use_gpu": {
                     "type": "boolean",
                     "default": false,
                     "description": "Run on CPUs (default) or GPUs"
                 },
-
+                "skip_download": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Skip the automatic download of databases and parameters"
+                },
                 "email": {
                     "type": "string",
                     "description": "Email address for completion summary.",
@@ -70,6 +69,10 @@
                     "default": "2020-05-14",
                     "description": "Maximum date of the PDB templates used by 'AF2' mode"
                 },
+                "db": {
+                    "type": "string",
+                    "description": "Specifies the DB and PARAMS used by 'AF2' mode"
+                },
                 "full_dbs": {
                     "type": "boolean",
                     "default": true,
@@ -89,6 +92,10 @@
             "fa_icon": "fas fa-coins",
             "description": "Colabfold options.",
             "properties": {
+                "colabfold_params": {
+                    "type": "string",
+                    "description": "Specifies the PARAMS path used by 'colabfold'  mode"
+                },
                 "model_type": {
                     "type": "string",
                     "default": "AlphaFold2-ptm",
