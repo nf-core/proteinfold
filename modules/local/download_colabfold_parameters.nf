@@ -1,3 +1,6 @@
+/*
+ * Download Colabfold parameters
+ */
 process DOWNLOAD_COLABFOLD_PARAMS {
     label 'long'
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?

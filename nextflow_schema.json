@@ -94,7 +94,7 @@
             "properties": {
                 "colabfold_params": {
                     "type": "string",
-                    "description": "Specifies the PARAMS path used by 'colabfold'  mode"
+                    "description": "Specifies the PARAMS path used by 'colabfold' mode"
                 },
                 "model_type": {
                     "type": "string",

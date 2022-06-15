@@ -110,7 +110,7 @@ workflow ALPHAFOLD2 {
             params.max_template_date,
             params.full_dbs,
             params.model_preset,
-            DOWNLOAD_AF2_DBS_AND_PARAMS.out
+            DOWNLOAD_AF2_DBS_AND_PARAMS.out.download_path
         )
     } else {
         RUN_AF2 (
