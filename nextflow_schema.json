@@ -121,6 +121,11 @@
                     "type":"integer",
                     "default": 0,
                     "description": "Specify the way that MMSeqs2 will load the required databases in memory"
+                },
+                "host_url": {
+                    "type":"string",
+                    "default": "",
+                    "description": "Specify your custom MMSeqs2 API server url"
                 }
             }
         },
