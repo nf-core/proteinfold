@@ -25,7 +25,7 @@ workflow DOWNLOAD_AF2_DBS_AND_PARAMS {
 		.combine(ch_pdb_mmcif, by: 0)
 		.combine(ch_uniclust30, by: 0)
 		.combine(ch_uniref90, by: 0)
-		.combine(ch_uniprot, by: 0)
+		.combine(ch_uniprot, by: 0).flatten().first()
 	} else {
 		ch_af2_params = DOWNLOAD_AF2_PARAMS(db).db_path
 		ch_small_bfd = DOWNLOAD_SMALL_BFD(db).db_path

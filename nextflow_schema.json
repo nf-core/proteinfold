@@ -10,7 +10,7 @@
             "type": "object",
             "fa_icon": "fas fa-coins",
             "description": "Define where the pipeline should find input data and save output data.",
-            "required": ["input", "outdir", "db"],
+            "required": ["input", "outdir", "colabfold_db"],
             "properties": {
                 "input": {
                     "type": "string",
@@ -32,7 +32,7 @@
                     "type": "string",
                     "default": "AF2",
                     "description": "Specifies the mode in which the pipeline will be run",
-                    "enum": ["AF2", "colabfold"]
+                    "enum": ["AF2", "colabfold_webserver", "colabfold_local"]
                 },
                 "use_gpu": {
                     "type": "boolean",
@@ -69,9 +69,9 @@
                     "default": "2020-05-14",
                     "description": "Maximum date of the PDB templates used by 'AF2' mode"
                 },
-                "db": {
+                "af2_db": {
                     "type": "string",
-                    "description": "Specifies the DB and PARAMS used by 'AF2' mode"
+                    "description": "Specifies the DB and PARAMS path used by 'AF2' mode"
                 },
                 "full_dbs": {
                     "type": "boolean",
@@ -92,9 +92,9 @@
             "fa_icon": "fas fa-coins",
             "description": "Colabfold options.",
             "properties": {
-                "colabfold_params": {
+                "colabfold_db": {
                     "type": "string",
-                    "description": "Specifies the PARAMS path used by 'colabfold'  mode"
+                    "description": "Specifies the PARAMS and DB path used by 'colabfold'  mode"
                 },
                 "model_type": {
                     "type": "string",
@@ -111,6 +111,16 @@
                     "type": "boolean",
                     "default": true,
                     "description": "Use Amber minimization to refine the predicted structures"
+                },
+                "mmseqs_threads": {
+                    "type": "integer",
+                    "default": 8,
+                    "description": "Number of threads used by MMSeqs2 during database search"
+                },
+                "db_load_mode": {
+                    "type":"integer",
+                    "default": 0,
+                    "description": "Specify the way that MMSeqs2 will load the required databases in memory"
                 }
             }
         },

@@ -1,14 +1,16 @@
 FROM nvidia/cuda:11.4.2-cudnn8-runtime-ubuntu18.04
 LABEL authors="Athanasios Baltzis" \
     title="nf-friendly Colabfold docker image" \
-    Version="v0.5" \
+    Version="v0.9" \
     description="Docker image containing all software requirements to run Colabfold using the nf-core/proteinfold pipeline"
 
 ENV PATH="/colabfold_batch/bin:$PATH"
-ENV LD_LIBRARY_PATH="/colabfold_batch/colabfold-conda/lib:/usr/local/cuda/lib64:/usr/local/cuda-11.4/compat"
+ENV LD_LIBRARY_PATH="/colabfold_batch/colabfold-conda/lib:/usr/local/cuda/lib64"
 ENV PYTHONPATH="/colabfold_batch/colabfold-conda/lib"
+ENV PATH="/MMseqs2/build/bin:$PATH"
 
 # Use bash to support string substitution.
+RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys A4B469963BF863CC
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
         build-essential \
         cuda-command-line-tools-11-4 \
@@ -18,6 +20,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
         tzdata \
         wget \
         curl \
+	cmake \
         && rm -rf /var/lib/apt/lists/*
 
 RUN cd / \
@@ -36,4 +39,11 @@ RUN cd / \
 #RUN mv param* /colabfold_batch/colabfold/params/
 #Silence download function
 RUN  sed -i "s|download_alphafold_params(|#download_alphafold_params(|g" /colabfold_batch/colabfold-conda/lib/python3.7/site-packages/colabfold/batch.py
-RUN ldconfig
+RUN git clone https://github.com/soedinglab/MMseqs2.git \ 
+&& cd MMseqs2 \
+&& git checkout b0b8e85f3b8437c10a666e3ea35c78c0ad0d7ec2 \
+&& mkdir build \
+&& cd build \
+&& cmake -DCMAKE_BUILD_TYPE=RELEASE -DCMAKE_INSTALL_PREFIX=. .. \
+&& make \
+&& make install

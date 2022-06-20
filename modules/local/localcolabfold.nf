@@ -1,10 +1,9 @@
 process RUN_COLABFOLD {
     tag "${seq_name}"
     label 'customConf'
-    //TODO
-    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'docker://athbaltzis/colabfold_proteinfold:v0.4' :
-        'athbaltzis/colabfold_proteinfold:v0.4' }"
+        container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
+        'docker://athbaltzis/colabfold_proteinfold:v0.9' :
+        'athbaltzis/colabfold_proteinfold:v0.9' }"
 
     input:
     tuple val(seq_name), path(fasta)
@@ -24,7 +23,7 @@ process RUN_COLABFOLD {
         --templates \
         $args \
         --num-recycle ${numRec} \
-        --data ${db}/${model_type} \
+        --data ${db}/params/${model_type} \
         --model-type ${model_type} \
         ${fasta} \
         \$PWD
