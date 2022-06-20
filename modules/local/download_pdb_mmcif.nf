@@ -2,7 +2,7 @@
  * Download PDB MMCIF database
  */
 process DOWNLOAD_PDB_MMCIF {
-    label 'long'
+    label 'process_medium'
 
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'docker://athbaltzis/debian:11.3' :
@@ -23,7 +23,6 @@ process DOWNLOAD_PDB_MMCIF {
 
     RAW_DIR="${download_dir}/raw"
     MMCIF_DIR="${download_dir}/mmcif_files"
-    BASENAME=\$(basename "${source_url}")
 
     mkdir --parents "\${RAW_DIR}"
     rsync \\
@@ -35,7 +34,7 @@ process DOWNLOAD_PDB_MMCIF {
         --info=progress2 \\
         --delete \\
         --port=33444 \\
-        $source_url_pdb_mmcifs \\
+        $source_url_pdb_mmcif \\
         "\${RAW_DIR}"
 
     echo "Unzipping all mmCIF files..."

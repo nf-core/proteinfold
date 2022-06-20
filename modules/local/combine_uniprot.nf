@@ -20,10 +20,10 @@ process COMBINE_UNIPROT {
     def args = task.ext.args ?: ''
     """
     set -e
+    mkdir --parents $output_dir 
 
-    cat ${uniprot_sprot}/uniprot_sprot/uniprot_sprot.fasta >> ${uniprot_trembl}/uniprot_sprot/uniprot_trembl.fasta
-    mv ${uniprot_trembl}/uniprot_sprot/uniprot_trembl.fasta ${output_dir}/uniprot.fasta
-    rm ${uniprot_sprot}/uniprot_sprot/uniprot_sprot.fasta
+    cat ${uniprot_sprot}/uniprot_sprot.fasta >> ${uniprot_trembl}/uniprot_trembl.fasta
+    cp ${uniprot_trembl}/uniprot_trembl.fasta ${output_dir}/uniprot.fasta
     """
 
     stub:
