@@ -25,6 +25,6 @@ process RUN_MMSEQS2 {
 
     stub:
     """
-    touch ./result
+    touch ./${seq_name.sequence}.a3m
     """
 }
