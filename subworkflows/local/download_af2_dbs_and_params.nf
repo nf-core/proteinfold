@@ -35,59 +35,143 @@ workflow DOWNLOAD_AF2_DBS_AND_PARAMS {
     ch_bfd = Channel.empty()
     download_path = Channel.empty()
 
-    if (full_dbs == true) {
-        ARIA2_BFD(
-            bfd,
-            'bfd'
+    //Make a big if params.db else
+    if (params.db) {
+        if (full_dbs == true) {
+            ch_bfd = file("${params.db}/bfd" )
+        }
+        else {
+            ch_bfd = file( "${params.db}/small_bfd" )
+        }
+
+        ch_params     = file( "${params.db}/params" )
+        ch_mgnify     = file( "${params.db}/mgnify" )
+        ch_pdb70      = file( "${params.db}/pdb70" )
+        ch_mmcif      = file( "${params.db}/pdb_mmcif" )
+        ch_uniclust30 = file( "${params.db}/uniclust30" )
+        ch_uniref90   = file( "${params.db}/uniref90" )
+        ch_uniprot    = file( "${params.db}/uniprot" )
+    } else {
+        if (full_dbs == true) {
+            ARIA2_BFD(
+                bfd,
+                'bfd'
+            )
+            ch_bfd =  ARIA2_BFD.out.db_path
+        } else {
+            ARIA2_SMALL_BFD(
+                small_bfd,
+                'small_bfd'
+            )
+            ch_bfd = ARIA2_SMALL_BFD.out.db_path
+        }
+
+        ARIA2_AF2_PARAMS(
+            af2_params,
+            'params'
         )
-        ch_bfd =  ARIA2_BFD.out.db_path
-    }
-    else {
-        ARIA2_SMALL_BFD(
-            small_bfd,
-            'small_bfd'
+        ARIA2_MGNIFY(
+            mgnify,
+            'mgnify'
         )
-        ch_bfd = ARIA2_SMALL_BFD.out.db_path
+        ARIA2_PDB70(
+            pdb70,
+            'pdb70'
+        )
+        DOWNLOAD_PDB_MMCIF(
+            pdb_mmCIF,
+            pdb_obsolete,
+            'pdb_mmcif'
+        )
+        ARIA2_UNICLUST30(
+            uniclust30,
+            'uniclust30'
+        )
+        ARIA2_UNIREF90(
+            uniref90,
+            'uniref90'
+        )
+        ARIA2_UNIPROT_SPROT(
+            uniprot_sprot,
+            'uniprot_sprot'
+        )
+        ARIA2_UNIPROT_TREMBL(
+            uniprot_trembl,
+            'uniprot_trembl'
+        )
+        COMBINE_UNIPROT (
+            ARIA2_UNIPROT_SPROT.out.db_path,
+            ARIA2_UNIPROT_TREMBL.out.db_path,
+            'uniprot'
+        )
     }
 
-    ARIA2_AF2_PARAMS(
-        af2_params,
-        'params'
-    )
-    ARIA2_MGNIFY(
-        mgnify,
-        'mgnify'
-    )
-    ARIA2_PDB70(
-        pdb70,
-        'pdb70'
-    )
-    DOWNLOAD_PDB_MMCIF(
-        pdb_mmCIF,
-        pdb_obsolete,
-        'pdb_mmcif'
-    )
-    ARIA2_UNICLUST30(
-        uniclust30,
-        'uniclust30'
-    )
-    ARIA2_UNIREF90(
-        uniref90,
-        'uniref90'
-    )
-    ARIA2_UNIPROT_SPROT(
-        uniprot_sprot,
-        'uniprot_sprot'
-    )
-    ARIA2_UNIPROT_TREMBL(
-        uniprot_trembl,
-        'uniprot_trembl'
-    )
-    COMBINE_UNIPROT (
-        ARIA2_UNIPROT_SPROT.out.db_path,
-        ARIA2_UNIPROT_TREMBL.out.db_path,
-        'uniprot'
-    )
+
+
+    // if (full_dbs == true) {
+    //     if (params.db) {
+    //         ch_bfd = file("${params.db}/bfd" )
+    //     }
+    //     else {
+    //         ARIA2_BFD(
+    //             bfd,
+    //             'bfd'
+    //         )
+    //         ch_bfd =  ARIA2_BFD.out.db_path
+    //     }
+    // }
+    // else {
+    //     if (params.db) {
+    //         ch_bfd = file("${params.db}/small_bfd" )
+    //     }
+    //     else (params.db) {
+    //         ARIA2_SMALL_BFD(
+    //             small_bfd,
+    //             'small_bfd'
+    //         )
+    //         ch_bfd = ARIA2_SMALL_BFD.out.db_path
+    //     }
+
+    // }
+
+    // ARIA2_AF2_PARAMS(
+    //     af2_params,
+    //     'params'
+    // )
+    // ARIA2_MGNIFY(
+    //     mgnify,
+    //     'mgnify'
+    // )
+    // ARIA2_PDB70(
+    //     pdb70,
+    //     'pdb70'
+    // )
+    // DOWNLOAD_PDB_MMCIF(
+    //     pdb_mmCIF,
+    //     pdb_obsolete,
+    //     'pdb_mmcif'
+    // )
+    // ARIA2_UNICLUST30(
+    //     uniclust30,
+    //     'uniclust30'
+    // )
+    // ARIA2_UNIREF90(
+    //     uniref90,
+    //     'uniref90'
+    // )
+    // ARIA2_UNIPROT_SPROT(
+    //     uniprot_sprot,
+    //     'uniprot_sprot'
+    // )
+    // ARIA2_UNIPROT_TREMBL(
+    //     uniprot_trembl,
+    //     'uniprot_trembl'
+    // )
+    // COMBINE_UNIPROT (
+    //     ARIA2_UNIPROT_SPROT.out.db_path,
+    //     ARIA2_UNIPROT_TREMBL.out.db_path,
+    //     'uniprot'
+    // )
 
     ch_bfd
         .concat (
@@ -100,10 +184,22 @@ workflow DOWNLOAD_AF2_DBS_AND_PARAMS {
             COMBINE_UNIPROT.out.db_path
         )
         .collect()
-        .set {download_path}
+        .set {ch_db}
 
-    // download_path.view()
+    // ch_bfd
+    //     .combine (
+    //         ARIA2_AF2_PARAMS.out.db_path)
+    //     .combine (    ARIA2_MGNIFY.out.db_path)
+    //     .combine (    ARIA2_PDB70.out.db_path)
+    //     .combine (    DOWNLOAD_PDB_MMCIF.out.db_path)
+    //     .combine (    ARIA2_UNICLUST30.out.db_path)
+    //     .combine (    ARIA2_UNIREF90.out.db_path)
+    //     .combine (    COMBINE_UNIPROT.out.db_path
+    //     )
+    //     .flatten()
+    //     .first()
+    //     .set {ch_db}
 
 	emit:
-	download_path
+	db = ch_db //    path: star/index/
 }

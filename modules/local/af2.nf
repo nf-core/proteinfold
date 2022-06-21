@@ -12,7 +12,7 @@ process RUN_AF2 {
     val   max_template_date
     val   db_preset
     val   model_preset
-    path  db
+    path ('dbs/*')
 
     output:
     path ("*")
@@ -34,11 +34,11 @@ process RUN_AF2 {
         --model_preset=${model_preset} \
         --db_preset=${db_preset} \
         --output_dir=\$PWD \
-        --data_dir=${db} \
-        --uniref90_database_path=${db}/uniref90/uniref90.fasta \
-        --mgnify_database_path=${db}/mgnify/mgy_clusters_2018_12.fa \
-        --template_mmcif_dir=${db}/pdb_mmcif/mmcif_files \
-        --obsolete_pdbs_path=${db}/pdb_mmcif/obsolete.dat \
+        --data_dir=./dbs \
+        --uniref90_database_path=./dbs/uniref90/uniref90.fasta \
+        --mgnify_database_path=./dbs/mgnify/mgy_clusters_2018_12.fa \
+        --template_mmcif_dir=./dbs/pdb_mmcif/mmcif_files \
+        --obsolete_pdbs_path=./dbs/pdb_mmcif/obsolete.dat \
         --random_seed=53343 \
         $args
 
@@ -47,6 +47,7 @@ process RUN_AF2 {
 
     stub:
     """
+    echo ${db} > culo.txt
     touch ./"${fasta.baseName}".alphafold.pdb
     """
 }

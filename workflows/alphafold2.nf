@@ -12,7 +12,7 @@ WorkflowAlphafold2.initialise(params, log)
 // Check input path parameters to see if they exist
 def checkPathParamList = [
     params.input,
-    params.skip_download ? params.db : ''
+    params.skip_download ? params.db : '' // TODO review
 ]
 for (param in checkPathParamList) { if (param) { file(param, checkIfExists: true) } }
 
@@ -96,31 +96,21 @@ workflow ALPHAFOLD2 {
     //
     // SUBWORKFLOW: Download databases and params for Alphafold2
     //
-    if (!params.skip_download) {
-        DOWNLOAD_AF2_DBS_AND_PARAMS (
-            params.db,
-            params.full_dbs
-        )
-
-    //
-    // MODULE: Run Alphafold2
-    //
-        RUN_AF2 (
-            ch_fasta,
-            params.max_template_date,
-            params.full_dbs,
-            params.model_preset,
-            DOWNLOAD_AF2_DBS_AND_PARAMS.out.download_path
-        )
-    } else {
-        RUN_AF2 (
-            ch_fasta,
-            params.max_template_date,
-            params.full_dbs,
-            params.model_preset,
-            params.db
-        )
+    if (params.db) {
+        ch_db = file(params.db)
     }
+    else {
+        ch_db =  DOWNLOAD_AF2_DBS_AND_PARAMS ( params.db, params.full_dbs ).db
+    }
+
+    RUN_AF2 (
+        ch_fasta,
+        params.max_template_date,
+        params.full_dbs,
+        params.model_preset,
+        ch_db
+    )
+
     //
     // MODULE: MultiQC
     //

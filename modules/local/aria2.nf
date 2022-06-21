@@ -1,6 +1,6 @@
 process ARIA2 {
     label 'process_long'
-    
+
     //container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
     //    'https://depot.galaxyproject.org/singularity/aria2:1.34.0--h2021cec_3' :
     //    'quay.io/biocontainers/aria2:1.34.0--h2021cec_3' }"
