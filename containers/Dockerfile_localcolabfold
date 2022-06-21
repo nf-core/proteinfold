@@ -20,7 +20,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
         tzdata \
         wget \
         curl \
-	cmake \
+        cmake \
         && rm -rf /var/lib/apt/lists/*
 
 RUN cd / \
@@ -39,7 +39,7 @@ RUN cd / \
 #RUN mv param* /colabfold_batch/colabfold/params/
 #Silence download function
 RUN  sed -i "s|download_alphafold_params(|#download_alphafold_params(|g" /colabfold_batch/colabfold-conda/lib/python3.7/site-packages/colabfold/batch.py
-RUN git clone https://github.com/soedinglab/MMseqs2.git \ 
+RUN git clone https://github.com/soedinglab/MMseqs2.git \
 && cd MMseqs2 \
 && git checkout b0b8e85f3b8437c10a666e3ea35c78c0ad0d7ec2 \
 && mkdir build \

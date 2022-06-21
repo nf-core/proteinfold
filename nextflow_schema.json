@@ -118,13 +118,12 @@
                     "description": "Number of threads used by MMSeqs2 during database search"
                 },
                 "db_load_mode": {
-                    "type":"integer",
+                    "type": "integer",
                     "default": 0,
                     "description": "Specify the way that MMSeqs2 will load the required databases in memory"
                 },
                 "host_url": {
-                    "type":"string",
-                    "default": "",
+                    "type": "string",
                     "description": "Specify your custom MMSeqs2 API server url"
                 }
             }
