@@ -96,20 +96,23 @@ workflow ALPHAFOLD2 {
     //
     // SUBWORKFLOW: Download databases and params for Alphafold2
     //
-    if (params.db) {
-        ch_db = file(params.db)
-    }
-    else {
-        ch_db = DOWNLOAD_AF2_DBS_AND_PARAMS ( params.db, params.full_dbs ).db
-    }
+    ch_db = DOWNLOAD_AF2_DBS_AND_PARAMS ( params.db, params.full_dbs )
+
 
     RUN_AF2 (
         ch_fasta,
         params.max_template_date,
         params.full_dbs,
         params.model_preset,
-        ch_db
-
+        DOWNLOAD_AF2_DBS_AND_PARAMS.out.params,
+        DOWNLOAD_AF2_DBS_AND_PARAMS.out.bfd,
+        DOWNLOAD_AF2_DBS_AND_PARAMS.out.bfd_small,
+        DOWNLOAD_AF2_DBS_AND_PARAMS.out.mgnify,
+        DOWNLOAD_AF2_DBS_AND_PARAMS.out.pdb70,
+        DOWNLOAD_AF2_DBS_AND_PARAMS.out.pdb_mmcif,
+        DOWNLOAD_AF2_DBS_AND_PARAMS.out.uniclust30,
+        DOWNLOAD_AF2_DBS_AND_PARAMS.out.uniref90,
+        DOWNLOAD_AF2_DBS_AND_PARAMS.out.uniprot
     )
 
     //

@@ -12,16 +12,15 @@ process RUN_AF2 {
     val   max_template_date
     val   db_preset
     val   model_preset
-    path db
-    // path ('params/*')
-    // path ('bfd/*')
-    // path ('small_bfd/*')
-    // path ('mgnify/*')
-    // path ('pdb70/*')
-    // path ('pdb_mmcif/*')
-    // path ('uniclust30/*')
-    // path ('uniref90/*')
-    // path ('uniprot/*')
+    path ('params/*')
+    path ('bfd/*')
+    path ('small_bfd/*')
+    path ('mgnify/*')
+    path ('pdb70/*')
+    path ('pdb_mmcif/*')
+    path ('uniclust30/*')
+    path ('uniref90/*')
+    path ('uniprot/*')
 
     output:
     path ("*")
