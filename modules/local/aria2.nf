@@ -13,39 +13,24 @@ process ARIA2 {
 
     input:
     val source_url
-    val download_dir
 
     output:
-    path download_dir, emit: db_path
+    path ("*.*"), emit: ch_db
 
     script:
     def args = task.ext.args ?: ''
+    file_name = source_url.split('/')[-1]
     """
     set -e
 
-    BASENAME=\$(basename "${source_url}")
-    mkdir --parents $download_dir
-
     aria2c \\
         $args \\
-        $source_url \\
-        --dir=$download_dir \\
-
-    if [[ \$BASENAME == *.tar.gz ]];
-    then
-        tar --extract --verbose --file="${download_dir}/\${BASENAME}" \
-        --directory="${download_dir}" --preserve-permissions
-        rm "${download_dir}/\${BASENAME}"
-    fi
-
-    if [[ \$BASENAME == *.gz && \$BASENAME == !(*.tar.gz) ]];
-    then
-	gunzip "${download_dir}/\${BASENAME}"
-    fi
+        $source_url
     """
 
     stub:
     """
-    touch $download_dir
+    BASENAME=\$(basename "${source_url}")
+    touch \$BASENAME
     """
 }

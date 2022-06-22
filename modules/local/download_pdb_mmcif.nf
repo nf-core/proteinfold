@@ -11,20 +11,17 @@ process DOWNLOAD_PDB_MMCIF {
     input:
     val source_url_pdb_mmcif
     val source_url_pdb_obsolete
-    val download_dir
 
     output:
-    path download_dir, emit: db_path
+    path ('*'), emit: ch_db
 
     script:
     def args = task.ext.args ?: ''
     """
-    set -e
+    set -euo pipefail
 
-    RAW_DIR="${download_dir}/raw"
-    MMCIF_DIR="${download_dir}/mmcif_files"
+    mkdir raw
 
-    mkdir --parents "\${RAW_DIR}"
     rsync \\
         --recursive \\
         --links \\
@@ -35,28 +32,28 @@ process DOWNLOAD_PDB_MMCIF {
         --delete \\
         --port=33444 \\
         $source_url_pdb_mmcif \\
-        "\${RAW_DIR}"
+        raw
 
     echo "Unzipping all mmCIF files..."
-    find "\${RAW_DIR}/" -type f -iname "*.gz" -exec gunzip {} +
+    find ./raw -type f -iname "*.gz" -exec gunzip {} +
 
     echo "Flattening all mmCIF files..."
-    mkdir --parents "\${MMCIF_DIR}"
-    find "\${RAW_DIR}" -type d -empty -delete  # Delete empty directories.
-    for subdir in "\${RAW_DIR}"/*; do
-        mv "\${subdir}/"*.cif "\${MMCIF_DIR}"
+    mkdir mmcif_files
+    find ./raw -type d -empty -delete  # Delete empty directories.
+    for subdir in ./raw/*; do
+        mv "\${subdir}/"*.cif ./mmcif_files
     done
 
     # Delete empty download directory structure.
-    find "\${RAW_DIR}" -type d -empty -delete
+    find ./raw -type d -empty -delete
 
     aria2c \\
-        $source_url_pdb_obsolete \\
-        --dir=${download_dir}
+        $source_url_pdb_obsolete
     """
 
     stub:
     """
-    touch $download_dir
+    touch obsolete.dat
+    mkdir mmcif_files
     """
 }

@@ -100,7 +100,7 @@ workflow ALPHAFOLD2 {
         ch_db = file(params.db)
     }
     else {
-        ch_db =  DOWNLOAD_AF2_DBS_AND_PARAMS ( params.db, params.full_dbs ).db
+        ch_db = DOWNLOAD_AF2_DBS_AND_PARAMS ( params.db, params.full_dbs ).db
     }
 
     RUN_AF2 (
@@ -109,6 +109,7 @@ workflow ALPHAFOLD2 {
         params.full_dbs,
         params.model_preset,
         ch_db
+
     )
 
     //

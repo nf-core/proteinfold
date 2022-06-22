@@ -11,23 +11,21 @@ process COMBINE_UNIPROT {
     input:
     path uniprot_sprot
     path uniprot_trembl
-    val  output_dir
 
     output:
-    path output_dir, emit: db_path
+    path ('uniprot.fasta'), emit: ch_db
 
     script:
     def args = task.ext.args ?: ''
     """
     set -e
-    mkdir --parents $output_dir 
 
     cat ${uniprot_sprot}/uniprot_sprot.fasta >> ${uniprot_trembl}/uniprot_trembl.fasta
-    cp ${uniprot_trembl}/uniprot_trembl.fasta ${output_dir}/uniprot.fasta
+    cp ${uniprot_trembl}/uniprot_trembl.fasta uniprot.fasta
     """
 
     stub:
     """
-    touch $output_dir
+    touch uniprot.fasta
     """
 }
