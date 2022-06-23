@@ -28,12 +28,12 @@ process RUN_AF2 {
     script:
     def args = task.ext.args ?: ''
     def db_preset = db_preset ? "full_dbs --bfd_database_path=./bfd/bfd_metaclust_clu_complete_id30_c90_final_seq.sorted_opt --uniclust30_database_path=./uniclust30/uniclust30_2018_08/uniclust30_2018_08" :
-        "reduced_dbs --small_bfd_database_path=./dbs/small_bfd/bfd-first_non_consensus_sequences.fasta"
+        "reduced_dbs --small_bfd_database_path=./small_bfd/bfd-first_non_consensus_sequences.fasta"
     if (model_preset == 'multimer') {
-        model_preset = model_preset + " --pdb_seqres_database_path=./pdb_seqres/pdb_seqres.txt --uniprot_database_path=./dbs/uniprot/uniprot.fasta "
+        model_preset = model_preset + " --pdb_seqres_database_path=./pdb_seqres/pdb_seqres.txt --uniprot_database_path=./uniprot/uniprot.fasta "
     }
     else {
-        model_preset = model_preset + " --pdb70_database_path=./dbs/pdb70/pdb70 "
+        model_preset = model_preset + " --pdb70_database_path=./pdb70/pdb70 "
     }
     """
     python3 /app/alphafold/run_alphafold.py \
@@ -42,11 +42,11 @@ process RUN_AF2 {
         --model_preset=${model_preset} \
         --db_preset=${db_preset} \
         --output_dir=\$PWD \
-        --data_dir=./dbs \
-        --uniref90_database_path=./dbs/uniref90/uniref90.fasta \
-        --mgnify_database_path=./dbs/mgnify/mgy_clusters_2018_12.fa \
-        --template_mmcif_dir=./dbs/pdb_mmcif/mmcif_files \
-        --obsolete_pdbs_path=./dbs/pdb_mmcif/obsolete.dat \
+        --data_dir=\$PWD \
+        --uniref90_database_path=./uniref90/uniref90.fasta \
+        --mgnify_database_path=./mgnify/mgy_clusters_2018_12.fa \
+        --template_mmcif_dir=./pdb_mmcif/mmcif_files \
+        --obsolete_pdbs_path=./pdb_mmcif/obsolete.dat \
         --random_seed=53343 \
         $args
 
