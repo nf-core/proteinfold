@@ -99,6 +99,12 @@ workflow ALPHAFOLD2 {
     ch_db = DOWNLOAD_AF2_DBS_AND_PARAMS ( params.db, params.full_dbs )
 
 
+    DOWNLOAD_AF2_DBS_AND_PARAMS.out.pdb70.view()
+    DOWNLOAD_AF2_DBS_AND_PARAMS.out.pdb_mmcif,
+    DOWNLOAD_AF2_DBS_AND_PARAMS.out.uniclust30,
+    DOWNLOAD_AF2_DBS_AND_PARAMS.out.uniref90,
+    DOWNLOAD_AF2_DBS_AND_PARAMS.out.uniprot
+
     RUN_AF2 (
         ch_fasta,
         params.max_template_date,
