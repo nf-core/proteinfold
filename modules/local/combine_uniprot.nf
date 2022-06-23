@@ -20,8 +20,8 @@ process COMBINE_UNIPROT {
     """
     set -e
 
-    cat ${uniprot_sprot}/uniprot_sprot.fasta >> ${uniprot_trembl}/uniprot_trembl.fasta
-    cp ${uniprot_trembl}/uniprot_trembl.fasta uniprot.fasta
+    cat ${uniprot_sprot} >> ${uniprot_trembl}
+    mv ${uniprot_trembl} uniprot.fasta
     """
 
     stub:
