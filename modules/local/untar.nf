@@ -11,7 +11,7 @@ process UNTAR_AF2_PARAMS {
     tuple path(archive)
 
     output:
-    tuple path("$untar/*"), emit: untar
+    tuple path('output/*'), emit: untar
     path "versions.yml"   , emit: versions
 
     when:
@@ -32,8 +32,6 @@ process UNTAR_AF2_PARAMS {
         $args \\
         $archive \\
         $args2
-
-    mv output ${untar}
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
