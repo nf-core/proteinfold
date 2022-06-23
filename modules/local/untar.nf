@@ -1,4 +1,4 @@
-process UNTAR_AF2_PARAMS {
+process UNTAR {
     tag "$archive"
     label 'process_low'
 
