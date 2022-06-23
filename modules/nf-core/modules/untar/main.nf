@@ -20,19 +20,14 @@ process UNTAR {
     script:
     def args  = task.ext.args ?: ''
     def args2 = task.ext.args2 ?: ''
-    untar = archive.toString() - '.tar.gz'
-    def tar_opts = '-xzvf'
-    if (archive .toString().endsWith('.tar')) {
-        untar    = archive.toString() - '.tar'
-        tar_opts = '-xvf'
-    }
+    untar     = archive.toString() - '.tar.gz'
 
     """
     mkdir output
 
     tar \\
         -C output --strip-components 1 \\
-        $tar_opts \\
+        -xzvf \\
         $args \\
         $archive \\
         $args2
