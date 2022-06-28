@@ -19,12 +19,12 @@ workflow ARIA2_UNCOMPRESS {
     ch_db = Channel.empty()
 
     if (source_url.contains('pdb70')) {
-        ch_db = UNTAR_PDB70 ( ARIA2.out.ch_db ).untar
+	ch_db = UNTAR_PDB70 ( ARIA2.out.ch_db ).untar
     } else if (source_url.endsWith('.gz')) {
         ch_db = GUNZIP ( ARIA2.out.ch_db.flatten().map{ [ [:], it ] } ).gunzip.map { it[1] }
     } else if (source_url.endsWith('tar.gz')) {
         ch_db = UNTAR ( ARIA2.out.ch_db.flatten().map{ [ [:], it ] } ).untar.map{ it[1] }
-    } else if (source_url.equals('tar')) {
+    } else if (source_url.endsWith('tar')) {
         ch_db = UNTAR_AF2_PARAMS ( ARIA2.out.ch_db ).untar
     }
 
