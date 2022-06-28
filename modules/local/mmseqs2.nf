@@ -17,8 +17,8 @@ process RUN_MMSEQS2 {
     script:
     def args = task.ext.args ?: ''
     """
-    mmseqs touchdb ${db}/uniref30_2103_db --threads ${threads}
-    mmseqs touchdb ${db}/colabfold_envdb_202108_db --threads ${threads}
+    mmseqs touchdb ${db}/uniref30_2103_db --threads $task.cpus
+    mmseqs touchdb ${db}/colabfold_envdb_202108_db --threads $task.cpus
     /colabfold_batch/colabfold-conda/bin/colabfold_search --db-load-mode ${db_load_mode} --threads ${threads} ${fasta} ${db} "result/"
     cp result/0.a3m ${seq_name.sequence}.a3m
     """
