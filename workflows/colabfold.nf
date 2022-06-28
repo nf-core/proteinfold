@@ -120,7 +120,6 @@ workflow COLABFOLD {
             RUN_MMSEQS2 (
                 INPUT_CHECK.out.reads,
                 DOWNLOAD_COLABFOLD_DBS_AND_PARAMS.out,
-                params.mmseqs_threads,
                 params.db_load_mode
             )
 
@@ -140,7 +139,6 @@ workflow COLABFOLD {
             RUN_MMSEQS2 (
                 INPUT_CHECK.out.reads,
                 params.colabfold_db,
-                params.mmseqs_threads,
                 params.db_load_mode
             )
             RUN_COLABFOLD(

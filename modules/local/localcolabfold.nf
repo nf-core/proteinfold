@@ -17,10 +17,9 @@ process RUN_COLABFOLD {
     script:
     if (model_type == 'AlphaFold2-ptm') {
     def args = task.ext.args ?: ''
-    // def prefix = fasta.baseName //TODO ?
+    // def prefix = fasta.baseName //TODO ?  --templates \
     """
     colabfold_batch \
-        --templates \
         $args \
         --num-recycle ${numRec} \
         --data ${db}/params/${model_type} \
