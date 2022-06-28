@@ -12,7 +12,7 @@ WorkflowAlphafold2.initialise(params, log)
 // Check input path parameters to see if they exist
 def checkPathParamList = [
     params.input,
-    params.skip_download ? params.db : ''
+    params.skip_download ? params.af2_db : ''
 ]
 for (param in checkPathParamList) { if (param) { file(param, checkIfExists: true) } }
 
@@ -98,7 +98,7 @@ workflow ALPHAFOLD2 {
     //
     if (!params.skip_download) {
         DOWNLOAD_AF2_DBS_AND_PARAMS (
-            params.db,
+            params.af2_db,
             params.full_dbs
         )
 
@@ -118,7 +118,7 @@ workflow ALPHAFOLD2 {
             params.max_template_date,
             params.full_dbs,
             params.model_preset,
-            params.db
+            params.af2_db
         )
     }
     //

@@ -10,7 +10,6 @@ process DOWNLOAD_AF2_PARAMS {
     val db
 
     output:
-    path("*")
     tuple val(db), path("*"), emit: db_path
 
 
@@ -38,7 +37,6 @@ process DOWNLOAD_SMALL_BFD {
     val db
 
     output:
-    path("*")
     tuple val(db), path("*"), emit: db_path
 
 
@@ -66,7 +64,6 @@ process DOWNLOAD_BFD {
     val db
 
     output:
-    path("*")
     tuple val(db), path("*"), emit: db_path
 
 
@@ -94,7 +91,6 @@ process DOWNLOAD_MGNIFY {
     val db
 
     output:
-    path("*")
     tuple val(db), path("*"), emit: db_path
 
 
@@ -122,7 +118,6 @@ process DOWNLOAD_PDB70 {
     val db
 
     output:
-    path("*")
     tuple val(db), path("*"), emit: db_path
 
 
@@ -150,7 +145,6 @@ process DOWNLOAD_PDB_MMCIF {
     val db
 
     output:
-    path("*")
     tuple val(db), path("*"), emit: db_path
 
 
@@ -178,7 +172,6 @@ process DOWNLOAD_UNICLUST30 {
     val db
 
     output:
-    path("*")
     tuple val(db), path("*"), emit: db_path
 
 
@@ -206,7 +199,6 @@ process DOWNLOAD_UNIREF90 {
     val db
 
     output:
-    path("*")
     tuple val(db), path("*"), emit: db_path
 
 
@@ -234,7 +226,6 @@ process DOWNLOAD_UNIPROT {
     val db
 
     output:
-    path("*")
     tuple val(db), path("*"), emit: db_path
 
 
@@ -262,7 +253,6 @@ process DOWNLOAD_PDB_SEQRES {
     val db
 
     output:
-    path("*")
     tuple val(db), path("*"), emit: db_path
 
 

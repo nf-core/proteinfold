@@ -44,7 +44,7 @@ nextflow run nf-core/proteinfold \
        --input samplesheet.csv \
        --outdir <OUTDIR> \
        --mode AF2 \
-       --db <DB_PATH> \
+       --af2_db <DB_PATH> \
        --full_dbs <true/false> \
        --skip_download <true/false> \
        --model_preset monomer \
@@ -54,15 +54,32 @@ nextflow run nf-core/proteinfold \
 
 ```console
 nextflow run nf-core/proteinfold \
-       --input samplesheet.csv \
-       --outdir <OUTDIR> \
-       --mode colabfold \
-       --colabfold_params <PATH> \
-       --num_recycle 3 \
-       --use_amber <true/false> \
-       --skip_download <true/false> \
-       --model_type "AlphaFold2-ptm" \
-       --use_gpu <true/false> \
+      --input samplesheet.csv \
+      --outdir <OUTDIR> \
+      --mode colabfold_local \
+      --colabfold_db <PATH> \
+      --num_recycle 3 \
+      --use_amber <true/false> \
+      --skip_download <true/false> \
+      --model_type "AlphaFold2-ptm" \
+      --use_gpu <true/false> \
+      --mmseqs_threads 8
+      --db_load_mode 0
+       -profile <docker>
+```
+
+```console
+nextflow run nf-core/proteinfold \
+      --input samplesheet.csv \
+      --outdir <OUTDIR> \
+      --mode colabfold_webserver \
+      --host_url <custom MMSeqs2 API Server URL> \
+      --colabfold_db <PATH> \
+      --num_recycle 3 \
+      --use_amber <true/false> \
+      --skip_download <true/false> \
+      --model_type "AlphaFold2-ptm" \
+      --use_gpu <true/false> \
        -profile <docker>
 ```
 
