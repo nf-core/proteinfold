@@ -13,7 +13,8 @@ The directories listed below will be created in the results directory after the 
 The pipeline is built using [Nextflow](https://www.nextflow.io/) and predicts protein structures using the following methods:
 
 - [AlphaFold2](https://github.com/deepmind/alphafold)
-- [LocalColabFold](https://github.com/YoshitakaMo/localcolabfold) - AlphaFold2 using MMseqs2
+- [ColabFold](https://github.com/sokrypton/ColabFold) - MMseqs2 API server followed by ColabFold
+- [ColabFold](https://github.com/sokrypton/ColabFold) - MMseqs2 local search followed by ColabFold
 
 ### AlphaFold2
 
@@ -26,7 +27,7 @@ The pipeline is built using [Nextflow](https://www.nextflow.io/) and predicts pr
 
 </details>
 
-### LocalColabFold
+### ColabFold
 
 <details markdown="1">
 <summary>Output files</summary>

@@ -12,7 +12,11 @@ WorkflowAlphafold2.initialise(params, log)
 // Check input path parameters to see if they exist
 def checkPathParamList = [
     params.input,
+<<<<<<< HEAD
     params.skip_download ? params.db : '' // TODO review
+=======
+    params.skip_download ? params.af2_db : ''
+>>>>>>> upstream/dev
 ]
 for (param in checkPathParamList) { if (param) { file(param, checkIfExists: true) } }
 
@@ -96,23 +100,31 @@ workflow ALPHAFOLD2 {
     //
     // SUBWORKFLOW: Download databases and params for Alphafold2
     //
-    ch_db = DOWNLOAD_AF2_DBS_AND_PARAMS ( params.db, params.full_dbs )
+    // if (!params.skip_download) {
+    //     DOWNLOAD_AF2_DBS_AND_PARAMS (
+    //         params.af2_db,
+    //         params.full_dbs
+    //     )
 
-    RUN_AF2 (
-        ch_fasta,
-        params.max_template_date,
-        params.full_dbs,
-        params.model_preset,
-        DOWNLOAD_AF2_DBS_AND_PARAMS.out.params,
-        DOWNLOAD_AF2_DBS_AND_PARAMS.out.bfd.ifEmpty([]),
-        DOWNLOAD_AF2_DBS_AND_PARAMS.out.bfd_small.ifEmpty([]),
-        DOWNLOAD_AF2_DBS_AND_PARAMS.out.mgnify,
-        DOWNLOAD_AF2_DBS_AND_PARAMS.out.pdb70,
-        DOWNLOAD_AF2_DBS_AND_PARAMS.out.pdb_mmcif,
-        DOWNLOAD_AF2_DBS_AND_PARAMS.out.uniclust30,
-        DOWNLOAD_AF2_DBS_AND_PARAMS.out.uniref90,
-        DOWNLOAD_AF2_DBS_AND_PARAMS.out.uniprot
-    )
+    // //
+    // // MODULE: Run Alphafold2
+    // //
+    //     RUN_AF2 (
+    //         ch_fasta,
+    //         params.max_template_date,
+    //         params.full_dbs,
+    //         params.model_preset,
+    //         DOWNLOAD_AF2_DBS_AND_PARAMS.out
+    //     )
+    // } else {
+    //     RUN_AF2 (
+    //         ch_fasta,
+    //         params.max_template_date,
+    //         params.full_dbs,
+    //         params.model_preset,
+    //         params.af2_db
+    //     )
+    // }
 
     //
     // MODULE: MultiQC
