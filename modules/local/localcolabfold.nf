@@ -12,7 +12,7 @@ process RUN_COLABFOLD {
     val numRec
 
     output:
-    path ("*")
+    path ("*relaxed_rank_*.pdb")
 
     script:
     if (model_type == 'AlphaFold2-ptm') {
