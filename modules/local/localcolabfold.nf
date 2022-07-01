@@ -33,12 +33,11 @@ process RUN_COLABFOLD {
     // def prefix = fasta.baseName //TODO ?
     """
     echo "id,sequence" >> input.csv
-    echo -e ${seq_name},`awk -F ' ' '!/^>/ {print \$0}' ${fasta} | tr "\n" ":" | awk '{gsub(/:\$/,""); print}'` >> input.csv
+    echo -e ${seq_name.sequence},`awk -F ' ' '!/^>/ {print \$0}' ${fasta} | tr "\n" ":" | awk '{gsub(/:\$/,""); print}'` >> input.csv
     colabfold_batch \
-        --templates \
         $args \
-        --num-recycle 3 \
-        --data ${db}/${model_type} \
+        --num-recycle ${numRec} \
+        --data ${db}/params/${model_type} \
         --model-type ${model_type} \
         input.csv \
         \$PWD

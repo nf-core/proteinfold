@@ -8,11 +8,11 @@ process DOWNLOAD_COLABFOLD_PARAMS {
     val db
 
     output:
-    tuple val(db), path("params") , emit: db_path
+    tuple val(db), path("*") , emit: db_path
 
     script:
     """
-    download_colabfold_params.sh params
+    download_colabfold_params.sh \$PWD
     """
 
     stub:

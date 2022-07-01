@@ -84,9 +84,9 @@ workflow COLABFOLD {
         // MODULE: Download params for ColabFold
         //
         if (!params.skip_download) {
-            DOWNLOAD_COLABFOLD_PARAMS (
+            ch_colabfold_params = DOWNLOAD_COLABFOLD_PARAMS (
                 params.colabfold_db
-            )
+            ).db_path
 
         //
         // MODULE: Run colabfold
@@ -94,7 +94,7 @@ workflow COLABFOLD {
             RUN_COLABFOLD(
                 INPUT_CHECK.out.reads,
                 params.model_type,
-                DOWNLOAD_COLABFOLD_PARAMS.out.db_path,
+                ch_colabfold_params.flatten().first(),
                 params.num_recycle
             )
         } else {
