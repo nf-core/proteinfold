@@ -1,15 +1,15 @@
 process ARIA2 {
+    tag "$file_name"
     label 'process_long'
 
-    //container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-    //    'https://depot.galaxyproject.org/singularity/aria2:1.34.0--h2021cec_3' :
-    //    'quay.io/biocontainers/aria2:1.34.0--h2021cec_3' }"
-    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'docker://athbaltzis/debian:11.3' :
-        'athbaltzis/debian:11.3' }"
+
     // container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-    //     'https://depot.galaxyproject.org/singularity/mulled-v2-1fa26d1ce03c295fe2fdcf85831a92fbcbd7e8c2:59cdd445419f14abac76b31dd0d71217994cbcc9-0' :
-    //     'quay.io/biocontainers/mulled-v2-1fa26d1ce03c295fe2fdcf85831a92fbcbd7e8c2:59cdd445419f14abac76b31dd0d71217994cbcc9-0' }"
+    //     'docker://athbaltzis/debian:11.3' :
+    //     'athbaltzis/debian:11.3' }" //TODO get rid of this container if the one below works
+    conda (params.enable_conda ? "conda-forge::aria2=1.36.0 conda-forge::pigz=2.6 conda-forge::tar=1.34" : null)
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
+        'https://depot.galaxyproject.org/singularity/mulled-v2-69301472645cb9673ee25896a90852844f609980:67059f7bbd77178ef34cc40895191f5687211776-0' :
+        'quay.io/biocontainers/mulled-v2-69301472645cb9673ee25896a90852844f609980:67059f7bbd77178ef34cc40895191f5687211776-0' }"
 
     input:
     val source_url

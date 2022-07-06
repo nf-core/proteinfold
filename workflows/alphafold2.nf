@@ -12,11 +12,8 @@ WorkflowAlphafold2.initialise(params, log)
 // Check input path parameters to see if they exist
 def checkPathParamList = [
     params.input,
-<<<<<<< HEAD
-    params.skip_download ? params.db : '' // TODO review
-=======
-    params.skip_download ? params.af2_db : ''
->>>>>>> upstream/dev
+    params.af2_db,
+    params.colabfold_db
 ]
 for (param in checkPathParamList) { if (param) { file(param, checkIfExists: true) } }
 
@@ -42,12 +39,12 @@ ch_multiqc_custom_config = params.multiqc_config ? Channel.fromPath(params.multi
 // SUBWORKFLOW: Consisting of a mix of local and nf-core/modules
 //
 include { INPUT_CHECK } from '../subworkflows/local/input_check'
-include { DOWNLOAD_AF2_DBS_AND_PARAMS } from '../subworkflows/local/download_af2_dbs_and_params.nf'
+include { PREPARE_AF2_DBS } from '../subworkflows/local/prepare_af2_dbs'
 
 //
 // MODULE: Local to the pipeline
 //
-include { RUN_AF2 } from '../modules/local/af2.nf'
+include { RUN_ALPHAFOLD } from '../modules/local/run_alphafold'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -81,7 +78,7 @@ workflow ALPHAFOLD2 {
         INPUT_CHECK (
             ch_input
         )
-        .reads
+        .fastas
         .map {
             meta, fasta ->
             [ meta, fasta.splitFasta(file:true) ]
@@ -92,7 +89,7 @@ workflow ALPHAFOLD2 {
         INPUT_CHECK (
             ch_input
         )
-        .reads
+        .fastas
         .set { ch_fasta }
     }
     ch_versions = ch_versions.mix(INPUT_CHECK.out.versions)
@@ -100,31 +97,26 @@ workflow ALPHAFOLD2 {
     //
     // SUBWORKFLOW: Download databases and params for Alphafold2
     //
-    // if (!params.skip_download) {
-    //     DOWNLOAD_AF2_DBS_AND_PARAMS (
-    //         params.af2_db,
-    //         params.full_dbs
-    //     )
+    PREPARE_AF2_DBS ( ) // Rename as prepare
 
-    // //
-    // // MODULE: Run Alphafold2
-    // //
-    //     RUN_AF2 (
-    //         ch_fasta,
-    //         params.max_template_date,
-    //         params.full_dbs,
-    //         params.model_preset,
-    //         DOWNLOAD_AF2_DBS_AND_PARAMS.out
-    //     )
-    // } else {
-    //     RUN_AF2 (
-    //         ch_fasta,
-    //         params.max_template_date,
-    //         params.full_dbs,
-    //         params.model_preset,
-    //         params.af2_db
-    //     )
-    // }
+    PREPARE_AF2_DBS.out.bfd.view()
+    PREPARE_AF2_DBS.out.bfd_small.view()
+    RUN_ALPHAFOLD (
+        ch_fasta,
+        params.max_template_date,
+        params.full_dbs,
+        params.model_preset,
+        PREPARE_AF2_DBS.out.params,
+        PREPARE_AF2_DBS.out.bfd.ifEmpty([]),
+        PREPARE_AF2_DBS.out.bfd_small.ifEmpty([]),
+        PREPARE_AF2_DBS.out.mgnify,
+        PREPARE_AF2_DBS.out.pdb70,
+        PREPARE_AF2_DBS.out.pdb_mmcif,
+        PREPARE_AF2_DBS.out.uniclust30,
+        PREPARE_AF2_DBS.out.uniref90,
+        PREPARE_AF2_DBS.out.pdb_seqres,
+        PREPARE_AF2_DBS.out.uniprot
+    )
 
     //
     // MODULE: MultiQC

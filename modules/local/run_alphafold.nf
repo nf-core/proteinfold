@@ -1,4 +1,4 @@
-process RUN_AF2 {
+process RUN_ALPHAFOLD {
     tag "${seq_name}"
     label 'customConf'
 
@@ -20,6 +20,7 @@ process RUN_AF2 {
     path ('pdb_mmcif/*')
     path ('uniclust30/*')
     path ('uniref90/*')
+    path ('pdbseqres/*')
     path ('uniprot/*')
 
     output:

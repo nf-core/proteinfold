@@ -1,5 +1,5 @@
-process RUN_MMSEQS2 {
-    tag "${seq_name}"
+process MMSEQS_COLABFOLDSEARCH {
+    tag "$seq_name"
     label 'high'
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'docker://athbaltzis/colabfold_proteinfold:v0.9' :
@@ -11,7 +11,7 @@ process RUN_MMSEQS2 {
     val db_load_mode
 
     output:
-    tuple val(seq_name), path("${seq_name.sequence}.a3m")
+    tuple val(seq_name), path("${seq_name.sequence}.a3m"), emit: a3m
 
     script:
     def args = task.ext.args ?: ''
@@ -24,6 +24,6 @@ process RUN_MMSEQS2 {
 
     stub:
     """
-    touch ./${seq_name.sequence}.a3m
+    touch ${seq_name.sequence}.a3m
     """
 }

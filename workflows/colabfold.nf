@@ -12,7 +12,8 @@ WorkflowColabfold.initialise(params, log)
 // Check input path parameters to see if they exist
 def checkPathParamList = [
     params.input,
-    params.skip_download ? params.colabfold_db : ''
+    // params.skip_download ? params.colabfold_db : ''
+    params.colabfold_db
 ]
 for (param in checkPathParamList) { if (param) { file(param, checkIfExists: true) } }
 
@@ -38,14 +39,13 @@ ch_multiqc_custom_config = params.multiqc_config ? Channel.fromPath(params.multi
 // SUBWORKFLOW: Consisting of a mix of local and nf-core/modules
 //
 include { INPUT_CHECK } from '../subworkflows/local/input_check'
-include { DOWNLOAD_COLABFOLD_DBS_AND_PARAMS } from '../subworkflows/local/download_colabfold_dbs_and_params.nf'
+include { PREPARE_COLABFOLD_DBS } from '../subworkflows/local/prepare_colabfold_dbs'
 
 //
 // MODULE: Local to the pipeline
 //
-include { RUN_COLABFOLD } from '../modules/local/localcolabfold.nf'
-include { DOWNLOAD_COLABFOLD_PARAMS } from '../modules/local/prepare_colabfold_dbs_and_params.nf'
-include { RUN_MMSEQS2 } from '../modules/local/mmseqs2.nf'
+include { COLABFOLD_BATCH         } from '../modules/local/colabfold_batch'
+include { MMSEQS_COLABFOLDSEARCH } from '../modules/local/mmseqs_colabfoldsearch'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -79,75 +79,42 @@ workflow COLABFOLD {
         ch_input
     )
     ch_versions = ch_versions.mix(INPUT_CHECK.out.versions)
+
+    PREPARE_COLABFOLD_DBS ( )
+
     if (params.mode == 'colabfold_webserver') {
         //
-        // MODULE: Download params for ColabFold
-        //
-        if (!params.skip_download) {
-            DOWNLOAD_COLABFOLD_PARAMS (
-                params.colabfold_db
-            )
-
-        //
         // MODULE: Run colabfold
         //
-            RUN_COLABFOLD(
-                INPUT_CHECK.out.reads,
-                params.model_type,
-                DOWNLOAD_COLABFOLD_PARAMS.out.db_path,
-                params.num_recycle
-            )
-        } else {
-            RUN_COLABFOLD(
-                INPUT_CHECK.out.reads,
-                params.model_type,
-                params.colabfold_db,
-                params.num_recycle
-            )
-        }
+        COLABFOLD_BATCH(
+            INPUT_CHECK.out.fastas,
+            params.model_type,
+            PREPARE_COLABFOLD_DBS.out.params,
+            [],
+            [],
+            params.num_recycle
+        )
     } else if (params.mode == 'colabfold_local') {
         //
-        // SUBWORKFLOW: Download dbs and params for ColabFold
+        // MODULE: Run mmseqs
         //
-        if (!params.skip_download) {
-            DOWNLOAD_COLABFOLD_DBS_AND_PARAMS (
-                params.colabfold_db
-            )
-        //
-        // MODULE: Run mmseqs2
-        //
-
-            RUN_MMSEQS2 (
-                INPUT_CHECK.out.reads,
-                DOWNLOAD_COLABFOLD_DBS_AND_PARAMS.out,
-                params.db_load_mode
-            )
+        MMSEQS_COLABFOLDSEARCH (
+            INPUT_CHECK.out.fastas,
+            PREPARE_COLABFOLD_DBS.out.colabfold_db.first(), //TODO check if this only needs colabfold db or also uniref30
+            params.db_load_mode
+        )
 
         //
         // MODULE: Run colabfold
         //
-            RUN_COLABFOLD(
-                RUN_MMSEQS2.out,
-                params.model_type,
-                DOWNLOAD_COLABFOLD_DBS_AND_PARAMS.out,
-                params.num_recycle
-            )
-        } else {
-            //
-            // MODULE: Run mmseqs2
-            //
-            RUN_MMSEQS2 (
-                INPUT_CHECK.out.reads,
-                params.colabfold_db,
-                params.db_load_mode
-            )
-            RUN_COLABFOLD(
-                RUN_MMSEQS2.out,
-                params.model_type,
-                params.colabfold_db,
-                params.num_recycle
-            )
-        }
+        COLABFOLD_BATCH(
+            MMSEQS_COLABFOLDSEARCH.out.a3m,
+            params.model_type,
+            PREPARE_COLABFOLD_DBS.out.params,
+            PREPARE_COLABFOLD_DBS.out.colabfold_db.first(),
+            PREPARE_COLABFOLD_DBS.out.uniref30.first(),
+            params.num_recycle
+        )
     }
     //
     // MODULE: MultiQC
