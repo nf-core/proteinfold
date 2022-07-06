@@ -10,7 +10,7 @@
                 "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
             },
             "gunzip": {
-                "git_sha": "9aadd9a6d3f5964476582319b3a1c54a3e3fe7c9"
+                "git_sha": "fa37e0662690c4ec4260dae282fbce08777503e6"
             },
             "multiqc": {
                 "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"

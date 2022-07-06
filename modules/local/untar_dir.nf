@@ -1,4 +1,4 @@
-process UNTAR {
+process UNTAR_DIR {
     tag "$archive"
     label 'process_low'
 
@@ -44,7 +44,8 @@ process UNTAR {
     stub:
     untar     = archive.toString() - '.tar'
     """
-    touch $untar
+    mkdir $untar
+    touch $untar/dummy.csv
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
