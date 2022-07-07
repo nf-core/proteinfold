@@ -7,7 +7,7 @@ if (params.model_type == 'AlphaFold2-multimer-v1') {
 } else if (params.model_type == 'AlphaFold2-multimer-v2') {
     link_params = 'https://storage.googleapis.com/alphafold/alphafold_params_colab_2022-03-02.tar'
 } else if (params.model_type == 'AlphaFold2-ptm') {
-    link_params = 'https://storage.googleapis.com/alphafold/alphafold_params_colab_2022-03-02.tar'
+    link_params = 'https://storage.googleapis.com/alphafold/alphafold_params_2021-07-14.tar'
 }
 
 colabfold_db = 'http://wwwuser.gwdg.de/~compbiol/colabfold/colabfold_envdb_202108.tar.gz'
