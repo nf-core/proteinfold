@@ -99,8 +99,6 @@ workflow ALPHAFOLD2 {
     //
     PREPARE_AF2_DBS ( ) // Rename as prepare
 
-    PREPARE_AF2_DBS.out.bfd.view()
-    PREPARE_AF2_DBS.out.bfd_small.view()
     RUN_ALPHAFOLD (
         ch_fasta,
         params.max_template_date,
