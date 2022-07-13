@@ -1,6 +1,6 @@
 process MMSEQS_CREATEINDEX {
     tag "$db"
-    label 'process_long'
+    label 'proces_high'
 
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'docker://athbaltzis/mmseqs_proteinfold:v0.1' :
@@ -10,14 +10,16 @@ process MMSEQS_CREATEINDEX {
     path db
 
     output:
-    path("*.idx") , emit: idx
+    path("${db}/*.idx") , emit: idx
 
     script:
     def args = task.ext.args ?: ''
     // mmseqs createindex "uniref30_2103_db" tmp1 --remove-tmp-files 1
     """
+    cd $db
+
     mmseqs createindex \\
-        $db \\
+        ${db}_exprofile \\
         tmp1 \\
         --remove-tmp-files 1 \\
         $args
