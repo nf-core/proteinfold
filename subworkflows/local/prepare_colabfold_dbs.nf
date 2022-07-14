@@ -50,17 +50,14 @@ workflow PREPARE_COLABFOLD_DBS {
             MMSEQS_TSV2EXPROFILEDB_COLABFOLDDB (
                 ARIA2_COLABFOLD_DB.out.db
             )
+            ch_colabfold_db = MMSEQS_TSV2EXPROFILEDB_COLABFOLDDB.db_exprofile
 
-            MMSEQS_CREATEINDEX_COLABFOLDDB (
-                MMSEQS_TSV2EXPROFILEDB_COLABFOLDDB.out.db_exprofile
-            )
-
-            ARIA2_COLABFOLD_DB
-                .out
-                .db
-                .combine(MMSEQS_TSV2EXPROFILEDB_COLABFOLDDB.out.db_exprofile)
-                .combine (MMSEQS_CREATEINDEX_COLABFOLDDB.out.idx)
-                .set { ch_colabfold_db }
+            if (params.create_colabfold_index) {
+                MMSEQS_CREATEINDEX_COLABFOLDDB (
+                    MMSEQS_TSV2EXPROFILEDB_COLABFOLDDB.out.db_exprofile
+                )
+                ch_colabfold_db = MMSEQS_CREATEINDEX_COLABFOLDDB.out.db_index
+            }
 
             ARIA2_UNIREF30(
                 uniref30
@@ -69,14 +66,14 @@ workflow PREPARE_COLABFOLD_DBS {
             MMSEQS_TSV2EXPROFILEDB_UNIPROT30 (
                 ARIA2_UNIREF30.out.db
             )
+            ch_uniref30 = MMSEQS_TSV2EXPROFILEDB_UNIPROT30.out.db_exprofile
 
-            MMSEQS_CREATEINDEX_UNIPROT30 (
-                MMSEQS_TSV2EXPROFILEDB_UNIPROT30.out.db_exprofile
-            )
-
-            MMSEQS_TSV2EXPROFILEDB_UNIPROT30.out.db_exprofile
-                .combine (MMSEQS_CREATEINDEX_UNIPROT30.out.idx)
-                .set { ch_uniref30 }
+            if (params.create_colabfold_index) {
+                MMSEQS_CREATEINDEX_UNIPROT30 (
+                    MMSEQS_TSV2EXPROFILEDB_UNIPROT30.out.db_exprofile
+                )
+                ch_uniref30 = MMSEQS_CREATEINDEX_UNIPROT30.out.db_index
+            }
         }
     }
 

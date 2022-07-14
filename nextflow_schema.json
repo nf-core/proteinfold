@@ -120,6 +120,11 @@
                 "host_url": {
                     "type": "string",
                     "description": "Specify your custom MMSeqs2 API server url"
+                },
+                "create_colabfold_index": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Create databases indexes when running colabfold_local mode"
                 }
             }
         },

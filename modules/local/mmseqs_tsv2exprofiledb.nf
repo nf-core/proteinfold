@@ -10,12 +10,13 @@ process MMSEQS_TSV2EXPROFILEDB {
     path db
 
     output:
-    path("*") , emit: db_exprofile
+    path(db), emit: db_exprofile
 
     script:
     def args = task.ext.args ?: ''
     file_name = source_url.split('/')[-1]
     """
+    cd ${db}
     mmseqs tsv2exprofiledb \\
         "${db}" \\
         "${db}_exprofile"
@@ -23,6 +24,6 @@ process MMSEQS_TSV2EXPROFILEDB {
 
     stub:
     """
-    mkdir ${db}_exprofile
+    touch ${db}/${db}_exprofile
     """
 }

@@ -1,6 +1,7 @@
 //
 // Download all the required AlphaFold 2 databases and parameters
 //
+// TODO create parameters and include them in nextflow config
 bfd            = 'https://storage.googleapis.com/alphafold-databases/casp14_versions/bfd_metaclust_clu_complete_id30_c90_final_seq.sorted_opt.tar.gz'
 small_bfd      = 'https://storage.googleapis.com/alphafold-databases/reduced_dbs/bfd-first_non_consensus_sequences.fasta.gz'
 af2_params     = 'https://storage.googleapis.com/alphafold/alphafold_params_2022-03-02.tar'
@@ -47,6 +48,7 @@ workflow PREPARE_AF2_DBS {
         // TODO parameters for each of the DBs that could be updated or provided in a user path
         // maybe have a db.config?
         // TODO add checkIfExists (need to create a fake structure for testing)
+        // Add an if for each parameter?
         ch_params     = file( "${params.af2_db}/params" )
         ch_mgnify     = file( "${params.af2_db}/mgnify" )
         ch_pdb70      = file( "${params.af2_db}/pdb70" )

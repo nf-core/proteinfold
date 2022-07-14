@@ -100,7 +100,17 @@ workflow COLABFOLD {
         //
         MMSEQS_COLABFOLDSEARCH (
             INPUT_CHECK.out.fastas,
-            PREPARE_COLABFOLD_DBS.out.colabfold_db.first(), //TODO check if this only needs colabfold db or also uniref30
+            PREPARE_COLABFOLD_DBS
+                .out
+                .params
+                .combine(PREPARE_COLABFOLD_DBS.out.colabfold_db, by: 0)
+                .combine(PREPARE_COLABFOLD_DBS.out.uniref30, by: 0).flatten().first()
+            // PREPARE_COLABFOLD_DBS
+            //     .out
+            //     .colabfold_db
+            //     .combine(PREPARE_COLABFOLD_DBS.out.uniref30)
+            // PREPARE_COLABFOLD_DBS.out.colabfold_db.first(), //TODO check if this only needs colabfold db or also uniref30
+            // PREPARE_COLABFOLD_DBS.out.uniref30.first(),
             params.db_load_mode
         )
 
@@ -110,9 +120,16 @@ workflow COLABFOLD {
         COLABFOLD_BATCH(
             MMSEQS_COLABFOLDSEARCH.out.a3m,
             params.model_type,
-            PREPARE_COLABFOLD_DBS.out.params,
-            PREPARE_COLABFOLD_DBS.out.colabfold_db.first(),
-            PREPARE_COLABFOLD_DBS.out.uniref30.first(),
+            PREPARE_COLABFOLD_DBS
+                .out
+                .params
+                .combine(PREPARE_COLABFOLD_DBS.out.colabfold_db, by: 0)
+                .combine(PREPARE_COLABFOLD_DBS.out.uniref30, by: 0).flatten().first()
+            // PREPARE_COLABFOLD_DBS.out.params,
+            // PREPARE_COLABFOLD_DBS.out.colabfold_db.first(),
+            // PREPARE_COLABFOLD_DBS.out.uniref30.first(),
+            // PREPARE_COLABFOLD_DBS.out.colabfold_db.first(),
+            // PREPARE_COLABFOLD_DBS.out.uniref30.first(),
             params.num_recycle
         )
     }

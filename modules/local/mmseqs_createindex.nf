@@ -10,14 +10,13 @@ process MMSEQS_CREATEINDEX {
     path db
 
     output:
-    path("${db}/*.idx") , emit: idx
+    path(db) , emit: db_index
 
     script:
     def args = task.ext.args ?: ''
     // mmseqs createindex "uniref30_2103_db" tmp1 --remove-tmp-files 1
     """
     cd $db
-
     mmseqs createindex \\
         ${db}_exprofile \\
         tmp1 \\
@@ -27,6 +26,6 @@ process MMSEQS_CREATEINDEX {
 
     stub:
     """
-    touch ${db}.idx
+    touch ${db}/${db}.idx
     """
 }
