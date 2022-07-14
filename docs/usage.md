@@ -63,7 +63,6 @@ nextflow run nf-core/proteinfold \
       --skip_download <true/false> \
       --model_type "AlphaFold2-ptm" \
       --use_gpu <true/false> \
-      --mmseqs_threads 8
       --db_load_mode 0
        -profile <docker>
 ```

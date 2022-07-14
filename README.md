@@ -110,7 +110,6 @@ On release, automated continuous integration tests run the pipeline on a full-si
       --skip_download <true/false> \
       --model_type "AlphaFold2-ptm" \
       --use_gpu <true/false> \
-      --mmseqs_threads 8
       --db_load_mode 0
       -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
   ```
