@@ -53,4 +53,4 @@ RUN /conda/bin/conda update -qy conda \
 
 # Install pip packages
 RUN /conda/bin/pip3 install --upgrade pip \
-      && /conda/bin/pip3 install -r /app/alphafold/requirements_msa.txt
+    && /conda/bin/pip3 install -r /app/alphafold/requirements_msa.txt
