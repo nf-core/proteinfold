@@ -1,0 +1,75 @@
+FROM nvidia/cuda:11.1.1-cudnn8-runtime-ubuntu18.04
+LABEL authors="Athanasios Baltzis, Luisa Santus" \
+    title="nf-friendly AF2 docker image" \
+    Version="v0.6" \
+    description="Docker image containing all software requirements to run AF2 using the nf-core/proteinfold pipeline"
+
+
+# Use bash to support string substitution.
+SHELL ["/bin/bash", "-c"]
+
+# Add env variables
+ARG CUDA=11.1.1
+ENV LD_LIBRARY_PATH="/conda/lib:/usr/local/cuda-11.1/lib64:$LD_LIBRARY_PATH"
+ENV PATH="/conda/bin:$PATH"
+
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
+        build-essential \
+        cmake \
+        cuda-command-line-tools-11-1 \
+        git \
+        hmmer \
+        kalign \
+        tzdata \
+        wget \
+        && rm -rf /var/lib/apt/lists/*
+
+# Clone AF2
+RUN git clone https://github.com/luisas/alphafold_split.git /app/alphafold && \
+    cd /app/alphafold && \
+    git checkout 4566488e056f9f3ded078680208f719892649644 && \
+    cd -
+
+# Compile HHsuite from source
+RUN git clone --branch v3.3.0 https://github.com/soedinglab/hh-suite.git /tmp/hh-suite \
+    && mkdir /tmp/hh-suite/build \
+    &&	cd /tmp/hh-suite/build \
+    &&	cmake -DCMAKE_INSTALL_PREFIX=/opt/hhsuite -DHAVE_AVX2=1 .. \
+    && make -j 4 && make install \
+    && ln -s /opt/hhsuite/bin/* /usr/bin \
+    && cd - && rm -rf /tmp/hh-suite
+
+# Install Miniconda package manager
+RUN wget -q -P /tmp \
+    https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh \
+        && bash /tmp/Miniconda3-latest-Linux-x86_64.sh -b -p /conda \
+        && rm /tmp/Miniconda3-latest-Linux-x86_64.sh
+
+# Install conda packages
+RUN /conda/bin/conda update -qy conda \
+    && /conda/bin/conda install -y -c conda-forge \
+        openmm=7.5.1 \
+        cudatoolkit==11.1.1
+
+RUN /conda/bin/conda install -y -c conda-forge \
+        pdbfixer
+
+RUN /conda/bin/conda install -y -c conda-forge pip
+
+RUN /conda/bin/conda install -y -c conda-forge python=3.9
+
+COPY . /app/alphafold
+RUN wget -q -P /app/alphafold/alphafold/common/ \
+  https://git.scicore.unibas.ch/schwede/openstructure/-/raw/7102c63615b64735c4941278d92b554ec94415f8/modules/mol/alg/src/stereo_chemical_props.txt
+
+# Install pip packages.
+RUN pip3 install --upgrade pip \
+    && pip3 install -r /app/alphafold/requirements.txt \
+    && pip3 install --upgrade \
+      jaxlib==0.1.69+cuda$(cut -f1,2 -d. <<< ${CUDA} | sed 's/\.//g') \
+      -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html
+
+# # Apply OpenMM patch
+WORKDIR /conda/lib/python3.9/site-packages
+RUN patch -p0 < /app/alphafold/docker/openmm.patch
+RUN sed -i "s|alphafold/common/stereo_chemical_props.txt|/app/alphafold/alphafold/common/stereo_chemical_props.txt|g" /app/alphafold/alphafold/common/residue_constants.py
