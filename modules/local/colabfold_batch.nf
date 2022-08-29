@@ -25,7 +25,7 @@ process COLABFOLD_BATCH {
         colabfold_batch \\
             $args \\
             --num-recycle ${numRec} \\
-            --data ./ \\
+            --data ./db/params \\
             --model-type ${model_type} \\
             ${fasta} \\
             \$PWD
@@ -42,7 +42,7 @@ process COLABFOLD_BATCH {
             --templates \\
             $args \\
             --num-recycle ${numRec} \\
-            --data ./ \\
+            --data ./db \\
             --model-type ${model_type} \\
             input.csv \\
             \$PWD

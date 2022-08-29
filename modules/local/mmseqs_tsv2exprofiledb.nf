@@ -1,6 +1,6 @@
 process MMSEQS_TSV2EXPROFILEDB {
     tag "$db"
-    label 'process_long'
+    label 'process_low'
 
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'docker://athbaltzis/mmseqs_proteinfold:v0.1' :
@@ -14,12 +14,11 @@ process MMSEQS_TSV2EXPROFILEDB {
 
     script:
     def args = task.ext.args ?: ''
-    file_name = source_url.split('/')[-1]
     """
     cd ${db}
     mmseqs tsv2exprofiledb \\
         "${db}" \\
-        "${db}_exprofile"
+        "${db}_db"
     """
 
     stub:

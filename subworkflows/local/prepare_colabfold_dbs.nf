@@ -50,7 +50,7 @@ workflow PREPARE_COLABFOLD_DBS {
             MMSEQS_TSV2EXPROFILEDB_COLABFOLDDB (
                 ARIA2_COLABFOLD_DB.out.db
             )
-            ch_colabfold_db = MMSEQS_TSV2EXPROFILEDB_COLABFOLDDB.db_exprofile
+            ch_colabfold_db = MMSEQS_TSV2EXPROFILEDB_COLABFOLDDB.out.db_exprofile
 
             if (params.create_colabfold_index) {
                 MMSEQS_CREATEINDEX_COLABFOLDDB (
