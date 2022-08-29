@@ -83,6 +83,11 @@
                     "default": "monomer",
                     "description": "Model preset for 'AF2' mode",
                     "enum": ["monomer", "monomer_casp14", "monomer_ptm", "multimer"]
+                },
+                "standard_af2": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "If true, uses the standard AF2 implementation, otherwise the splits the MSA computation and prediction steps."
                 }
             }
         },
