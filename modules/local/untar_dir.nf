@@ -11,7 +11,7 @@ process UNTAR_DIR {
     path(archive)
 
     output:
-    path("$untar/*"), emit: untar
+    path("$untar"), emit: untar
     path "versions.yml"   , emit: versions
 
     when:
