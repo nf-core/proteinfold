@@ -43,7 +43,7 @@ include { DOWNLOAD_AF2_DBS_AND_PARAMS } from '../subworkflows/local/download_af2
 //
 // MODULE: Local to the pipeline
 //
-include { RUN_AF2 } from '../modules/local/af2.nf'
+include { RUN_AF2; RUN_AF2_MSA; RUN_AF2_PRED } from '../modules/local/af2.nf'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -105,14 +105,52 @@ workflow ALPHAFOLD2 {
     //
     // MODULE: Run Alphafold2
     //
-        RUN_AF2 (
+    if (!params.standard_af2) {
+
+      RUN_AF2_MSA (
+          ch_fasta,
+          params.full_dbs,
+          params.model_preset,
+          DOWNLOAD_AF2_DBS_AND_PARAMS.out
+      )
+
+      RUN_AF2_PRED (
+          ch_fasta,
+          params.full_dbs,
+          params.model_preset,
+          DOWNLOAD_AF2_DBS_AND_PARAMS.out,
+          RUN_AF2_MSA.out.features
+
+      )
+
+    } else{
+      RUN_AF2 (
+          ch_fasta,
+          params.max_template_date,
+          params.full_dbs,
+          params.model_preset,
+          DOWNLOAD_AF2_DBS_AND_PARAMS.out
+      )
+    }
+
+    } else {
+      if (!params.standard_af2) {
+        RUN_AF2_MSA (
             ch_fasta,
-            params.max_template_date,
             params.full_dbs,
             params.model_preset,
-            DOWNLOAD_AF2_DBS_AND_PARAMS.out
+            params.af2_db
         )
-    } else {
+
+        RUN_AF2_PRED (
+            ch_fasta,
+            params.full_dbs,
+            params.model_preset,
+            params.af2_db,
+            RUN_AF2_MSA.out.features
+        )
+
+      } else{
         RUN_AF2 (
             ch_fasta,
             params.max_template_date,
@@ -120,6 +158,7 @@ workflow ALPHAFOLD2 {
             params.model_preset,
             params.af2_db
         )
+      }
     }
     //
     // MODULE: MultiQC
