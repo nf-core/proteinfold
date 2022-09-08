@@ -33,11 +33,13 @@ On release, automated continuous integration tests run the pipeline on a full-si
 
 1. Choice of protein structure prediction method:
 
-   i. [AlphaFold2](https://github.com/deepmind/alphafold) (default)
+   i. [AlphaFold2](https://github.com/deepmind/alphafold)
 
-   ii. [ColabFold](https://github.com/sokrypton/ColabFold) - MMseqs2 API server followed by ColabFold
+   ii. [AlphaFold2 split](https://github.com/luisas/alphafold_split) - AlphaFold2 MSA computation and model inference in separate processes
 
-   iii. [ColabFold](https://github.com/sokrypton/ColabFold) - MMseqs2 local search followed by ColabFold
+   iii. [ColabFold](https://github.com/sokrypton/ColabFold) - MMseqs2 API server followed by ColabFold
+
+   iv. [ColabFold](https://github.com/sokrypton/ColabFold) - MMseqs2 local search followed by ColabFold
 
 ## Quick Start
 
@@ -60,27 +62,7 @@ On release, automated continuous integration tests run the pipeline on a full-si
 
 4. Start running your own analysis!
 
-   Download the databases and params required by AlphaFold2 and Colabfold and provide the path using the corresponding parameter [`--af2_db`] or [`--colabfold_db`]
-
-- For AlphaFold2 using the instructions provided [here](https://github.com/deepmind/alphafold)
-
-- For Colabfold using the following scripts:
-
-  - [setup_databases.sh](https://github.com/sokrypton/ColabFold/blob/main/setup_databases.sh)
-
-  - bin/download_colabfold_params.sh
-
-  or
-
-  use the following nextflow parameters so that the pipeline takes care of fetching the required databases and params:
-
-```console
---skip_download --af2_db <PATH_TO_STORE>
-```
-
-```console
---skip_download --colabfold_db <PATH_TO_STORE>
-```
+   The pipeline takes care of downloading the required databases and parameters required by AlphaFold2 and/or Colabfold. In case you have already downloaded the required files, you can skip this step by providing the path using the corresponding parameter [`--af2_db`] or [`--colabfold_db`]
 
 - Typical command to run AlphaFold2 mode:
 
@@ -89,9 +71,9 @@ On release, automated continuous integration tests run the pipeline on a full-si
       --input samplesheet.csv \
       --outdir <OUTDIR> \
       --mode AF2 \
-      --af2_db <DB_PATH> \
+      --af2_db <null (default) | DB_PATH> \
       --full_dbs <true/false> \
-      --skip_download <true/false> \
+      --standard_af2 <true/false> \
       --model_preset monomer \
       --use_gpu <true/false> \
       -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
@@ -104,10 +86,9 @@ On release, automated continuous integration tests run the pipeline on a full-si
       --input samplesheet.csv \
       --outdir <OUTDIR> \
       --mode colabfold_local \
-      --colabfold_db <PATH> \
+      --colabfold_db <null (default) | PATH> \
       --num_recycle 3 \
       --use_amber <true/false> \
-      --skip_download <true/false> \
       --model_type "AlphaFold2-ptm" \
       --use_gpu <true/false> \
       --db_load_mode 0
@@ -122,10 +103,9 @@ On release, automated continuous integration tests run the pipeline on a full-si
       --outdir <OUTDIR> \
       --mode colabfold_webserver \
       --host_url <custom MMSeqs2 API Server URL> \
-      --colabfold_db <PATH> \
+      --colabfold_db <null (default) | PATH> \
       --num_recycle 3 \
       --use_amber <true/false> \
-      --skip_download <true/false> \
       --model_type "AlphaFold2-ptm" \
       --use_gpu <true/false> \
       -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
@@ -137,7 +117,7 @@ The nf-core/proteinfold pipeline comes with documentation about the pipeline [us
 
 ## Credits
 
-nf-core/proteinfold was originally written by Athanasios Baltzis, Jose Espinosa-Carrasco, Harshil Patel.
+nf-core/proteinfold was originally written by Athanasios Baltzis, Jose Espinosa-Carrasco, Luisa Santus, Harshil Patel.
 
 We thank the following people for their extensive assistance in the development of this pipeline:
 
