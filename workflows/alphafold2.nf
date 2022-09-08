@@ -12,8 +12,7 @@ WorkflowAlphafold2.initialise(params, log)
 // Check input path parameters to see if they exist
 def checkPathParamList = [
     params.input,
-    params.af2_db,
-    params.colabfold_db
+    params.af2_db
 ]
 for (param in checkPathParamList) { if (param) { file(param, checkIfExists: true) } }
 
@@ -97,136 +96,69 @@ workflow ALPHAFOLD2 {
     }
     ch_versions = ch_versions.mix(INPUT_CHECK.out.versions)
 
-    //
-    // SUBWORKFLOW: Download databases and params for Alphafold2
-    //
-    if (!params.skip_download) {
-        DOWNLOAD_AF2_DBS_AND_PARAMS (
-            params.af2_db,
-            params.full_dbs
-        )
-
-        //
-        // MODULE: Run Alphafold2
-        //
-        if (!params.standard_af2) {
-
-            RUN_AF2_MSA (
-                ch_fasta,
-                params.full_dbs,
-                params.model_preset,
-                DOWNLOAD_AF2_DBS_AND_PARAMS.out
-            )
-
-            RUN_AF2_PRED (
-                ch_fasta,
-                params.full_dbs,
-                params.model_preset,
-                DOWNLOAD_AF2_DBS_AND_PARAMS.out,
-                RUN_AF2_MSA.out.features
-            )
-
-        } else {
-            RUN_AF2 (
-                ch_fasta,
-                params.max_template_date,
-                params.full_dbs,
-                params.model_preset,
-                DOWNLOAD_AF2_DBS_AND_PARAMS.out
-            )
-        }
-
-    } else {
-        if (!params.standard_af2) {
-            RUN_AF2_MSA (
-                ch_fasta,
-                params.full_dbs,
-                params.model_preset,
-                params.af2_db
-            )
-
-            RUN_AF2_PRED (
-                ch_fasta,
-                params.full_dbs,
-                params.model_preset,
-                params.af2_db,
-                RUN_AF2_MSA.out.features
-            )
-
-        } else{
-            RUN_AF2 (
-                ch_fasta,
-                params.max_template_date,
-                params.full_dbs,
-                params.model_preset,
-                params.af2_db
-            )
-        }
-    }
-
     // TODO The above code can be simplified with something such as the one below, modules need to be reviewed to
     // swallow the correct DBs, only RUN_AF2 should work like it is now
     // //
     // // SUBWORKFLOW: Download databases and params for Alphafold2
     // //
-    // PREPARE_AF2_DBS ( )
+
+    PREPARE_AF2_DBS ( )
 
     // //
     // // MODULE: Run Alphafold2
     // //
-    // if (!params.standard_af2) {
+    if (!params.standard_af2) {
+        RUN_AF2_MSA (
+            ch_fasta,
+            params.full_dbs,
+            params.model_preset,
+            PREPARE_AF2_DBS.out.params,
+            PREPARE_AF2_DBS.out.bfd.ifEmpty([]),
+            PREPARE_AF2_DBS.out.bfd_small.ifEmpty([]),
+            PREPARE_AF2_DBS.out.mgnify,
+            PREPARE_AF2_DBS.out.pdb70,
+            PREPARE_AF2_DBS.out.pdb_mmcif,
+            PREPARE_AF2_DBS.out.uniclust30,
+            PREPARE_AF2_DBS.out.uniref90,
+            PREPARE_AF2_DBS.out.pdb_seqres,
+            PREPARE_AF2_DBS.out.uniprot
+            )
 
-    //     RUN_AF2_MSA (
-    //         ch_fasta,
-    //         params.full_dbs,
-    //         params.model_preset,
-    //         PREPARE_AF2_DBS.out.params,
-    //         PREPARE_AF2_DBS.out.bfd.ifEmpty([]),
-    //         PREPARE_AF2_DBS.out.bfd_small.ifEmpty([]),
-    //         PREPARE_AF2_DBS.out.mgnify,
-    //         PREPARE_AF2_DBS.out.pdb70,
-    //         PREPARE_AF2_DBS.out.pdb_mmcif,
-    //         PREPARE_AF2_DBS.out.uniclust30,
-    //         PREPARE_AF2_DBS.out.uniref90,
-    //         PREPARE_AF2_DBS.out.pdb_seqres,
-    //         PREPARE_AF2_DBS.out.uniprot
-    //     )
+        RUN_AF2_PRED (
+            ch_fasta,
+            params.full_dbs,
+            params.model_preset,
+            PREPARE_AF2_DBS.out.params,
+            PREPARE_AF2_DBS.out.bfd.ifEmpty([]),
+            PREPARE_AF2_DBS.out.bfd_small.ifEmpty([]),
+            PREPARE_AF2_DBS.out.mgnify,
+            PREPARE_AF2_DBS.out.pdb70,
+            PREPARE_AF2_DBS.out.pdb_mmcif,
+            PREPARE_AF2_DBS.out.uniclust30,
+            PREPARE_AF2_DBS.out.uniref90,
+            PREPARE_AF2_DBS.out.pdb_seqres,
+            PREPARE_AF2_DBS.out.uniprot,
+            RUN_AF2_MSA.out.features
+        )
 
-    //     RUN_AF2_PRED (
-    //         ch_fasta,
-    //         params.full_dbs,
-    //         params.model_preset,
-    //         PREPARE_AF2_DBS.out.params,
-    //         PREPARE_AF2_DBS.out.bfd.ifEmpty([]),
-    //         PREPARE_AF2_DBS.out.bfd_small.ifEmpty([]),
-    //         PREPARE_AF2_DBS.out.mgnify,
-    //         PREPARE_AF2_DBS.out.pdb70,
-    //         PREPARE_AF2_DBS.out.pdb_mmcif,
-    //         PREPARE_AF2_DBS.out.uniclust30,
-    //         PREPARE_AF2_DBS.out.uniref90,
-    //         PREPARE_AF2_DBS.out.pdb_seqres,
-    //         PREPARE_AF2_DBS.out.uniprot,
-    //         RUN_AF2_MSA.out.features
-    //     )
-
-    // } else {
-    //     RUN_AF2 (
-    //         ch_fasta,
-    //         params.max_template_date,
-    //         params.full_dbs,
-    //         params.model_preset,
-    //         PREPARE_AF2_DBS.out.params,
-    //         PREPARE_AF2_DBS.out.bfd.ifEmpty([]),
-    //         PREPARE_AF2_DBS.out.bfd_small.ifEmpty([]),
-    //         PREPARE_AF2_DBS.out.mgnify,
-    //         PREPARE_AF2_DBS.out.pdb70,
-    //         PREPARE_AF2_DBS.out.pdb_mmcif,
-    //         PREPARE_AF2_DBS.out.uniclust30,
-    //         PREPARE_AF2_DBS.out.uniref90,
-    //         PREPARE_AF2_DBS.out.pdb_seqres,
-    //         PREPARE_AF2_DBS.out.uniprot
-    //     )
-    // }
+    } else {
+        RUN_AF2 (
+            ch_fasta,
+            params.max_template_date,
+            params.full_dbs,
+            params.model_preset,
+            PREPARE_AF2_DBS.out.params,
+            PREPARE_AF2_DBS.out.bfd.ifEmpty([]),
+            PREPARE_AF2_DBS.out.bfd_small.ifEmpty([]),
+            PREPARE_AF2_DBS.out.mgnify,
+            PREPARE_AF2_DBS.out.pdb70,
+            PREPARE_AF2_DBS.out.pdb_mmcif,
+            PREPARE_AF2_DBS.out.uniclust30,
+            PREPARE_AF2_DBS.out.uniref90,
+            PREPARE_AF2_DBS.out.pdb_seqres,
+            PREPARE_AF2_DBS.out.uniprot
+        )
+    }
 
     //
     // MODULE: MultiQC

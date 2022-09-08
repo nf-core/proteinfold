@@ -1,6 +1,7 @@
 process MMSEQS_TSV2EXPROFILEDB {
     tag "$db"
-    label 'process_low'
+    label 'process_high'
+    label 'long'
 
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'docker://athbaltzis/mmseqs_proteinfold:v0.1' :

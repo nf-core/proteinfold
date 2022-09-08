@@ -39,11 +39,6 @@
                     "default": false,
                     "description": "Run on CPUs (default) or GPUs"
                 },
-                "skip_download": {
-                    "type": "boolean",
-                    "default": true,
-                    "description": "Skip the automatic download of databases and parameters"
-                },
                 "email": {
                     "type": "string",
                     "description": "Email address for completion summary.",
@@ -125,6 +120,11 @@
                 "host_url": {
                     "type": "string",
                     "description": "Specify your custom MMSeqs2 API server url"
+                },
+                "use_templates": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Use PDB templates"
                 },
                 "create_colabfold_index": {
                     "type": "boolean",

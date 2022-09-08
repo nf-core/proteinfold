@@ -12,7 +12,6 @@ WorkflowColabfold.initialise(params, log)
 // Check input path parameters to see if they exist
 def checkPathParamList = [
     params.input,
-    // params.skip_download ? params.colabfold_db : ''
     params.colabfold_db
 ]
 for (param in checkPathParamList) { if (param) { file(param, checkIfExists: true) } }
@@ -100,7 +99,7 @@ workflow COLABFOLD {
         //
         MMSEQS_COLABFOLDSEARCH (
             INPUT_CHECK.out.fastas,
-	    PREPARE_COLABFOLD_DBS.out.params,
+            PREPARE_COLABFOLD_DBS.out.params,
             PREPARE_COLABFOLD_DBS.out.colabfold_db,
             PREPARE_COLABFOLD_DBS.out.uniref30,
             params.db_load_mode

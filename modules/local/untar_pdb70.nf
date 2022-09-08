@@ -1,4 +1,4 @@
-process UNTAR_DIR {
+process UNTAR_PDB70 {
     tag "$archive"
     label 'process_low'
     label 'error_retry'
@@ -9,11 +9,11 @@ process UNTAR_DIR {
         'ubuntu:20.04' }"
 
     input:
-    path(archive)
+    tuple val(meta), path(archive)
 
     output:
-    path("$untar"), emit: untar
-    path "versions.yml"   , emit: versions
+    tuple val(meta), path("$untar"), emit: untar
+    path "versions.yml"            , emit: versions
 
     when:
     task.ext.when == null || task.ext.when
@@ -21,15 +21,14 @@ process UNTAR_DIR {
     script:
     def args  = task.ext.args ?: ''
     def args2 = task.ext.args2 ?: ''
-    untar     = archive.toString() - '.tar'
-    tar_opts  = '-xvf'
+    untar     = archive.toString() - '.tar.gz'
 
     """
     mkdir output
 
     tar \\
         -C output \\
-        $tar_opts \\
+        -xzvf \\
         $args \\
         $archive \\
         $args2
@@ -43,10 +42,9 @@ process UNTAR_DIR {
     """
 
     stub:
-    untar     = archive.toString() - '.tar'
+    untar     = archive.toString() - '.tar.gz'
     """
-    mkdir $untar
-    touch $untar/dummy.csv
+    touch $untar
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
@@ -54,4 +52,3 @@ process UNTAR_DIR {
     END_VERSIONS
     """
 }
-

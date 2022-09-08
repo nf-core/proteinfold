@@ -3,6 +3,7 @@
  */
 process DOWNLOAD_PDBMMCIF {
     label 'process_medium'
+    label 'error_retry'
 
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'docker://athbaltzis/debian:11.3' :

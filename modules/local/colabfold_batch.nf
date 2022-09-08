@@ -14,7 +14,7 @@ process COLABFOLD_BATCH {
     val   numRec
 
     output:
-    path ("*"), emit: pdb
+    path ("*${fasta.baseName}*"), emit: pdb
 
     script:
     // monomer
@@ -22,13 +22,15 @@ process COLABFOLD_BATCH {
         def args = task.ext.args ?: ''
         // def prefix = fasta.baseName //TODO ?  --templates \
         """
+        cp params/alphafold_params_*/* params/
         colabfold_batch \\
             $args \\
             --num-recycle ${numRec} \\
-            --data ./db/params \\
+            --data \$PWD \\
             --model-type ${model_type} \\
             ${fasta} \\
             \$PWD
+        for i in `find *_relaxed_rank_1*.pdb`; do cp \$i `echo \$i | sed "s|_relaxed_rank_|\t|g" | cut -f1`"_colabfold.pdb"; done
         """
     }
     // multimer
@@ -36,13 +38,14 @@ process COLABFOLD_BATCH {
         def args = task.ext.args ?: ''
         // def prefix = fasta.baseName //TODO ?
         """
+        cp params/alphafold_params_*/* params/
         echo "id,sequence" >> input.csv
         echo -e ${seq_name},`awk -F ' ' '!/^>/ {print \$0}' ${fasta} | tr "\n" ":" | awk '{gsub(/:\$/,""); print}'` >> input.csv
         colabfold_batch \\
             --templates \\
             $args \\
             --num-recycle ${numRec} \\
-            --data ./db \\
+            --data \$PWD \\
             --model-type ${model_type} \\
             input.csv \\
             \$PWD

@@ -1,6 +1,7 @@
 process ARIA2 {
     tag "$file_name"
     label 'process_long'
+    label 'error_retry'
 
 
     // container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
@@ -24,6 +25,7 @@ process ARIA2 {
     set -e
 
     aria2c \\
+        --check-certificate=false \\
         $args \\
         $source_url
     """
