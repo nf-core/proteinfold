@@ -24,6 +24,7 @@ The pipeline is built using [Nextflow](https://www.nextflow.io/) and predicts pr
 - `AlphaFold2/`
   - `<SEQUENCE NAME>/` that contains the computed MSAs, unrelaxed structures, relaxed structures, ranked structures, raw model outputs, prediction metadata, and section timings
   - `<SEQUENCE NAME>.alphafold.pdb` that is the structure with the highest pLDDT score (ranked first)
+- `DBs/` that contains symbolic links to the downloaded database and parameter files
 
 </details>
 
@@ -32,7 +33,8 @@ The pipeline is built using [Nextflow](https://www.nextflow.io/) and predicts pr
 <details markdown="1">
 <summary>Output files</summary>
 
-- `colabfold/` that contains the computed MSAs, unrelaxed structures, relaxed structures, ranked structures, raw model outputs and scores, prediction metadata, logs and section timings
+- `colabfold_webserver/` or `colabfold_local` based on the selected mode that contains the computed MSAs, unrelaxed structures, relaxed structures, ranked structures, raw model outputs and scores, prediction metadata, logs and section timings
+- `DBs/` that contains symbolic links to the downloaded database and parameter files
 
 </details>
 

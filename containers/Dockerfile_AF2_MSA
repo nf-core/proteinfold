@@ -1,8 +1,8 @@
 FROM nvidia/cuda:11.1.1-cudnn8-runtime-ubuntu18.04
 LABEL authors="Luisa Santus, Athanasios Baltzis" \
-    title="nf-friendly AF2 docker image" \
-    Version="v0.6" \
-    description="Docker image containing all software requirements to run AF2 using the nf-core/proteinfold pipeline"
+    title="nf-friendly AF2 MSA docker image" \
+    Version="v0.1" \
+    description="Docker image containing all software requirements to run AF2_MSA using the nf-core/proteinfold pipeline"
 
 
 # Use bash to support string substitution.
@@ -12,6 +12,12 @@ SHELL ["/bin/bash", "-c"]
 ENV LD_LIBRARY_PATH="/conda/lib:/usr/local/cuda-11.1/lib64:$LD_LIBRARY_PATH"
 ENV PATH="/conda/bin:$PATH"
 
+RUN rm /etc/apt/sources.list.d/cuda.list && \
+    rm /etc/apt/sources.list.d/nvidia-ml.list && \
+    apt-key del 7fa2af80 && \
+    apt-get update && apt-get install -y --no-install-recommends wget && \
+    wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/cuda-keyring_1.0-1_all.deb && \
+    dpkg -i cuda-keyring_1.0-1_all.deb
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
         build-essential \
         cmake \
@@ -27,7 +33,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
 # Clone AF2 git checkout d3327d968c6cfa31da53324c173ff635ed1ec0b6 && \
 RUN git clone https://github.com/luisas/alphafold_split.git /app/alphafold && \
     cd /app/alphafold && \
-    git checkout 0652c8c8130eea36620dadd25a46c2421d4997a6 && \
+    git checkout 095768b24e9ee76a3f0f85c706f2f91cbfca659f && \
     cd -
 
 # Compile HHsuite from source
@@ -49,7 +55,7 @@ RUN wget -q -P /tmp \
 RUN /conda/bin/conda update -qy conda \
         && /conda/bin/conda install -y -c conda-forge \
             pip \
-            python=3.7
+            python=3.9
 
 # Install pip packages
 RUN /conda/bin/pip3 install --upgrade pip \

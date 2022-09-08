@@ -10,7 +10,7 @@
             "type": "object",
             "fa_icon": "fas fa-coins",
             "description": "Define where the pipeline should find input data and save output data.",
-            "required": ["input", "outdir", "colabfold_db"],
+            "required": ["input", "outdir"],
             "properties": {
                 "input": {
                     "type": "string",
@@ -38,11 +38,6 @@
                     "type": "boolean",
                     "default": false,
                     "description": "Run on CPUs (default) or GPUs"
-                },
-                "skip_download": {
-                    "type": "boolean",
-                    "default": true,
-                    "description": "Skip the automatic download of databases and parameters"
                 },
                 "email": {
                     "type": "string",
@@ -86,8 +81,8 @@
                 },
                 "standard_af2": {
                     "type": "boolean",
-                    "default": false,
-                    "description": "If true, uses the standard AF2 implementation, otherwise the splits the MSA computation and prediction steps."
+                    "default": true,
+                    "description": "If true, uses the standard AF2 implementation, otherwise it separates the MSA computation from the model inference step"
                 }
             }
         },
@@ -130,6 +125,16 @@
                 "host_url": {
                     "type": "string",
                     "description": "Specify your custom MMSeqs2 API server url"
+                },
+                "use_templates": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Use PDB templates"
+                },
+                "create_colabfold_index": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Create databases indexes when running colabfold_local mode"
                 }
             }
         },

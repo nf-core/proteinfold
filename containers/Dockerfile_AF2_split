@@ -1,8 +1,8 @@
 FROM nvidia/cuda:11.1.1-cudnn8-runtime-ubuntu18.04
 LABEL authors="Athanasios Baltzis, Luisa Santus" \
-    title="nf-friendly AF2 docker image" \
-    Version="v0.6" \
-    description="Docker image containing all software requirements to run AF2 using the nf-core/proteinfold pipeline"
+    title="nf-friendly AF2_PRED docker image" \
+    Version="v1.0" \
+    description="Docker image containing all software requirements to run AF2_PRED step using the nf-core/proteinfold pipeline"
 
 
 # Use bash to support string substitution.
@@ -27,7 +27,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
 # Clone AF2
 RUN git clone https://github.com/luisas/alphafold_split.git /app/alphafold && \
     cd /app/alphafold && \
-    git checkout 4566488e056f9f3ded078680208f719892649644 && \
+    git checkout 095768b24e9ee76a3f0f85c706f2f91cbfca659f && \
     cd -
 
 # Compile HHsuite from source

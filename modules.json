@@ -9,8 +9,14 @@
             "fastqc": {
                 "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
             },
+            "gunzip": {
+                "git_sha": "fa37e0662690c4ec4260dae282fbce08777503e6"
+            },
             "multiqc": {
                 "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
+            },
+            "untar": {
+                "git_sha": "51be617b1ca9bff973655eb899d591ed6ab253b5"
             }
         }
     }
