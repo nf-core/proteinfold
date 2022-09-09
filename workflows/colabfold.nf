@@ -45,6 +45,7 @@ include { PREPARE_COLABFOLD_DBS } from '../subworkflows/local/prepare_colabfold_
 //
 include { COLABFOLD_BATCH         } from '../modules/local/colabfold_batch'
 include { MMSEQS_COLABFOLDSEARCH } from '../modules/local/mmseqs_colabfoldsearch'
+include { MULTIFASTA_TO_CSV } from '../modules/local/multifasta_to_csv'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -85,7 +86,20 @@ workflow COLABFOLD {
         //
         // MODULE: Run colabfold
         //
-        COLABFOLD_BATCH(
+        if (params.model_type != 'AlphaFold2-ptm') {
+            MULTIFASTA_TO_CSV(
+            INPUT_CHECK.out.fastas
+            )
+            COLABFOLD_BATCH(
+            MULTIFASTA_TO_CSV.out.input_csv,
+            params.model_type,
+            PREPARE_COLABFOLD_DBS.out.params,
+            [],
+            [],
+            params.num_recycle
+        )
+        } else {
+            COLABFOLD_BATCH(
             INPUT_CHECK.out.fastas,
             params.model_type,
             PREPARE_COLABFOLD_DBS.out.params,
@@ -93,6 +107,9 @@ workflow COLABFOLD {
             [],
             params.num_recycle
         )
+        }
+
+
     } else if (params.mode == 'colabfold_local') {
         //
 	// MODULE: Run mmseqs

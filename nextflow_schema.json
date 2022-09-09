@@ -112,11 +112,6 @@
                     "default": true,
                     "description": "Use Amber minimization to refine the predicted structures"
                 },
-                "use_templates": {
-                    "type": "boolean",
-                    "default": true,
-                    "description": "Use PDB templates"
-                },
                 "db_load_mode": {
                     "type": "integer",
                     "default": 0,
