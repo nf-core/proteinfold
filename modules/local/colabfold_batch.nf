@@ -14,12 +14,12 @@ process COLABFOLD_BATCH {
     val   numRec
 
     output:
-    path ("*${fasta.baseName}*"), emit: pdb
+    path ("*"), emit: pdb
 
     script:
     def args = task.ext.args ?: ''
     """
-    cp params/alphafold_params_*/* params/
+    ln -r -s params/alphafold_params_*/* params/
     colabfold_batch \\
         $args \\
         --num-recycle ${numRec} \\

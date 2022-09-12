@@ -112,15 +112,29 @@ workflow COLABFOLD {
 
     } else if (params.mode == 'colabfold_local') {
         //
-	// MODULE: Run mmseqs
+	    // MODULE: Run mmseqs
         //
-        MMSEQS_COLABFOLDSEARCH (
+        if (params.model_type != 'AlphaFold2-ptm') {
+            MULTIFASTA_TO_CSV(
+            INPUT_CHECK.out.fastas
+            )
+            MMSEQS_COLABFOLDSEARCH (
+            MULTIFASTA_TO_CSV.out.input_csv,
+            PREPARE_COLABFOLD_DBS.out.params,
+            PREPARE_COLABFOLD_DBS.out.colabfold_db,
+            PREPARE_COLABFOLD_DBS.out.uniref30,
+            params.db_load_mode
+            )
+        } else {
+            MMSEQS_COLABFOLDSEARCH (
             INPUT_CHECK.out.fastas,
             PREPARE_COLABFOLD_DBS.out.params,
             PREPARE_COLABFOLD_DBS.out.colabfold_db,
             PREPARE_COLABFOLD_DBS.out.uniref30,
             params.db_load_mode
-        )
+            )
+        }
+
 
         //
         // MODULE: Run colabfold
