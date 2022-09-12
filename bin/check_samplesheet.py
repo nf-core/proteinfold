@@ -135,7 +135,7 @@ def check_samplesheet(file_in, file_out):
                 ):
                     print_error(
                         "Multiple runs of a sequence must be of the same datatype!",
-                        "Sequence: {}".format(sequence),
+                        "Sequence: {}".format(sequence)
                     )
 
                 for idx, val in enumerate(sequence_mapping_dict[sequence]):
