@@ -26,8 +26,13 @@ On release, automated continuous integration tests run the pipeline on a full-si
 
 <!-- TODO nf-core: Fill in short bullet-pointed list of the default steps in the pipeline -->
 
-1. Read QC ([`FastQC`](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/))
-2. Present QC for raw reads ([`MultiQC`](http://multiqc.info/))
+1. Choice of protein structure prediction method:
+
+   i. [AlphaFold2](https://github.com/deepmind/alphafold) (default)
+
+   ii. [ColabFold](https://github.com/sokrypton/ColabFold) - MMseqs2 API server followed by ColabFold
+
+   iii. [ColabFold](https://github.com/sokrypton/ColabFold) - MMseqs2 local search followed by ColabFold
 
 ## Quick Start
 
@@ -50,11 +55,77 @@ On release, automated continuous integration tests run the pipeline on a full-si
 
 4. Start running your own analysis!
 
-   <!-- TODO nf-core: Update the example "typical command" below used to run the pipeline -->
+   Download the databases and params required by AlphaFold2 and Colabfold and provide the path using the corresponding parameter [`--af2_db`] or [`--colabfold_db`]
 
-   ```bash
-   nextflow run nf-core/proteinfold --input samplesheet.csv --outdir <OUTDIR> --genome GRCh37 -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
-   ```
+- For AlphaFold2 using the instructions provided [here](https://github.com/deepmind/alphafold)
+
+- For Colabfold using the following scripts:
+
+  - [setup_databases.sh](https://github.com/sokrypton/ColabFold/blob/main/setup_databases.sh)
+
+  - bin/download_colabfold_params.sh
+
+  or
+
+  use the following nextflow parameters so that the pipeline takes care of fetching the required databases and params:
+
+```console
+--skip_download --af2_db <PATH_TO_STORE>
+```
+
+```console
+--skip_download --colabfold_db <PATH_TO_STORE>
+```
+
+- Typical command to run AlphaFold2 mode:
+
+  ```console
+  nextflow run nf-core/proteinfold \
+      --input samplesheet.csv \
+      --outdir <OUTDIR> \
+      --mode AF2 \
+      --af2_db <DB_PATH> \
+      --full_dbs <true/false> \
+      --skip_download <true/false> \
+      --model_preset monomer \
+      --use_gpu <true/false> \
+      -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
+  ```
+
+- Typical command to run colabfold_local mode:
+
+  ```console
+  nextflow run nf-core/proteinfold \
+      --input samplesheet.csv \
+      --outdir <OUTDIR> \
+      --mode colabfold_local \
+      --colabfold_db <PATH> \
+      --num_recycle 3 \
+      --use_amber <true/false> \
+      --skip_download <true/false> \
+      --model_type "AlphaFold2-ptm" \
+      --use_gpu <true/false> \
+      --mmseqs_threads 8
+      --db_load_mode 0
+      -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
+  ```
+
+- Typical command to run colabfold_webserver mode:
+
+  ```console
+  nextflow run nf-core/proteinfold \
+      --input samplesheet.csv \
+      --outdir <OUTDIR> \
+      --mode colabfold_webserver \
+      --host_url <custom MMSeqs2 API Server URL> \
+      --colabfold_db <PATH> \
+      --num_recycle 3 \
+      --use_amber <true/false> \
+      --skip_download <true/false> \
+      --model_type "AlphaFold2-ptm" \
+      --use_gpu <true/false> \
+      -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
+  ```
 
 ## Documentation
 

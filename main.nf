@@ -13,14 +13,6 @@ nextflow.enable.dsl = 2
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    GENOME PARAMETER VALUES
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-*/
-
-params.fasta = WorkflowMain.getGenomeAttribute(params, 'fasta')
-
-/*
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     VALIDATE & PRINT PARAMETER SUMMARY
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
@@ -33,13 +25,26 @@ WorkflowMain.initialise(workflow, params, log)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { PROTEINFOLD } from './workflows/proteinfold'
+if (params.mode == "AF2") {
+    include { ALPHAFOLD2 } from './workflows/alphafold2'
+} else if (params.mode == "colabfold_webserver" || params.mode == "colabfold_local") {
+    include { COLABFOLD } from './workflows/colabfold'
+}
 
-//
-// WORKFLOW: Run main nf-core/proteinfold analysis pipeline
-//
 workflow NFCORE_PROTEINFOLD {
-    PROTEINFOLD ()
+    //
+    // WORKFLOW: Run alphafold2
+    //
+    if(params.mode == "AF2") {
+        ALPHAFOLD2 ()
+    }
+
+    //
+    // WORKFLOW: Run colabfold
+    //
+    else if(params.mode == "colabfold_webserver" || params.mode == "colabfold_local") {
+        COLABFOLD ()
+    }
 }
 
 /*
