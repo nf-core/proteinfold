@@ -24,6 +24,7 @@ process MMSEQS_TSV2EXPROFILEDB {
 
     stub:
     """
+    mkdir ${db}
     touch ${db}/${db}_exprofile
     """
 }

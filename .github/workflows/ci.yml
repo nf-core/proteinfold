@@ -42,57 +42,27 @@ jobs:
     name: Test af2 workflow
     if: ${{ github.event_name != 'push' || (github.event_name == 'push' && github.repository == 'nf-core/proteinfold') }}
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        # Nextflow versions
-        include:
-          # Test pipeline minimum Nextflow version
-          - NXF_VER: "21.10.3"
-            NXF_EDGE: ""
-          # Test latest edge release of Nextflow
-          - NXF_VER: ""
-            NXF_EDGE: "1"
     steps:
       - name: Check out pipeline code
         uses: actions/checkout@v2
 
       - name: Install Nextflow
-        env:
-          NXF_VER: ${{ matrix.NXF_VER }}
-          # Uncomment only if the edge release is more recent than the latest stable release
-          # See https://github.com/nextflow-io/nextflow/issues/2467
-          # NXF_EDGE: ${{ matrix.NXF_EDGE }}
         run: |
           wget -qO- get.nextflow.io | bash
           sudo mv nextflow /usr/local/bin/
       - name: Run pipeline with minimal SISPA data and various options
         run: |
-          nextflow run ${GITHUB_WORKSPACE} -profile test_af2,docker --af2_standard false -stub-run --outdir ./results
+          nextflow run ${GITHUB_WORKSPACE} -profile test_af2,docker --standard_af2 false -stub-run --outdir ./results
 
   test_colabfold_local:
     name: Test Colabfold local workflow
     if: ${{ github.event_name != 'push' || (github.event_name == 'push' && github.repository == 'nf-core/proteinfold') }}
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        # Nextflow versions
-        include:
-          # Test pipeline minimum Nextflow version
-          - NXF_VER: "21.10.3"
-            NXF_EDGE: ""
-          # Test latest edge release of Nextflow
-          - NXF_VER: ""
-            NXF_EDGE: "1"
     steps:
       - name: Check out pipeline code
         uses: actions/checkout@v2
 
       - name: Install Nextflow
-        env:
-          NXF_VER: ${{ matrix.NXF_VER }}
-          # Uncomment only if the edge release is more recent than the latest stable release
-          # See https://github.com/nextflow-io/nextflow/issues/2467
-          # NXF_EDGE: ${{ matrix.NXF_EDGE }}
         run: |
           wget -qO- get.nextflow.io | bash
           sudo mv nextflow /usr/local/bin/
@@ -104,26 +74,11 @@ jobs:
     name: Test Colabfold webserver workflow
     if: ${{ github.event_name != 'push' || (github.event_name == 'push' && github.repository == 'nf-core/proteinfold') }}
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        # Nextflow versions
-        include:
-          # Test pipeline minimum Nextflow version
-          - NXF_VER: "21.10.3"
-            NXF_EDGE: ""
-          # Test latest edge release of Nextflow
-          - NXF_VER: ""
-            NXF_EDGE: "1"
     steps:
       - name: Check out pipeline code
         uses: actions/checkout@v2
 
       - name: Install Nextflow
-        env:
-          NXF_VER: ${{ matrix.NXF_VER }}
-          # Uncomment only if the edge release is more recent than the latest stable release
-          # See https://github.com/nextflow-io/nextflow/issues/2467
-          # NXF_EDGE: ${{ matrix.NXF_EDGE }}
         run: |
           wget -qO- get.nextflow.io | bash
           sudo mv nextflow /usr/local/bin/
