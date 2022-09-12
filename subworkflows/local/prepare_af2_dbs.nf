@@ -38,10 +38,10 @@ workflow PREPARE_AF2_DBS {
     if (params.af2_db) {
         if (params.full_dbs) {
             ch_bfd       = file("${params.af2_db}/bfd" )
-            ch_bfd_small = file("${projectDir}/assets/dummy_db.csv")
+            ch_bfd_small = file("${projectDir}/assets/dummy_db")
         }
         else {
-            ch_bfd       = file("${projectDir}/assets/dummy_db.csv")
+            ch_bfd       = file("${projectDir}/assets/dummy_db")
             ch_bfd_small = file("${params.af2_db}/small_bfd")
         }
 
