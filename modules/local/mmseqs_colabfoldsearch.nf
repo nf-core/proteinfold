@@ -28,6 +28,6 @@ process MMSEQS_COLABFOLDSEARCH {
 
     stub:
     """
-    touch result/${seq_name.sequence}.a3m
+    touch ${seq_name.sequence}.a3m
     """
 }
