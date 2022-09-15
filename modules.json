@@ -6,16 +6,24 @@
             "git_url": "https://github.com/nf-core/modules.git",
             "modules": {
                 "custom/dumpsoftwareversions": {
-                    "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d",
-                    "branch": "master"
+                    "branch": "master",
+                    "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
                 },
                 "fastqc": {
-                    "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d",
-                    "branch": "master"
+                    "branch": "master",
+                    "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
+                },
+                "gunzip": {
+                    "branch": "master",
+                    "git_sha": "fa37e0662690c4ec4260dae282fbce08777503e6"
                 },
                 "multiqc": {
-                    "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d",
-                    "branch": "master"
+                    "branch": "master",
+                    "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
+                },
+                "untar": {
+                    "branch": "master",
+                    "git_sha": "51be617b1ca9bff973655eb899d591ed6ab253b5"
                 }
             }
         }

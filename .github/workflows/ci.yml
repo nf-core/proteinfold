@@ -52,7 +52,7 @@ jobs:
           sudo mv nextflow /usr/local/bin/
       - name: Run pipeline with minimal SISPA data and various options
         run: |
-          nextflow run ${GITHUB_WORKSPACE} -profile test_af2,docker -stub-run --outdir ./results
+          nextflow run ${GITHUB_WORKSPACE} -profile test_af2,docker --standard_af2 false -stub-run --outdir ./results
 
   test_colabfold_local:
     name: Test Colabfold local workflow
