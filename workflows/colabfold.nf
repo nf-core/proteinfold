@@ -7,15 +7,17 @@
 def summary_params = NfcoreSchema.paramsSummaryMap(workflow, params)
 
 // Validate input parameters
-WorkflowProteinfold.initialise(params, log)
+WorkflowColabfold.initialise(params, log)
 
-// TODO nf-core: Add all file path parameters for the pipeline to the list below
 // Check input path parameters to see if they exist
-def checkPathParamList = [ params.input, params.multiqc_config, params.fasta ]
+def checkPathParamList = [
+    params.input,
+    params.colabfold_db
+]
 for (param in checkPathParamList) { if (param) { file(param, checkIfExists: true) } }
 
 // Check mandatory parameters
-if (params.input) { ch_input = file(params.input) } else { exit 1, 'Input samplesheet not specified!' }
+if (params.input) { ch_input = file(params.input) } else { exit 1, 'Input file not specified!' }
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -38,6 +40,14 @@ ch_multiqc_custom_methods_description = params.multiqc_methods_description ? fil
 // SUBWORKFLOW: Consisting of a mix of local and nf-core/modules
 //
 include { INPUT_CHECK } from '../subworkflows/local/input_check'
+include { PREPARE_COLABFOLD_DBS } from '../subworkflows/local/prepare_colabfold_dbs'
+
+//
+// MODULE: Local to the pipeline
+//
+include { COLABFOLD_BATCH         } from '../modules/local/colabfold_batch'
+include { MMSEQS_COLABFOLDSEARCH } from '../modules/local/mmseqs_colabfoldsearch'
+include { MULTIFASTA_TO_CSV } from '../modules/local/multifasta_to_csv'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -61,7 +71,7 @@ include { CUSTOM_DUMPSOFTWAREVERSIONS } from '../modules/nf-core/custom/dumpsoft
 // Info required for completion email and summary
 def multiqc_report = []
 
-workflow PROTEINFOLD {
+workflow COLABFOLD {
 
     ch_versions = Channel.empty()
 
@@ -73,14 +83,78 @@ workflow PROTEINFOLD {
     )
     ch_versions = ch_versions.mix(INPUT_CHECK.out.versions)
 
-    //
-    // MODULE: Run FastQC
-    //
-    FASTQC (
-        INPUT_CHECK.out.reads
-    )
-    ch_versions = ch_versions.mix(FASTQC.out.versions.first())
+    PREPARE_COLABFOLD_DBS ( )
 
+    if (params.mode == 'colabfold_webserver') {
+        //
+        // MODULE: Run colabfold
+        //
+        if (params.model_type != 'AlphaFold2-ptm') {
+            MULTIFASTA_TO_CSV(
+            INPUT_CHECK.out.fastas
+            )
+            COLABFOLD_BATCH(
+            MULTIFASTA_TO_CSV.out.input_csv,
+            params.model_type,
+            PREPARE_COLABFOLD_DBS.out.params,
+            [],
+            [],
+            params.num_recycle
+        )
+        } else {
+            COLABFOLD_BATCH(
+            INPUT_CHECK.out.fastas,
+            params.model_type,
+            PREPARE_COLABFOLD_DBS.out.params,
+            [],
+            [],
+            params.num_recycle
+        )
+        }
+
+
+    } else if (params.mode == 'colabfold_local') {
+        //
+	    // MODULE: Run mmseqs
+        //
+        if (params.model_type != 'AlphaFold2-ptm') {
+            MULTIFASTA_TO_CSV(
+            INPUT_CHECK.out.fastas
+            )
+            MMSEQS_COLABFOLDSEARCH (
+            MULTIFASTA_TO_CSV.out.input_csv,
+            PREPARE_COLABFOLD_DBS.out.params,
+            PREPARE_COLABFOLD_DBS.out.colabfold_db,
+            PREPARE_COLABFOLD_DBS.out.uniref30,
+            params.db_load_mode
+            )
+        } else {
+            MMSEQS_COLABFOLDSEARCH (
+            INPUT_CHECK.out.fastas,
+            PREPARE_COLABFOLD_DBS.out.params,
+            PREPARE_COLABFOLD_DBS.out.colabfold_db,
+            PREPARE_COLABFOLD_DBS.out.uniref30,
+            params.db_load_mode
+            )
+        }
+
+
+        //
+        // MODULE: Run colabfold
+        //
+        COLABFOLD_BATCH(
+            MMSEQS_COLABFOLDSEARCH.out.a3m,
+            params.model_type,
+            PREPARE_COLABFOLD_DBS.out.params,
+            PREPARE_COLABFOLD_DBS.out.colabfold_db,
+            PREPARE_COLABFOLD_DBS.out.uniref30,
+            params.num_recycle
+        )
+    }
+
+     //
+    // MODULE: Pipeline reporting
+    //
     CUSTOM_DUMPSOFTWAREVERSIONS (
         ch_versions.unique().collectFile(name: 'collated_versions.yml')
     )
@@ -88,17 +162,17 @@ workflow PROTEINFOLD {
     //
     // MODULE: MultiQC
     //
-    workflow_summary    = WorkflowProteinfold.paramsSummaryMultiqc(workflow, summary_params)
+    workflow_summary    = WorkflowColabfold.paramsSummaryMultiqc(workflow, summary_params)
     ch_workflow_summary = Channel.value(workflow_summary)
 
-    methods_description    = WorkflowProteinfold.methodsDescriptionText(workflow, ch_multiqc_custom_methods_description)
+    methods_description    = WorkflowColabfold.methodsDescriptionText(workflow, ch_multiqc_custom_methods_description)
     ch_methods_description = Channel.value(methods_description)
 
     ch_multiqc_files = Channel.empty()
     ch_multiqc_files = ch_multiqc_files.mix(ch_workflow_summary.collectFile(name: 'workflow_summary_mqc.yaml'))
     ch_multiqc_files = ch_multiqc_files.mix(ch_methods_description.collectFile(name: 'methods_description_mqc.yaml'))
     ch_multiqc_files = ch_multiqc_files.mix(CUSTOM_DUMPSOFTWAREVERSIONS.out.mqc_yml.collect())
-    ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.collect{it[1]}.ifEmpty([]))
+    //ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.collect{it[1]}.ifEmpty([]))
 
     MULTIQC (
         ch_multiqc_files.collect(),

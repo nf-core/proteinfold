@@ -26,8 +26,15 @@ On release, automated continuous integration tests run the pipeline on a full-si
 
 <!-- TODO nf-core: Fill in short bullet-pointed list of the default steps in the pipeline -->
 
-1. Read QC ([`FastQC`](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/))
-2. Present QC for raw reads ([`MultiQC`](http://multiqc.info/))
+1. Choice of protein structure prediction method:
+
+   i. [AlphaFold2](https://github.com/deepmind/alphafold)
+
+   ii. [AlphaFold2 split](https://github.com/luisas/alphafold_split) - AlphaFold2 MSA computation and model inference in separate processes
+
+   iii. [ColabFold](https://github.com/sokrypton/ColabFold) - MMseqs2 API server followed by ColabFold
+
+   iv. [ColabFold](https://github.com/sokrypton/ColabFold) - MMseqs2 local search followed by ColabFold
 
 ## Quick Start
 
@@ -50,11 +57,54 @@ On release, automated continuous integration tests run the pipeline on a full-si
 
 4. Start running your own analysis!
 
-   <!-- TODO nf-core: Update the example "typical command" below used to run the pipeline -->
+   The pipeline takes care of downloading the required databases and parameters required by AlphaFold2 and/or Colabfold. In case you have already downloaded the required files, you can skip this step by providing the path using the corresponding parameter [`--af2_db`] or [`--colabfold_db`]
 
-   ```bash
-   nextflow run nf-core/proteinfold --input samplesheet.csv --outdir <OUTDIR> --genome GRCh37 -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
-   ```
+- Typical command to run AlphaFold2 mode:
+
+  ```console
+  nextflow run nf-core/proteinfold \
+      --input samplesheet.csv \
+      --outdir <OUTDIR> \
+      --mode AF2 \
+      --af2_db <null (default) | DB_PATH> \
+      --full_dbs <true/false> \
+      --standard_af2 <true/false> \
+      --model_preset monomer \
+      --use_gpu <true/false> \
+      -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
+  ```
+
+- Typical command to run colabfold_local mode:
+
+  ```console
+  nextflow run nf-core/proteinfold \
+      --input samplesheet.csv \
+      --outdir <OUTDIR> \
+      --mode colabfold_local \
+      --colabfold_db <null (default) | PATH> \
+      --num_recycle 3 \
+      --use_amber <true/false> \
+      --model_type "AlphaFold2-ptm" \
+      --use_gpu <true/false> \
+      --db_load_mode 0
+      -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
+  ```
+
+- Typical command to run colabfold_webserver mode:
+
+  ```console
+  nextflow run nf-core/proteinfold \
+      --input samplesheet.csv \
+      --outdir <OUTDIR> \
+      --mode colabfold_webserver \
+      --host_url <custom MMSeqs2 API Server URL> \
+      --colabfold_db <null (default) | PATH> \
+      --num_recycle 3 \
+      --use_amber <true/false> \
+      --model_type "AlphaFold2-ptm" \
+      --use_gpu <true/false> \
+      -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
+  ```
 
 ## Documentation
 
@@ -62,7 +112,7 @@ The nf-core/proteinfold pipeline comes with documentation about the pipeline [us
 
 ## Credits
 
-nf-core/proteinfold was originally written by Athanasios Baltzis, Jose Espinosa-Carrasco, Harshil Patel.
+nf-core/proteinfold was originally written by Athanasios Baltzis, Jose Espinosa-Carrasco, Luisa Santus, Harshil Patel.
 
 We thank the following people for their extensive assistance in the development of this pipeline:
 

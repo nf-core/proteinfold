@@ -36,4 +36,52 @@ jobs:
         # For example: adding multiple test runs with different parameters
         # Remember that you can parallelise this by using strategy.matrix
         run: |
-          nextflow run ${GITHUB_WORKSPACE} -profile test,docker --outdir ./results
+          nextflow run ${GITHUB_WORKSPACE} -profile test,docker -stub-run --outdir ./results
+
+  test_af2:
+    name: Test af2 workflow
+    if: ${{ github.event_name != 'push' || (github.event_name == 'push' && github.repository == 'nf-core/proteinfold') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out pipeline code
+        uses: actions/checkout@v2
+
+      - name: Install Nextflow
+        run: |
+          wget -qO- get.nextflow.io | bash
+          sudo mv nextflow /usr/local/bin/
+      - name: Run pipeline with minimal SISPA data and various options
+        run: |
+          nextflow run ${GITHUB_WORKSPACE} -profile test_af2,docker --standard_af2 false -stub-run --outdir ./results
+
+  test_colabfold_local:
+    name: Test Colabfold local workflow
+    if: ${{ github.event_name != 'push' || (github.event_name == 'push' && github.repository == 'nf-core/proteinfold') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out pipeline code
+        uses: actions/checkout@v2
+
+      - name: Install Nextflow
+        run: |
+          wget -qO- get.nextflow.io | bash
+          sudo mv nextflow /usr/local/bin/
+      - name: Run pipeline with minimal SISPA data and various options
+        run: |
+          nextflow run ${GITHUB_WORKSPACE} -profile test_colabfold_local,docker -stub-run --outdir ./results
+
+  test_colabfold_webserver:
+    name: Test Colabfold webserver workflow
+    if: ${{ github.event_name != 'push' || (github.event_name == 'push' && github.repository == 'nf-core/proteinfold') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out pipeline code
+        uses: actions/checkout@v2
+
+      - name: Install Nextflow
+        run: |
+          wget -qO- get.nextflow.io | bash
+          sudo mv nextflow /usr/local/bin/
+      - name: Run pipeline with minimal SISPA data and various options
+        run: |
+          nextflow run ${GITHUB_WORKSPACE} -profile test_colabfold_webserver,docker -stub-run --outdir ./results
