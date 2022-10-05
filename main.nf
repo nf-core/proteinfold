@@ -4,7 +4,8 @@
     nf-core/proteinfold
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     Github : https://github.com/nf-core/proteinfold
-Website: https://nf-co.re/proteinfold
+
+    Website: https://nf-co.re/proteinfold
     Slack  : https://nfcore.slack.com/channels/proteinfold
 ----------------------------------------------------------------------------------------
 */

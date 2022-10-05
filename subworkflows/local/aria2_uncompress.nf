@@ -3,8 +3,8 @@
 //
 
 include { ARIA2     } from '../../modules/local/aria2'
-include { GUNZIP    } from '../../modules/nf-core/modules/gunzip/main'
-include { UNTAR     } from '../../modules/nf-core/modules/untar/main'
+include { GUNZIP    } from '../../modules/nf-core/gunzip/main'
+include { UNTAR     } from '../../modules/nf-core/untar/main'
 include { UNTAR_DIR } from '../../modules/local/untar_dir'
 include { UNTAR_PDB70 } from '../../modules/local/untar_pdb70'
 
