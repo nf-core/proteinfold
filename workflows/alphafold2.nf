@@ -45,10 +45,9 @@ include { PREPARE_AF2_DBS } from '../subworkflows/local/prepare_af2_dbs'
 //
 // MODULE: Local to the pipeline
 //
-// TODO name the module as the containing file
-// TODO Split them in three local modules, nf-core standard is one module per file since eventually they can become
-// official modules
-include { RUN_AF2; RUN_AF2_MSA; RUN_AF2_PRED } from '../modules/local/af2.nf'
+include { RUN_AF2      } from '../modules/local/run_af2'
+include { RUN_AF2_MSA  } from '../modules/local/run_af2_msa'
+include { RUN_AF2_PRED } from '../modules/local/run_af2_pred'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -125,7 +124,7 @@ workflow ALPHAFOLD2 {
             PREPARE_AF2_DBS.out.uniref90,
             PREPARE_AF2_DBS.out.pdb_seqres,
             PREPARE_AF2_DBS.out.uniprot
-            )
+        )
 
         RUN_AF2_PRED (
             ch_fasta,
