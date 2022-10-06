@@ -26,8 +26,8 @@ include {
     ARIA2_UNCOMPRESS as ARIA2_UNIPROT_SPROT
     ARIA2_UNCOMPRESS as ARIA2_UNIPROT_TREMBL } from './aria2_uncompress'
 
-include { ARIA2              } from '../../modules/local/aria2'
-include { COMBINE_UNIPROT    } from '../../modules/local/combine_uniprot'
+include { ARIA2             } from '../../modules/local/aria2'
+include { COMBINE_UNIPROT   } from '../../modules/local/combine_uniprot'
 include { DOWNLOAD_PDBMMCIF } from '../../modules/local/download_pdbmmcif'
 
 workflow PREPARE_AF2_DBS {
