@@ -20,8 +20,8 @@ process UNTAR {
     script:
     def args  = task.ext.args ?: ''
     def args2 = task.ext.args2 ?: ''
-    untar     = archive.toString() - '.tar.gz'
-
+    def tar_opts  = archive.endsWith('tar.gz')? '-xzvf' : '-xvf'
+    untar = archive.endsWith('tar.gz')? archive.toString() - '.tar.gz' : archive.toString() - '.tar'
     """
     mkdir output
 
@@ -30,14 +30,14 @@ process UNTAR {
     if [[ \$(tar -tzf ${archive} | grep -o -P "^.*?\\/" | uniq | wc -l) -eq 1 ]]; then
         tar \\
             -C output --strip-components 1 \\
-            -xzvf \\
+            $tar_opts \\
             $args \\
             $archive \\
             $args2
     else
         tar \\
             -C output \\
-            -xzvf \\
+            $tar_opts \\
             $args \\
             $archive \\
             $args2
@@ -52,7 +52,7 @@ process UNTAR {
     """
 
     stub:
-    untar     = archive.toString() - '.tar.gz'
+    untar = archive.endsWith('tar.gz')? archive.toString() - '.tar.gz' : archive.toString() - '.tar'
     """
     touch $untar
 
