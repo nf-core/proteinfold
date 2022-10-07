@@ -1,7 +1,6 @@
 //
 // Download with aria2 and uncompress the data if needed
 //
-include { UNTAR_TAR } from '../../modules/local/untar_tar'
 
 include { UNTAR  } from '../../modules/nf-core/untar/main'
 include { GUNZIP } from '../../modules/nf-core/gunzip/main'
@@ -18,9 +17,7 @@ workflow ARIA2_UNCOMPRESS {
     )
     ch_db = Channel.empty()
 
-    if (source_url.endsWith('.tar')) {
-        ch_db = UNTAR_TAR ( ARIA2.out.ch_db.map{ [ [:], it ] } ).untar.map{ it[1] }
-    }else if (source_url.endsWith('.tar.gz')) {
+    if (source_url.endsWith('.tar') || source_url.endsWith('.tar.gz')) {
         ch_db = UNTAR ( ARIA2.out.ch_db.flatten().map{ [ [:], it ] } ).untar.map{ it[1] }
     } else if (source_url.endsWith('.gz')) {
         ch_db = GUNZIP ( ARIA2.out.ch_db.flatten().map{ [ [:], it ] } ).gunzip.map { it[1] }
