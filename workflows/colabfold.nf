@@ -91,25 +91,25 @@ workflow COLABFOLD {
         //
         if (params.model_type != 'AlphaFold2-ptm') {
             MULTIFASTA_TO_CSV(
-            INPUT_CHECK.out.fastas
+                INPUT_CHECK.out.fastas
             )
             COLABFOLD_BATCH(
-            MULTIFASTA_TO_CSV.out.input_csv,
-            params.model_type,
-            PREPARE_COLABFOLD_DBS.out.params,
-            [],
-            [],
-            params.num_recycle
-        )
+                MULTIFASTA_TO_CSV.out.input_csv,
+                params.model_type,
+                PREPARE_COLABFOLD_DBS.out.params,
+                [],
+                [],
+                params.num_recycle
+            )
         } else {
             COLABFOLD_BATCH(
-            INPUT_CHECK.out.fastas,
-            params.model_type,
-            PREPARE_COLABFOLD_DBS.out.params,
-            [],
-            [],
-            params.num_recycle
-        )
+                INPUT_CHECK.out.fastas,
+                params.model_type,
+                PREPARE_COLABFOLD_DBS.out.params,
+                [],
+                [],
+                params.num_recycle
+            )
         }
 
 
@@ -119,22 +119,22 @@ workflow COLABFOLD {
         //
         if (params.model_type != 'AlphaFold2-ptm') {
             MULTIFASTA_TO_CSV(
-            INPUT_CHECK.out.fastas
+                INPUT_CHECK.out.fastas
             )
             MMSEQS_COLABFOLDSEARCH (
-            MULTIFASTA_TO_CSV.out.input_csv,
-            PREPARE_COLABFOLD_DBS.out.params,
-            PREPARE_COLABFOLD_DBS.out.colabfold_db,
-            PREPARE_COLABFOLD_DBS.out.uniref30,
-            params.db_load_mode
+                MULTIFASTA_TO_CSV.out.input_csv,
+                PREPARE_COLABFOLD_DBS.out.params,
+                PREPARE_COLABFOLD_DBS.out.colabfold_db,
+                PREPARE_COLABFOLD_DBS.out.uniref30,
+                params.db_load_mode
             )
         } else {
             MMSEQS_COLABFOLDSEARCH (
-            INPUT_CHECK.out.fastas,
-            PREPARE_COLABFOLD_DBS.out.params,
-            PREPARE_COLABFOLD_DBS.out.colabfold_db,
-            PREPARE_COLABFOLD_DBS.out.uniref30,
-            params.db_load_mode
+                INPUT_CHECK.out.fastas,
+                PREPARE_COLABFOLD_DBS.out.params,
+                PREPARE_COLABFOLD_DBS.out.colabfold_db,
+                PREPARE_COLABFOLD_DBS.out.uniref30,
+                params.db_load_mode
             )
         }
 

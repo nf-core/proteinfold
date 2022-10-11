@@ -26,8 +26,8 @@ include {
     ARIA2_UNCOMPRESS as ARIA2_UNIPROT_SPROT
     ARIA2_UNCOMPRESS as ARIA2_UNIPROT_TREMBL } from './aria2_uncompress'
 
-include { ARIA2              } from '../../modules/local/aria2'
-include { COMBINE_UNIPROT    } from '../../modules/local/combine_uniprot'
+include { ARIA2             } from '../../modules/local/aria2'
+include { COMBINE_UNIPROT   } from '../../modules/local/combine_uniprot'
 include { DOWNLOAD_PDBMMCIF } from '../../modules/local/download_pdbmmcif'
 
 workflow PREPARE_AF2_DBS {
@@ -51,7 +51,7 @@ workflow PREPARE_AF2_DBS {
         // Add an if for each parameter?
         ch_params     = file( "${params.af2_db}/alphafold_params_*/*" )
         ch_mgnify     = file( "${params.af2_db}/mgnify/*" )
-        ch_pdb70      = file( "${params.af2_db}/pdb70/*" )
+        ch_pdb70      = file( "${params.af2_db}/pdb70/*", type: 'any' )
         ch_mmcif      = file( "${params.af2_db}/pdb_mmcif/*", type: 'any' )
         ch_uniclust30 = file( "${params.af2_db}/uniclust30/*" )
         ch_uniref90   = file( "${params.af2_db}/uniref90/*" )

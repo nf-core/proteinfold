@@ -1,6 +1,6 @@
 process UNTAR {
     tag "$archive"
-    label 'process_low'
+    label 'process_single'
 
     conda (params.enable_conda ? "conda-forge::sed=4.7" : null)
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
@@ -20,17 +20,28 @@ process UNTAR {
     script:
     def args  = task.ext.args ?: ''
     def args2 = task.ext.args2 ?: ''
-    untar     = archive.toString() - '.tar.gz'
-
+    def tar_opts  = archive.endsWith('tar.gz')? '-xzvf' : '-xvf'
+    untar = archive.endsWith('tar.gz')? archive.toString() - '.tar.gz' : archive.toString() - '.tar'
     """
     mkdir output
 
-    tar \\
-        -C output --strip-components 1 \\
-        -xzvf \\
-        $args \\
-        $archive \\
-        $args2
+    ## Ensures --strip-components only applied when top level of tar contents is a directory
+    ## If just files or multiple directories, place all in output
+    if [[ \$(tar -tzf ${archive} | grep -o -P "^.*?\\/" | uniq | wc -l) -eq 1 ]]; then
+        tar \\
+            -C output --strip-components 1 \\
+            $tar_opts \\
+            $args \\
+            $archive \\
+            $args2
+    else
+        tar \\
+            -C output \\
+            $tar_opts \\
+            $args \\
+            $archive \\
+            $args2
+    fi
 
     mv output ${untar}
 
@@ -41,7 +52,7 @@ process UNTAR {
     """
 
     stub:
-    untar     = archive.toString() - '.tar.gz'
+    untar = archive.endsWith('tar.gz')? archive.toString() - '.tar.gz' : archive.toString() - '.tar'
     """
     touch $untar
 

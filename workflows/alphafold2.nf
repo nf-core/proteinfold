@@ -45,10 +45,9 @@ include { PREPARE_AF2_DBS } from '../subworkflows/local/prepare_af2_dbs'
 //
 // MODULE: Local to the pipeline
 //
-// TODO name the module as the containing file
-// TODO Split them in three local modules, nf-core standard is one module per file since eventually they can become
-// official modules
-include { RUN_AF2; RUN_AF2_MSA; RUN_AF2_PRED } from '../modules/local/af2.nf'
+include { RUN_AF2      } from '../modules/local/run_af2'
+include { RUN_AF2_MSA  } from '../modules/local/run_af2_msa'
+include { RUN_AF2_PRED } from '../modules/local/run_af2_pred'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -111,57 +110,57 @@ workflow ALPHAFOLD2 {
     // // MODULE: Run Alphafold2
     // //
     if (!params.standard_af2) {
-        RUN_AF2_MSA (
-            ch_fasta,
-            params.full_dbs,
-            params.model_preset,
-            PREPARE_AF2_DBS.out.params,
-            PREPARE_AF2_DBS.out.bfd.ifEmpty([]),
-            PREPARE_AF2_DBS.out.bfd_small.ifEmpty([]),
-            PREPARE_AF2_DBS.out.mgnify,
-            PREPARE_AF2_DBS.out.pdb70,
-            PREPARE_AF2_DBS.out.pdb_mmcif,
-            PREPARE_AF2_DBS.out.uniclust30,
-            PREPARE_AF2_DBS.out.uniref90,
-            PREPARE_AF2_DBS.out.pdb_seqres,
-            PREPARE_AF2_DBS.out.uniprot
-            )
+         RUN_AF2_MSA (
+             ch_fasta,
+             params.full_dbs,
+             params.model_preset,
+             PREPARE_AF2_DBS.out.params,
+             PREPARE_AF2_DBS.out.bfd.ifEmpty([]),
+             PREPARE_AF2_DBS.out.bfd_small.ifEmpty([]),
+             PREPARE_AF2_DBS.out.mgnify,
+             PREPARE_AF2_DBS.out.pdb70,
+             PREPARE_AF2_DBS.out.pdb_mmcif,
+             PREPARE_AF2_DBS.out.uniclust30,
+             PREPARE_AF2_DBS.out.uniref90,
+             PREPARE_AF2_DBS.out.pdb_seqres,
+             PREPARE_AF2_DBS.out.uniprot
+         )
 
-        RUN_AF2_PRED (
-            ch_fasta,
-            params.full_dbs,
-            params.model_preset,
-            PREPARE_AF2_DBS.out.params,
-            PREPARE_AF2_DBS.out.bfd.ifEmpty([]),
-            PREPARE_AF2_DBS.out.bfd_small.ifEmpty([]),
-            PREPARE_AF2_DBS.out.mgnify,
-            PREPARE_AF2_DBS.out.pdb70,
-            PREPARE_AF2_DBS.out.pdb_mmcif,
-            PREPARE_AF2_DBS.out.uniclust30,
-            PREPARE_AF2_DBS.out.uniref90,
-            PREPARE_AF2_DBS.out.pdb_seqres,
-            PREPARE_AF2_DBS.out.uniprot,
-            RUN_AF2_MSA.out.features
-        )
+         RUN_AF2_PRED (
+             ch_fasta,
+             params.full_dbs,
+             params.model_preset,
+             PREPARE_AF2_DBS.out.params,
+             PREPARE_AF2_DBS.out.bfd.ifEmpty([]),
+             PREPARE_AF2_DBS.out.bfd_small.ifEmpty([]),
+             PREPARE_AF2_DBS.out.mgnify,
+             PREPARE_AF2_DBS.out.pdb70,
+             PREPARE_AF2_DBS.out.pdb_mmcif,
+             PREPARE_AF2_DBS.out.uniclust30,
+             PREPARE_AF2_DBS.out.uniref90,
+             PREPARE_AF2_DBS.out.pdb_seqres,
+             PREPARE_AF2_DBS.out.uniprot,
+             RUN_AF2_MSA.out.features
+         )
 
     } else {
-        RUN_AF2 (
-            ch_fasta,
-            params.max_template_date,
-            params.full_dbs,
-            params.model_preset,
-            PREPARE_AF2_DBS.out.params,
-            PREPARE_AF2_DBS.out.bfd.ifEmpty([]),
-            PREPARE_AF2_DBS.out.bfd_small.ifEmpty([]),
-            PREPARE_AF2_DBS.out.mgnify,
-            PREPARE_AF2_DBS.out.pdb70,
-            PREPARE_AF2_DBS.out.pdb_mmcif,
-            PREPARE_AF2_DBS.out.uniclust30,
-            PREPARE_AF2_DBS.out.uniref90,
-            PREPARE_AF2_DBS.out.pdb_seqres,
-            PREPARE_AF2_DBS.out.uniprot
-        )
-    }
+         RUN_AF2 (
+             ch_fasta,
+             params.max_template_date,
+             params.full_dbs,
+             params.model_preset,
+             PREPARE_AF2_DBS.out.params,
+             PREPARE_AF2_DBS.out.bfd.ifEmpty([]),
+             PREPARE_AF2_DBS.out.bfd_small.ifEmpty([]),
+             PREPARE_AF2_DBS.out.mgnify,
+             PREPARE_AF2_DBS.out.pdb70,
+             PREPARE_AF2_DBS.out.pdb_mmcif,
+             PREPARE_AF2_DBS.out.uniclust30,
+             PREPARE_AF2_DBS.out.uniref90,
+             PREPARE_AF2_DBS.out.pdb_seqres,
+             PREPARE_AF2_DBS.out.uniprot
+         )
+     }
 
     //
     // MODULE: Pipeline reporting

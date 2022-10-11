@@ -1,5 +1,5 @@
 process ARIA2 {
-    tag "$file_name"
+    tag "$source_url"
     label 'process_long'
     label 'error_retry'
 
