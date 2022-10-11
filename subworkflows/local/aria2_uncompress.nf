@@ -26,6 +26,6 @@ workflow ARIA2_UNCOMPRESS {
     emit:
     db = ch_db //TODO
     // channel: [ val(meta), [ reads ] ]
-    // versions = SAMPLESHEET_CHECK.out.versions // channel: [ versions.yml ]
+    versions = SAMPLESHEET_CHECK.out.versions // channel: [ versions.yml ]
 }
 
