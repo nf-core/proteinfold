@@ -38,7 +38,7 @@ process MMSEQS_COLABFOLDSEARCH {
     stub:
     """
     touch ${seq_name.sequence}.a3m
-    
+
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         colabfold_search: $VERSION

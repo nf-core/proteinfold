@@ -20,7 +20,7 @@ process COMBINE_UNIPROT {
 
     cat ${uniprot_sprot} >> ${uniprot_trembl}
     mv ${uniprot_trembl} uniprot.fasta
-    
+
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         sed: \$(echo \$(sed --version 2>&1) | sed 's/^.*GNU sed) //; s/ .*\$//')

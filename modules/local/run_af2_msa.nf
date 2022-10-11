@@ -53,7 +53,7 @@ process RUN_AF2_MSA {
         $args
 
     cp "${fasta.baseName}"/features.pkl ./"${fasta.baseName}".features.pkl
-    
+
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         python: \$(python3 --version | sed 's/Python //g')

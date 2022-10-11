@@ -29,7 +29,7 @@ process ARIA2 {
         --check-certificate=false \\
         $args \\
         $source_url
-    
+
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
     aria2c: \$( aria2c -v |head -1 | sed 's/aria2 version //g' )
@@ -40,7 +40,7 @@ process ARIA2 {
     """
     BASENAME=\$(basename "${source_url}")
     touch \$BASENAME
-    
+
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
     aria2c: \$( aria2c -v |head -1 | sed 's/aria2 version //g' )
