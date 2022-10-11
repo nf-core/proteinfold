@@ -158,7 +158,6 @@ workflow COLABFOLD {
             params.num_recycle
         )
         ch_versions = ch_versions.mix(COLABFOLD_BATCH.out.versions)
-        }
     }
 
      //
