@@ -167,7 +167,6 @@ workflow ALPHAFOLD2 {
          ch_versions = ch_versions.mix(RUN_AF2.out.versions)
      }
 
-    ch_versions.view()
     /*
     //
     // MODULE: Pipeline reporting
@@ -199,7 +198,7 @@ workflow ALPHAFOLD2 {
     )
     multiqc_report = MULTIQC.out.report.toList()
     ch_versions    = ch_versions.mix(MULTIQC.out.versions)
-*/
+
 }
 
 
