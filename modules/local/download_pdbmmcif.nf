@@ -68,9 +68,7 @@ process DOWNLOAD_PDBMMCIF {
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        sed: \$(echo \$(sed --version 2>&1) | head -1 | sed 's/^.*GNU sed) //; s/ .*\$//')
-        rsync: \$(rsync --version | head -1 | sed 's/^rsync  version //; s/  protocol version [[:digit:]]*//')
-        aria2c: \$( aria2c -v | head -1 | sed 's/aria2 version //' )
+        awk: \$(gawk --version| head -1 | sed 's/GNU Awk //; s/, API:.*//')
     END_VERSIONS
 
     """

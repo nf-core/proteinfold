@@ -70,7 +70,7 @@ process RUN_AF2 {
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        python: \$(python3 --version | sed 's/Python //g')
+        awk: \$(gawk --version| head -1 | sed 's/GNU Awk //; s/, API:.*//')
     END_VERSIONS
     """
 }

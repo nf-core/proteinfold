@@ -32,7 +32,7 @@ process COMBINE_UNIPROT {
     touch uniprot.fasta
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        sed: \$(echo \$(sed --version 2>&1) | sed 's/^.*GNU sed) //; s/ .*\$//')
+        awk: \$(gawk --version| head -1 | sed 's/GNU Awk //; s/, API:.*//')
     END_VERSIONS
     """
 }

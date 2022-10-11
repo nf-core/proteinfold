@@ -43,7 +43,7 @@ process ARIA2 {
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-    aria2c: \$( aria2c -v |head -1 | sed 's/aria2 version //g' )
+        awk: \$(gawk --version| head -1 | sed 's/GNU Awk //; s/, API:.*//')
     END_VERSIONS
     """
 }

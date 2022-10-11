@@ -37,7 +37,7 @@ process MMSEQS_CREATEINDEX {
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        mmseqs: \$(mmseqs | grep 'Version' | sed 's/MMseqs2 Version: //')
+        awk: \$(gawk --version| head -1 | sed 's/GNU Awk //; s/, API:.*//')
     END_VERSIONS
     """
 }
