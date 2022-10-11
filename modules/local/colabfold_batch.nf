@@ -39,6 +39,7 @@ process COLABFOLD_BATCH {
     """
 
     stub:
+    def VERSION = '1.2.0' // WARN: Version information not provided by tool on CLI. Please update this string when bumping container versions.
     """
     touch ./"${fasta.baseName}"_colabfold.pdb
 
