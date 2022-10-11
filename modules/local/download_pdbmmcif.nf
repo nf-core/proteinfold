@@ -15,6 +15,7 @@ process DOWNLOAD_PDBMMCIF {
 
     output:
     path ('*'), emit: ch_db
+    path "versions.yml" , emit: versions
 
     script:
     def args = task.ext.args ?: ''
@@ -50,11 +51,27 @@ process DOWNLOAD_PDBMMCIF {
 
     aria2c \\
         $source_url_pdb_obsolete
+    
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        sed: \$(echo \$(sed --version 2>&1) | head -1 | sed 's/^.*GNU sed) //; s/ .*\$//')
+        rsync: \$(rsync --version | head -1 | sed 's/^rsync[[:blank:]]\+version //; s/[[:blank:]]\+protocol version [[:digit:]]\+//')
+        aria2c: \$( aria2c -v | head -1 | sed 's/aria2 version //' )
+    END_VERSIONS
+
     """
 
     stub:
     """
     touch obsolete.dat
     mkdir mmcif_files
+    
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        sed: \$(echo \$(sed --version 2>&1) | head -1 | sed 's/^.*GNU sed) //; s/ .*\$//')
+        rsync: \$(rsync --version | head -1 | sed 's/^rsync[[:blank:]]\+version //; s/[[:blank:]]\+protocol version [[:digit:]]\+//')
+        aria2c: \$( aria2c -v | head -1 | sed 's/aria2 version //' )
+    END_VERSIONS
+
     """
 }

@@ -14,9 +14,13 @@ process MMSEQS_COLABFOLDSEARCH {
 
     output:
     tuple val(seq_name), path("${seq_name.sequence}.a3m"), emit: a3m
+    path "versions.yml" , emit: versions
+
 
     script:
     def args = task.ext.args ?: ''
+    def VERSION = '1.2.0'
+
     // mmseqs touchdb ${db}/uniref30_2103_db --threads $task.cpus
     // mmseqs touchdb ${db}/colabfold_envdb_202108_db --threads $task.cpus
     """
@@ -24,10 +28,20 @@ process MMSEQS_COLABFOLDSEARCH {
     ln -r -s $colabfold_db/* ./db
     /colabfold_batch/colabfold-conda/bin/colabfold_search --db-load-mode ${db_load_mode} --threads $task.cpus ${fasta} ./db "result/"
     cp result/0.a3m ${seq_name.sequence}.a3m
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        colabfold_search: $VERSION
+    END_VERSIONS
     """
 
     stub:
     """
     touch ${seq_name.sequence}.a3m
+    
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        colabfold_search: $VERSION
+    END_VERSIONS
     """
 }

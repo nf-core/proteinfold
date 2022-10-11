@@ -11,6 +11,8 @@ process MMSEQS_CREATEINDEX {
 
     output:
     path(db) , emit: db_index
+    path "versions.yml" , emit: versions
+
 
     script:
     def args = task.ext.args ?: ''
@@ -22,10 +24,20 @@ process MMSEQS_CREATEINDEX {
         tmp1 \\
         --remove-tmp-files 1 \\
         $args
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        mmseqs: \$(mmseqs | grep 'Version' | sed 's/MMseqs2 Version: //')
+    END_VERSIONS
     """
 
     stub:
     """
     touch ${db}/${db}.idx
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        mmseqs: \$(mmseqs | grep 'Version' | sed 's/MMseqs2 Version: //')
+    END_VERSIONS
     """
 }

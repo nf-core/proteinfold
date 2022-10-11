@@ -12,6 +12,7 @@ process MMSEQS_TSV2EXPROFILEDB {
 
     output:
     path(db), emit: db_exprofile
+    path "versions.yml" , emit: versions
 
     script:
     def args = task.ext.args ?: ''
@@ -20,10 +21,20 @@ process MMSEQS_TSV2EXPROFILEDB {
     mmseqs tsv2exprofiledb \\
         "${db}" \\
         "${db}_db"
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        mmseqs: \$(mmseqs | grep 'Version' | sed 's/MMseqs2 Version: //')
+    END_VERSIONS
     """
 
     stub:
     """
     touch ${db}_exprofile
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        mmseqs: \$(mmseqs | grep 'Version' | sed 's/MMseqs2 Version: //')
+    END_VERSIONS
     """
 }
