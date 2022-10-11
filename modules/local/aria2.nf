@@ -17,6 +17,7 @@ process ARIA2 {
 
     output:
     path ("*.*"), emit: ch_db
+    path "versions.yml" , emit: versions
 
     script:
     def args = task.ext.args ?: ''
@@ -39,5 +40,10 @@ process ARIA2 {
     """
     BASENAME=\$(basename "${source_url}")
     touch \$BASENAME
+    
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+    aria2c: \$( aria2c -v |head -1 | sed 's/aria2 version //g' )
+    END_VERSIONS
     """
 }
