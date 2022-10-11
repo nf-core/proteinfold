@@ -105,7 +105,7 @@ workflow ALPHAFOLD2 {
     // //
 
     PREPARE_AF2_DBS ( )
-
+    ch_versions = ch_versions.mix(PREPARE_AF2_DBS.out.versions)
     // //
     // // MODULE: Run Alphafold2
     // //
@@ -124,7 +124,9 @@ workflow ALPHAFOLD2 {
              PREPARE_AF2_DBS.out.uniref90,
              PREPARE_AF2_DBS.out.pdb_seqres,
              PREPARE_AF2_DBS.out.uniprot
+
          )
+         ch_versions = ch_versions.mix(RUN_AF2_MSA.out.versions)
 
          RUN_AF2_PRED (
              ch_fasta,
@@ -141,7 +143,9 @@ workflow ALPHAFOLD2 {
              PREPARE_AF2_DBS.out.pdb_seqres,
              PREPARE_AF2_DBS.out.uniprot,
              RUN_AF2_MSA.out.features
+
          )
+         ch_versions = ch_versions.mix(RUN_AF2_PRED.out.versions)
 
     } else {
          RUN_AF2 (
@@ -160,6 +164,7 @@ workflow ALPHAFOLD2 {
              PREPARE_AF2_DBS.out.pdb_seqres,
              PREPARE_AF2_DBS.out.uniprot
          )
+         ch_versions = ch_versions.mix(RUN_AF2.out.versions)
      }
 
     //

@@ -28,6 +28,8 @@ workflow PREPARE_COLABFOLD_DBS {
     ch_params       = Channel.empty()
     ch_colabfold_db = Channel.empty()
     ch_uniref30     = Channel.empty()
+    ch_versions     = Channel.empty()
+
 
     if (params.colabfold_db) {
         ch_params       = file( "${params.colabfold_db}/${params.model_type}" )
@@ -41,38 +43,45 @@ workflow PREPARE_COLABFOLD_DBS {
             link_params
         )
         ch_params = ARIA2_COLABFOLD_PARAMS.out.db
+        ch_versions = ch_versions.mix(ARIA2_COLABFOLD_PARAMS.out.versions)
 
         if (params.mode == 'colabfold_local') {
             ARIA2_COLABFOLD_DB (
                 colabfold_db
             )
+            ch_versions = ch_versions.mix(ARIA2_COLABFOLD_DB.out.versions)
 
             MMSEQS_TSV2EXPROFILEDB_COLABFOLDDB (
                 ARIA2_COLABFOLD_DB.out.db
             )
             ch_colabfold_db = MMSEQS_TSV2EXPROFILEDB_COLABFOLDDB.out.db_exprofile
+            ch_versions = ch_versions.mix(MMSEQS_TSV2EXPROFILEDB_COLABFOLDDB.out.versions)
 
             if (params.create_colabfold_index) {
                 MMSEQS_CREATEINDEX_COLABFOLDDB (
                     MMSEQS_TSV2EXPROFILEDB_COLABFOLDDB.out.db_exprofile
                 )
                 ch_colabfold_db = MMSEQS_CREATEINDEX_COLABFOLDDB.out.db_index
+                ch_versions = ch_versions.mix(MMSEQS_CREATEINDEX_COLABFOLDDB.out.versions)
             }
 
             ARIA2_UNIREF30(
                 uniref30
             )
+            ch_versions = ch_versions.mix(ARIA2_UNIREF30.out.versions)
 
             MMSEQS_TSV2EXPROFILEDB_UNIPROT30 (
                 ARIA2_UNIREF30.out.db
             )
             ch_uniref30 = MMSEQS_TSV2EXPROFILEDB_UNIPROT30.out.db_exprofile
+            ch_versions = ch_versions.mix(MMSEQS_TSV2EXPROFILEDB_UNIPROT30.out.versions)
 
             if (params.create_colabfold_index) {
                 MMSEQS_CREATEINDEX_UNIPROT30 (
                     MMSEQS_TSV2EXPROFILEDB_UNIPROT30.out.db_exprofile
                 )
                 ch_uniref30 = MMSEQS_CREATEINDEX_UNIPROT30.out.db_index
+                ch_versions = ch_versions.mix(MMSEQS_CREATEINDEX_UNIPROT30.out.versions)
             }
         }
     }
@@ -81,4 +90,5 @@ workflow PREPARE_COLABFOLD_DBS {
     params       = ch_params
     colabfold_db = ch_colabfold_db
     uniref30     = ch_uniref30
+    versions     = ch_versions
 }

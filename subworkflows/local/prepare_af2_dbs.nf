@@ -34,6 +34,8 @@ workflow PREPARE_AF2_DBS {
     main:
     ch_bfd        = Channel.empty()
     ch_bfd_small  = Channel.empty()
+    ch_versions   = Channel.empty()
+
 
     if (params.af2_db) {
         if (params.full_dbs) {
@@ -64,60 +66,76 @@ workflow PREPARE_AF2_DBS {
                 bfd
             )
             ch_bfd =  ARIA2_BFD.out.db
+            ch_versions = ch_versions.mix(ARIA2_BFD.out.versions)
         } else {
             ARIA2_SMALL_BFD(
                 small_bfd
             )
             ch_bfd_small = ARIA2_SMALL_BFD.out.db
+            ch_versions = ch_versions.mix(ARIA2_SMALL_BFD.out.versions)
         }
 
         ARIA2_AF2_PARAMS(
             af2_params
         )
         ch_params = ARIA2_AF2_PARAMS.out.db
+        ch_versions = ch_versions.mix(ARIA2_AF2_PARAMS.out.versions)
 
         ARIA2_MGNIFY(
             mgnify
         )
         ch_mgnify = ARIA2_MGNIFY.out.db
+        ch_versions = ch_versions.mix(ARIA2_MGNIFY.out.versions)
+
 
         ARIA2_PDB70(
             pdb70
         )
         ch_pdb70 = ARIA2_PDB70.out.db
+        ch_versions = ch_versions.mix(ARIA2_PDB70.out.versions)
 
         DOWNLOAD_PDBMMCIF(
             pdb_mmCIF,
             pdb_obsolete
         )
         ch_mmcif = DOWNLOAD_PDBMMCIF.out.ch_db
+        ch_versions = ch_versions.mix(DOWNLOAD_PDBMMCIF.out.versions)
 
         ARIA2_UNICLUST30(
             uniclust30
         )
         ch_uniclust30 = ARIA2_UNICLUST30.out.db
+        ch_versions = ch_versions.mix(ARIA2_UNICLUST30.out.versions)
 
         ARIA2_UNIREF90(
             uniref90
         )
         ch_uniref90 = ARIA2_UNIREF90.out.db
+        ch_versions = ch_versions.mix(ARIA2_UNIREF90.out.versions)
 
         ARIA2 (
             pdb_seqres
         )
         ch_pdb_seqres = ARIA2.out.ch_db
+        ch_versions = ch_versions.mix(ARIA2.out.versions)
 
         ARIA2_UNIPROT_SPROT(
             uniprot_sprot
         )
+        ch_versions = ch_versions.mix(UNIPROT_SPROT.out.versions)
         ARIA2_UNIPROT_TREMBL(
             uniprot_trembl
         )
+        ch_versions = ch_versions.mix(UNIPROT_TREMPL.out.versions)
         COMBINE_UNIPROT (
             ARIA2_UNIPROT_SPROT.out.db,
             ARIA2_UNIPROT_TREMBL.out.db
         )
         ch_uniprot = COMBINE_UNIPROT.out.ch_db
+        ch_version =  ch_versions.mix(COMBINE_UNIPROT.out.versions)
+
+
+
     }
 
 	emit:
@@ -131,4 +149,5 @@ workflow PREPARE_AF2_DBS {
     uniref90   = ch_uniref90
     pdb_seqres = ch_pdb_seqres
     uniprot    = ch_uniprot
+    versions    = ch_versions
 }
