@@ -34,10 +34,10 @@ process RUN_AF2 {
         model_preset = model_preset + " --pdb_seqres_database_path=./pdb_seqres/pdb_seqres.txt --uniprot_database_path=./uniprot/uniprot.fasta "
     }
     else {
-        model_preset = model_preset + " --pdb70_database_path=./pdb70/pdb70_from_mmcif_200916/pdb70 "
+        model_preset = model_preset + " --pdb70_database_path=./pdb70/pdb70 "
     }
     """
-    cp params/alphafold_params_*/* params/
+    if [ -d params/alphafold_params_* ]; then cp params/alphafold_params_*/* params/; fi
     python3 /app/alphafold/run_alphafold.py \
         --fasta_paths=${fasta} \
         --max_template_date=${max_template_date} \
