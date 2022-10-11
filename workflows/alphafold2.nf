@@ -167,7 +167,7 @@ workflow ALPHAFOLD2 {
          ch_versions = ch_versions.mix(RUN_AF2.out.versions)
      }
 
-    /*
+
     //
     // MODULE: Pipeline reporting
     //
