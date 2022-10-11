@@ -19,7 +19,7 @@ process COLABFOLD_BATCH {
 
     script:
     def args = task.ext.args ?: ''
-    def VERSION = '1.2.0'
+    def VERSION = '1.2.0' // WARN: Version information not provided by tool on CLI. Please update this string when bumping container versions.
     """
     ln -r -s params/alphafold_params_*/* params/
     colabfold_batch \\
@@ -33,7 +33,7 @@ process COLABFOLD_BATCH {
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        colabfold_batch: $VERSION
+        colabfold_batch: $VERSION 
     END_VERSIONS
     """
 
