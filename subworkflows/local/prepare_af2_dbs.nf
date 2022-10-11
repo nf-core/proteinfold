@@ -126,7 +126,7 @@ workflow PREPARE_AF2_DBS {
         ARIA2_UNIPROT_TREMBL(
             uniprot_trembl
         )
-        ch_versions = ch_versions.mix(ARIA2_UNIPROT_TREMPL.out.versions)
+        ch_versions = ch_versions.mix(ARIA2_UNIPROT_TREMBL.out.versions)
         COMBINE_UNIPROT (
             ARIA2_UNIPROT_SPROT.out.db,
             ARIA2_UNIPROT_TREMBL.out.db
