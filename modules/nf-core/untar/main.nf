@@ -20,8 +20,8 @@ process UNTAR {
     script:
     def args  = task.ext.args ?: ''
     def args2 = task.ext.args2 ?: ''
-    def tar_opts  = archive.endsWith('tar.gz')? '-xzvf' : '-xvf'
-    untar = archive.endsWith('tar.gz')? archive.toString() - '.tar.gz' : archive.toString() - '.tar'
+    def tar_opts  = archive.toString().endsWith('tar.gz')? '-xzvf' : '-xvf'
+    untar = archive.toString().endsWith('tar.gz')? archive.toString() - '.tar.gz' : archive.toString() - '.tar'
     """
     mkdir output
 
@@ -52,7 +52,7 @@ process UNTAR {
     """
 
     stub:
-    untar = archive.endsWith('tar.gz')? archive.toString() - '.tar.gz' : archive.toString() - '.tar'
+    untar = archive.toString().endsWith('tar.gz')? archive.toString() - '.tar.gz' : archive.toString() - '.tar'
     """
     touch $untar
 

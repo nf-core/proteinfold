@@ -31,7 +31,7 @@ process RUN_AF2_PRED {
     script:
     def args = task.ext.args ?: ''
     """
-    cp params/alphafold_params_*/* params/
+    if [ -d params/alphafold_params_* ]; then ln -r -s params/alphafold_params_*/* params/; fi
     python3 /app/alphafold/run_predict.py \
         --fasta_paths=${fasta} \
         --model_preset=${model_preset} \

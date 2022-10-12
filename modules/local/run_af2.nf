@@ -40,7 +40,7 @@ process RUN_AF2 {
         model_preset = model_preset + " --pdb70_database_path=./pdb70/pdb70_from_mmcif_200916/pdb70 "
     }
     """
-    cp params/alphafold_params_*/* params/
+    if [ -d params/alphafold_params_* ]; then ln -r -s params/alphafold_params_*/* params/; fi
     python3 /app/alphafold/run_alphafold.py \
         --fasta_paths=${fasta} \
         --max_template_date=${max_template_date} \
