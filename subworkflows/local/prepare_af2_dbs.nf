@@ -26,7 +26,7 @@ include {
     ARIA2_UNCOMPRESS as ARIA2_UNIPROT_SPROT
     ARIA2_UNCOMPRESS as ARIA2_UNIPROT_TREMBL } from './aria2_uncompress'
 
-include { ARIA2             } from '../../modules/local/aria2'
+include { ARIA2             } from '../../modules/nf-core/aria2/main'
 include { COMBINE_UNIPROT   } from '../../modules/local/combine_uniprot'
 include { DOWNLOAD_PDBMMCIF } from '../../modules/local/download_pdbmmcif'
 
@@ -116,7 +116,7 @@ workflow PREPARE_AF2_DBS {
         ARIA2 (
             pdb_seqres
         )
-        ch_pdb_seqres = ARIA2.out.ch_db
+        ch_pdb_seqres = ARIA2.out.downloaded_file
         ch_versions = ch_versions.mix(ARIA2.out.versions)
 
         ARIA2_UNIPROT_SPROT(
