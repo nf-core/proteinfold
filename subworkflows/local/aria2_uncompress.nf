@@ -4,7 +4,7 @@
 
 include { UNTAR  } from '../../modules/nf-core/untar/main'
 include { GUNZIP } from '../../modules/nf-core/gunzip/main'
-include { ARIA2  } from '../../modules/local/aria2'
+include { ARIA2  } from '../../modules/nf-core/aria2/main'
 
 
 workflow ARIA2_UNCOMPRESS {
@@ -18,9 +18,9 @@ workflow ARIA2_UNCOMPRESS {
     ch_db = Channel.empty()
 
     if (source_url.toString().endsWith('.tar') || source_url.toString().endsWith('.tar.gz')) {
-        ch_db = UNTAR ( ARIA2.out.ch_db.flatten().map{ [ [:], it ] } ).untar.map{ it[1] }
+        ch_db = UNTAR ( ARIA2.out.downloaded_file.flatten().map{ [ [:], it ] } ).untar.map{ it[1] }
     } else if (source_url.toString().endsWith('.gz')) {
-        ch_db = GUNZIP ( ARIA2.out.ch_db.flatten().map{ [ [:], it ] } ).gunzip.map { it[1] }
+        ch_db = GUNZIP ( ARIA2.out.downloaded_file.flatten().map{ [ [:], it ] } ).gunzip.map { it[1] }
     }
 
     emit:
