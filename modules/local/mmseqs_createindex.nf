@@ -1,6 +1,6 @@
 process MMSEQS_CREATEINDEX {
     tag "$db"
-    label 'proces_high'
+    label 'process_high'
 
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'docker://athbaltzis/mmseqs_proteinfold:v0.1' :
