@@ -7,7 +7,7 @@
                 "nf-core": {
                     "aria2": {
                         "branch": "master",
-                        "git_sha": "7dd695a748e0ace266f613c6376304b136fe8ea2"
+                        "git_sha": "5fde85e8f65546f1aa69b40bf8fc045c6e579a20"
                     },
                     "custom/dumpsoftwareversions": {
                         "branch": "master",
