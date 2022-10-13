@@ -84,6 +84,7 @@ workflow COLABFOLD {
     ch_versions = ch_versions.mix(INPUT_CHECK.out.versions)
 
     PREPARE_COLABFOLD_DBS ( )
+    ch_versions = ch_versions.mix(PREPARE_COLABFOLD_DBS.out.versions)
 
     if (params.mode == 'colabfold_webserver') {
         //
@@ -93,6 +94,7 @@ workflow COLABFOLD {
             MULTIFASTA_TO_CSV(
                 INPUT_CHECK.out.fastas
             )
+            ch_versions = ch_versions.mix(MULTIFASTA_TO_CSV.out.versions)
             COLABFOLD_BATCH(
                 MULTIFASTA_TO_CSV.out.input_csv,
                 params.model_type,
@@ -101,6 +103,7 @@ workflow COLABFOLD {
                 [],
                 params.num_recycle
             )
+            ch_versions = ch_versions.mix(COLABFOLD_BATCH.out.versions)
         } else {
             COLABFOLD_BATCH(
                 INPUT_CHECK.out.fastas,
@@ -110,6 +113,7 @@ workflow COLABFOLD {
                 [],
                 params.num_recycle
             )
+            ch_versions = ch_versions.mix(COLABFOLD_BATCH.out.versions)
         }
 
 
@@ -121,6 +125,7 @@ workflow COLABFOLD {
             MULTIFASTA_TO_CSV(
                 INPUT_CHECK.out.fastas
             )
+            ch_versions = ch_versions.mix(MULTIFASTA_TO_CSV.out.versions)
             MMSEQS_COLABFOLDSEARCH (
                 MULTIFASTA_TO_CSV.out.input_csv,
                 PREPARE_COLABFOLD_DBS.out.params,
@@ -128,6 +133,7 @@ workflow COLABFOLD {
                 PREPARE_COLABFOLD_DBS.out.uniref30,
                 params.db_load_mode
             )
+            ch_versions = ch_versions.mix(MMSEQS_COLABFOLDSEARCH.out.versions)
         } else {
             MMSEQS_COLABFOLDSEARCH (
                 INPUT_CHECK.out.fastas,
@@ -136,6 +142,7 @@ workflow COLABFOLD {
                 PREPARE_COLABFOLD_DBS.out.uniref30,
                 params.db_load_mode
             )
+            ch_versions = ch_versions.mix(MMSEQS_COLABFOLDSEARCH.out.versions)
         }
 
 
@@ -150,6 +157,7 @@ workflow COLABFOLD {
             PREPARE_COLABFOLD_DBS.out.uniref30,
             params.num_recycle
         )
+        ch_versions = ch_versions.mix(COLABFOLD_BATCH.out.versions)
     }
 
      //

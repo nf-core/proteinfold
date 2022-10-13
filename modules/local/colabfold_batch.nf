@@ -14,10 +14,13 @@ process COLABFOLD_BATCH {
     val   numRec
 
     output:
-    path ("*"), emit: pdb
+    path ("*")         , emit: pdb
+    path "versions.yml", emit: versions
 
     script:
     def args = task.ext.args ?: ''
+    def VERSION = '1.2.0' // WARN: Version information not provided by tool on CLI. Please update this string when bumping container versions.
+
     """
     ln -r -s params/alphafold_params_*/* params/
     colabfold_batch \\
@@ -28,10 +31,21 @@ process COLABFOLD_BATCH {
         ${fasta} \\
         \$PWD
     for i in `find *_relaxed_rank_1*.pdb`; do cp \$i `echo \$i | sed "s|_relaxed_rank_|\t|g" | cut -f1`"_colabfold.pdb"; done
-        """
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        colabfold_batch: $VERSION
+    END_VERSIONS
+    """
 
     stub:
+    def VERSION = '1.2.0' // WARN: Version information not provided by tool on CLI. Please update this string when bumping container versions.
     """
     touch ./"${fasta.baseName}"_colabfold.pdb
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        colabfold_batch: $VERSION
+    END_VERSIONS
     """
 }

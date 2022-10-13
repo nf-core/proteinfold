@@ -27,6 +27,7 @@ process RUN_AF2_PRED {
 
     output:
     path ("${fasta.baseName}*")
+    path "versions.yml", emit: versions
 
     script:
     def args = task.ext.args ?: ''
@@ -42,10 +43,20 @@ process RUN_AF2_PRED {
         $args
 
     cp "${fasta.baseName}"/ranked_0.pdb ./"${fasta.baseName}".alphafold.pdb
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        python: \$(python3 --version | sed 's/Python //g')
+    END_VERSIONS
     """
 
     stub:
     """
     touch ./"${fasta.baseName}".alphafold.pdb
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        awk: \$(gawk --version| head -1 | sed 's/GNU Awk //; s/, API:.*//')
+    END_VERSIONS
     """
 }

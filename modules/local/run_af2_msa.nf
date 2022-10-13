@@ -27,6 +27,7 @@ process RUN_AF2_MSA {
     output:
     path ("${fasta.baseName}*")
     path ("${fasta.baseName}.features.pkl"), emit: features
+    path "versions.yml"                    , emit: versions
 
     script:
     def args = task.ext.args ?: ''
@@ -53,10 +54,20 @@ process RUN_AF2_MSA {
         $args
 
     cp "${fasta.baseName}"/features.pkl ./"${fasta.baseName}".features.pkl
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        python: \$(python3 --version | sed 's/Python //g')
+    END_VERSIONS
     """
 
     stub:
     """
     touch ./"${fasta.baseName}".features.pkl
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        awk: \$(gawk --version| head -1 | sed 's/GNU Awk //; s/, API:.*//')
+    END_VERSIONS
     """
 }
