@@ -55,7 +55,7 @@ workflow PREPARE_AF2_DBS {
         ch_mgnify     = file( "${params.af2_db}/mgnify/*" )
         ch_pdb70      = file( "${params.af2_db}/pdb70/*", type: 'any' )
         ch_mmcif      = file( "${params.af2_db}/pdb_mmcif/*", type: 'any' )
-        ch_uniclust30 = file( "${params.af2_db}/uniclust30/*" )
+        ch_uniclust30 = file( "${params.af2_db}/uniclust30/*", type: 'any' )
         ch_uniref90   = file( "${params.af2_db}/uniref90/*" )
         ch_pdb_seqres = file( "${params.af2_db}/pdb_seqres/*" )
         ch_uniprot    = file( "${params.af2_db}/uniprot/*" )
