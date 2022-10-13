@@ -14,8 +14,8 @@ process COLABFOLD_BATCH {
     val   numRec
 
     output:
-    path ("*"), emit: pdb
-    path "versions.yml" , emit: versions
+    path ("*")         , emit: pdb
+    path "versions.yml", emit: versions
 
     script:
     def args = task.ext.args ?: ''

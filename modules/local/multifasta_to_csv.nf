@@ -9,7 +9,7 @@ process MULTIFASTA_TO_CSV {
 
     output:
     tuple val(seq_name), path("input.csv"), emit: input_csv
-    path "versions.yml" , emit: versions
+    path "versions.yml", emit: versions
 
     script:
     """

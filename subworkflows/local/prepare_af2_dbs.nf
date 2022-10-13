@@ -149,5 +149,5 @@ workflow PREPARE_AF2_DBS {
     uniref90   = ch_uniref90
     pdb_seqres = ch_pdb_seqres
     uniprot    = ch_uniprot
-    versions    = ch_versions
+    versions   = ch_versions
 }

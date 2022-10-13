@@ -14,8 +14,8 @@ process DOWNLOAD_PDBMMCIF {
     val source_url_pdb_obsolete
 
     output:
-    path ('*'), emit: ch_db
-    path "versions.yml" , emit: versions
+    path ('*')         , emit: ch_db
+    path "versions.yml", emit: versions
 
     script:
     def args = task.ext.args ?: ''
@@ -58,7 +58,6 @@ process DOWNLOAD_PDBMMCIF {
         rsync: \$(rsync --version | head -1 | sed 's/^rsync  version //; s/  protocol version [[:digit:]]*//')
         aria2c: \$( aria2c -v | head -1 | sed 's/aria2 version //' )
     END_VERSIONS
-
     """
 
     stub:

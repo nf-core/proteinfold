@@ -110,63 +110,62 @@ workflow ALPHAFOLD2 {
     // // MODULE: Run Alphafold2
     // //
     if (!params.standard_af2) {
-         RUN_AF2_MSA (
-             ch_fasta,
-             params.full_dbs,
-             params.model_preset,
-             PREPARE_AF2_DBS.out.params,
-             PREPARE_AF2_DBS.out.bfd.ifEmpty([]),
-             PREPARE_AF2_DBS.out.bfd_small.ifEmpty([]),
-             PREPARE_AF2_DBS.out.mgnify,
-             PREPARE_AF2_DBS.out.pdb70,
-             PREPARE_AF2_DBS.out.pdb_mmcif,
-             PREPARE_AF2_DBS.out.uniclust30,
-             PREPARE_AF2_DBS.out.uniref90,
-             PREPARE_AF2_DBS.out.pdb_seqres,
-             PREPARE_AF2_DBS.out.uniprot
+        RUN_AF2_MSA (
+            ch_fasta,
+            params.full_dbs,
+            params.model_preset,
+            PREPARE_AF2_DBS.out.params,
+            PREPARE_AF2_DBS.out.bfd.ifEmpty([]),
+            PREPARE_AF2_DBS.out.bfd_small.ifEmpty([]),
+            PREPARE_AF2_DBS.out.mgnify,
+            PREPARE_AF2_DBS.out.pdb70,
+            PREPARE_AF2_DBS.out.pdb_mmcif,
+            PREPARE_AF2_DBS.out.uniclust30,
+            PREPARE_AF2_DBS.out.uniref90,
+            PREPARE_AF2_DBS.out.pdb_seqres,
+            PREPARE_AF2_DBS.out.uniprot
 
-         )
-         ch_versions = ch_versions.mix(RUN_AF2_MSA.out.versions)
+        )
+        ch_versions = ch_versions.mix(RUN_AF2_MSA.out.versions)
 
-         RUN_AF2_PRED (
-             ch_fasta,
-             params.full_dbs,
-             params.model_preset,
-             PREPARE_AF2_DBS.out.params,
-             PREPARE_AF2_DBS.out.bfd.ifEmpty([]),
-             PREPARE_AF2_DBS.out.bfd_small.ifEmpty([]),
-             PREPARE_AF2_DBS.out.mgnify,
-             PREPARE_AF2_DBS.out.pdb70,
-             PREPARE_AF2_DBS.out.pdb_mmcif,
-             PREPARE_AF2_DBS.out.uniclust30,
-             PREPARE_AF2_DBS.out.uniref90,
-             PREPARE_AF2_DBS.out.pdb_seqres,
-             PREPARE_AF2_DBS.out.uniprot,
-             RUN_AF2_MSA.out.features
+        RUN_AF2_PRED (
+            ch_fasta,
+            params.full_dbs,
+            params.model_preset,
+            PREPARE_AF2_DBS.out.params,
+            PREPARE_AF2_DBS.out.bfd.ifEmpty([]),
+            PREPARE_AF2_DBS.out.bfd_small.ifEmpty([]),
+            PREPARE_AF2_DBS.out.mgnify,
+            PREPARE_AF2_DBS.out.pdb70,
+            PREPARE_AF2_DBS.out.pdb_mmcif,
+            PREPARE_AF2_DBS.out.uniclust30,
+            PREPARE_AF2_DBS.out.uniref90,
+            PREPARE_AF2_DBS.out.pdb_seqres,
+            PREPARE_AF2_DBS.out.uniprot,
+            RUN_AF2_MSA.out.features
 
-         )
-         ch_versions = ch_versions.mix(RUN_AF2_PRED.out.versions)
+        )
+        ch_versions = ch_versions.mix(RUN_AF2_PRED.out.versions)
 
     } else {
-         RUN_AF2 (
-             ch_fasta,
-             params.max_template_date,
-             params.full_dbs,
-             params.model_preset,
-             PREPARE_AF2_DBS.out.params,
-             PREPARE_AF2_DBS.out.bfd.ifEmpty([]),
-             PREPARE_AF2_DBS.out.bfd_small.ifEmpty([]),
-             PREPARE_AF2_DBS.out.mgnify,
-             PREPARE_AF2_DBS.out.pdb70,
-             PREPARE_AF2_DBS.out.pdb_mmcif,
-             PREPARE_AF2_DBS.out.uniclust30,
-             PREPARE_AF2_DBS.out.uniref90,
-             PREPARE_AF2_DBS.out.pdb_seqres,
-             PREPARE_AF2_DBS.out.uniprot
-         )
-         ch_versions = ch_versions.mix(RUN_AF2.out.versions)
-     }
-
+        RUN_AF2 (
+            ch_fasta,
+            params.max_template_date,
+            params.full_dbs,
+            params.model_preset,
+            PREPARE_AF2_DBS.out.params,
+            PREPARE_AF2_DBS.out.bfd.ifEmpty([]),
+            PREPARE_AF2_DBS.out.bfd_small.ifEmpty([]),
+            PREPARE_AF2_DBS.out.mgnify,
+            PREPARE_AF2_DBS.out.pdb70,
+            PREPARE_AF2_DBS.out.pdb_mmcif,
+            PREPARE_AF2_DBS.out.uniclust30,
+            PREPARE_AF2_DBS.out.uniref90,
+            PREPARE_AF2_DBS.out.pdb_seqres,
+            PREPARE_AF2_DBS.out.uniprot
+        )
+        ch_versions = ch_versions.mix(RUN_AF2.out.versions)
+    }
 
     //
     // MODULE: Pipeline reporting

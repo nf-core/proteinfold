@@ -11,8 +11,8 @@ process MMSEQS_TSV2EXPROFILEDB {
     path db
 
     output:
-    path(db), emit: db_exprofile
-    path "versions.yml" , emit: versions
+    path (db)          , emit: db_exprofile
+    path "versions.yml", emit: versions
 
     script:
     def args = task.ext.args ?: ''

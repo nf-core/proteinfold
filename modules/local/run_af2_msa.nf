@@ -27,7 +27,7 @@ process RUN_AF2_MSA {
     output:
     path ("${fasta.baseName}*")
     path ("${fasta.baseName}.features.pkl"), emit: features
-    path "versions.yml" , emit: versions
+    path "versions.yml"                    , emit: versions
 
     script:
     def args = task.ext.args ?: ''

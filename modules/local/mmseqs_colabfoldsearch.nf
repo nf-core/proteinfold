@@ -14,7 +14,7 @@ process MMSEQS_COLABFOLDSEARCH {
 
     output:
     tuple val(seq_name), path("${seq_name.sequence}.a3m"), emit: a3m
-    path "versions.yml" , emit: versions
+    path "versions.yml", emit: versions
 
 
     script:

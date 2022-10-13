@@ -10,8 +10,8 @@ process MMSEQS_CREATEINDEX {
     path db
 
     output:
-    path(db) , emit: db_index
-    path "versions.yml" , emit: versions
+    path(db)           , emit: db_index
+    path "versions.yml", emit: versions
 
 
     script:

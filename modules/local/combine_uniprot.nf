@@ -11,7 +11,7 @@ process COMBINE_UNIPROT {
 
     output:
     path ('uniprot.fasta'), emit: ch_db
-    path "versions.yml" , emit: versions
+    path "versions.yml"   , emit: versions
 
     script:
     def args = task.ext.args ?: ''

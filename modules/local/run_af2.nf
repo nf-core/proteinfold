@@ -28,7 +28,7 @@ process RUN_AF2 {
 
     output:
     path ("${fasta.baseName}*")
-    path "versions.yml" , emit: versions
+    path "versions.yml", emit: versions
 
     script:
     def args = task.ext.args ?: ''
