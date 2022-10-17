@@ -21,7 +21,7 @@ process MMSEQS_TSV2EXPROFILEDB {
     mmseqs tsv2exprofiledb \\
         "${db}" \\
         "${db}_db"
-
+    cd ..
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         mmseqs: \$(mmseqs | grep 'Version' | sed 's/MMseqs2 Version: //')
