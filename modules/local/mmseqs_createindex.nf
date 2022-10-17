@@ -24,7 +24,7 @@ process MMSEQS_CREATEINDEX {
         tmp1 \\
         --remove-tmp-files 1 \\
         $args
-
+    cd ..
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         mmseqs: \$(mmseqs | grep 'Version' | sed 's/MMseqs2 Version: //')
