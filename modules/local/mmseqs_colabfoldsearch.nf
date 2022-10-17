@@ -24,8 +24,8 @@ process MMSEQS_COLABFOLDSEARCH {
     // mmseqs touchdb ${db}/uniref30_2103_db --threads $task.cpus
     // mmseqs touchdb ${db}/colabfold_envdb_202108_db --threads $task.cpus
     """
-    ln -r -s $uniref30/* ./db
-    ln -r -s $colabfold_db/* ./db
+    ln -r -s $uniref30/uniref30_* ./db
+    ln -r -s $colabfold_db/colabfold_envdb* ./db
     /colabfold_batch/colabfold-conda/bin/colabfold_search --db-load-mode ${db_load_mode} --threads $task.cpus ${fasta} ./db "result/"
     cp result/0.a3m ${seq_name.sequence}.a3m
 
