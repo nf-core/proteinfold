@@ -8,8 +8,8 @@ process MMSEQS_COLABFOLDSEARCH {
     input:
     tuple val(seq_name), path(fasta)
     path ('db/params')
-    path uniref30
     path colabfold_db
+    path uniref30
     val db_load_mode
 
     output:
