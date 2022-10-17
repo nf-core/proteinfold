@@ -3,7 +3,7 @@
  */
 process RUN_AF2_MSA {
     tag "${seq_name}"
-    label 'customConf'
+    label 'process_medium'
 
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'docker://luisas/af2_msa:v0.1' :
