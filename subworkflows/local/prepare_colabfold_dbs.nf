@@ -34,8 +34,8 @@ workflow PREPARE_COLABFOLD_DBS {
     if (params.colabfold_db) {
         ch_params       = file( "${params.colabfold_db}/params/alphafold_params_*", type: 'any' )
         if (params.mode == 'colabfold_local') {
-            ch_colabfold_db = file( "${params.colabfold_db}/colabfold_envdb_202108_db", type: 'any' )
-            ch_uniref30     = file( "${params.colabfold_db}/uniref30_2103_db", type: 'any' )
+            ch_colabfold_db = file( "${params.colabfold_db}/colabfold_envdb_202108", type: 'any' )
+            ch_uniref30     = file( "${params.colabfold_db}/uniref30_2103", type: 'any' )
         }
     }
     else {
