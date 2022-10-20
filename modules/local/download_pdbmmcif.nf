@@ -1,5 +1,5 @@
 /*
- * Download PDB MMCIF database ###use --port=33444 \\
+ * Download PDB MMCIF database
  */
 process DOWNLOAD_PDBMMCIF {
     label 'process_low'
@@ -32,6 +32,7 @@ process DOWNLOAD_PDBMMCIF {
         --compress \\
         --info=progress2 \\
         --delete \\
+        --port=33444 \\
         $source_url_pdb_mmcif \\
         raw
 
