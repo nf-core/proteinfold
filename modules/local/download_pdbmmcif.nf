@@ -2,7 +2,7 @@
  * Download PDB MMCIF database
  */
 process DOWNLOAD_PDBMMCIF {
-    label 'process_medium'
+    label 'process_low'
     label 'error_retry'
 
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?

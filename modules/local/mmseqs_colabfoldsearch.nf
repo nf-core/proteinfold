@@ -1,6 +1,7 @@
 process MMSEQS_COLABFOLDSEARCH {
     tag "$seq_name"
-    label 'high'
+    label 'process_high_memory'
+
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'docker://athbaltzis/colabfold_proteinfold:v0.9' :
         'athbaltzis/colabfold_proteinfold:v0.9' }"

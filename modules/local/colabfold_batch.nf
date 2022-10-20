@@ -1,7 +1,8 @@
 process COLABFOLD_BATCH {
     tag "$seq_name"
-    label 'customConf'
-        container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
+    label 'process_medium'
+
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'docker://athbaltzis/colabfold_proteinfold:v0.9' :
         'athbaltzis/colabfold_proteinfold:v0.9' }"
 

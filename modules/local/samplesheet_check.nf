@@ -1,5 +1,6 @@
 process SAMPLESHEET_CHECK {
     tag "$samplesheet"
+    label 'process_single'
 
     conda (params.enable_conda ? "conda-forge::python=3.8.3" : null)
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
@@ -21,7 +22,7 @@ process SAMPLESHEET_CHECK {
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        awk: \$(gawk --version| head -1 | sed 's/GNU Awk //; s/, API:.*//')
+        python: \$(python --version | sed 's/Python //g')
     END_VERSIONS
     """
 }
