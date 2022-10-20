@@ -1,8 +1,8 @@
 /*
- * Download PDB MMCIF database
+ * Download PDB MMCIF database ###use --port=33444 \\
  */
 process DOWNLOAD_PDBMMCIF {
-    label 'process_medium'
+    label 'process_low'
     label 'error_retry'
 
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
@@ -32,7 +32,6 @@ process DOWNLOAD_PDBMMCIF {
         --compress \\
         --info=progress2 \\
         --delete \\
-        --port=33444 \\
         $source_url_pdb_mmcif \\
         raw
 

@@ -1,8 +1,10 @@
 process MULTIFASTA_TO_CSV {
     tag "$seq_name"
-        container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'docker://athbaltzis/colabfold_proteinfold:v0.9' :
-        'athbaltzis/colabfold_proteinfold:v0.9' }"
+    label 'process_single'
+
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
+        'https://depot.galaxyproject.org/singularity/ubuntu:20.04' :
+        'ubuntu:20.04' }"
 
     input:
     tuple val(seq_name), path(fasta)
