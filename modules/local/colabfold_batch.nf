@@ -1,5 +1,5 @@
 process COLABFOLD_BATCH {
-    tag "$seq_name"
+    tag "$meta.id"
     label 'process_medium'
 
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
@@ -7,7 +7,7 @@ process COLABFOLD_BATCH {
         'athbaltzis/colabfold_proteinfold:v0.9' }"
 
     input:
-    tuple val(seq_name), path(fasta)
+    tuple val(meta), path(fasta)
     val   model_type
     path ('params/*')
     path ('colabfold_db/*')

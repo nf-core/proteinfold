@@ -116,7 +116,6 @@ workflow COLABFOLD {
             ch_versions = ch_versions.mix(COLABFOLD_BATCH.out.versions)
         }
 
-
     } else if (params.mode == 'colabfold_local') {
         //
 	    // MODULE: Run mmseqs

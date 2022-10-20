@@ -1,5 +1,5 @@
 process MULTIFASTA_TO_CSV {
-    tag "$seq_name"
+    tag "$meta.id"
     label 'process_single'
 
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
@@ -7,16 +7,16 @@ process MULTIFASTA_TO_CSV {
         'ubuntu:20.04' }"
 
     input:
-    tuple val(seq_name), path(fasta)
+    tuple val(meta), path(fasta)
 
     output:
-    tuple val(seq_name), path("input.csv"), emit: input_csv
+    tuple val(meta), path("input.csv"), emit: input_csv
     path "versions.yml", emit: versions
 
     script:
     """
     echo "id,sequence" >> input.csv
-    echo -e ${seq_name.sequence},`awk -F ' ' '!/^>/ {print \$0}' ${fasta} | tr "\n" ":" | awk '{gsub(/:\$/,""); print}'` >> input.csv
+    echo -e ${meta.id},`awk -F ' ' '!/^>/ {print \$0}' ${fasta} | tr "\n" ":" | awk '{gsub(/:\$/,""); print}'` >> input.csv
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

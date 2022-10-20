@@ -2,7 +2,7 @@
  * Run Alphafold2 PRED
  */
 process RUN_AF2_PRED {
-    tag "${seq_name}"
+    tag "$meta.id"
     label 'process_medium'
 
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
@@ -10,7 +10,7 @@ process RUN_AF2_PRED {
         'luisas/af2_split:v.1.0' }"
 
     input:
-    tuple val(seq_name), path(fasta)
+    tuple val(meta), path(fasta)
     val   db_preset
     val   model_preset
     path ('params/*')

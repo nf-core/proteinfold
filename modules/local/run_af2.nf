@@ -2,7 +2,7 @@
  * Run Alphafold2
  */
 process RUN_AF2 {
-    tag "${seq_name}"
+    tag "$meta.id"
     label 'process_medium'
 
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
@@ -10,7 +10,7 @@ process RUN_AF2 {
         'athbaltzis/af2_proteinfold:v0.6' }"
 
     input:
-    tuple val(seq_name), path(fasta)
+    tuple val(meta), path(fasta)
     val   max_template_date
     val   db_preset
     val   model_preset
