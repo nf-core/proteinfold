@@ -6,8 +6,8 @@ process RUN_AF2 {
     label 'process_medium'
 
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'docker://athbaltzis/af2_proteinfold:v0.6' :
-        'athbaltzis/af2_proteinfold:v0.6' }"
+        'docker://athbaltzis/af2_proteinfold:v0.9' :
+        'athbaltzis/af2_proteinfold:v0.9' }"
 
     input:
     tuple val(seq_name), path(fasta)

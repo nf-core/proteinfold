@@ -1,18 +1,19 @@
-FROM nvidia/cuda:11.1.1-cudnn8-runtime-ubuntu18.04
+FROM nvidia/cuda:11.4.2-cudnn8-runtime-ubuntu18.04
 LABEL authors="Athanasios Baltzis" \
     title="nf-friendly AF2 docker image" \
-    Version="v0.6" \
+    Version="v0.9" \
     description="Docker image containing all software requirements to run AF2 using the nf-core/proteinfold pipeline"
 
 
 # Use bash to support string substitution.
-SHELL ["/bin/bash", "-c"]
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 # Add env variables
 ENV LD_LIBRARY_PATH="/conda/lib:/usr/local/cuda-11.1/lib64:$LD_LIBRARY_PATH"
 ENV PATH="/conda/bin:$PATH"
 
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
+RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys A4B469963BF863CC
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y \
         build-essential \
         cmake \
         cuda-command-line-tools-11-1 \
@@ -21,12 +22,14 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
         kalign \
         tzdata \
         wget \
-        && rm -rf /var/lib/apt/lists/*
+        && rm -rf /var/lib/apt/lists/* \
+	&& apt-get autoremove -y \
+	&& apt-get clean
 
 # Clone AF2
 RUN git clone https://github.com/deepmind/alphafold.git /app/alphafold && \
     cd /app/alphafold && \
-    git checkout 918434f597c0f8a7bd999f878de474aeb0a0b4ae && \
+    git checkout 5cb2f8c480aa8314c02a93c6fbfc3f48f0ce8af0 && \
     cd -
 
 # Compile HHsuite from source
@@ -45,27 +48,23 @@ RUN wget -q -P /tmp \
         && rm /tmp/Miniconda3-latest-Linux-x86_64.sh
 
 # Install conda packages
-RUN /conda/bin/conda update -qy conda \
+RUN /conda/bin/conda install -qy conda=4.13.0 \
     && /conda/bin/conda install -y -c conda-forge \
         openmm=7.5.1 \
         cudatoolkit==11.1.1 \
         pdbfixer \
         pip \
-        python=3.7
+        python=3.7 \
+	&& conda clean --all --force-pkgs-dirs --yes
 
 RUN wget -q -P /app/alphafold/alphafold/common/ \
     https://git.scicore.unibas.ch/schwede/openstructure/-/raw/7102c63615b64735c4941278d92b554ec94415f8/modules/mol/alg/src/stereo_chemical_props.txt
 
 # Install pip packages
-RUN /conda/bin/pip3 install --upgrade pip \
-    && /conda/bin/pip3 install -r /app/alphafold/requirements.txt \
-    && /conda/bin/pip3 install --upgrade jax jaxlib==0.3.0 -f \
-        https://storage.googleapis.com/jax-releases/jax_releases.html
-#RUN ln -s /conda/lib/libcusolver.so.10 /conda/lib/libcusolver.so.11
-    #ln -s /conda/lib/libcudart.so.10.2 /conda/lib/libcudart.so.11.0
-    #ln -s /conda/lib/libcublas.so.10 /conda/lib/libcublas.so.11
-    #ln -s /conda/lib/libcublasLt.so.10 /conda/lib/libcublasLt.so.11
-    #ln -s /conda/lib/libcusparse.so.10 /conda/lib/libcusparse.so.11
+RUN /conda/bin/pip3 install --upgrade pip --no-cache-dir \
+    && /conda/bin/pip3 install -r /app/alphafold/requirements.txt --no-cache-dir \
+    && /conda/bin/pip3 install --upgrade --no-cache-dir jax==0.3.17 jaxlib==0.3.15+cuda11.cudnn805 -f \
+        https://storage.googleapis.com/jax-releases/jax_cuda_releases.html
 
 # Apply OpenMM patch
 WORKDIR /conda/lib/python3.7/site-packages
