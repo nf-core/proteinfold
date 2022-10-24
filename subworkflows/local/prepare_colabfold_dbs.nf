@@ -3,11 +3,14 @@
 //
 
 if (params.model_type == 'AlphaFold2-multimer-v1') {
-    link_params = 'https://storage.googleapis.com/alphafold/alphafold_params_colab_2021-10-27.tar'
+    fullname_params = 'alphafold_params_colab_2021-10-27'
+    link_params     = "https://storage.googleapis.com/alphafold/${fullname_params}.tar"
 } else if (params.model_type == 'AlphaFold2-multimer-v2') {
-    link_params = 'https://storage.googleapis.com/alphafold/alphafold_params_colab_2022-03-02.tar'
+    fullname_params = 'alphafold_params_colab_2022-03-02'
+    link_params     = "https://storage.googleapis.com/alphafold/${fullname_params}.tar"
 } else if (params.model_type == 'AlphaFold2-ptm') {
-    link_params = 'https://storage.googleapis.com/alphafold/alphafold_params_2021-07-14.tar'
+    fullname_params = 'alphafold_params_colab_2021-07-14'
+    link_params     = "https://storage.googleapis.com/alphafold/${fullname_params}.tar"
 }
 
 colabfold_db = 'http://wwwuser.gwdg.de/~compbiol/colabfold/colabfold_envdb_202108.tar.gz'
@@ -32,7 +35,7 @@ workflow PREPARE_COLABFOLD_DBS {
 
 
     if (params.colabfold_db) {
-        ch_params       = file( "${params.colabfold_db}/params/alphafold_params_*", type: 'any' )
+        ch_params       = file( "${params.colabfold_db}/params/${fullname_params}", type: 'any' )
         if (params.mode == 'colabfold_local') {
             ch_colabfold_db = file( "${params.colabfold_db}/colabfold_envdb_202108", type: 'any' )
             ch_uniref30     = file( "${params.colabfold_db}/uniref30_2103", type: 'any' )
