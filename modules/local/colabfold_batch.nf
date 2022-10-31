@@ -16,6 +16,7 @@ process COLABFOLD_BATCH {
 
     output:
     path ("*")         , emit: pdb
+    path ("*_mqc.png") , emit: multiqc
     path "versions.yml", emit: versions
 
     script:
@@ -32,6 +33,7 @@ process COLABFOLD_BATCH {
         ${fasta} \\
         \$PWD
     for i in `find *_relaxed_rank_1*.pdb`; do cp \$i `echo \$i | sed "s|_relaxed_rank_|\t|g" | cut -f1`"_colabfold.pdb"; done
+    for i in `find *.png -maxdepth 0`; do cp \$i \${i%'.png'}_mqc.png; done
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

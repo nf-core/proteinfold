@@ -15,15 +15,14 @@ process MULTIFASTA_TO_CSV {
 
     script:
     """
-    echo "id,sequence" >> input.csv
-    echo -e ${seq_name.sequence},`awk -F ' ' '!/^>/ {print \$0}' ${fasta} | tr "\n" ":" | awk '{gsub(/:\$/,""); print}'` >> input.csv
+    echo -e id,sequence'\\n'${seq_name.sequence},`awk '!/^>/ {print \$0}' ${fasta} | tr '\\n' ':' | sed 's/:\$//'` > input.csv
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         sed: \$(echo \$(sed --version 2>&1) | sed 's/^.*GNU sed) //; s/ .*\$//')
-        gawk: \$(awk -Wversion 2>/dev/null | sed 's/.*wk //; s/,.*\$//')
     END_VERSIONS
     """
+
 
     stub:
     """
