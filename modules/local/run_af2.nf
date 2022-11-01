@@ -41,7 +41,7 @@ process RUN_AF2 {
         model_preset = model_preset + " --pdb70_database_path=./pdb70/pdb70_from_mmcif_200916/pdb70 "
     }
     """
-    if [ -d pdb_seqres/pdb_seqres.txt ]; then sed -i "/^\\w*0/d" pdb_seqres/pdb_seqres.txt; fi
+    if [ -d pdb_seqres ]; then sed -i "/^\\w*0/d" pdb_seqres/pdb_seqres.txt; fi
     if [ -d params/alphafold_params_* ]; then ln -r -s params/alphafold_params_*/* params/; fi
     python3 /app/alphafold/run_alphafold.py \
         --fasta_paths=${fasta} \
@@ -63,7 +63,7 @@ process RUN_AF2 {
     for i in 1 2 3 4; do awk '{print \$6"\\t"\$11}' ranked_\$i.pdb | uniq | awk '{print \$2}' > ranked_"\$i"_plddt.tsv; done
     paste ranked_0_plddt.tsv ranked_1_plddt.tsv ranked_2_plddt.tsv ranked_3_plddt.tsv ranked_4_plddt.tsv > plddt.tsv
     echo -e Positions"\\t"rank_0"\\t"rank_1"\\t"rank_2"\\t"rank_3"\\t"rank_4 > header.tsv
-    cat header.tsv plddt.tsv > ../"${fasta.baseName}"_mqc.tsv
+    cat header.tsv plddt.tsv > ../"${fasta.baseName}"_plddt_mqc.tsv
     cd ..
 
     cat <<-END_VERSIONS > versions.yml

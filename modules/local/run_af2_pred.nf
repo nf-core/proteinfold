@@ -49,7 +49,7 @@ process RUN_AF2_PRED {
     for i in 1 2 3 4; do awk '{print \$6"\\t"\$11}' ranked_\$i.pdb | uniq | awk '{print \$2}' > ranked_"\$i"_plddt.tsv; done
     paste ranked_0_plddt.tsv ranked_1_plddt.tsv ranked_2_plddt.tsv ranked_3_plddt.tsv ranked_4_plddt.tsv > plddt.tsv
     echo -e Positions"\\t"rank_0"\\t"rank_1"\\t"rank_2"\\t"rank_3"\\t"rank_4 > header.tsv
-    cat header.tsv plddt.tsv > ../"${fasta.baseName}"_mqc.tsv
+    cat header.tsv plddt.tsv > ../"${fasta.baseName}"_plddt_mqc.tsv
     cd ..
 
     cat <<-END_VERSIONS > versions.yml
