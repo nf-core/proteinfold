@@ -18,4 +18,3 @@ run_modules:
   - run_af2
   - run_af2_pred
   - colabfold_batch
-
