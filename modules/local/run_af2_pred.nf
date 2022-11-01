@@ -61,6 +61,7 @@ process RUN_AF2_PRED {
     stub:
     """
     touch ./"${fasta.baseName}".alphafold.pdb
+    touch ./"${fasta.baseName}"_mqc.tsv
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

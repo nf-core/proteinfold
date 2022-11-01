@@ -45,6 +45,7 @@ process COLABFOLD_BATCH {
     def VERSION = '1.2.0' // WARN: Version information not provided by tool on CLI. Please update this string when bumping container versions.
     """
     touch ./"${fasta.baseName}"_colabfold.pdb
+    touch ./"${fasta.baseName}"_mqc.png
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
