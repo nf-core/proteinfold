@@ -29,7 +29,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --no-instal
 # Clone AF2 git checkout d3327d968c6cfa31da53324c173ff635ed1ec0b6 && \
 RUN git clone https://github.com/luisas/alphafold_split.git /app/alphafold && \
     cd /app/alphafold && \
-    git checkout 5cb2f8c480aa8314c02a93c6fbfc3f48f0ce8af0 && \
+    git checkout 3a8535cee46a35ed0462c2112e96a832eeb3f4ae && \
     cd -
 
 # Compile HHsuite from source
