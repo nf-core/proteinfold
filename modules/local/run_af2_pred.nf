@@ -6,8 +6,8 @@ process RUN_AF2_PRED {
     label 'process_medium'
 
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'docker://luisas/af2_split:v.1.0' :
-        'luisas/af2_split:v.1.0' }"
+        'docker://luisas/af2_split:2' :
+        'luisas/af2_split:2' }"
 
     input:
     tuple val(seq_name), path(fasta)
