@@ -6,8 +6,8 @@ process RUN_AF2_MSA {
     label 'process_medium'
 
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'docker://luisas/af2_msa:v0.1' :
-        'luisas/af2_msa:v0.1' }"
+        'docker://luisas/af2_msa:2' :
+        'luisas/af2_msa:2' }"
 
     input:
     tuple val(seq_name), path(fasta)
