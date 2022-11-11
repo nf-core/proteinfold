@@ -20,6 +20,7 @@ process MULTIFASTA_TO_CSV {
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         sed: \$(echo \$(sed --version 2>&1) | sed 's/^.*GNU sed) //; s/ .*\$//')
+        gawk: \$(echo \$(gawk --version 2>&1) | sed 's/^.*GNU Awk //; s/, .*\$//')
     END_VERSIONS
     """
 
@@ -30,7 +31,8 @@ process MULTIFASTA_TO_CSV {
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        awk: \$(gawk --version| head -1 | sed 's/GNU Awk //; s/, API:.*//')
+        sed: \$(echo \$(sed --version 2>&1) | sed 's/^.*GNU sed) //; s/ .*\$//')
+        gawk: \$(echo \$(gawk --version 2>&1) | sed 's/^.*GNU Awk //; s/, .*\$//')
     END_VERSIONS
     """
 }
