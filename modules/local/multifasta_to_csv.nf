@@ -23,7 +23,6 @@ process MULTIFASTA_TO_CSV {
     END_VERSIONS
     """
 
-
     stub:
     """
     touch input.csv
