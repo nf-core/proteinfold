@@ -146,7 +146,7 @@ workflow ALPHAFOLD2 {
 
         )
         ch_versions = ch_versions.mix(RUN_AF2_PRED.out.versions)
-
+        ch_multiqc_rep = RUN_AF2_PRED.out.multiqc.collect()
     } else {
         RUN_AF2 (
             ch_fasta,
@@ -165,6 +165,7 @@ workflow ALPHAFOLD2 {
             PREPARE_AF2_DBS.out.uniprot
         )
         ch_versions = ch_versions.mix(RUN_AF2.out.versions)
+        ch_multiqc_rep = RUN_AF2.out.multiqc.collect()
     }
 
     //
@@ -187,6 +188,7 @@ workflow ALPHAFOLD2 {
     ch_multiqc_files = ch_multiqc_files.mix(ch_workflow_summary.collectFile(name: 'workflow_summary_mqc.yaml'))
     ch_multiqc_files = ch_multiqc_files.mix(ch_methods_description.collectFile(name: 'methods_description_mqc.yaml'))
     ch_multiqc_files = ch_multiqc_files.mix(CUSTOM_DUMPSOFTWAREVERSIONS.out.mqc_yml.collect())
+    ch_multiqc_files = ch_multiqc_files.mix(ch_multiqc_rep)
     //ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.collect{it[1]}.ifEmpty([]))
 
     MULTIQC (
