@@ -40,7 +40,7 @@ process RUN_AF2_MSA {
         model_preset = model_preset + " --pdb70_database_path=./pdb70/pdb70_from_mmcif_200916/pdb70 "
     }
     """
-    if [ -f pdb_seqres/pdb_seqres.txt ] 
+    if [ -f pdb_seqres/pdb_seqres.txt ]
         then sed -i "/^\\w*0/d" pdb_seqres/pdb_seqres.txt
     fi
     python3 /app/alphafold/run_msa.py \
