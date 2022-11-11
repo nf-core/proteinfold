@@ -15,17 +15,11 @@ process MULTIFASTA_TO_CSV {
 
     script:
     """
-<<<<<<< HEAD
-    echo "id,sequence" >> input.csv
-    echo -e ${meta.id},`awk -F ' ' '!/^>/ {print \$0}' ${fasta} | tr "\n" ":" | awk '{gsub(/:\$/,""); print}'` >> input.csv
-=======
     echo -e id,sequence'\\n'${seq_name.sequence},`awk '!/^>/ {print \$0}' ${fasta} | tr '\\n' ':' | sed 's/:\$//'` > input.csv
->>>>>>> upstream/dev
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         sed: \$(echo \$(sed --version 2>&1) | sed 's/^.*GNU sed) //; s/ .*\$//')
-        gawk: \$(echo \$(gawk --version 2>&1) | sed 's/^.*GNU Awk //; s/, .*\$//')
     END_VERSIONS
     """
 
@@ -37,7 +31,6 @@ process MULTIFASTA_TO_CSV {
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         sed: \$(echo \$(sed --version 2>&1) | sed 's/^.*GNU sed) //; s/ .*\$//')
-        gawk: \$(echo \$(gawk --version 2>&1) | sed 's/^.*GNU Awk //; s/, .*\$//')
     END_VERSIONS
     """
 }
