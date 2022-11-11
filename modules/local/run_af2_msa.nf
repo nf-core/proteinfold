@@ -6,8 +6,8 @@ process RUN_AF2_MSA {
     label 'process_medium'
 
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'docker://luisas/af2_msa:v0.1' :
-        'luisas/af2_msa:v0.1' }"
+        'docker://luisas/af2_msa:2' :
+        'luisas/af2_msa:2' }"
 
     input:
     tuple val(seq_name), path(fasta)
@@ -40,7 +40,9 @@ process RUN_AF2_MSA {
         model_preset = model_preset + " --pdb70_database_path=./pdb70/pdb70_from_mmcif_200916/pdb70 "
     }
     """
-    if [ -d pdb_seqres/pdb_seqres.txt ]; then sed -i "/^\\w*0/d" pdb_seqres/pdb_seqres.txt; fi
+    if [ -f pdb_seqres/pdb_seqres.txt ]
+        then sed -i "/^\\w*0/d" pdb_seqres/pdb_seqres.txt
+    fi
     python3 /app/alphafold/run_msa.py \
         --fasta_paths=${fasta} \
         --model_preset=${model_preset} \
