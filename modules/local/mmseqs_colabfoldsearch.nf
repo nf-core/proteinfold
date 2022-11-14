@@ -11,7 +11,6 @@ process MMSEQS_COLABFOLDSEARCH {
     path ('db/params')
     path colabfold_db
     path uniref30
-    val db_load_mode
 
     output:
     tuple val(meta), path("${meta.id}.a3m"), emit: a3m
