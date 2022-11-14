@@ -1,6 +1,6 @@
 //
 // Download all the required databases and params by Colabfold
-// 
+//
 
 if (params.model_type == 'AlphaFold2-multimer-v1') {
     fullname_params = 'alphafold_params_colab_2021-10-27'
@@ -9,7 +9,7 @@ if (params.model_type == 'AlphaFold2-multimer-v1') {
     fullname_params = 'alphafold_params_colab_2022-03-02'
     link_params     = "https://storage.googleapis.com/alphafold/${fullname_params}.tar"
 } else if (params.model_type == 'AlphaFold2-ptm') {
-    fullname_params = 'alphafold_params_colab_2021-07-14'
+    fullname_params = 'alphafold_params_2021-07-14'
     link_params     = "https://storage.googleapis.com/alphafold/${fullname_params}.tar"
 }
 
