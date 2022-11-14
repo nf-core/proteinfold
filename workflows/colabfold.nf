@@ -130,7 +130,6 @@ workflow COLABFOLD {
                 PREPARE_COLABFOLD_DBS.out.params,
                 PREPARE_COLABFOLD_DBS.out.colabfold_db,
                 PREPARE_COLABFOLD_DBS.out.uniref30,
-                params.db_load_mode
             )
             ch_versions = ch_versions.mix(MMSEQS_COLABFOLDSEARCH.out.versions)
         } else {
@@ -139,7 +138,6 @@ workflow COLABFOLD {
                 PREPARE_COLABFOLD_DBS.out.params,
                 PREPARE_COLABFOLD_DBS.out.colabfold_db,
                 PREPARE_COLABFOLD_DBS.out.uniref30,
-                params.db_load_mode
             )
             ch_versions = ch_versions.mix(MMSEQS_COLABFOLDSEARCH.out.versions)
         }
