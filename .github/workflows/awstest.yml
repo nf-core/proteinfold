@@ -20,6 +20,7 @@ jobs:
           workdir: s3://${{ secrets.AWS_S3_BUCKET }}/work/proteinfold/work-${{ github.sha }}
           parameters: |
             {
+              "af2_db": ${projectDir}/assets/dummy_db_dir
               "outdir": "s3://${{ secrets.AWS_S3_BUCKET }}/proteinfold/results-test-${{ github.sha }}"
             }
           profiles: test,aws_tower

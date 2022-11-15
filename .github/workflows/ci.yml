@@ -32,11 +32,8 @@ jobs:
           version: "${{ matrix.NXF_VER }}"
 
       - name: Run pipeline with test data
-        # TODO nf-core: You can customise CI pipeline run tests as required
-        # For example: adding multiple test runs with different parameters
-        # Remember that you can parallelise this by using strategy.matrix
         run: |
-          nextflow run ${GITHUB_WORKSPACE} -profile test,docker -stub-run --outdir ./results
+          nextflow run ${GITHUB_WORKSPACE} --af2_db ${projectDir}/assets/dummy_db_dir -profile test,docker -stub-run --outdir ./results
 
   test_af2_split:
     name: Test af2 split workflow
@@ -52,7 +49,7 @@ jobs:
           sudo mv nextflow /usr/local/bin/
       - name: Run pipeline with stub-run in af2 split mode
         run: |
-          nextflow run ${GITHUB_WORKSPACE} -profile test_af2,docker --standard_af2 false -stub-run --outdir ./results
+          nextflow run ${GITHUB_WORKSPACE} --mode AF2_split --af2_db ${projectDir}/assets/dummy_db_dir -profile test,docker -stub-run --outdir ./results
 
   test_colabfold_local:
     name: Test Colabfold local workflow
@@ -68,7 +65,7 @@ jobs:
           sudo mv nextflow /usr/local/bin/
       - name: Run pipeline with stub-run in colabfold_local mode
         run: |
-          nextflow run ${GITHUB_WORKSPACE} -profile test_colabfold_local,docker -stub-run --outdir ./results
+          nextflow run ${GITHUB_WORKSPACE} --mode colabfold_local --colabfold_db ${projectDir}/assets/dummy_db_dir -profile test,docker -stub-run --outdir ./results
 
   test_colabfold_webserver:
     name: Test Colabfold webserver workflow
@@ -84,4 +81,4 @@ jobs:
           sudo mv nextflow /usr/local/bin/
       - name: Run pipeline with stub-run in colabfold_webserver mode
         run: |
-          nextflow run ${GITHUB_WORKSPACE} -profile test_colabfold_webserver,docker -stub-run --outdir ./results
+          nextflow run ${GITHUB_WORKSPACE} --mode colabfold_webserver --colabfold_db ${projectDir}/assets/dummy_db_dir -profile test,docker -stub-run --outdir ./results

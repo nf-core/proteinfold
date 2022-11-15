@@ -26,7 +26,7 @@ WorkflowMain.initialise(workflow, params, log)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-if (params.mode == "AF2") {
+if (params.mode == "AF2" || params.mode == "AF2_split") {
     include { ALPHAFOLD2 } from './workflows/alphafold2'
 } else if (params.mode == "colabfold_webserver" || params.mode == "colabfold_local") {
     include { COLABFOLD } from './workflows/colabfold'
@@ -36,7 +36,7 @@ workflow NFCORE_PROTEINFOLD {
     //
     // WORKFLOW: Run alphafold2
     //
-    if(params.mode == "AF2") {
+    if(params.mode == "AF2" || params.mode == "AF2_split") {
         ALPHAFOLD2 ()
     }
 
