@@ -57,7 +57,7 @@ On release, automated continuous integration tests run the pipeline on a full-si
 
 4. Start running your own analysis!
 
-   The pipeline takes care of downloading the required databases and parameters required by AlphaFold2 and/or Colabfold. In case you have already downloaded the required files, you can skip this step by providing the path using the corresponding parameter [`--af2_db`] or [`--colabfold_db`]
+   The pipeline takes care of downloading the required databases and parameters required by AlphaFold2 and/or Colabfold. In case you have already downloaded the required files, you can skip this step by providing the path using the corresponding parameter [`--alphafold2_db`] or [`--colabfold_db`]
 
 - Typical command to run AlphaFold2 mode:
 
@@ -65,11 +65,10 @@ On release, automated continuous integration tests run the pipeline on a full-si
   nextflow run nf-core/proteinfold \
       --input samplesheet.csv \
       --outdir <OUTDIR> \
-      --mode AF2 \
-      --af2_db <null (default) | DB_PATH> \
+      --mode alphafold2 \
+      --alphafold2_db <null (default) | DB_PATH> \
       --full_dbs <true/false> \
-      --standard_af2 <true/false> \
-      --model_preset monomer \
+      --alphafold2_model_preset monomer \
       --use_gpu <true/false> \
       -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
   ```
@@ -80,11 +79,12 @@ On release, automated continuous integration tests run the pipeline on a full-si
   nextflow run nf-core/proteinfold \
       --input samplesheet.csv \
       --outdir <OUTDIR> \
-      --mode colabfold_local \
+      --mode colabfold \
+      --colabfold_server local \
       --colabfold_db <null (default) | PATH> \
       --num_recycle 3 \
       --use_amber <true/false> \
-      --model_type "AlphaFold2-ptm" \
+      --colabfold_model_preset "AlphaFold2-ptm" \
       --use_gpu <true/false> \
       --db_load_mode 0
       -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
@@ -96,12 +96,13 @@ On release, automated continuous integration tests run the pipeline on a full-si
   nextflow run nf-core/proteinfold \
       --input samplesheet.csv \
       --outdir <OUTDIR> \
-      --mode colabfold_webserver \
+      --mode colabfold \
+      --colabfold_server webserver \
       --host_url <custom MMSeqs2 API Server URL> \
       --colabfold_db <null (default) | PATH> \
       --num_recycle 3 \
       --use_amber <true/false> \
-      --model_type "AlphaFold2-ptm" \
+      --colabfold_model_preset "AlphaFold2-ptm" \
       --use_gpu <true/false> \
       -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
   ```
