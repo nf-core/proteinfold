@@ -12,37 +12,10 @@ jobs:
     name: Run AWS AF2 full monomer tests
     if: github.repository == 'nf-core/proteinfold'
     runs-on: ubuntu-latest
+    # Do a full-scale run on each of the mode
     strategy:
       matrix:
-        mode: ["AF2", "AF2_split"]
-    steps:
-      - name: Launch workflow via tower
-        uses: nf-core/tower-action@v3
-        with:
-          workspace_id: ${{ secrets.TOWER_WORKSPACE_ID }}
-          access_token: ${{ secrets.TOWER_ACCESS_TOKEN }}
-          compute_env: ${{ secrets.TOWER_COMPUTE_ENV }}
-          workdir: s3://${{ secrets.AWS_S3_BUCKET }}/work/proteinfold/work-${{ github.sha }}
-          #TODO add af2_db and colabfold_db paths in AWS
-          parameters: |
-            {
-              "input": 'https://raw.githubusercontent.com/nf-core/test-datasets/proteinfold/testdata/samplesheet/v1.0/samplesheet.csv'
-              "outdir": "s3://${{ secrets.AWS_S3_BUCKET }}/proteinfold/results-${{ github.sha }}/monomer_mode_${{ matrix.mode }}"
-              "model_preset": "monomer_ptm"
-            }
-          profiles: test_full,aws_tower
-      - uses: actions/upload-artifact@v3
-        with:
-          name: Tower debug log file
-          path: tower_action_*.log
-
-  run-tower-af2-multimer:
-    name: Run AWS AF2 full multimer tests
-    if: github.repository == 'nf-core/proteinfold'
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        mode: ["AF2", "AF2_split"]
+        mode: ["alphafold2", "colabfold"]
     steps:
       - name: Launch workflow via tower
         uses: nf-core/tower-action@v3
@@ -53,65 +26,9 @@ jobs:
           workdir: s3://${{ secrets.AWS_S3_BUCKET }}/work/proteinfold/work-${{ github.sha }}
           parameters: |
             {
-              "input": 'https://raw.githubusercontent.com/nf-core/test-datasets/proteinfold/testdata/samplesheet/v1.0/samplesheet_multimer.csv'
-              "outdir": "s3://${{ secrets.AWS_S3_BUCKET }}/proteinfold/results-${{ github.sha }}/multimer_mode_${{ matrix.mode }}"
-              "model_preset": "multimer"
+              "outdir": "s3://${{ secrets.AWS_S3_BUCKET }}/proteinfold/results-${{ github.sha }}/mode_${{ matrix.mode }}"
             }
-          profiles: test_full,aws_tower
-      - uses: actions/upload-artifact@v3
-        with:
-          name: Tower debug log file
-          path: tower_action_*.log
-
-  run-tower-colabfold-monomer:
-    name: Run AWS colabfold full monomer tests
-    if: github.repository == 'nf-core/proteinfold'
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        mode: ["colabfold_webserver", "colabfold_local"]
-    steps:
-      - name: Launch workflow via tower
-        uses: nf-core/tower-action@v3
-        with:
-          workspace_id: ${{ secrets.TOWER_WORKSPACE_ID }}
-          access_token: ${{ secrets.TOWER_ACCESS_TOKEN }}
-          compute_env: ${{ secrets.TOWER_COMPUTE_ENV }}
-          workdir: s3://${{ secrets.AWS_S3_BUCKET }}/work/proteinfold/work-${{ github.sha }}
-          parameters: |
-            {
-              "input": 'https://raw.githubusercontent.com/nf-core/test-datasets/proteinfold/testdata/samplesheet/v1.0/samplesheet.csv'
-              "outdir": "s3://${{ secrets.AWS_S3_BUCKET }}/proteinfold/results-${{ github.sha }}/monomer_mode_${{ matrix.mode }}"
-              "model_type": "AlphaFold2-ptm"
-            }
-          profiles: test_full,aws_tower
-      - uses: actions/upload-artifact@v3
-        with:
-          name: Tower debug log file
-          path: tower_action_*.log
-
-  run-tower-colabfold-multimer:
-    name: Run AWS colabfold full multimer tests
-    if: github.repository == 'nf-core/proteinfold'
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        mode: ["colabfold_webserver", "colabfold_local"]
-    steps:
-      - name: Launch workflow via tower
-        uses: nf-core/tower-action@v3
-        with:
-          workspace_id: ${{ secrets.TOWER_WORKSPACE_ID }}
-          access_token: ${{ secrets.TOWER_ACCESS_TOKEN }}
-          compute_env: ${{ secrets.TOWER_COMPUTE_ENV }}
-          workdir: s3://${{ secrets.AWS_S3_BUCKET }}/work/proteinfold/work-${{ github.sha }}
-          parameters: |
-            {
-              "input": 'https://raw.githubusercontent.com/nf-core/test-datasets/proteinfold/testdata/samplesheet/v1.0/samplesheet_multimer.csv'
-              "outdir": "s3://${{ secrets.AWS_S3_BUCKET }}/proteinfold/results-${{ github.sha }}/multimer_mode_${{ matrix.mode }}"
-              "model_type": "AlphaFold2-multimer-v2"
-            }
-          profiles: test_full,aws_tower
+          profiles: test_full_${{ matrix.platform }},aws_tower
       - uses: actions/upload-artifact@v3
         with:
           name: Tower debug log file
