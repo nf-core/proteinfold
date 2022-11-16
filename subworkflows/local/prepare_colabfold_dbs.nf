@@ -2,20 +2,6 @@
 // Download all the required databases and params by Colabfold
 //
 
-// if (params.colabfold_model == 'AlphaFold2-multimer-v1') {
-//     fullname_params = 'alphafold_params_colab_2021-10-27'
-//     alphafold_params     = "https://storage.googleapis.com/alphafold/${fullname_params}.tar"
-// } else if (params.colabfold_model == 'AlphaFold2-multimer-v2') {
-//     fullname_params = 'alphafold_params_colab_2022-03-02'
-//     alphafold_params     = "https://storage.googleapis.com/alphafold/${fullname_params}.tar"
-// } else if (params.colabfold_model == 'AlphaFold2-ptm') {
-//     fullname_params = 'alphafold_params_2021-07-14'
-//     alphafold_params     = "https://storage.googleapis.com/alphafold/${fullname_params}.tar"
-// }
-
-// colabfold_db = 'http://wwwuser.gwdg.de/~compbiol/colabfold/colabfold_envdb_202108.tar.gz'
-// uniref30     = 'http://wwwuser.gwdg.de/~compbiol/colabfold/uniref30_2103.tar.gz'
-
 include { ARIA2_UNCOMPRESS as ARIA2_COLABFOLD_PARAMS                   } from './aria2_uncompress'
 include { ARIA2_UNCOMPRESS as ARIA2_COLABFOLD_DB                       } from './aria2_uncompress'
 include { ARIA2_UNCOMPRESS as ARIA2_UNIREF30                           } from './aria2_uncompress'
@@ -31,23 +17,16 @@ workflow PREPARE_COLABFOLD_DBS {
     ch_uniref30     = Channel.empty()
     ch_versions     = Channel.empty()
 
-    // ADD DB PARAMETERS TO JSON
-    // Implement paths to individual DBs
     if (params.colabfold_db) {
-
-        println "........................... params.alphafold_params\n" //TODO del
-        alphafold_params_dir =  params.alphafold_params[params.colabfold_model_preset].split('/')[-1].split('\\.')[0]
-        ch_params            = file( "${params.colabfold_db}/params/${alphafold_params_dir}", type: 'any' )
-        println "...............................................................${alphafold_params_dir}\n" //TODO del
-        println ":::::::::::::::::::::::::::::::: ${params.colabfold_db}/params/${alphafold_params_dir}\n" //TODO del
+        ch_params            = file( params.alphafold_params_path[params.colabfold_model_preset], type: 'any' )
         if (params.colabfold_server == 'local') {
-            ch_colabfold_db = file( "${params.colabfold_db}/colabfold_envdb_202108", type: 'any' )
-            ch_uniref30     = file( "${params.colabfold_db}/uniref30_2103", type: 'any' )
+            ch_colabfold_db = file( params.colabfold_db_path, type: 'any' )
+            ch_uniref30     = file( params.uniref30_path , type: 'any' )
         }
     }
     else {
         ARIA2_COLABFOLD_PARAMS (
-            params.alphafold_params[params.colabfold_model]
+            params.alphafold_params[params.colabfold_model_preset]
         )
         ch_params = ARIA2_COLABFOLD_PARAMS.out.db
         ch_versions = ch_versions.mix(ARIA2_COLABFOLD_PARAMS.out.versions)

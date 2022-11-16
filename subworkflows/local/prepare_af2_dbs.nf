@@ -1,19 +1,6 @@
 //
 // Download all the required AlphaFold 2 databases and parameters
 //
-// TODO create parameters and include them in nextflow config
-// bfd            = 'https://storage.googleapis.com/alphafold-databases/casp14_versions/bfd_metaclust_clu_complete_id30_c90_final_seq.sorted_opt.tar.gz'
-// small_bfd      = 'https://storage.googleapis.com/alphafold-databases/reduced_dbs/bfd-first_non_consensus_sequences.fasta.gz'
-// af2_params     = 'https://storage.googleapis.com/alphafold/alphafold_params_2022-03-02.tar'
-// mgnify         = 'https://storage.googleapis.com/alphafold-databases/casp14_versions/mgy_clusters_2018_12.fa.gz'
-// pdb70          = 'http://wwwuser.gwdg.de/~compbiol/data/hhsuite/databases/hhsuite_dbs/old-releases/pdb70_from_mmcif_200916.tar.gz'
-// pdb_mmCIF      = 'rsync.rcsb.org::ftp_data/structures/divided/mmCIF/' //'rsync.rcsb.org::ftp_data/structures/divided/mmCIF/' ftp.pdbj.org::ftp_data/structures/divided/mmCIF/ rsync.ebi.ac.uk::pub/databases/pdb/data/structures/divided/mmCIF/
-// pdb_obsolete   = 'ftp://ftp.wwpdb.org/pub/pdb/data/status/obsolete.dat'
-// uniclust30     = 'https://storage.googleapis.com/alphafold-databases/casp14_versions/uniclust30_2018_08_hhsuite.tar.gz'
-// uniref90       = 'ftp://ftp.uniprot.org/pub/databases/uniprot/uniref/uniref90/uniref90.fasta.gz'
-// pdb_seqres     = 'ftp://ftp.wwpdb.org/pub/pdb/derived_data/pdb_seqres.txt'
-// uniprot_sprot  = 'ftp://ftp.ebi.ac.uk/pub/databases/uniprot/current_release/knowledgebase/complete/uniprot_sprot.fasta.gz'
-// uniprot_trembl = 'ftp://ftp.ebi.ac.uk/pub/databases/uniprot/current_release/knowledgebase/complete/uniprot_trembl.fasta.gz'
 
 include {
     ARIA2_UNCOMPRESS as ARIA2_AF2_PARAMS
@@ -39,26 +26,22 @@ workflow PREPARE_AF2_DBS {
 
     if (params.alphafold2_db) {
         if (params.full_dbs) {
-            ch_bfd       = file("${params.alphafold2_db}/bfd/*" )
+            ch_bfd       = file(params.bfd_path)
             ch_bfd_small = file("${projectDir}/assets/dummy_db")
         }
         else {
             ch_bfd       = file("${projectDir}/assets/dummy_db")
-            ch_bfd_small = file("${params.alphafold2_db}/small_bfd/*")
+            ch_bfd_small = file(params.small_bfd_path)
         }
 
-        // TODO parameters for each of the DBs that could be updated or provided in a user path
-        // maybe have a db.config?
-        // TODO add checkIfExists (need to create a fake structure for testing)
-        // Add an if for each parameter?
-        ch_params     = file( "${params.alphafold2_db}/alphafold_params_*/*" )
-        ch_mgnify     = file( "${params.alphafold2_db}/mgnify/*" )
-        ch_pdb70      = file( "${params.alphafold2_db}/pdb70/*", type: 'any' )
-        ch_mmcif      = file( "${params.alphafold2_db}/pdb_mmcif/*", type: 'any' )
-        ch_uniclust30 = file( "${params.alphafold2_db}/uniclust30/*", type: 'any' )
-        ch_uniref90   = file( "${params.alphafold2_db}/uniref90/*" )
-        ch_pdb_seqres = file( "${params.alphafold2_db}/pdb_seqres/*" )
-        ch_uniprot    = file( "${params.alphafold2_db}/uniprot/*" )
+        ch_params     = file(params.params_path)
+        ch_mgnify     = file(params.mgnify_path)
+        ch_pdb70      = file(params.pdb70_path, type: 'any')
+        ch_mmcif      = file(params.pdb_mmcif_path, type: 'any')
+        ch_uniclust30 = file(params.uniclust30_path, type: 'any')
+        ch_uniref90   = file(params.uniref90_path)
+        ch_pdb_seqres = file(params.pdb_seqres_path )
+        ch_uniprot    = file(params.uniprot_path)
     }
     else {
         if (params.full_dbs) {
