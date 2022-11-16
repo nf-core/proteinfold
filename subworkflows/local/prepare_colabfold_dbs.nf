@@ -31,8 +31,10 @@ workflow PREPARE_COLABFOLD_DBS {
     ch_uniref30     = Channel.empty()
     ch_versions     = Channel.empty()
 
-
+    // ADD DB PARAMETERS TO JSON
+    // Implement paths to individual DBs
     if (params.colabfold_db) {
+
         println "........................... params.alphafold_params\n" //TODO del
         alphafold_params_dir =  params.alphafold_params[params.colabfold_model_preset].split('/')[-1].split('\\.')[0]
         ch_params            = file( "${params.colabfold_db}/params/${alphafold_params_dir}", type: 'any' )
