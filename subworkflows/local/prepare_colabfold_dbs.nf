@@ -25,9 +25,7 @@ include { MMSEQS_CREATEINDEX as MMSEQS_CREATEINDEX_COLABFOLDDB         } from '.
 include { MMSEQS_CREATEINDEX as MMSEQS_CREATEINDEX_UNIPROT30           } from '../../modules/local/mmseqs_createindex'
 
 workflow PREPARE_COLABFOLD_DBS {
-
 	main:
-
     ch_params       = Channel.empty()
     ch_colabfold_db = Channel.empty()
     ch_uniref30     = Channel.empty()
@@ -48,7 +46,7 @@ workflow PREPARE_COLABFOLD_DBS {
         ch_params = ARIA2_COLABFOLD_PARAMS.out.db
         ch_versions = ch_versions.mix(ARIA2_COLABFOLD_PARAMS.out.versions)
 
-        if (params.mode == 'colabfold_local') {
+        if (params.colabfold_server == 'local') {
             ARIA2_COLABFOLD_DB (
                 colabfold_db
             )

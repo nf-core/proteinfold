@@ -100,16 +100,38 @@ workflow ALPHAFOLD2 {
 
     // TODO The above code can be simplified with something such as the one below, modules need to be reviewed to
     // swallow the correct DBs, only RUN_AF2 should work like it is now
-    // //
-    // // SUBWORKFLOW: Download databases and params for Alphafold2
-    // //
-
+    //
+    // SUBWORKFLOW: Download databases and params for Alphafold2
+    //
     PREPARE_AF2_DBS ( )
     ch_versions = ch_versions.mix(PREPARE_AF2_DBS.out.versions)
-    // //
-    // // MODULE: Run Alphafold2
-    // //
-    if (params.mode == 'AF2_split') {
+
+    if (params.alphafold2_mode == 'standard') {
+        //
+        // SUBWORKFLOW: Run Alphafold2 standard mode
+        //
+        RUN_AF2 (
+            ch_fasta,
+            params.max_template_date,
+            params.full_dbs,
+            params.model_preset,
+            PREPARE_AF2_DBS.out.params,
+            PREPARE_AF2_DBS.out.bfd.ifEmpty([]),
+            PREPARE_AF2_DBS.out.bfd_small.ifEmpty([]),
+            PREPARE_AF2_DBS.out.mgnify,
+            PREPARE_AF2_DBS.out.pdb70,
+            PREPARE_AF2_DBS.out.pdb_mmcif,
+            PREPARE_AF2_DBS.out.uniclust30,
+            PREPARE_AF2_DBS.out.uniref90,
+            PREPARE_AF2_DBS.out.pdb_seqres,
+            PREPARE_AF2_DBS.out.uniprot,
+        )
+        ch_versions = ch_versions.mix(RUN_AF2.out.versions)
+        ch_multiqc_rep = RUN_AF2.out.multiqc.collect()
+    } else if (params.alphafold2_mode == '') {
+        //
+        // SUBWORKFLOW: Run Alphafold2 split mode, MSA and predicition
+        //
         RUN_AF2_MSA (
             ch_fasta,
             params.full_dbs,
@@ -147,25 +169,6 @@ workflow ALPHAFOLD2 {
         )
         ch_versions = ch_versions.mix(RUN_AF2_PRED.out.versions)
         ch_multiqc_rep = RUN_AF2_PRED.out.multiqc.collect()
-    } else {
-        RUN_AF2 (
-            ch_fasta,
-            params.max_template_date,
-            params.full_dbs,
-            params.model_preset,
-            PREPARE_AF2_DBS.out.params,
-            PREPARE_AF2_DBS.out.bfd.ifEmpty([]),
-            PREPARE_AF2_DBS.out.bfd_small.ifEmpty([]),
-            PREPARE_AF2_DBS.out.mgnify,
-            PREPARE_AF2_DBS.out.pdb70,
-            PREPARE_AF2_DBS.out.pdb_mmcif,
-            PREPARE_AF2_DBS.out.uniclust30,
-            PREPARE_AF2_DBS.out.uniref90,
-            PREPARE_AF2_DBS.out.pdb_seqres,
-            PREPARE_AF2_DBS.out.uniprot
-        )
-        ch_versions = ch_versions.mix(RUN_AF2.out.versions)
-        ch_multiqc_rep = RUN_AF2.out.multiqc.collect()
     }
 
     //
@@ -201,7 +204,6 @@ workflow ALPHAFOLD2 {
     ch_versions    = ch_versions.mix(MULTIQC.out.versions)
 
 }
-
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

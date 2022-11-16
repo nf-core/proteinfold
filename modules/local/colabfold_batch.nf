@@ -8,10 +8,10 @@ process COLABFOLD_BATCH {
 
     input:
     tuple val(meta), path(fasta)
-    val   model_type
-    path ('params/*')
-    path ('colabfold_db/*')
-    path ('uniref30/*')
+    val   colabfold_model
+    path  ('params/*')
+    path  ('colabfold_db/*')
+    path  ('uniref30/*')
     val   numRec
 
     output:
@@ -29,7 +29,7 @@ process COLABFOLD_BATCH {
         $args \\
         --num-recycle ${numRec} \\
         --data \$PWD \\
-        --model-type ${model_type} \\
+        --model-type ${colabfold_model} \\
         ${fasta} \\
         \$PWD
     for i in `find *_relaxed_rank_1*.pdb`; do cp \$i `echo \$i | sed "s|_relaxed_rank_|\t|g" | cut -f1`"_colabfold.pdb"; done

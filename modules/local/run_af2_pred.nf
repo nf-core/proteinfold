@@ -12,7 +12,7 @@ process RUN_AF2_PRED {
     input:
     tuple val(meta), path(fasta)
     val   db_preset
-    val   model_preset
+    val   alphafold2_model_preset
     path ('params/*')
     path ('bfd/*')
     path ('small_bfd/*')
@@ -36,7 +36,7 @@ process RUN_AF2_PRED {
     if [ -d params/alphafold_params_* ]; then ln -r -s params/alphafold_params_*/* params/; fi
     python3 /app/alphafold/run_predict.py \
         --fasta_paths=${fasta} \
-        --model_preset=${model_preset} \
+        --model_preset=${alphafold2_model_preset} \
         --output_dir=\$PWD \
         --data_dir=\$PWD \
         --random_seed=53343 \

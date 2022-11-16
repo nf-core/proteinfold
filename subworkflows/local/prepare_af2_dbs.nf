@@ -37,28 +37,28 @@ workflow PREPARE_AF2_DBS {
     ch_versions   = Channel.empty()
 
 
-    if (params.af2_db) {
+    if (params.alphafold2_db) {
         if (params.full_dbs) {
-            ch_bfd       = file("${params.af2_db}/bfd/*" )
+            ch_bfd       = file("${params.alphafold2_db}/bfd/*" )
             ch_bfd_small = file("${projectDir}/assets/dummy_db")
         }
         else {
             ch_bfd       = file("${projectDir}/assets/dummy_db")
-            ch_bfd_small = file("${params.af2_db}/small_bfd/*")
+            ch_bfd_small = file("${params.alphafold2_db}/small_bfd/*")
         }
 
         // TODO parameters for each of the DBs that could be updated or provided in a user path
         // maybe have a db.config?
         // TODO add checkIfExists (need to create a fake structure for testing)
         // Add an if for each parameter?
-        ch_params     = file( "${params.af2_db}/alphafold_params_*/*" )
-        ch_mgnify     = file( "${params.af2_db}/mgnify/*" )
-        ch_pdb70      = file( "${params.af2_db}/pdb70/*", type: 'any' )
-        ch_mmcif      = file( "${params.af2_db}/pdb_mmcif/*", type: 'any' )
-        ch_uniclust30 = file( "${params.af2_db}/uniclust30/*", type: 'any' )
-        ch_uniref90   = file( "${params.af2_db}/uniref90/*" )
-        ch_pdb_seqres = file( "${params.af2_db}/pdb_seqres/*" )
-        ch_uniprot    = file( "${params.af2_db}/uniprot/*" )
+        ch_params     = file( "${params.alphafold2_db}/alphafold_params_*/*" )
+        ch_mgnify     = file( "${params.alphafold2_db}/mgnify/*" )
+        ch_pdb70      = file( "${params.alphafold2_db}/pdb70/*", type: 'any' )
+        ch_mmcif      = file( "${params.alphafold2_db}/pdb_mmcif/*", type: 'any' )
+        ch_uniclust30 = file( "${params.alphafold2_db}/uniclust30/*", type: 'any' )
+        ch_uniref90   = file( "${params.alphafold2_db}/uniref90/*" )
+        ch_pdb_seqres = file( "${params.alphafold2_db}/pdb_seqres/*" )
+        ch_uniprot    = file( "${params.alphafold2_db}/uniprot/*" )
     }
     else {
         if (params.full_dbs) {
