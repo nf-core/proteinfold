@@ -109,7 +109,7 @@ workflow ALPHAFOLD2 {
     // //
     // // MODULE: Run Alphafold2
     // //
-    if (!params.standard_af2) {
+    if (params.mode == 'AF2_split') {
         RUN_AF2_MSA (
             ch_fasta,
             params.full_dbs,

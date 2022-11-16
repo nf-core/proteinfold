@@ -32,7 +32,7 @@
                     "type": "string",
                     "default": "AF2",
                     "description": "Specifies the mode in which the pipeline will be run",
-                    "enum": ["AF2", "colabfold_webserver", "colabfold_local"]
+                    "enum": ["AF2", "AF2_split", "colabfold_webserver", "colabfold_local"]
                 },
                 "use_gpu": {
                     "type": "boolean",
@@ -75,14 +75,9 @@
                 },
                 "model_preset": {
                     "type": "string",
-                    "default": "monomer",
+                    "default": "monomer_ptm",
                     "description": "Model preset for 'AF2' mode",
                     "enum": ["monomer", "monomer_casp14", "monomer_ptm", "multimer"]
-                },
-                "standard_af2": {
-                    "type": "boolean",
-                    "default": true,
-                    "description": "If true, uses the standard AF2 implementation, otherwise it separates the MSA computation from the model inference step"
                 }
             }
         },
