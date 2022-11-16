@@ -2,7 +2,7 @@
  * Run Alphafold2 MSA
  */
 process RUN_AF2_MSA {
-    tag "${seq_name}"
+    tag   "$meta.id"
     label 'process_medium'
 
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
@@ -10,7 +10,7 @@ process RUN_AF2_MSA {
         'luisas/af2_msa:2' }"
 
     input:
-    tuple val(seq_name), path(fasta)
+    tuple val(meta), path(fasta)
     val   db_preset
     val   alphafold2_model_preset
     path ('params/*')
