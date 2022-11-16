@@ -39,15 +39,15 @@ ch_multiqc_custom_methods_description = params.multiqc_methods_description ? fil
 //
 // SUBWORKFLOW: Consisting of a mix of local and nf-core/modules
 //
-include { INPUT_CHECK } from '../subworkflows/local/input_check'
+include { INPUT_CHECK           } from '../subworkflows/local/input_check'
 include { PREPARE_COLABFOLD_DBS } from '../subworkflows/local/prepare_colabfold_dbs'
 
 //
 // MODULE: Local to the pipeline
 //
-include { COLABFOLD_BATCH         } from '../modules/local/colabfold_batch'
+include { COLABFOLD_BATCH        } from '../modules/local/colabfold_batch'
 include { MMSEQS_COLABFOLDSEARCH } from '../modules/local/mmseqs_colabfoldsearch'
-include { MULTIFASTA_TO_CSV } from '../modules/local/multifasta_to_csv'
+include { MULTIFASTA_TO_CSV      } from '../modules/local/multifasta_to_csv'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -86,18 +86,18 @@ workflow COLABFOLD {
     PREPARE_COLABFOLD_DBS ( )
     ch_versions = ch_versions.mix(PREPARE_COLABFOLD_DBS.out.versions)
 
-    if (params.colabfold_server == 'colabfold') {
+    if (params.colabfold_server == 'webserver') {
         //
         // MODULE: Run colabfold
         //
-        if (params.colabfold_model != 'AlphaFold2-ptm') {
+        if (params.colabfold_model_preset != 'AlphaFold2-ptm') {
             MULTIFASTA_TO_CSV(
                 INPUT_CHECK.out.fastas
             )
             ch_versions = ch_versions.mix(MULTIFASTA_TO_CSV.out.versions)
             COLABFOLD_BATCH(
                 MULTIFASTA_TO_CSV.out.input_csv,
-                params.colabfold_model,
+                params.colabfold_model_preset,
                 PREPARE_COLABFOLD_DBS.out.params,
                 [],
                 [],
@@ -107,7 +107,7 @@ workflow COLABFOLD {
         } else {
             COLABFOLD_BATCH(
                 INPUT_CHECK.out.fastas,
-                params.colabfold_model,
+                params.colabfold_model_preset,
                 PREPARE_COLABFOLD_DBS.out.params,
                 [],
                 [],
@@ -120,7 +120,7 @@ workflow COLABFOLD {
         //
 	    // MODULE: Run mmseqs
         //
-        if (params.colabfold_model != 'AlphaFold2-ptm') {
+        if (params.colabfold_model_preset != 'AlphaFold2-ptm') {
             MULTIFASTA_TO_CSV(
                 INPUT_CHECK.out.fastas
             )
