@@ -2,19 +2,19 @@
 // Download all the required databases and params by Colabfold
 //
 
-if (params.model_type == 'AlphaFold2-multimer-v1') {
-    fullname_params = 'alphafold_params_colab_2021-10-27'
-    link_params     = "https://storage.googleapis.com/alphafold/${fullname_params}.tar"
-} else if (params.model_type == 'AlphaFold2-multimer-v2') {
-    fullname_params = 'alphafold_params_colab_2022-03-02'
-    link_params     = "https://storage.googleapis.com/alphafold/${fullname_params}.tar"
-} else if (params.model_type == 'AlphaFold2-ptm') {
-    fullname_params = 'alphafold_params_2021-07-14'
-    link_params     = "https://storage.googleapis.com/alphafold/${fullname_params}.tar"
-}
+// if (params.colabfold_model == 'AlphaFold2-multimer-v1') {
+//     fullname_params = 'alphafold_params_colab_2021-10-27'
+//     alphafold_params     = "https://storage.googleapis.com/alphafold/${fullname_params}.tar"
+// } else if (params.colabfold_model == 'AlphaFold2-multimer-v2') {
+//     fullname_params = 'alphafold_params_colab_2022-03-02'
+//     alphafold_params     = "https://storage.googleapis.com/alphafold/${fullname_params}.tar"
+// } else if (params.colabfold_model == 'AlphaFold2-ptm') {
+//     fullname_params = 'alphafold_params_2021-07-14'
+//     alphafold_params     = "https://storage.googleapis.com/alphafold/${fullname_params}.tar"
+// }
 
-colabfold_db = 'http://wwwuser.gwdg.de/~compbiol/colabfold/colabfold_envdb_202108.tar.gz'
-uniref30     = 'http://wwwuser.gwdg.de/~compbiol/colabfold/uniref30_2103.tar.gz'
+// colabfold_db = 'http://wwwuser.gwdg.de/~compbiol/colabfold/colabfold_envdb_202108.tar.gz'
+// uniref30     = 'http://wwwuser.gwdg.de/~compbiol/colabfold/uniref30_2103.tar.gz'
 
 include { ARIA2_UNCOMPRESS as ARIA2_COLABFOLD_PARAMS                   } from './aria2_uncompress'
 include { ARIA2_UNCOMPRESS as ARIA2_COLABFOLD_DB                       } from './aria2_uncompress'
@@ -33,22 +33,26 @@ workflow PREPARE_COLABFOLD_DBS {
 
 
     if (params.colabfold_db) {
-        ch_params       = file( "${params.colabfold_db}/params/${fullname_params}", type: 'any' )
-        if (params.mode == 'colabfold_local') {
+        println "........................... params.alphafold_params\n" //TODO del
+        alphafold_params_dir =  params.alphafold_params[params.colabfold_model_preset].split('/')[-1].split('\\.')[0]
+        ch_params            = file( "${params.colabfold_db}/params/${alphafold_params_dir}", type: 'any' )
+        println "...............................................................${alphafold_params_dir}\n" //TODO del
+        println ":::::::::::::::::::::::::::::::: ${params.colabfold_db}/params/${alphafold_params_dir}\n" //TODO del
+        if (params.colabfold_server == 'local') {
             ch_colabfold_db = file( "${params.colabfold_db}/colabfold_envdb_202108", type: 'any' )
             ch_uniref30     = file( "${params.colabfold_db}/uniref30_2103", type: 'any' )
         }
     }
     else {
         ARIA2_COLABFOLD_PARAMS (
-            link_params
+            params.alphafold_params[params.colabfold_model]
         )
         ch_params = ARIA2_COLABFOLD_PARAMS.out.db
         ch_versions = ch_versions.mix(ARIA2_COLABFOLD_PARAMS.out.versions)
 
         if (params.colabfold_server == 'local') {
             ARIA2_COLABFOLD_DB (
-                colabfold_db
+                params.colabfold_db_link
             )
             ch_versions = ch_versions.mix(ARIA2_COLABFOLD_DB.out.versions)
 
@@ -67,7 +71,7 @@ workflow PREPARE_COLABFOLD_DBS {
             }
 
             ARIA2_UNIREF30(
-                uniref30
+                params.uniref30
             )
             ch_versions = ch_versions.mix(ARIA2_UNIREF30.out.versions)
 
