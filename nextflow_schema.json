@@ -10,10 +10,7 @@
             "type": "object",
             "fa_icon": "fas fa-coins",
             "description": "Define where the pipeline should find input data and save output data.",
-            "required": [
-                "input",
-                "outdir"
-            ],
+            "required": ["input", "outdir"],
             "properties": {
                 "input": {
                     "type": "string",
@@ -35,10 +32,7 @@
                     "type": "string",
                     "default": "alphafold2",
                     "description": "Specifies the mode in which the pipeline will be run",
-                    "enum": [
-                        "alphafold2",
-                        "colabfold"
-                    ],
+                    "enum": ["alphafold2", "colabfold"],
                     "fa_icon": "fas fa-cogs"
                 },
                 "use_gpu": {
@@ -87,22 +81,14 @@
                     "type": "string",
                     "default": "standard",
                     "description": "Specifies the mode in which Alphafold2 will be run",
-                    "enum": [
-                        "standard",
-                        "split_msa_prediction"
-                    ],
+                    "enum": ["standard", "split_msa_prediction"],
                     "fa_icon": "fas fa-exchange-alt"
                 },
                 "alphafold2_model_preset": {
                     "type": "string",
                     "default": "monomer_ptm",
                     "description": "Model preset for 'AF2' mode",
-                    "enum": [
-                        "monomer",
-                        "monomer_casp14",
-                        "monomer_ptm",
-                        "multimer"
-                    ],
+                    "enum": ["monomer", "monomer_casp14", "monomer_ptm", "multimer"],
                     "fa_icon": "fas fa-stream"
                 }
             }
@@ -122,21 +108,14 @@
                     "type": "string",
                     "default": "webserver",
                     "description": "Specifies the MSA server used by Colabfold",
-                    "enum": [
-                        "webserver",
-                        "local"
-                    ],
+                    "enum": ["webserver", "local"],
                     "fa_icon": "fas fa-server"
                 },
                 "colabfold_model_preset": {
                     "type": "string",
                     "default": "AlphaFold2-ptm",
                     "description": "Model preset for 'colabfold' mode",
-                    "enum": [
-                        "AlphaFold2-ptm",
-                        "AlphaFold2-multimer-v1",
-                        "AlphaFold2-multimer-v2"
-                    ],
+                    "enum": ["AlphaFold2-ptm", "AlphaFold2-multimer-v1", "AlphaFold2-multimer-v2"],
                     "fa_icon": "fas fa-stream"
                 },
                 "num_recycle": {
@@ -156,12 +135,7 @@
                     "default": 0,
                     "description": "Specify the way that MMSeqs2 will load the required databases in memory",
                     "fa_icon": "fas fa-download",
-                    "enum": [
-                        0,
-                        1,
-                        2,
-                        3
-                    ]
+                    "enum": [0, 1, 2, 3]
                 },
                 "host_url": {
                     "type": "string",
@@ -473,14 +447,7 @@
                     "description": "Method used to save pipeline results to output directory.",
                     "help_text": "The Nextflow `publishDir` option specifies which intermediate files should be saved to the output directory. This option tells the pipeline what method should be used to move these files. See [Nextflow docs](https://www.nextflow.io/docs/latest/process.html#publishdir) for details.",
                     "fa_icon": "fas fa-copy",
-                    "enum": [
-                        "symlink",
-                        "rellink",
-                        "link",
-                        "copy",
-                        "copyNoFollow",
-                        "move"
-                    ],
+                    "enum": ["symlink", "rellink", "link", "copy", "copyNoFollow", "move"],
                     "hidden": true
                 },
                 "email_on_fail": {
