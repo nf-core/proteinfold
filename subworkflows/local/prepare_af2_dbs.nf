@@ -26,22 +26,22 @@ workflow PREPARE_AF2_DBS {
 
     if (params.alphafold2_db) {
         if (params.full_dbs) {
-            ch_bfd       = file(params.bfd_path)
-            ch_bfd_small = file("${projectDir}/assets/dummy_db")
+            ch_bfd       = file( params.bfd_path )
+            ch_bfd_small = file( "${projectDir}/assets/dummy_db" )
         }
         else {
-            ch_bfd       = file("${projectDir}/assets/dummy_db")
-            ch_bfd_small = file(params.small_bfd_path)
+            ch_bfd       = file( "${projectDir}/assets/dummy_db" )
+            ch_bfd_small = file( params.small_bfd_path )
         }
 
-        ch_params     = file(params.alphafold2_params_path)
-        ch_mgnify     = file(params.mgnify_path)
-        ch_pdb70      = file(params.pdb70_path, type: 'any')
-        ch_mmcif      = file(params.pdb_mmcif_path, type: 'any')
-        ch_uniclust30 = file(params.uniclust30_path, type: 'any')
-        ch_uniref90   = file(params.uniref90_path)
-        ch_pdb_seqres = file(params.pdb_seqres_path )
-        ch_uniprot    = file(params.uniprot_path)
+        ch_params     = file( params.alphafold2_params_path )
+        ch_mgnify     = file( params.mgnify_path )
+        ch_pdb70      = file( params.pdb70_path, type: 'any' )
+        ch_mmcif      = file( params.pdb_mmcif_path, type: 'any' )
+        ch_uniclust30 = file( params.uniclust30_path, type: 'any' )
+        ch_uniref90   = file( params.uniref90_path )
+        ch_pdb_seqres = file( params.pdb_seqres_path )
+        ch_uniprot    = file( params.uniprot_path )
     }
     else {
         if (params.full_dbs) {
