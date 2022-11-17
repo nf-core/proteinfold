@@ -55,10 +55,4 @@ class WorkflowColabfold {
 
         return description_html
     }
-
-    //
-    // Exit pipeline if incorrect --genome key provided
-    //
-    private static void genomeExistsError(params, log) {
-    }
 }

@@ -422,7 +422,6 @@
                 },
                 "colabfold_alphafold2_params": {
                     "type": "string",
-                    "default": "https://storage.googleapis.com/alphafold/alphafold_params_2021-07-14.tar",
                     "description": "Link to the Alphafold2 parameters for Colabfold",
                     "fa_icon": "fas fa-link"
                 }
@@ -448,6 +447,12 @@
                     "type": "string",
                     "description": "Link to the Alphafold2 parameters for Colabfold",
                     "fa_icon": "fas fa-folder-open"
+                },
+                "properties": {
+                    "colabfold_alphafold2_params_tags": {
+                        "type": "string",
+                        "default": "['AlphaFold2-multimer-v1':'alphafold_params_colab_2021-10-27', 'AlphaFold2-multimer-v2':'AlphaFold2-multimer-v2', 'AlphaFold2-ptm':'alphafold_params_2021-07-14']"
+                    }
                 }
             }
         },

@@ -18,7 +18,7 @@ workflow PREPARE_COLABFOLD_DBS {
     ch_versions     = Channel.empty()
 
     if (params.colabfold_db) {
-        ch_params = file( params.colabfold_alphafold2_params_path[params.colabfold_model_preset], type: 'any' )
+        ch_params = file( params.colabfold_alphafold2_params_path, type: 'any' )
         if (params.colabfold_server == 'local') {
             ch_colabfold_db = file( params.colabfold_db_path, type: 'any' )
             ch_uniref30     = file( params.uniref30_path , type: 'any' )
@@ -26,7 +26,7 @@ workflow PREPARE_COLABFOLD_DBS {
     }
     else {
         ARIA2_COLABFOLD_PARAMS (
-            params.colabfold_alphafold2_params[params.colabfold_model_preset]
+            params.colabfold_alphafold2_params
         )
         ch_params = ARIA2_COLABFOLD_PARAMS.out.db
         ch_versions = ch_versions.mix(ARIA2_COLABFOLD_PARAMS.out.versions)
