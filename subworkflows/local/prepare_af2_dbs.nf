@@ -34,7 +34,7 @@ workflow PREPARE_AF2_DBS {
             ch_bfd_small = file(params.small_bfd_path)
         }
 
-        ch_params     = file(params.params_path)
+        ch_params     = file(params.alphafold2_params_path)
         ch_mgnify     = file(params.mgnify_path)
         ch_pdb70      = file(params.pdb70_path, type: 'any')
         ch_mmcif      = file(params.pdb_mmcif_path, type: 'any')
@@ -59,7 +59,7 @@ workflow PREPARE_AF2_DBS {
         }
 
         ARIA2_AF2_PARAMS(
-            params.af2_params
+            params.alphafold2_params
         )
         ch_params = ARIA2_AF2_PARAMS.out.db
         ch_versions = ch_versions.mix(ARIA2_AF2_PARAMS.out.versions)
@@ -78,7 +78,7 @@ workflow PREPARE_AF2_DBS {
         ch_versions = ch_versions.mix(ARIA2_PDB70.out.versions)
 
         DOWNLOAD_PDBMMCIF(
-            params.pdb_mmCIF,
+            params.pdb_mmcif,
             params.pdb_obsolete
         )
         ch_mmcif = DOWNLOAD_PDBMMCIF.out.ch_db
