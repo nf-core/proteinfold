@@ -38,11 +38,13 @@
                     "enum": [
                         "alphafold2",
                         "colabfold"
-                    ]
+                    ],
+                    "fa_icon": "fas fa-cogs"
                 },
                 "use_gpu": {
                     "type": "boolean",
-                    "description": "Run on CPUs (default) or GPUs"
+                    "description": "Run on CPUs (default) or GPUs",
+                    "fa_icon": "fas fa-microchip"
                 },
                 "email": {
                     "type": "string",
@@ -88,7 +90,8 @@
                     "enum": [
                         "standard",
                         "split_msa_prediction"
-                    ]
+                    ],
+                    "fa_icon": "fas fa-exchange-alt"
                 },
                 "alphafold2_model_preset": {
                     "type": "string",
@@ -99,7 +102,8 @@
                         "monomer_casp14",
                         "monomer_ptm",
                         "multimer"
-                    ]
+                    ],
+                    "fa_icon": "fas fa-stream"
                 }
             }
         },
@@ -132,12 +136,14 @@
                         "AlphaFold2-ptm",
                         "AlphaFold2-multimer-v1",
                         "AlphaFold2-multimer-v2"
-                    ]
+                    ],
+                    "fa_icon": "fas fa-stream"
                 },
                 "num_recycle": {
                     "type": "integer",
                     "default": 3,
-                    "description": "Number of recycles"
+                    "description": "Number of recycles",
+                    "fa_icon": "fas fa-recycle"
                 },
                 "use_amber": {
                     "type": "boolean",
@@ -148,20 +154,30 @@
                 "db_load_mode": {
                     "type": "integer",
                     "default": 0,
-                    "description": "Specify the way that MMSeqs2 will load the required databases in memory"
+                    "description": "Specify the way that MMSeqs2 will load the required databases in memory",
+                    "fa_icon": "fas fa-download",
+                    "enum": [
+                        0,
+                        1,
+                        2,
+                        3
+                    ]
                 },
                 "host_url": {
                     "type": "string",
-                    "description": "Specify your custom MMSeqs2 API server url"
+                    "description": "Specify your custom MMSeqs2 API server url",
+                    "fa_icon": "fas fa-link"
                 },
                 "use_templates": {
                     "type": "boolean",
                     "default": true,
-                    "description": "Use PDB templates"
+                    "description": "Use PDB templates",
+                    "fa_icon": "fas fa-paste"
                 },
                 "create_colabfold_index": {
                     "type": "boolean",
-                    "description": "Create databases indexes when running colabfold_local mode"
+                    "description": "Create databases indexes when running colabfold_local mode",
+                    "fa_icon": "fas fa-bezier-curve"
                 }
             }
         },
@@ -336,63 +352,53 @@
             "properties": {
                 "bfd_path": {
                     "type": "string",
-                    "default": "https://storage.googleapis.com/alphafold-databases/casp14_versions/bfd_metaclust_clu_complete_id30_c90_final_seq.sorted_opt.tar.gz",
                     "description": "Path to BFD dababase",
-                    "fa_icon": "fas fa-database"
+                    "fa_icon": "fas fa-folder-open"
                 },
                 "bfd_small_path": {
                     "type": "string",
-                    "default": "https://storage.googleapis.com/alphafold-databases/reduced_dbs/bfd-first_non_consensus_sequences.fasta.gz",
                     "description": "Path to a reduced version of the BFD database",
-                    "fa_icon": "fas fa-database"
+                    "fa_icon": "fas fa-folder-open"
                 },
                 "alphafold2_params_path": {
                     "type": "string",
-                    "default": "https://storage.googleapis.com/alphafold/alphafold_params_2022-03-02.tar",
                     "description": "Path to the Alphafold2 parameters",
-                    "fa_icon": "fas fa-database"
+                    "fa_icon": "fas fa-folder-open"
                 },
                 "mgnify_path": {
                     "type": "string",
-                    "default": "https://storage.googleapis.com/alphafold-databases/casp14_versions/mgy_clusters_2018_12.fa.gz",
                     "description": "Path to the MGnify database",
-                    "fa_icon": "fas fa-database"
+                    "fa_icon": "fas fa-folder-open"
                 },
                 "pdb70_path": {
                     "type": "string",
-                    "default": "http://wwwuser.gwdg.de/~compbiol/data/hhsuite/databases/hhsuite_dbs/old-releases/pdb70_from_mmcif_200916.tar.gz",
                     "description": "Path to the PDB70 database",
-                    "fa_icon": "fas fa-database"
+                    "fa_icon": "fas fa-folder-open"
                 },
                 "pdb_mmcif_path": {
                     "type": "string",
-                    "default": "rsync.rcsb.org::ftp_data/structures/divided/mmCIF/",
                     "description": "Path to the PDB mmCIF database",
-                    "fa_icon": "fas fa-database"
+                    "fa_icon": "fas fa-folder-open"
                 },
                 "uniclust30_path": {
                     "type": "string",
-                    "default": "https://storage.googleapis.com/alphafold-databases/casp14_versions/uniclust30_2018_08_hhsuite.tar.gz",
                     "description": "Path to the Uniclust30 database",
-                    "fa_icon": "fas fa-database"
+                    "fa_icon": "fas fa-folder-open"
                 },
                 "uniref90_path": {
                     "type": "string",
-                    "default": "ftp://ftp.uniprot.org/pub/databases/uniprot/uniref/uniref90/uniref90.fasta.gz",
                     "description": "Path to the UniRef90 database",
-                    "fa_icon": "fas fa-database"
+                    "fa_icon": "fas fa-folder-open"
                 },
                 "pdb_seqres_path": {
                     "type": "string",
-                    "default": "ftp://ftp.wwpdb.org/pub/pdb/derived_data/pdb_seqres.txt",
                     "description": "Path to the PDB SEQRES database",
-                    "fa_icon": "fas fa-database"
+                    "fa_icon": "fas fa-folder-open"
                 },
                 "uniprot_path": {
                     "type": "string",
-                    "default": "ftp://ftp.ebi.ac.uk/pub/databases/uniprot/current_release/knowledgebase/complete/uniprot_sprot.fasta.gz",
                     "description": "Path to UniProt database containing the SwissProt and the TrEMBL databases",
-                    "fa_icon": "fas fa-database"
+                    "fa_icon": "fas fa-folder-open"
                 }
             }
         },
@@ -430,21 +436,18 @@
             "properties": {
                 "colabfold_db_path": {
                     "type": "string",
-                    "default": "http://wwwuser.gwdg.de/~compbiol/colabfold/colabfold_envdb_202108.tar.gz",
                     "description": "Link to the Colabfold database",
-                    "fa_icon": "fas fa-database"
+                    "fa_icon": "fas fa-folder-open"
                 },
                 "uniref30_path": {
                     "type": "string",
-                    "default": "http://wwwuser.gwdg.de/~compbiol/colabfold/uniref30_2103.tar.gz",
                     "description": "Link to the UniRef30 database",
-                    "fa_icon": "fas fa-database"
+                    "fa_icon": "fas fa-folder-open"
                 },
                 "colabfold_alphafold2_params_path": {
                     "type": "string",
-                    "default": "https://storage.googleapis.com/alphafold/alphafold_params_2021-07-14.tar",
                     "description": "Link to the Alphafold2 parameters for Colabfold",
-                    "fa_icon": "fas fa-database"
+                    "fa_icon": "fas fa-folder-open"
                 }
             }
         },
