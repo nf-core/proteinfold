@@ -329,7 +329,7 @@
                     "description": "Path to BFD dababase",
                     "fa_icon": "fas fa-folder-open"
                 },
-                "bfd_small_path": {
+                "small_bfd_path": {
                     "type": "string",
                     "description": "Path to a reduced version of the BFD database",
                     "fa_icon": "fas fa-folder-open"

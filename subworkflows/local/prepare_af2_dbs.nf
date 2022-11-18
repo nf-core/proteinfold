@@ -20,18 +20,18 @@ include { DOWNLOAD_PDBMMCIF } from '../../modules/local/download_pdbmmcif'
 workflow PREPARE_AF2_DBS {
     main:
     ch_bfd        = Channel.empty()
-    ch_bfd_small  = Channel.empty()
+    ch_small_bfd  = Channel.empty()
     ch_versions   = Channel.empty()
 
 
     if (params.alphafold2_db) {
         if (params.full_dbs) {
             ch_bfd       = file( params.bfd_path )
-            ch_bfd_small = file( "${projectDir}/assets/dummy_db" )
+            ch_small_bfd = file( "${projectDir}/assets/dummy_db" )
         }
         else {
             ch_bfd       = file( "${projectDir}/assets/dummy_db" )
-            ch_bfd_small = file( params.small_bfd_path )
+            ch_small_bfd = file( params.small_bfd_path )
         }
 
         ch_params     = file( params.alphafold2_params_path )
@@ -54,7 +54,7 @@ workflow PREPARE_AF2_DBS {
             ARIA2_SMALL_BFD(
                 params.small_bfd
             )
-            ch_bfd_small = ARIA2_SMALL_BFD.out.db
+            ch_small_bfd = ARIA2_SMALL_BFD.out.db
             ch_versions = ch_versions.mix(ARIA2_SMALL_BFD.out.versions)
         }
 
@@ -120,7 +120,7 @@ workflow PREPARE_AF2_DBS {
 
 	emit:
     bfd        = ch_bfd
-    bfd_small  = ch_bfd_small
+    small_bfd  = ch_small_bfd
     params     = ch_params
     mgnify     = ch_mgnify
     pdb70      = ch_pdb70
