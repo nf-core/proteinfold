@@ -73,6 +73,21 @@ On release, automated continuous integration tests run the pipeline on a full-si
       -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
   ```
 
+- Typical command to run AlphaFold2 splitting the MSA from the prediction execution:
+
+  ```console
+  nextflow run nf-core/proteinfold \
+      --input samplesheet.csv \
+      --outdir <OUTDIR> \
+      --mode alphafold2 \
+      --alphafold2_mode split_msa_prediction \
+      --alphafold2_db <null (default) | DB_PATH> \
+      --full_dbs <true/false> \
+      --alphafold2_model_preset monomer \
+      --use_gpu <true/false> \
+      -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
+  ```
+
 - Typical command to run colabfold_local mode:
 
   ```console
