@@ -73,7 +73,7 @@
                 },
                 "full_dbs": {
                     "type": "boolean",
-                    "default": true,
+                    "default": false,
                     "description": "If true uses full DBs otherwise, otherwise it uses the reduced version of DBs",
                     "fa_icon": "fas fa-battery-full"
                 },
