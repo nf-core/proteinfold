@@ -112,7 +112,6 @@ workflow ALPHAFOLD2 {
         //
         RUN_AF2 (
             ch_fasta,
-            params.max_template_date,
             params.full_dbs,
             params.alphafold2_model_preset,
             PREPARE_AF2_DBS.out.params,

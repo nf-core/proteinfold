@@ -11,7 +11,6 @@ process RUN_AF2 {
 
     input:
     tuple val(meta), path(fasta)
-    val   max_template_date
     val   db_preset
     val   alphafold2_model_preset
     path ('params/*')
@@ -47,7 +46,6 @@ process RUN_AF2 {
     if [ -d params/alphafold_params_* ]; then ln -r -s params/alphafold_params_*/* params/; fi
     python3 /app/alphafold/run_alphafold.py \
         --fasta_paths=${fasta} \
-        --max_template_date=${max_template_date} \
         --model_preset=${alphafold2_model_preset} \
         --db_preset=${db_preset} \
         --output_dir=\$PWD \
