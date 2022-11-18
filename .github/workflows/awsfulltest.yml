@@ -16,7 +16,7 @@ jobs:
     strategy:
       matrix:
         mode: ["alphafold2", "colabfold"]
-        structure: [ "monomer", "multimer"]
+        structure: ["monomer", "multimer"]
     steps:
       - name: Launch workflow via tower
         uses: nf-core/tower-action@v3
