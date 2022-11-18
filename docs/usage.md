@@ -53,9 +53,23 @@ nextflow run nf-core/proteinfold \
 
 ```console
 nextflow run nf-core/proteinfold \
+    --input samplesheet.csv \
+    --outdir <OUTDIR> \
+    --mode alphafold2 \
+    --alphafold2_mode split_msa_prediction \
+    --alphafold2_db <null (default) | DB_PATH> \
+    --full_dbs <true/false> \
+    --alphafold2_model_preset monomer \
+    --use_gpu <true/false> \
+    -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
+```
+
+```console
+nextflow run nf-core/proteinfold \
       --input samplesheet.csv \
       --outdir <OUTDIR> \
-      --mode colabfold_local \
+      --mode colabfold \
+      --colabfold_server local \
       --colabfold_db <null (default) | DB_PATH> \
       --num_recycle 3 \
       --use_amber <true/false> \
@@ -69,7 +83,8 @@ nextflow run nf-core/proteinfold \
 nextflow run nf-core/proteinfold \
       --input samplesheet.csv \
       --outdir <OUTDIR> \
-      --mode colabfold_webserver \
+      --mode colabfold
+      --colabfold_server webserver \
       --host_url <custom MMSeqs2 API Server URL> \
       --colabfold_db <null (default) | DB_PATH> \
       --num_recycle 3 \
