@@ -15,7 +15,15 @@ jobs:
     # Do a full-scale run on each of the mode
     strategy:
       matrix:
-        mode: ["_alphafold2_standard", "_alphafold_split", "_alphafold2_multimer", "_colabfold_local", "_colabfold_webserver", "_colabfold_multimer"]
+        mode:
+          [
+            "_alphafold2_standard",
+            "_alphafold_split",
+            "_alphafold2_multimer",
+            "_colabfold_local",
+            "_colabfold_webserver",
+            "_colabfold_multimer",
+          ]
     steps:
       - name: Launch workflow via tower
         uses: nf-core/tower-action@v3
