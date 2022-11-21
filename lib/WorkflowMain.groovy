@@ -90,4 +90,30 @@ class WorkflowMain {
         }
         return null
     }
+
+    //
+    // Get link to Colabfold Alphafold2 parameters
+    //
+    public static String getColabfoldAlphafold2Params(params) {
+        def link = null
+        if (params.colabfold_alphafold2_params_tags) {
+            if (params.colabfold_alphafold2_params_tags.containsKey(params.colabfold_model_preset.toString())) {
+                link = "https://storage.googleapis.com/alphafold/" + params.colabfold_alphafold2_params_tags[ params.colabfold_model_preset.toString() ] + '.tar'
+            }
+        }
+        return link
+    }
+
+    //
+    // Get path to Colabfold Alphafold2 parameters
+    //
+    public static String getColabfoldAlphafold2ParamsPath(params) {
+        def path = null
+        if (params.colabfold_alphafold2_params_tags) {
+            if (params.colabfold_alphafold2_params_tags.containsKey(params.colabfold_model_preset.toString())) {
+                path = "${params.colabfold_db}/params/" + params.colabfold_alphafold2_params_tags[ params.colabfold_model_preset.toString() ]
+            }
+        }
+        return path
+    }
 }

@@ -30,14 +30,15 @@
                 },
                 "mode": {
                     "type": "string",
-                    "default": "AF2",
+                    "default": "alphafold2",
                     "description": "Specifies the mode in which the pipeline will be run",
-                    "enum": ["AF2", "AF2_split", "colabfold_webserver", "colabfold_local"]
+                    "enum": ["alphafold2", "colabfold"],
+                    "fa_icon": "fas fa-cogs"
                 },
                 "use_gpu": {
                     "type": "boolean",
-                    "default": false,
-                    "description": "Run on CPUs (default) or GPUs"
+                    "description": "Run on CPUs (default) or GPUs",
+                    "fa_icon": "fas fa-microchip"
                 },
                 "email": {
                     "type": "string",
@@ -62,22 +63,33 @@
                 "max_template_date": {
                     "type": "string",
                     "default": "2020-05-14",
-                    "description": "Maximum date of the PDB templates used by 'AF2' mode"
+                    "description": "Maximum date of the PDB templates used by 'AF2' mode",
+                    "fa_icon": "fas fa-calendar-check"
                 },
-                "af2_db": {
+                "alphafold2_db": {
                     "type": "string",
-                    "description": "Specifies the DB and PARAMS path used by 'AF2' mode"
+                    "description": "Specifies the DB and PARAMS path used by 'AF2' mode",
+                    "fa_icon": "fas fa-database"
                 },
                 "full_dbs": {
                     "type": "boolean",
-                    "default": true,
-                    "description": "If true uses full DBs otherwise, otherwise it uses the reduced version of DBs"
+                    "default": false,
+                    "description": "If true uses full DBs otherwise, otherwise it uses the reduced version of DBs",
+                    "fa_icon": "fas fa-battery-full"
                 },
-                "model_preset": {
+                "alphafold2_mode": {
+                    "type": "string",
+                    "default": "standard",
+                    "description": "Specifies the mode in which Alphafold2 will be run",
+                    "enum": ["standard", "split_msa_prediction"],
+                    "fa_icon": "fas fa-exchange-alt"
+                },
+                "alphafold2_model_preset": {
                     "type": "string",
                     "default": "monomer_ptm",
                     "description": "Model preset for 'AF2' mode",
-                    "enum": ["monomer", "monomer_casp14", "monomer_ptm", "multimer"]
+                    "enum": ["monomer", "monomer_casp14", "monomer_ptm", "multimer"],
+                    "fa_icon": "fas fa-stream"
                 }
             }
         },
@@ -89,42 +101,57 @@
             "properties": {
                 "colabfold_db": {
                     "type": "string",
-                    "description": "Specifies the PARAMS and DB path used by 'colabfold'  mode"
+                    "description": "Specifies the PARAMS and DB path used by 'colabfold'  mode",
+                    "fa_icon": "fas fa-folder-open"
                 },
-                "model_type": {
+                "colabfold_server": {
+                    "type": "string",
+                    "default": "webserver",
+                    "description": "Specifies the MSA server used by Colabfold",
+                    "enum": ["webserver", "local"],
+                    "fa_icon": "fas fa-server"
+                },
+                "colabfold_model_preset": {
                     "type": "string",
                     "default": "AlphaFold2-ptm",
                     "description": "Model preset for 'colabfold' mode",
-                    "enum": ["AlphaFold2-ptm", "AlphaFold2-multimer-v1", "AlphaFold2-multimer-v2"]
+                    "enum": ["AlphaFold2-ptm", "AlphaFold2-multimer-v1", "AlphaFold2-multimer-v2"],
+                    "fa_icon": "fas fa-stream"
                 },
                 "num_recycle": {
                     "type": "integer",
                     "default": 3,
-                    "description": "Number of recycles"
+                    "description": "Number of recycles",
+                    "fa_icon": "fas fa-recycle"
                 },
                 "use_amber": {
                     "type": "boolean",
                     "default": true,
-                    "description": "Use Amber minimization to refine the predicted structures"
+                    "description": "Use Amber minimization to refine the predicted structures",
+                    "fa_icon": "fas fa-compress-alt"
                 },
                 "db_load_mode": {
                     "type": "integer",
                     "default": 0,
-                    "description": "Specify the way that MMSeqs2 will load the required databases in memory"
+                    "description": "Specify the way that MMSeqs2 will load the required databases in memory",
+                    "fa_icon": "fas fa-download",
+                    "enum": [0, 1, 2, 3]
                 },
                 "host_url": {
                     "type": "string",
-                    "description": "Specify your custom MMSeqs2 API server url"
+                    "description": "Specify your custom MMSeqs2 API server url",
+                    "fa_icon": "fas fa-link"
                 },
                 "use_templates": {
                     "type": "boolean",
                     "default": true,
-                    "description": "Use PDB templates"
+                    "description": "Use PDB templates",
+                    "fa_icon": "fas fa-paste"
                 },
                 "create_colabfold_index": {
                     "type": "boolean",
-                    "default": false,
-                    "description": "Create databases indexes when running colabfold_local mode"
+                    "description": "Create databases indexes when running colabfold_local mode",
+                    "fa_icon": "fas fa-bezier-curve"
                 }
             }
         },
@@ -208,6 +235,197 @@
                     "pattern": "^(\\d+\\.?\\s*(s|m|h|day)\\s*)+$",
                     "hidden": true,
                     "help_text": "Use to set an upper-limit for the time requirement for each process. Should be a string in the format integer-unit e.g. `--max_time '2.h'`"
+                }
+            }
+        },
+        "alphafold2_dbs_and_parameters_link_options": {
+            "title": "Alphafold2 DBs and parameters links options",
+            "type": "object",
+            "fa_icon": "fas fa-database",
+            "description": "Parameters used to provide the links to the DBs and parameters public resources to Alphafold2.",
+            "properties": {
+                "bfd": {
+                    "type": "string",
+                    "default": "https://storage.googleapis.com/alphafold-databases/casp14_versions/bfd_metaclust_clu_complete_id30_c90_final_seq.sorted_opt.tar.gz",
+                    "description": "Link to BFD dababase",
+                    "fa_icon": "fas fa-link"
+                },
+                "small_bfd": {
+                    "type": "string",
+                    "default": "https://storage.googleapis.com/alphafold-databases/reduced_dbs/bfd-first_non_consensus_sequences.fasta.gz",
+                    "description": "Link to a reduced version of the BFD dababase",
+                    "fa_icon": "fas fa-link"
+                },
+                "alphafold2_params": {
+                    "type": "string",
+                    "default": "https://storage.googleapis.com/alphafold/alphafold_params_2022-03-02.tar",
+                    "description": "Link to the Alphafold2 parameters",
+                    "fa_icon": "fas fa-link"
+                },
+                "mgnify": {
+                    "type": "string",
+                    "default": "https://storage.googleapis.com/alphafold-databases/casp14_versions/mgy_clusters_2018_12.fa.gz",
+                    "description": "Link to the MGnify database",
+                    "fa_icon": "fas fa-link"
+                },
+                "pdb70": {
+                    "type": "string",
+                    "default": "http://wwwuser.gwdg.de/~compbiol/data/hhsuite/databases/hhsuite_dbs/old-releases/pdb70_from_mmcif_200916.tar.gz",
+                    "description": "Link to the PDB70 database",
+                    "fa_icon": "fas fa-link"
+                },
+                "pdb_mmcif": {
+                    "type": "string",
+                    "default": "rsync.rcsb.org::ftp_data/structures/divided/mmCIF/",
+                    "description": "Link to the PDB mmCIF database",
+                    "fa_icon": "fas fa-link"
+                },
+                "pdb_obsolete": {
+                    "type": "string",
+                    "default": "ftp://ftp.wwpdb.org/pub/pdb/data/status/obsolete.dat",
+                    "description": "Link to the PDV obsolete database",
+                    "fa_icon": "fas fa-link"
+                },
+                "uniclust30": {
+                    "type": "string",
+                    "default": "https://storage.googleapis.com/alphafold-databases/casp14_versions/uniclust30_2018_08_hhsuite.tar.gz",
+                    "description": "Link to the Uniclust30 database",
+                    "fa_icon": "fas fa-link"
+                },
+                "uniref90": {
+                    "type": "string",
+                    "default": "ftp://ftp.uniprot.org/pub/databases/uniprot/uniref/uniref90/uniref90.fasta.gz",
+                    "description": "Link to the UniRef90 database",
+                    "fa_icon": "fas fa-link"
+                },
+                "pdb_seqres": {
+                    "type": "string",
+                    "default": "ftp://ftp.wwpdb.org/pub/pdb/derived_data/pdb_seqres.txt",
+                    "description": "Link to the PDB SEQRES database",
+                    "fa_icon": "fas fa-link"
+                },
+                "uniprot_sprot": {
+                    "type": "string",
+                    "default": "ftp://ftp.ebi.ac.uk/pub/databases/uniprot/current_release/knowledgebase/complete/uniprot_sprot.fasta.gz",
+                    "description": "Link to the SwissProt UniProt database",
+                    "fa_icon": "fas fa-link"
+                },
+                "uniprot_trembl": {
+                    "type": "string",
+                    "default": "ftp://ftp.ebi.ac.uk/pub/databases/uniprot/current_release/knowledgebase/complete/uniprot_trembl.fasta.gz",
+                    "description": "Link to the TrEMBL UniProt database",
+                    "fa_icon": "fas fa-link"
+                }
+            }
+        },
+        "alphafold2_dbs_and_parameters_path_options": {
+            "title": "Alphafold2 DBs and parameters links options",
+            "type": "object",
+            "fa_icon": "fas fa-database",
+            "description": "Parameters used to provide the paths to the DBs and parameters for Alphafold2.",
+            "properties": {
+                "bfd_path": {
+                    "type": "string",
+                    "description": "Path to BFD dababase",
+                    "fa_icon": "fas fa-folder-open"
+                },
+                "small_bfd_path": {
+                    "type": "string",
+                    "description": "Path to a reduced version of the BFD database",
+                    "fa_icon": "fas fa-folder-open"
+                },
+                "alphafold2_params_path": {
+                    "type": "string",
+                    "description": "Path to the Alphafold2 parameters",
+                    "fa_icon": "fas fa-folder-open"
+                },
+                "mgnify_path": {
+                    "type": "string",
+                    "description": "Path to the MGnify database",
+                    "fa_icon": "fas fa-folder-open"
+                },
+                "pdb70_path": {
+                    "type": "string",
+                    "description": "Path to the PDB70 database",
+                    "fa_icon": "fas fa-folder-open"
+                },
+                "pdb_mmcif_path": {
+                    "type": "string",
+                    "description": "Path to the PDB mmCIF database",
+                    "fa_icon": "fas fa-folder-open"
+                },
+                "uniclust30_path": {
+                    "type": "string",
+                    "description": "Path to the Uniclust30 database",
+                    "fa_icon": "fas fa-folder-open"
+                },
+                "uniref90_path": {
+                    "type": "string",
+                    "description": "Path to the UniRef90 database",
+                    "fa_icon": "fas fa-folder-open"
+                },
+                "pdb_seqres_path": {
+                    "type": "string",
+                    "description": "Path to the PDB SEQRES database",
+                    "fa_icon": "fas fa-folder-open"
+                },
+                "uniprot_path": {
+                    "type": "string",
+                    "description": "Path to UniProt database containing the SwissProt and the TrEMBL databases",
+                    "fa_icon": "fas fa-folder-open"
+                }
+            }
+        },
+        "colabfold_dbs_and_parameters_link_options": {
+            "title": "Colabfold DBs and parameters links options",
+            "type": "object",
+            "description": "Parameters used to provide the links to the DBs and parameters public resources to Colabfold.",
+            "fa_icon": "fas fa-database",
+            "properties": {
+                "colabfold_db_link": {
+                    "type": "string",
+                    "default": "http://wwwuser.gwdg.de/~compbiol/colabfold/colabfold_envdb_202108.tar.gz",
+                    "description": "Link to the Colabfold database",
+                    "fa_icon": "fas fa-link"
+                },
+                "uniref30": {
+                    "type": "string",
+                    "default": "http://wwwuser.gwdg.de/~compbiol/colabfold/uniref30_2103.tar.gz",
+                    "description": "Link to the UniRef30 database",
+                    "fa_icon": "fas fa-link"
+                },
+                "colabfold_alphafold2_params": {
+                    "type": "string",
+                    "description": "Link to the Alphafold2 parameters for Colabfold",
+                    "fa_icon": "fas fa-link"
+                }
+            }
+        },
+        "colabfold_dbs_and_parameters_path_options": {
+            "title": "Colabfold DBs and parameters links options",
+            "type": "object",
+            "description": "Parameters used to provide the links to the DBs and parameters public resources to Colabfold.",
+            "fa_icon": "fas fa-database",
+            "properties": {
+                "colabfold_db_path": {
+                    "type": "string",
+                    "description": "Link to the Colabfold database",
+                    "fa_icon": "fas fa-folder-open"
+                },
+                "uniref30_path": {
+                    "type": "string",
+                    "description": "Link to the UniRef30 database",
+                    "fa_icon": "fas fa-folder-open"
+                },
+                "colabfold_alphafold2_params_path": {
+                    "type": "string",
+                    "description": "Link to the Alphafold2 parameters for Colabfold",
+                    "fa_icon": "fas fa-folder-open"
+                },
+                "colabfold_alphafold2_params_tags": {
+                    "type": "object",
+                    "description": "Dictionary with Alphafold2 parameters tags",
+                    "fa_icon": "fas fa-stream"
                 }
             }
         },
@@ -330,6 +548,18 @@
         },
         {
             "$ref": "#/definitions/max_job_request_options"
+        },
+        {
+            "$ref": "#/definitions/alphafold2_dbs_and_parameters_link_options"
+        },
+        {
+            "$ref": "#/definitions/alphafold2_dbs_and_parameters_path_options"
+        },
+        {
+            "$ref": "#/definitions/colabfold_dbs_and_parameters_link_options"
+        },
+        {
+            "$ref": "#/definitions/colabfold_dbs_and_parameters_path_options"
         },
         {
             "$ref": "#/definitions/generic_options"

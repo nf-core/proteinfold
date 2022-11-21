@@ -14,6 +14,15 @@ nextflow.enable.dsl = 2
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    COLABFOLD PARAMETER VALUES
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+*/
+
+params.colabfold_alphafold2_params      = WorkflowMain.getColabfoldAlphafold2Params(params)
+params.colabfold_alphafold2_params_path = WorkflowMain.getColabfoldAlphafold2ParamsPath(params)
+
+/*
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     VALIDATE & PRINT PARAMETER SUMMARY
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
@@ -26,9 +35,9 @@ WorkflowMain.initialise(workflow, params, log)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-if (params.mode == "AF2" || params.mode == "AF2_split") {
+if (params.mode == "alphafold2") {
     include { ALPHAFOLD2 } from './workflows/alphafold2'
-} else if (params.mode == "colabfold_webserver" || params.mode == "colabfold_local") {
+} else if (params.mode == "colabfold") {
     include { COLABFOLD } from './workflows/colabfold'
 }
 
@@ -36,14 +45,15 @@ workflow NFCORE_PROTEINFOLD {
     //
     // WORKFLOW: Run alphafold2
     //
-    if(params.mode == "AF2" || params.mode == "AF2_split") {
+    if(params.mode == "alphafold2") {
         ALPHAFOLD2 ()
     }
 
     //
     // WORKFLOW: Run colabfold
     //
-    else if(params.mode == "colabfold_webserver" || params.mode == "colabfold_local") {
+    // else if(params.mode == "colabfold_webserver" || params.mode == "colabfold_local") {
+    else if(params.mode == "colabfold") {
         COLABFOLD ()
     }
 }

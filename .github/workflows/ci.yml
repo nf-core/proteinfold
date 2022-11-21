@@ -33,9 +33,9 @@ jobs:
 
       - name: Run pipeline with test data
         run: |
-          nextflow run ${GITHUB_WORKSPACE} -profile test,docker -stub-run --outdir ./results
+          nextflow run ${GITHUB_WORKSPACE} -profile test,docker --outdir ./results
 
-  test_af2_split:
+  test_alphafold2_split:
     name: Test af2 split workflow
     if: ${{ github.event_name != 'push' || (github.event_name == 'push' && github.repository == 'nf-core/proteinfold') }}
     runs-on: ubuntu-latest
@@ -49,7 +49,7 @@ jobs:
           sudo mv nextflow /usr/local/bin/
       - name: Run pipeline with stub-run in af2 split mode
         run: |
-          nextflow run ${GITHUB_WORKSPACE} --mode AF2_split -profile test,docker -stub-run --outdir ./results
+          nextflow run ${GITHUB_WORKSPACE} -profile test_alphafold2_split,docker --outdir ./results
 
   test_colabfold_local:
     name: Test Colabfold local workflow
@@ -65,7 +65,7 @@ jobs:
           sudo mv nextflow /usr/local/bin/
       - name: Run pipeline with stub-run in colabfold_local mode
         run: |
-          nextflow run ${GITHUB_WORKSPACE} --mode colabfold_local -profile test,docker -stub-run --outdir ./results
+          nextflow run ${GITHUB_WORKSPACE} -profile test_colabfold_local,docker --outdir ./results
 
   test_colabfold_webserver:
     name: Test Colabfold webserver workflow
@@ -81,4 +81,4 @@ jobs:
           sudo mv nextflow /usr/local/bin/
       - name: Run pipeline with stub-run in colabfold_webserver mode
         run: |
-          nextflow run ${GITHUB_WORKSPACE} --mode colabfold_webserver -profile test,docker -stub-run --outdir ./results
+          nextflow run ${GITHUB_WORKSPACE} -profile test_colabfold_webserver,docker --outdir ./results
