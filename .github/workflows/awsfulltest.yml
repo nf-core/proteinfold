@@ -15,8 +15,7 @@ jobs:
     # Do a full-scale run on each of the mode
     strategy:
       matrix:
-        mode: ["alphafold2", "colabfold"]
-        structure: ["monomer", "multimer"]
+        mode: ["_alphafold2_standard", "_alphafold_split", "_alphafold2_multimer", "_colabfold_local", "_colabfold_webserver", "_colabfold_multimer"]
     steps:
       - name: Launch workflow via tower
         uses: nf-core/tower-action@v3
@@ -27,9 +26,9 @@ jobs:
           workdir: s3://${{ secrets.AWS_S3_BUCKET }}/work/proteinfold/work-${{ github.sha }}
           parameters: |
             {
-              "outdir": "s3://${{ secrets.AWS_S3_BUCKET }}/proteinfold/results-${{ github.sha }}/mode_${{ matrix.mode }}_${{ matrix.structure }}"
+              "outdir": "s3://${{ secrets.AWS_S3_BUCKET }}/proteinfold/results-${{ github.sha }}/mode_${{ matrix.mode }}"
             }
-          profiles: test_full_${{ matrix.platform }}_${{ matrix.structure }},aws_tower
+          profiles: test_full_${{ matrix.mode }},aws_tower
       - uses: actions/upload-artifact@v3
         with:
           name: Tower debug log file
