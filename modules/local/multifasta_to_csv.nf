@@ -15,7 +15,7 @@ process MULTIFASTA_TO_CSV {
 
     script:
     """
-    echo -e id,sequence'\\n'${seq_name.sequence},`awk '!/^>/ {print \$0}' ${fasta} | tr '\\n' ':' | sed 's/:\$//'` > input.csv
+    echo -e id,sequence'\\n'${meta.id},`awk '!/^>/ {print \$0}' ${fasta} | tr '\\n' ':' | sed 's/:\$//'` > input.csv
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
