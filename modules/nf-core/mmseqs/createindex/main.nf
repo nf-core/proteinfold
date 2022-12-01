@@ -9,9 +9,10 @@ process MMSEQS_CREATEINDEX {
 
     input:
     path db
+    val db_name
 
     output:
-    path(db)           , emit: db_index
+    path(db)           , emit: db_indexed
     path "versions.yml", emit: versions
 
     when:
@@ -19,14 +20,13 @@ process MMSEQS_CREATEINDEX {
 
     script:
     def args = task.ext.args ?: ''
-    // mmseqs createindex "uniref30_2103_db" tmp1 --remove-tmp-files 1
+    def db_path_name = db_name ? "${db}/${db_name}": "${db}/${db}"
     """
-    cd $db
     mmseqs createindex \\
-        ${db}_exprofile \\
+        $db_path_name \\
         tmp1 \\
         $args
-    cd ..
+
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         mmseqs: \$(mmseqs | grep 'Version' | sed 's/MMseqs2 Version: //')
@@ -35,11 +35,11 @@ process MMSEQS_CREATEINDEX {
 
     stub:
     """
-    touch ${db}/${db}.idx
+    touch ${db_path_name}.idx
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        awk: \$(gawk --version| head -1 | sed 's/GNU Awk //; s/, API:.*//')
+        mmseqs: \$(mmseqs | grep 'Version' | sed 's/MMseqs2 Version: //')
     END_VERSIONS
     """
 }
