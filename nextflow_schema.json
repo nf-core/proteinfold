@@ -63,12 +63,12 @@
                 "max_template_date": {
                     "type": "string",
                     "default": "2020-05-14",
-                    "description": "Maximum date of the PDB templates used by 'AF2' mode",
+                    "description": "Maximum date of the PDB templates used by 'AlphaFold2' mode",
                     "fa_icon": "fas fa-calendar-check"
                 },
                 "alphafold2_db": {
                     "type": "string",
-                    "description": "Specifies the DB and PARAMS path used by 'AF2' mode",
+                    "description": "Specifies the DB and PARAMS path used by 'AlphaFold2' mode",
                     "fa_icon": "fas fa-database"
                 },
                 "full_dbs": {
@@ -87,7 +87,7 @@
                 "alphafold2_model_preset": {
                     "type": "string",
                     "default": "monomer_ptm",
-                    "description": "Model preset for 'AF2' mode",
+                    "description": "Model preset for 'AlphaFold2' mode",
                     "enum": ["monomer", "monomer_casp14", "monomer_ptm", "multimer"],
                     "fa_icon": "fas fa-stream"
                 }

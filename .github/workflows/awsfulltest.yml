@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 jobs:
   run-tower:
-    name: Run AWS AF2 full monomer tests
+    name: Run AWS AlphaFold2 full monomer tests
     if: github.repository == 'nf-core/proteinfold'
     runs-on: ubuntu-latest
     # Do a full-scale run on each of the mode

@@ -3,7 +3,7 @@
 //
 
 include {
-    ARIA2_UNCOMPRESS as ARIA2_AF2_PARAMS
+    ARIA2_UNCOMPRESS as ARIA2_ALPHAFOLD_PARAMS
     ARIA2_UNCOMPRESS as ARIA2_BFD
     ARIA2_UNCOMPRESS as ARIA2_SMALL_BFD
     ARIA2_UNCOMPRESS as ARIA2_MGNIFY
@@ -17,7 +17,7 @@ include { ARIA2             } from '../../modules/nf-core/aria2/main'
 include { COMBINE_UNIPROT   } from '../../modules/local/combine_uniprot'
 include { DOWNLOAD_PDBMMCIF } from '../../modules/local/download_pdbmmcif'
 
-workflow PREPARE_AF2_DBS {
+workflow PREPARE_ALPHAFOLD2_DBS {
     main:
     ch_bfd        = Channel.empty()
     ch_small_bfd  = Channel.empty()
@@ -58,11 +58,11 @@ workflow PREPARE_AF2_DBS {
             ch_versions = ch_versions.mix(ARIA2_SMALL_BFD.out.versions)
         }
 
-        ARIA2_AF2_PARAMS(
+        ARIA2_ALPHAFOLD2_PARAMS(
             params.alphafold2_params
         )
-        ch_params = ARIA2_AF2_PARAMS.out.db
-        ch_versions = ch_versions.mix(ARIA2_AF2_PARAMS.out.versions)
+        ch_params = ARIA2_ALPHAFOLD2_PARAMS.out.db
+        ch_versions = ch_versions.mix(ARIA2_ALPHAFOLD2_PARAMS.out.versions)
 
         ARIA2_MGNIFY(
             params.mgnify

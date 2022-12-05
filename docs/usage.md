@@ -37,7 +37,7 @@ An [example samplesheet](../assets/samplesheet.csv) has been provided with the p
 
 ## Running the pipeline
 
-The typical commands for running the pipeline on AF2 and Colabfold modes are as follows:
+The typical commands for running the pipeline on AlphaFold2 and Colabfold modes are as follows:
 
 ```console
 nextflow run nf-core/proteinfold \

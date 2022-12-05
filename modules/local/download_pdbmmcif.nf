@@ -69,6 +69,5 @@ process DOWNLOAD_PDBMMCIF {
     "${task.process}":
         awk: \$(gawk --version| head -1 | sed 's/GNU Awk //; s/, API:.*//')
     END_VERSIONS
-
     """
 }

@@ -36,7 +36,7 @@ jobs:
           nextflow run ${GITHUB_WORKSPACE} -profile test,docker --outdir ./results
 
   test_alphafold2_split:
-    name: Test af2 split workflow
+    name: Test alphafold2 split workflow
     if: ${{ github.event_name != 'push' || (github.event_name == 'push' && github.repository == 'nf-core/proteinfold') }}
     runs-on: ubuntu-latest
     steps:
@@ -47,7 +47,7 @@ jobs:
         run: |
           wget -qO- get.nextflow.io | bash
           sudo mv nextflow /usr/local/bin/
-      - name: Run pipeline with stub-run in af2 split mode
+      - name: Run pipeline with stub-run in alphafold2 split mode
         run: |
           nextflow run ${GITHUB_WORKSPACE} -profile test_alphafold2_split,docker --outdir ./results
 

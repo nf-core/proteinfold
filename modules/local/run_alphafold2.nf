@@ -1,7 +1,7 @@
 /*
  * Run Alphafold2
  */
-process RUN_AF2 {
+process RUN_ALPHAFOLD2 {
     tag "$meta.id"
     label 'process_medium'
 

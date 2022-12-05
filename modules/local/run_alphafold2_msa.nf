@@ -1,7 +1,7 @@
 /*
  * Run Alphafold2 MSA
  */
-process RUN_AF2_MSA {
+process RUN_ALPHAFOLD2_MSA {
     tag   "$meta.id"
     label 'process_medium'
 
