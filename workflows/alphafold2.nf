@@ -200,8 +200,6 @@ workflow ALPHAFOLD2 {
         ch_multiqc_logo.toList()
     )
     multiqc_report = MULTIQC.out.report.toList()
-    ch_versions    = ch_versions.mix(MULTIQC.out.versions)
-
 }
 
 /*
