@@ -29,6 +29,9 @@ process RUN_ALPHAFOLD2 {
     path "*_mqc.tsv", emit: multiqc
     path "versions.yml", emit: versions
 
+    when:
+    task.ext.when == null || task.ext.when
+
     script:
     def args = task.ext.args ?: ''
     def db_preset = db_preset ? "full_dbs --bfd_database_path=./bfd/bfd_metaclust_clu_complete_id30_c90_final_seq.sorted_opt --uniclust30_database_path=./uniclust30/uniclust30_2018_08/uniclust30_2018_08" :

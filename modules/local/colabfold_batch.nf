@@ -19,6 +19,9 @@ process COLABFOLD_BATCH {
     path ("*_mqc.png") , emit: multiqc
     path "versions.yml", emit: versions
 
+    when:
+    task.ext.when == null || task.ext.when
+
     script:
     def args = task.ext.args ?: ''
     def VERSION = '1.2.0' // WARN: Version information not provided by tool on CLI. Please update this string when bumping container versions.

@@ -13,6 +13,9 @@ process MULTIFASTA_TO_CSV {
     tuple val(meta), path("input.csv"), emit: input_csv
     path "versions.yml", emit: versions
 
+    when:
+    task.ext.when == null || task.ext.when
+
     script:
     """
     echo -e id,sequence'\\n'${meta.id},`awk '!/^>/ {print \$0}' ${fasta} | tr '\\n' ':' | sed 's/:\$//'` > input.csv
