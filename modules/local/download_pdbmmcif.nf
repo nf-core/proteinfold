@@ -5,9 +5,10 @@ process DOWNLOAD_PDBMMCIF {
     label 'process_low'
     label 'error_retry'
 
+    conda (params.enable_conda ? "bioconda::aria2=1.36.0 conda-forge::rsync=3.2.7" : null)
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'docker://athbaltzis/debian:11.3' :
-        'athbaltzis/debian:11.3' }"
+        'https://depot.galaxyproject.org/singularity/mulled-v2-4a7c46784ad871c48746744c6b8dbc5d0a97b9ca:33e61a87922824f8afcecf88a7717a2d4cb514e9-0' :
+        'quay.io/biocontainers/mulled-v2-4a7c46784ad871c48746744c6b8dbc5d0a97b9ca:33e61a87922824f8afcecf88a7717a2d4cb514e9-0' }"
 
     input:
     val source_url_pdb_mmcif
