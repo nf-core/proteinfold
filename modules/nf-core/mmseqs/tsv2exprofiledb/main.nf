@@ -13,21 +13,19 @@ process MMSEQS_TSV2EXPROFILEDB {
     output:
     path (db)          , emit: db_exprofile
     path "versions.yml", emit: versions
-
+    // INDEX=`find -L ./ -name "*.amb" | sed 's/\\.amb\$//'`
     when:
     task.ext.when == null || task.ext.when
 
     script:
     def args = task.ext.args ?: ''
     """
-    cd ${db}
+    DB_PATH_NAME=\$(find -L "$db/" -name "*_seq.tsv" | sed 's/_seq\\.tsv\$//')
 
     mmseqs tsv2exprofiledb \\
-        "${db}" \\
-        "${db}_db"
+        \${DB_PATH_NAME} \\
+        "\${DB_PATH_NAME}_db" \\
         $args
-
-    cd ..
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
@@ -37,11 +35,13 @@ process MMSEQS_TSV2EXPROFILEDB {
 
     stub:
     """
-    touch ${db}/${db}_db
+    DB_PATH_NAME=\$(find -L "$db/" -name "*_seq.tsv" | sed 's/_seq\\.tsv\$//')
+
+    touch "\${DB_PATH_NAME}_db"
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        awk: \$(gawk --version| head -1 | sed 's/GNU Awk //; s/, API:.*//')
+        mmseqs: \$(mmseqs | grep 'Version' | sed 's/MMseqs2 Version: //')
     END_VERSIONS
     """
 }
