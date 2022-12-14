@@ -3,11 +3,11 @@ process COLABFOLD_BATCH {
     label 'process_medium'
 
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        // 'docker://nfcore/proteinfold_colabfold:dev' :
-        // 'nfcore/proteinfold_colabfold:dev' }"
-        // TODO update when it works and it is push to nfcore docker repository
         'docker://athbaltzis/colabfold_proteinfold:v0.11' :
         'athbaltzis/colabfold_proteinfold:v0.11' }"
+    // 'docker://nfcore/proteinfold_colabfold:dev' :
+    // 'nfcore/proteinfold_colabfold:dev' }"
+    // TODO update when it works and it is push to nfcore repository
 
     input:
     tuple val(meta), path(fasta)
