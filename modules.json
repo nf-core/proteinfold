@@ -7,49 +7,49 @@
                 "nf-core": {
                     "aria2": {
                         "branch": "master",
-                        "git_sha": "5fde85e8f65546f1aa69b40bf8fc045c6e579a20",
+                        "git_sha": "c8e35eb2055c099720a75538d1b8adb3fb5a464c",
                         "installed_by": [
                             "modules"
                         ]
                     },
                     "custom/dumpsoftwareversions": {
                         "branch": "master",
-                        "git_sha": "8022c68e7403eecbd8ba9c49496f69f8c49d50f0",
+                        "git_sha": "c8e35eb2055c099720a75538d1b8adb3fb5a464c",
                         "installed_by": [
                             "modules"
                         ]
                     },
                     "gunzip": {
                         "branch": "master",
-                        "git_sha": "5e34754d42cd2d5d248ca8673c0a53cdf5624905",
+                        "git_sha": "c8e35eb2055c099720a75538d1b8adb3fb5a464c",
                         "installed_by": [
                             "modules"
                         ]
                     },
                     "mmseqs/createindex": {
                         "branch": "master",
-                        "git_sha": "f102e58304cc0763751cb56d93ede0a769d3ef26",
+                        "git_sha": "c8e35eb2055c099720a75538d1b8adb3fb5a464c",
                         "installed_by": [
                             "modules"
                         ]
                     },
                     "mmseqs/tsv2exprofiledb": {
                         "branch": "master",
-                        "git_sha": "89d5226440c179266d95792ed28e1572340813f2",
+                        "git_sha": "c8e35eb2055c099720a75538d1b8adb3fb5a464c",
                         "installed_by": [
                             "modules"
                         ]
                     },
                     "multiqc": {
                         "branch": "master",
-                        "git_sha": "5e34754d42cd2d5d248ca8673c0a53cdf5624905",
+                        "git_sha": "c8e35eb2055c099720a75538d1b8adb3fb5a464c",
                         "installed_by": [
                             "modules"
                         ]
                     },
                     "untar": {
                         "branch": "master",
-                        "git_sha": "5e34754d42cd2d5d248ca8673c0a53cdf5624905",
+                        "git_sha": "c8e35eb2055c099720a75538d1b8adb3fb5a464c",
                         "installed_by": [
                             "modules"
                         ],
