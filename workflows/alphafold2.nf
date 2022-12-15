@@ -97,8 +97,6 @@ workflow ALPHAFOLD2 {
     }
     ch_versions = ch_versions.mix(INPUT_CHECK.out.versions)
 
-    // TODO The above code can be simplified with something such as the one below, modules need to be reviewed to
-    // swallow the correct DBs, only RUN_AF2 should work like it is now
     //
     // SUBWORKFLOW: Download databases and params for Alphafold2
     //
