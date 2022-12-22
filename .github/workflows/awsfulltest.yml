@@ -18,7 +18,7 @@ jobs:
         mode:
           [
             "_alphafold2_standard",
-            "_alphafold_split",
+            "_alphafold2_split",
             "_alphafold2_multimer",
             "_colabfold_local",
             "_colabfold_webserver",
