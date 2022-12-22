@@ -24,7 +24,7 @@ On release, automated continuous integration tests run the pipeline on a full-si
 
 ## Pipeline summary
 
-<!-- TODO nf-core: Fill in short bullet-pointed list of the default steps in the pipeline -->
+![Alt text](docs/images/nf-core-proteinfold_metro_map.png?raw=true "nf-core-proteinfold metro map")
 
 1. Choice of protein structure prediction method:
 
@@ -128,11 +128,11 @@ The nf-core/proteinfold pipeline comes with documentation about the pipeline [us
 
 ## Credits
 
-nf-core/proteinfold was originally written by Athanasios Baltzis, Jose Espinosa-Carrasco, Luisa Santus, Harshil Patel.
+nf-core/proteinfold was originally written by Athanasios Baltzis ([@athbaltzis](https://github.com/athbaltzis)), Jose Espinosa-Carrasco ([@JoseEspinosa](https://github.com/JoseEspinosa)), Luisa Santus ([@luisas](https://github.com/luisas)), Harshil Patel ([@drpatelh](https://github.com/drpatelh)).
 
 We thank the following people for their extensive assistance in the development of this pipeline:
 
-<!-- TODO nf-core: If applicable, make list of people who have also contributed -->
+[@martin-steinegger](https://github.com/martin-steinegger), [@rjpbonnal](https://github.com/rjpbonnal), [@l-mansouri](https://github.com/l-mansouri)
 
 ## Contributions and Support
 
