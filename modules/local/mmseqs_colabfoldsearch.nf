@@ -3,8 +3,8 @@ process MMSEQS_COLABFOLDSEARCH {
     label 'process_high_memory'
 
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'docker://athbaltzis/colabfold_proteinfold:v0.9' :
-        'athbaltzis/colabfold_proteinfold:v0.9' }"
+        'docker://nfcore/proteinfold_colabfold:dev' :
+        'nfcore/proteinfold_colabfold:dev' }"
 
     input:
     tuple val(meta), path(fasta)

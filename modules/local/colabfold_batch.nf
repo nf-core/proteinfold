@@ -3,8 +3,8 @@ process COLABFOLD_BATCH {
     label 'process_medium'
 
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'docker://athbaltzis/colabfold_proteinfold:v0.9' :
-        'athbaltzis/colabfold_proteinfold:v0.9' }"
+        'docker://nfcore/proteinfold_colabfold:dev' :
+        'nfcore/proteinfold_colabfold:dev' }"
 
     input:
     tuple val(meta), path(fasta)
@@ -18,6 +18,9 @@ process COLABFOLD_BATCH {
     path ("*")         , emit: pdb
     path ("*_mqc.png") , emit: multiqc
     path "versions.yml", emit: versions
+
+    when:
+    task.ext.when == null || task.ext.when
 
     script:
     def args = task.ext.args ?: ''

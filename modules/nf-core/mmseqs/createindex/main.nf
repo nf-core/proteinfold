@@ -1,8 +1,8 @@
-process MMSEQS_TSV2EXPROFILEDB {
+process MMSEQS_CREATEINDEX {
     tag "$db"
     label 'process_high'
 
-    conda (params.enable_conda ? "bioconda::mmseqs2=14.7e284" : null)
+    conda "bioconda::mmseqs2=14.7e284"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'https://depot.galaxyproject.org/singularity/mmseqs2:14.7e284--pl5321hf1761c0_0':
         'quay.io/biocontainers/mmseqs2:14.7e284--pl5321hf1761c0_0' }"
@@ -11,7 +11,7 @@ process MMSEQS_TSV2EXPROFILEDB {
     path db
 
     output:
-    path (db)          , emit: db_exprofile
+    path(db)           , emit: db_indexed
     path "versions.yml", emit: versions
 
     when:
@@ -20,14 +20,12 @@ process MMSEQS_TSV2EXPROFILEDB {
     script:
     def args = task.ext.args ?: ''
     """
-    cd ${db}
+    DB_PATH_NAME=\$(find -L "$db/" -name "*_seq.tsv" | sed 's/_seq\\.tsv\$//')
 
-    mmseqs tsv2exprofiledb \\
-        "${db}" \\
-        "${db}_db"
+    mmseqs createindex \\
+        \${DB_PATH_NAME} \\
+        tmp1 \\
         $args
-
-    cd ..
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
@@ -37,11 +35,13 @@ process MMSEQS_TSV2EXPROFILEDB {
 
     stub:
     """
-    touch ${db}/${db}_db
+    DB_PATH_NAME=\$(find -L "$db/" -name "*_seq.tsv" | sed 's/_seq\\.tsv\$//')
+
+    touch "\${DB_PATH_NAME}.idx"
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        awk: \$(gawk --version| head -1 | sed 's/GNU Awk //; s/, API:.*//')
+        mmseqs: \$(mmseqs | grep 'Version' | sed 's/MMseqs2 Version: //')
     END_VERSIONS
     """
 }
