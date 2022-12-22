@@ -6,8 +6,6 @@ This document describes the output produced by the pipeline.
 
 The directories listed below will be created in the results directory after the pipeline has finished. All paths are relative to the top-level results directory.
 
-<!-- TODO nf-core: Write this documentation describing your workflow's output -->
-
 ## Pipeline overview
 
 The pipeline is built using [Nextflow](https://www.nextflow.io/) and predicts protein structures using the following methods:
@@ -33,7 +31,7 @@ The pipeline is built using [Nextflow](https://www.nextflow.io/) and predicts pr
 <details markdown="1">
 <summary>Output files</summary>
 
-- `colabfold_webserver/` or `colabfold_local/` based on the selected mode that contains the computed MSAs, unrelaxed structures, relaxed structures, ranked structures, raw model outputs and scores, prediction metadata, logs and section timings
+- `colabfold/webserver/` or `colabfold/local/` based on the selected mode that contains the computed MSAs, unrelaxed structures, relaxed structures, ranked structures, raw model outputs and scores, prediction metadata, logs and section timings
 - `DBs/` that contains symbolic links to the downloaded database and parameter files
 
 </details>
