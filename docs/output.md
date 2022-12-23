@@ -99,12 +99,15 @@ Below you can find an indicative example of the TSV file with the pLDDT scores p
 Below you can find some indicative examples of the output images produced by ColabFold, which are included in the MultiQC report:
 
 #### Sequence coverage
+
 ![Alt text](../docs/images/T1024_LmrP____408_residues__coverage_mqc.png?raw=true "T1024_coverage")
 
 #### predicted Local Distance Difference Test (pLDDT)
+
 ![Alt text](../docs/images/T1024_LmrP____408_residues__plddt_mqc.png?raw=true "T1024_coverage")
 
 #### Predicted Aligned Error (PAE)
+
 ![Alt text](../docs/images/T1024_LmrP____408_residues__PAE_mqc.png?raw=true "T1024_coverage")
 
 ### MultiQC report
