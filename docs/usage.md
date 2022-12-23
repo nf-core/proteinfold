@@ -277,6 +277,10 @@ See the main [Nextflow documentation](https://www.nextflow.io/docs/latest/config
 
 If you have any questions or issues please send us a message on [Slack](https://nf-co.re/join/slack) on the [`#configs` channel](https://nfcore.slack.com/channels/configs).
 
+## Use of shared file systems
+
+Given that the AlphaFold2 and the ColabFold modes (except for the ColabFold webserver option) rely on huge databases to infer the predictions, the execution of the pipeline is recommended to take place on shared file systems so as to avoid high latency caused during staging this data. For instance, if you work on AWS, you might consider using an Amazon FSx file system.
+
 ## Azure Resource Requests
 
 To be used with the `azurebatch` profile by specifying the `-profile azurebatch`.

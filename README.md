@@ -24,7 +24,7 @@ On release, automated continuous integration tests run the pipeline on a full-si
 
 ## Pipeline summary
 
-<!-- TODO nf-core: Fill in short bullet-pointed list of the default steps in the pipeline -->
+![Alt text](docs/images/nf-core-proteinfold_metro_map.png?raw=true "nf-core-proteinfold metro map")
 
 1. Choice of protein structure prediction method:
 
@@ -128,11 +128,11 @@ The nf-core/proteinfold pipeline comes with documentation about the pipeline [us
 
 ## Credits
 
-nf-core/proteinfold was originally written by Athanasios Baltzis, Jose Espinosa-Carrasco, Luisa Santus, Harshil Patel.
+nf-core/proteinfold was originally written by Athanasios Baltzis ([@athbaltzis](https://github.com/athbaltzis)), Jose Espinosa-Carrasco ([@JoseEspinosa](https://github.com/JoseEspinosa)) and Luisa Santus ([@luisas](https://github.com/luisas)) from [The Comparative Bioinformatics Group](https://www.crg.eu/en/cedric_notredame) at [The Centre for Genomic Regulation, Spain](https://www.crg.eu/) under the umbrella of the [BovReg project](https://www.bovreg.eu/) and Harshil Patel ([@drpatelh](https://github.com/drpatelh)) Harshil Patel ([@drpatelh](https://github.com/drpatelh)) from [Seqera Labs, Spain](https://seqera.io/).
 
 We thank the following people for their extensive assistance in the development of this pipeline:
 
-<!-- TODO nf-core: If applicable, make list of people who have also contributed -->
+Many thanks to others who have helped out and contributed along the way too, including (but not limited to): Interline Therapeutics [@interlinetx](https://github.com/interlinetx), Martin Steinegger [@martin-steinegger](https://github.com/martin-steinegger), Raoul J.P. Bonnal [@rjpbonnal](https://github.com/rjpbonnal) and Leila Mansouri [@l-mansouri](https://github.com/l-mansouri)
 
 ## Contributions and Support
 
