@@ -1,8 +1,8 @@
 FROM nvidia/cuda:11.4.2-cudnn8-runtime-ubuntu18.04
 LABEL authors="Athanasios Baltzis" \
-    title="nf-friendly AF2 docker image" \
-    Version="v0.9" \
-    description="Docker image containing all software requirements to run AF2 using the nf-core/proteinfold pipeline"
+    title="nfcore/proteinfold_alphafold2_standard" \
+    Version="1.0.0" \
+    description="Docker image containing all software requirements to run the RUN_ALPHAFOLD2 module using the nf-core/proteinfold pipeline"
 
 
 # Use bash to support string substitution.

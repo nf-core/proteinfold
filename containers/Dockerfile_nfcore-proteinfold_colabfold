@@ -1,8 +1,8 @@
 FROM nvidia/cuda:11.4.2-cudnn8-runtime-ubuntu18.04
 LABEL authors="Athanasios Baltzis" \
-    title="nf-friendly Colabfold docker image" \
-    Version="v0.9" \
-    description="Docker image containing all software requirements to run Colabfold using the nf-core/proteinfold pipeline"
+    title="nfcore/proteinfold_colabfold" \
+    Version="1.0.0" \
+    description="Docker image containing all software requirements to run the COLABFOLD_BATCH module using the nf-core/proteinfold pipeline"
 
 ENV PATH="/colabfold_batch/bin:$PATH"
 ENV LD_LIBRARY_PATH="/colabfold_batch/colabfold-conda/lib:/usr/local/cuda/lib64"

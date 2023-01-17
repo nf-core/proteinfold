@@ -1,8 +1,8 @@
 FROM nvidia/cuda:11.4.2-cudnn8-runtime-ubuntu18.04
 LABEL authors="Luisa Santus, Athanasios Baltzis" \
-    title="nf-friendly AF2 MSA docker image" \
-    Version="v2.2.4" \
-    description="Docker image containing all software requirements to run AF2_MSA using the nf-core/proteinfold pipeline"
+    title="nfcore/proteinfold_alphafold2_msa" \
+    Version="1.0.0" \
+    description="Docker image containing all software requirements to run the RUN_ALPHAFOLD2_MSA module using the nf-core/proteinfold pipeline"
 
 
 # Use bash to support string substitution.
