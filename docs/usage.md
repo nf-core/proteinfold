@@ -79,7 +79,7 @@ nextflow run nf-core/proteinfold \
        -profile <docker>
 ```
 
-```bash
+```console
 nextflow run nf-core/proteinfold \
       --input samplesheet.csv \
       --outdir <OUTDIR> \
