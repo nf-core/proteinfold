@@ -117,7 +117,6 @@ def check_samplesheet(file_in, file_out):
         with open(file_out, "w") as fout:
             fout.write(",".join(["sequence", "fasta"]) + "\n")
             for sequence in sorted(sequence_mapping_dict.keys()):
-
                 ## Check that multiple runs of the same sample are of the same datatype
                 if not all(x[0] == sequence_mapping_dict[sequence][0][0] for x in sequence_mapping_dict[sequence]):
                     print_error(
