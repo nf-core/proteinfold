@@ -47,10 +47,8 @@ def check_samplesheet(file_in, file_out):
     For an example see:
     https://raw.githubusercontent.com/nf-core/test-datasets/viralrecon/samplesheet/samplesheet_test_illumina_amplicon.csv
     """
-
     sequence_mapping_dict = {}
     with open(file_in, "r") as fin:
-
         ## Check header
         MIN_COLS = 2
         # TODO nf-core: Update the column names for the input samplesheet
