@@ -47,10 +47,8 @@ def check_samplesheet(file_in, file_out):
     For an example see:
     https://raw.githubusercontent.com/nf-core/test-datasets/viralrecon/samplesheet/samplesheet_test_illumina_amplicon.csv
     """
-
     sequence_mapping_dict = {}
     with open(file_in, "r") as fin:
-
         ## Check header
         MIN_COLS = 2
         # TODO nf-core: Update the column names for the input samplesheet
@@ -119,13 +117,11 @@ def check_samplesheet(file_in, file_out):
         with open(file_out, "w") as fout:
             fout.write(",".join(["sequence", "fasta"]) + "\n")
             for sequence in sorted(sequence_mapping_dict.keys()):
-
                 ## Check that multiple runs of the same sample are of the same datatype
                 if not all(x[0] == sequence_mapping_dict[sequence][0][0] for x in sequence_mapping_dict[sequence]):
                     print_error(
                         "Multiple runs of a sequence must be of the same datatype!", "Sequence: {}".format(sequence)
                     )
-
                 for idx, val in enumerate(sequence_mapping_dict[sequence]):
                     fout.write(",".join(["{}_T{}".format(sequence, idx + 1)] + val) + "\n")
     else:
