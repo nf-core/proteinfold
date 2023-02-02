@@ -128,9 +128,11 @@ def check_samplesheet(file_in, file_out):
     else:
         print_error("No entries to process!", "Samplesheet: {}".format(file_in))
 
+
 def main(args=None):
     args = parse_args(args)
     check_samplesheet(args.FILE_IN, args.FILE_OUT)
+
 
 if __name__ == "__main__":
     sys.exit(main())
