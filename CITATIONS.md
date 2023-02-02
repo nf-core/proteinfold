@@ -11,13 +11,13 @@
 ## Pipeline tools
 
 - [AlphaFold](https://pubmed.ncbi.nlm.nih.gov/34265844/)
-  Jumper J et al. Highly accurate protein structure prediction with AlphaFold. Nature. 2021 Aug;596(7873):583-589. doi: 10.1038/s41586-021-03819-2. PubMed PMID: 34265844; PubMed Central PMCID: PMC8371605 ;
+  Jumper J et al. Highly accurate protein structure prediction with AlphaFold. Nature. 2021 Aug;596(7873):583-589. doi: 10.1038/s41586-021-03819-2. PubMed PMID: 34265844; PubMed Central PMCID: PMC8371605.
 
 - [ColabFold](https://pubmed.ncbi.nlm.nih.gov/35637307/)
-  Mirdita M, Schütze K, Moriwaki Y, Heo L, Ovchinnikov S, Steinegger M MMseqs software suite for fast and deep clustering and searching of large protein sequence sets. Nat Methods. 2022 Jun;19(6):679-682. doi: 10.1038/s41592-022-01488-1. PubMed PMID: 35637307; PubMed Central PMCID: PMC9184281;
+  Mirdita M, Schütze K, Moriwaki Y, Heo L, Ovchinnikov S, Steinegger M. ColabFold: making protein folding accessible to all. Nat Methods. 2022 Jun;19(6):679-682. doi: 10.1038/s41592-022-01488-1. Epub 2022 May 30. PMID: 35637307; PMCID: PMC9184281.
 
 - [MMseqs2](https://pubmed.ncbi.nlm.nih.gov/26743509/)
-  Hauser M, Steinegger M, Söding J. MMseqs software suite for fast and deep clustering and searching of large protein sequence sets. Bioinformatics. 2016 May 1;32(9):1323-30. doi: 10.1093/bioinformatics/btw006. Epub 2016 Jan 6. PubMed PMID: 26743509;
+  Hauser M, Steinegger M, Söding J. MMseqs software suite for fast and deep clustering and searching of large protein sequence sets. Bioinformatics. 2016 May 1;32(9):1323-30. doi: 10.1093/bioinformatics/btw006. Epub 2016 Jan 6. PubMed PMID: 26743509.
 
 - [MultiQC](https://pubmed.ncbi.nlm.nih.gov/27312411/)
   > Ewels P, Magnusson M, Lundin S, Käller M. MultiQC: summarize analysis results for multiple tools and samples in a single report. Bioinformatics. 2016 Oct 1;32(19):3047-8. doi: 10.1093/bioinformatics/btw354. Epub 2016 Jun 16. PubMed PMID: 27312411; PubMed Central PMCID: PMC5039924.
