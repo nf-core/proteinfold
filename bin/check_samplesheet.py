@@ -109,7 +109,6 @@ def check_samplesheet(file_in, file_out):
                     print_error("Samplesheet contains duplicate rows!", "Line", line)
                 else:
                     sequence_mapping_dict[sequence].append(sequence_info)
-
     ## Write validated samplesheet with appropriate columns
     if len(sequence_mapping_dict) > 0:
         out_dir = os.path.dirname(file_out)
@@ -117,23 +116,19 @@ def check_samplesheet(file_in, file_out):
         with open(file_out, "w") as fout:
             fout.write(",".join(["sequence", "fasta"]) + "\n")
             for sequence in sorted(sequence_mapping_dict.keys()):
-
                 ## Check that multiple runs of the same sample are of the same datatype
                 if not all(x[0] == sequence_mapping_dict[sequence][0][0] for x in sequence_mapping_dict[sequence]):
                     print_error(
                         "Multiple runs of a sequence must be of the same datatype!", "Sequence: {}".format(sequence)
                     )
-
                 for idx, val in enumerate(sequence_mapping_dict[sequence]):
                     fout.write(",".join(["{}_T{}".format(sequence, idx + 1)] + val) + "\n")
     else:
         print_error("No entries to process!", "Samplesheet: {}".format(file_in))
 
-
 def main(args=None):
     args = parse_args(args)
     check_samplesheet(args.FILE_IN, args.FILE_OUT)
-
 
 if __name__ == "__main__":
     sys.exit(main())
