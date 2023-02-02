@@ -109,6 +109,7 @@ def check_samplesheet(file_in, file_out):
                     print_error("Samplesheet contains duplicate rows!", "Line", line)
                 else:
                     sequence_mapping_dict[sequence].append(sequence_info)
+    
     ## Write validated samplesheet with appropriate columns
     if len(sequence_mapping_dict) > 0:
         out_dir = os.path.dirname(file_out)
