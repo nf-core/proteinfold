@@ -12,31 +12,26 @@ workflow INPUT_CHECK {
     SAMPLESHEET_CHECK ( samplesheet )
         .csv
         .splitCsv ( header:true, sep:',' )
-        .map { create_fastq_channels(it) }
-        .set { reads }
+        .map { create_fasta_channel(it) }
+        .set { fastas }
 
     emit:
-    reads                                     // channel: [ val(meta), [ reads ] ]
+    fastas                                    // channel: [ val(meta), [ fastas ] ]
     versions = SAMPLESHEET_CHECK.out.versions // channel: [ versions.yml ]
 }
 
-// Function to get list of [ meta, [ fastq_1, fastq_2 ] ]
-def create_fastq_channels(LinkedHashMap row) {
+// Function to get list of [ meta, [ fasta ] ]
+def create_fasta_channel(LinkedHashMap row) {
+    // create meta map
     def meta = [:]
-    meta.id           = row.sample
-    meta.single_end   = row.single_end.toBoolean()
+    meta.id      = row.sequence
 
-    def array = []
-    if (!file(row.fastq_1).exists()) {
-        exit 1, "ERROR: Please check input samplesheet -> Read 1 FastQ file does not exist!\n${row.fastq_1}"
+    // add path of the fasta file to the meta map
+    def fasta_meta = []
+    if (!file(row.fasta).exists()) {
+        exit 1, "ERROR: Please check input samplesheet -> Fasta file does not exist!\n${row.fasta}"
     }
-    if (meta.single_end) {
-        array = [ meta, [ file(row.fastq_1) ] ]
-    } else {
-        if (!file(row.fastq_2).exists()) {
-            exit 1, "ERROR: Please check input samplesheet -> Read 2 FastQ file does not exist!\n${row.fastq_2}"
-        }
-        array = [ meta, [ file(row.fastq_1), file(row.fastq_2) ] ]
-    }
-    return array
+    fasta_meta = [ meta, file(row.fasta) ]
+
+    return fasta_meta
 }

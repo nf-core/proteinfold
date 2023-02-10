@@ -19,7 +19,7 @@ class WorkflowMain {
     }
 
     //
-    // Print help to screen if required
+    // Generate help string
     //
     public static String help(workflow, params, log) {
         def command = "nextflow run ${workflow.manifest.name} --input samplesheet.csv --genome GRCh37 -profile docker"
@@ -32,7 +32,7 @@ class WorkflowMain {
     }
 
     //
-    // Print parameter summary log to screen
+    // Generate parameter summary log string
     //
     public static String paramsSummaryLog(workflow, params, log) {
         def summary_log = ''
@@ -53,21 +53,29 @@ class WorkflowMain {
             System.exit(0)
         }
 
-        // Validate workflow parameters via the JSON schema
-        if (params.validate_params) {
-            NfcoreSchema.validateParameters(workflow, params, log)
+        // Print workflow version and exit on --version
+        if (params.version) {
+            String workflow_version = NfcoreTemplate.version(workflow)
+            log.info "${workflow.manifest.name} ${workflow_version}"
+            System.exit(0)
         }
 
         // Print parameter summary log to screen
         log.info paramsSummaryLog(workflow, params, log)
 
+        // Validate workflow parameters via the JSON schema
+        if (params.validate_params) {
+            NfcoreSchema.validateParameters(workflow, params, log)
+        }
+
         // Check that a -profile or Nextflow config has been provided to run the pipeline
         NfcoreTemplate.checkConfigProvided(workflow, log)
 
         // Check that conda channels are set-up correctly
-        if (params.enable_conda) {
+        if (workflow.profile.tokenize(',').intersect(['conda', 'mamba']).size() >= 1) {
             Utils.checkCondaChannels(log)
         }
+
 
         // Check AWS batch settings
         NfcoreTemplate.awsBatch(workflow, params)
@@ -78,17 +86,41 @@ class WorkflowMain {
             System.exit(1)
         }
     }
-
     //
     // Get attribute from genome config file e.g. fasta
     //
-    public static String getGenomeAttribute(params, attribute) {
-        def val = ''
+    public static Object getGenomeAttribute(params, attribute) {
         if (params.genomes && params.genome && params.genomes.containsKey(params.genome)) {
             if (params.genomes[ params.genome ].containsKey(attribute)) {
-                val = params.genomes[ params.genome ][ attribute ]
+                return params.genomes[ params.genome ][ attribute ]
             }
         }
-        return val
+        return null
+    }
+
+    //
+    // Get link to Colabfold Alphafold2 parameters
+    //
+    public static String getColabfoldAlphafold2Params(params) {
+        def link = null
+        if (params.colabfold_alphafold2_params_tags) {
+            if (params.colabfold_alphafold2_params_tags.containsKey(params.colabfold_model_preset.toString())) {
+                link = "https://storage.googleapis.com/alphafold/" + params.colabfold_alphafold2_params_tags[ params.colabfold_model_preset.toString() ] + '.tar'
+            }
+        }
+        return link
+    }
+
+    //
+    // Get path to Colabfold Alphafold2 parameters
+    //
+    public static String getColabfoldAlphafold2ParamsPath(params) {
+        def path = null
+        if (params.colabfold_alphafold2_params_tags) {
+            if (params.colabfold_alphafold2_params_tags.containsKey(params.colabfold_model_preset.toString())) {
+                path = "${params.colabfold_db}/params/" + params.colabfold_alphafold2_params_tags[ params.colabfold_model_preset.toString() ]
+            }
+        }
+        return path
     }
 }
