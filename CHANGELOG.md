@@ -10,3 +10,7 @@ Initial release of nf-core/proteinfold, created with the [nf-core](https://nf-co
 ### Enhancements & fixes
 
 - Updated pipeline template to [nf-core/tools 2.7.2](https://github.com/nf-core/tools/releases/tag/2.7.2)
+
+## 1.1.0
+
+### Enhancements & fixes
