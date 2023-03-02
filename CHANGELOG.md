@@ -14,3 +14,5 @@ Initial release of nf-core/proteinfold, created with the [nf-core](https://nf-co
 ## 1.1.0
 
 ### Enhancements & fixes
+
+Add `accelerator` directive to GPU processes when `params.use_gpu` is true.
