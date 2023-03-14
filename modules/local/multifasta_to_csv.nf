@@ -18,7 +18,8 @@ process MULTIFASTA_TO_CSV {
 
     script:
     """
-    echo -e id,sequence'\\n'${meta.id},`awk '!/^>/ {print \$0}' ${fasta} | tr '\\n' ':' | sed 's/:\$//'` > input.csv
+    awk '/^>/ {printf("\\n%s\\n",\$0);next; } { printf("%s",\$0);}  END {printf("\\n");}' ${fasta} > single_line.fasta
+    echo -e id,sequence'\\n'${meta.id},`awk '!/^>/ {print \$0}' single_line.fasta | tr '\\n' ':' | sed 's/:\$//' | sed 's/^://'` > input.csv
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
