@@ -15,4 +15,6 @@ Initial release of nf-core/proteinfold, created with the [nf-core](https://nf-co
 
 ### Enhancements & fixes
 
-Add `accelerator` directive to GPU processes when `params.use_gpu` is true.
+- Add `accelerator` directive to GPU processes when `params.use_gpu` is true.
+
+- Support multiline fasta for colabfold multimer predictions
