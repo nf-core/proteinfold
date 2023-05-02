@@ -172,6 +172,12 @@
                     "description": "Specifies the number of recycles used by Esmfold",
                     "enum": ["webserver", "local"],
                     "fa_icon": "fas fa-server"
+                },
+                "esmfold_model_preset": {
+                    "type": "string",
+                    "description": "Specifies whether is a 'monomer' or 'multimer' prediction",
+                    "enum": ["monomer","multimer"],
+                    "fa_icon": "fas fa-stream"
                 }
             }
         },

@@ -11,7 +11,8 @@ WorkflowEsmfold.initialise(params, log)
 
 // Check input path parameters to see if they exist
 def checkPathParamList = [
-    params.input
+    params.input,
+    params.esmfold_db
 ]
 for (param in checkPathParamList) { if (param) { file(param, checkIfExists: true) } }
 
@@ -39,7 +40,7 @@ ch_multiqc_custom_methods_description = params.multiqc_methods_description ? fil
 // SUBWORKFLOW: Consisting of a mix of local and nf-core/modules
 //
 include { INPUT_CHECK           } from '../subworkflows/local/input_check'
-//include { PREPARE_COLABFOLD_DBS } from '../subworkflows/local/prepare_colabfold_dbs'
+include { PREPARE_ESMFOLD_DBS } from '../subworkflows/local/prepare_esmfold_dbs'
 
 //
 // MODULE: Local to the pipeline
@@ -84,32 +85,28 @@ workflow ESMFOLD {
     ch_versions = ch_versions.mix(PREPARE_ESMFOLD.out.versions)
 
     //
-    // MODULE: Run colabfold
+    // MODULE: Run esmfold
     //
-    if (params.colabfold_model_preset != 'AlphaFold2-ptm') {
+    if (params.esmfold_model_preset != 'monomer') {
         MULTIFASTA_TO_CSV(
             INPUT_CHECK.out.fastas
         )
         ch_versions = ch_versions.mix(MULTIFASTA_TO_CSV.out.versions)
         RUN_ESMFOLD(
                 MULTIFASTA_TO_CSV.out.input_csv,
-                params.colabfold_model_preset,
-                PREPARE_COLABFOLD_DBS.out.params,
-                [],
-                [],
-                params.num_recycle
+                PREPARE_ESMFOLD_DBS.out.params,
+                params.num_recycles
             )
             ch_versions = ch_versions.mix(RUN_ESMFOLD.out.versions)
         } else {
             RUN_ESMFOLD(
                 INPUT_CHECK.out.fastas,
-                params.colabfold_model_preset,
-                PREPARE_COLABFOLD_DBS.out.params,
+                PREPARE_ESMFOLD_DBS.out.params,
                 [],
                 [],
-                params.num_recycle
+                params.num_recycles
             )
-            ch_versions = ch_versions.mix(COLABFOLD_BATCH.out.versions)
+            ch_versions = ch_versions.mix(RUN_ESMFOLD.out.versions)
         }
 
     //
@@ -122,17 +119,17 @@ workflow ESMFOLD {
     //
     // MODULE: MultiQC
     //
-    workflow_summary    = WorkflowColabfold.paramsSummaryMultiqc(workflow, summary_params)
+    workflow_summary    = WorkflowEsmfold.paramsSummaryMultiqc(workflow, summary_params)
     ch_workflow_summary = Channel.value(workflow_summary)
 
-    methods_description    = WorkflowColabfold.methodsDescriptionText(workflow, ch_multiqc_custom_methods_description)
+    methods_description    = WorkflowEsmfold.methodsDescriptionText(workflow, ch_multiqc_custom_methods_description)
     ch_methods_description = Channel.value(methods_description)
 
     ch_multiqc_files = Channel.empty()
     ch_multiqc_files = ch_multiqc_files.mix(ch_workflow_summary.collectFile(name: 'workflow_summary_mqc.yaml'))
     ch_multiqc_files = ch_multiqc_files.mix(ch_methods_description.collectFile(name: 'methods_description_mqc.yaml'))
     ch_multiqc_files = ch_multiqc_files.mix(CUSTOM_DUMPSOFTWAREVERSIONS.out.mqc_yml.collect())
-    ch_multiqc_files = ch_multiqc_files.mix(COLABFOLD_BATCH.out.multiqc.collect())
+    ch_multiqc_files = ch_multiqc_files.mix(RUN_ESMFOLD.out.multiqc.collect())
 
     MULTIQC (
         ch_multiqc_files.collect(),
