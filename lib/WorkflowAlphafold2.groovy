@@ -2,6 +2,7 @@
 // This file holds several functions specific to the workflow/proteinfold.nf in the nf-core/proteinfold pipeline
 //
 
+import nextflow.Nextflow
 import groovy.text.SimpleTemplateEngine
 
 class WorkflowAlphafold2 {
