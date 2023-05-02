@@ -8,6 +8,7 @@ process RUN_ESMFOLD {
 
     input:
     tuple val(meta), path(fasta)
+    path ('./checkpoint')
 
     output:
     path ("${fasta.baseName}*.pdb"), emit: pdb
@@ -25,6 +26,7 @@ process RUN_ESMFOLD {
     esm-fold \
         -i ${fasta} \
         -o \$PWD \
+        -m ./checkpoints
         $args
 
     awk '{print \$6"\\t"\$11}' "${fasta.baseName}"*.pdb | uniq > "${fasta.baseName}"_plddt_mqc.tsv
