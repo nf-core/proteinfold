@@ -32,7 +32,7 @@
                     "type": "string",
                     "default": "alphafold2",
                     "description": "Specifies the mode in which the pipeline will be run",
-                    "enum": ["alphafold2", "colabfold"],
+                    "enum": ["alphafold2", "colabfold", "esmfold"],
                     "fa_icon": "fas fa-cogs"
                 },
                 "use_gpu": {
@@ -152,6 +152,26 @@
                     "type": "boolean",
                     "description": "Create databases indexes when running colabfold_local mode",
                     "fa_icon": "fas fa-bezier-curve"
+                }
+            }
+        },
+        "esmfold_options": {
+            "title": "Esmfold options",
+            "type": "object",
+            "fa_icon": "fas fa-coins",
+            "description": "Esmfold options.",
+            "properties": {
+                "esmfold_db": {
+                    "type": "string",
+                    "description": "Specifies the PARAMS path used by 'esmfold' mode",
+                    "fa_icon": "fas fa-folder-open"
+                },
+                "num_recycles": {
+                    "type": "integer",
+                    "default": 4,
+                    "description": "Specifies the number of recycles used by Esmfold",
+                    "enum": ["webserver", "local"],
+                    "fa_icon": "fas fa-server"
                 }
             }
         },
