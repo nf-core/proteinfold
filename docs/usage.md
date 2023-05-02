@@ -63,7 +63,9 @@ nextflow run nf-core/proteinfold \
     --use_gpu <true/false> \
     -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
 ```
+
 If you specify the `--alphafold2_db ` parameter, the directory structure of your path should be like this:
+
 ```
 ├── mgnify
 │   └── mgy_clusters_2018_12.fa
@@ -250,6 +252,7 @@ nextflow run nf-core/proteinfold \
 ```
 
 If you specify the `--colabfold_db ` parameter, the directory structure of your path should be like this:
+
 ```
 ├── colabfold_envdb_202108
 │   ├── colabfold_envdb_202108_db.0
@@ -384,8 +387,6 @@ If you specify the `--colabfold_db ` parameter, the directory structure of your 
 ```
 
 This will launch the pipeline with the `docker` configuration profile. See below for more information about profiles.
-
-
 
 Note that the pipeline will create the following files in your working directory:
 
