@@ -64,6 +64,163 @@ nextflow run nf-core/proteinfold \
     -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
 ```
 
+If you specify the `--alphafold2_db ` parameter, the directory structure of your path should be like this:
+
+```
+├── mgnify
+│   └── mgy_clusters_2018_12.fa
+├── alphafold_params_2022-03-02
+│   ├── LICENSE
+│   ├── params_model_1_multimer.npz
+│   ├── params_model_1_multimer_v2.npz
+│   ├── params_model_1.npz
+│   ├── params_model_1_ptm.npz
+│   ├── params_model_2_multimer.npz
+│   ├── params_model_2_multimer_v2.npz
+│   ├── params_model_2.npz
+│   ├── params_model_2_ptm.npz
+│   ├── params_model_3_multimer.npz
+│   ├── params_model_3_multimer_v2.npz
+│   ├── params_model_3.npz
+│   ├── params_model_3_ptm.npz
+│   ├── params_model_4_multimer.npz
+│   ├── params_model_4_multimer_v2.npz
+│   ├── params_model_4.npz
+│   ├── params_model_4_ptm.npz
+│   ├── params_model_5_multimer.npz
+│   ├── params_model_5_multimer_v2.npz
+│   ├── params_model_5.npz
+│   └── params_model_5_ptm.npz
+├── pdb70
+│   └── pdb70_from_mmcif_200916
+│       ├── md5sum
+│       ├── pdb70_a3m.ffdata
+│       ├── pdb70_a3m.ffindex
+│       ├── pdb70_clu.tsv
+│       ├── pdb70_cs219.ffdata
+│       ├── pdb70_cs219.ffindex
+│       ├── pdb70_hhm.ffdata
+│       ├── pdb70_hhm.ffindex
+│       └── pdb_filter.dat
+├── pdb_mmcif
+│   ├── mmcif_files
+│   │   ├── 1g6g.cif
+│   │   ├── 1go4.cif
+│   │   ├── 1isn.cif
+│   │   ├── 1kuu.cif
+│   │   ├── 1m7s.cif
+│   │   ├── 1mwq.cif
+│   │   ├── 1ni5.cif
+│   │   ├── 1qgd.cif
+│   │   ├── 1tp9.cif
+│   │   ├── 1wa9.cif
+│   │   ├── 1ye5.cif
+│   │   ├── 1yhl.cif
+│   │   ├── 2bjd.cif
+│   │   ├── 2bo9.cif
+│   │   ├── 2e7t.cif
+│   │   ├── 2fyg.cif
+│   │   ├── 2j0q.cif
+│   │   ├── 2jcq.cif
+│   │   ├── 2m4k.cif
+│   │   ├── 2n9o.cif
+│   │   ├── 2nsx.cif
+│   │   ├── 2w4u.cif
+│   │   ├── 2wd6.cif
+│   │   ├── 2wh5.cif
+│   │   ├── 2wji.cif
+│   │   ├── 2yu3.cif
+│   │   ├── 3cw2.cif
+│   │   ├── 3d45.cif
+│   │   ├── 3gnz.cif
+│   │   ├── 3j0a.cif
+│   │   ├── 3jaj.cif
+│   │   ├── 3mzo.cif
+│   │   ├── 3nrn.cif
+│   │   ├── 3piv.cif
+│   │   ├── 3pof.cif
+│   │   ├── 3pvd.cif
+│   │   ├── 3q45.cif
+│   │   ├── 3qh6.cif
+│   │   ├── 3rg2.cif
+│   │   ├── 3sxe.cif
+│   │   ├── 3uai.cif
+│   │   ├── 3uid.cif
+│   │   ├── 3wae.cif
+│   │   ├── 3wt1.cif
+│   │   ├── 3wtr.cif
+│   │   ├── 3wy2.cif
+│   │   ├── 3zud.cif
+│   │   ├── 4bix.cif
+│   │   ├── 4bzx.cif
+│   │   ├── 4c1n.cif
+│   │   ├── 4cej.cif
+│   │   ├── 4chm.cif
+│   │   ├── 4fzo.cif
+│   │   ├── 4i1f.cif
+│   │   ├── 4ioa.cif
+│   │   ├── 4j6o.cif
+│   │   ├── 4m9q.cif
+│   │   ├── 4mal.cif
+│   │   ├── 4nhe.cif
+│   │   ├── 4o2w.cif
+│   │   ├── 4pzo.cif
+│   │   ├── 4qlx.cif
+│   │   ├── 4uex.cif
+│   │   ├── 4zm4.cif
+│   │   ├── 4zv1.cif
+│   │   ├── 5aj4.cif
+│   │   ├── 5frs.cif
+│   │   ├── 5hwo.cif
+│   │   ├── 5kbk.cif
+│   │   ├── 5odq.cif
+│   │   ├── 5u5t.cif
+│   │   ├── 5wzq.cif
+│   │   ├── 5x9z.cif
+│   │   ├── 5xe5.cif
+│   │   ├── 5ynv.cif
+│   │   ├── 5yud.cif
+│   │   ├── 5z5c.cif
+│   │   ├── 5zb3.cif
+│   │   ├── 5zlg.cif
+│   │   ├── 6a6i.cif
+│   │   ├── 6az3.cif
+│   │   ├── 6ban.cif
+│   │   ├── 6g1f.cif
+│   │   ├── 6ix4.cif
+│   │   ├── 6jwp.cif
+│   │   ├── 6ng9.cif
+│   │   ├── 6ojj.cif
+│   │   ├── 6s0x.cif
+│   │   ├── 6sg9.cif
+│   │   ├── 6vi4.cif
+│   │   └── 7sp5.cif
+│   └── obsolete.dat
+├── pdb_seqres
+│   └── pdb_seqres.txt
+├── small_bfd
+│   └── bfd-first_non_consensus_sequences.fasta
+├── uniclust30
+│   └── uniclust30_2018_08
+│       ├── uniclust30_2018_08_a3m_db -> uniclust30_2018_08_a3m.ffdata
+│       ├── uniclust30_2018_08_a3m_db.index
+│       ├── uniclust30_2018_08_a3m.ffdata
+│       ├── uniclust30_2018_08_a3m.ffindex
+│       ├── uniclust30_2018_08.cs219
+│       ├── uniclust30_2018_08_cs219.ffdata
+│       ├── uniclust30_2018_08_cs219.ffindex
+│       ├── uniclust30_2018_08.cs219.sizes
+│       ├── uniclust30_2018_08_hhm_db -> uniclust30_2018_08_hhm.ffdata
+│       ├── uniclust30_2018_08_hhm_db.index
+│       ├── uniclust30_2018_08_hhm.ffdata
+│       ├── uniclust30_2018_08_hhm.ffindex
+│       └── uniclust30_2018_08_md5sum
+├── uniprot
+│   └── uniprot.fasta
+└── uniref90
+    └── uniref90.fasta
+```
+
 ```console
 nextflow run nf-core/proteinfold \
       --input samplesheet.csv \
@@ -92,6 +249,141 @@ nextflow run nf-core/proteinfold \
       --colabfold_model_preset "AlphaFold2-ptm" \
       --use_gpu <true/false> \
        -profile <docker>
+```
+
+If you specify the `--colabfold_db ` parameter, the directory structure of your path should be like this:
+
+```
+├── colabfold_envdb_202108
+│   ├── colabfold_envdb_202108_db.0
+│   ├── colabfold_envdb_202108_db.1
+│   ├── colabfold_envdb_202108_db.10
+│   ├── colabfold_envdb_202108_db.11
+│   ├── colabfold_envdb_202108_db.12
+│   ├── colabfold_envdb_202108_db.13
+│   ├── colabfold_envdb_202108_db.14
+│   ├── colabfold_envdb_202108_db.15
+│   ├── colabfold_envdb_202108_db.2
+│   ├── colabfold_envdb_202108_db.3
+│   ├── colabfold_envdb_202108_db.4
+│   ├── colabfold_envdb_202108_db.5
+│   ├── colabfold_envdb_202108_db.6
+│   ├── colabfold_envdb_202108_db.7
+│   ├── colabfold_envdb_202108_db.8
+│   ├── colabfold_envdb_202108_db.9
+│   ├── colabfold_envdb_202108_db_aln.0
+│   ├── colabfold_envdb_202108_db_aln.1
+│   ├── colabfold_envdb_202108_db_aln.10
+│   ├── colabfold_envdb_202108_db_aln.11
+│   ├── colabfold_envdb_202108_db_aln.12
+│   ├── colabfold_envdb_202108_db_aln.13
+│   ├── colabfold_envdb_202108_db_aln.14
+│   ├── colabfold_envdb_202108_db_aln.15
+│   ├── colabfold_envdb_202108_db_aln.2
+│   ├── colabfold_envdb_202108_db_aln.3
+│   ├── colabfold_envdb_202108_db_aln.4
+│   ├── colabfold_envdb_202108_db_aln.5
+│   ├── colabfold_envdb_202108_db_aln.6
+│   ├── colabfold_envdb_202108_db_aln.7
+│   ├── colabfold_envdb_202108_db_aln.8
+│   ├── colabfold_envdb_202108_db_aln.9
+│   ├── colabfold_envdb_202108_db_aln.dbtype
+│   ├── colabfold_envdb_202108_db_aln.index
+│   ├── colabfold_envdb_202108_db.dbtype
+│   ├── colabfold_envdb_202108_db_h
+│   ├── colabfold_envdb_202108_db_h.dbtype
+│   ├── colabfold_envdb_202108_db_h.index
+│   ├── colabfold_envdb_202108_db.idx
+│   ├── colabfold_envdb_202108_db.idx.dbtype
+│   ├── colabfold_envdb_202108_db.idx.index
+│   ├── colabfold_envdb_202108_db.index
+│   ├── colabfold_envdb_202108_db_seq.0
+│   ├── colabfold_envdb_202108_db_seq.1
+│   ├── colabfold_envdb_202108_db_seq.10
+│   ├── colabfold_envdb_202108_db_seq.11
+│   ├── colabfold_envdb_202108_db_seq.12
+│   ├── colabfold_envdb_202108_db_seq.13
+│   ├── colabfold_envdb_202108_db_seq.14
+│   ├── colabfold_envdb_202108_db_seq.15
+│   ├── colabfold_envdb_202108_db_seq.2
+│   ├── colabfold_envdb_202108_db_seq.3
+│   ├── colabfold_envdb_202108_db_seq.4
+│   ├── colabfold_envdb_202108_db_seq.5
+│   ├── colabfold_envdb_202108_db_seq.6
+│   ├── colabfold_envdb_202108_db_seq.7
+│   ├── colabfold_envdb_202108_db_seq.8
+│   ├── colabfold_envdb_202108_db_seq.9
+│   ├── colabfold_envdb_202108_db_seq.dbtype
+│   ├── colabfold_envdb_202108_db_seq_h -> colabfold_envdb_202108_db_h
+│   ├── colabfold_envdb_202108_db_seq_h.dbtype -> colabfold_envdb_202108_db_h.dbtype
+│   ├── colabfold_envdb_202108_db_seq_h.index -> colabfold_envdb_202108_db_h.index
+│   ├── colabfold_envdb_202108_db_seq.index
+├── params
+│   ├── alphafold_params_2021-07-14
+│   │   ├── LICENSE
+│   │   ├── params_model_1.npz
+│   │   ├── params_model_1_ptm.npz
+│   │   ├── params_model_2.npz
+│   │   ├── params_model_2_ptm.npz
+│   │   ├── params_model_3.npz
+│   │   ├── params_model_3_ptm.npz
+│   │   ├── params_model_4.npz
+│   │   ├── params_model_4_ptm.npz
+│   │   ├── params_model_5.npz
+│   │   └── params_model_5_ptm.npz
+│   └── alphafold_params_colab_2022-03-02
+│       ├── LICENSE
+│       ├── params_model_1_multimer_v2.npz
+│       ├── params_model_1.npz
+│       ├── params_model_2_multimer_v2.npz
+│       ├── params_model_2.npz
+│       ├── params_model_2_ptm.npz
+│       ├── params_model_3_multimer_v2.npz
+│       ├── params_model_3.npz
+│       ├── params_model_4_multimer_v2.npz
+│       ├── params_model_4.npz
+│       ├── params_model_5_multimer_v2.npz
+│       └── params_model_5.npz
+└── uniref30_2202
+    ├── uniref30_2202_db.0
+    ├── uniref30_2202_db.1
+    ├── uniref30_2202_db.2
+    ├── uniref30_2202_db.3
+    ├── uniref30_2202_db.4
+    ├── uniref30_2202_db.5
+    ├── uniref30_2202_db.6
+    ├── uniref30_2202_db.7
+    ├── uniref30_2202_db_aln.0
+    ├── uniref30_2202_db_aln.1
+    ├── uniref30_2202_db_aln.2
+    ├── uniref30_2202_db_aln.3
+    ├── uniref30_2202_db_aln.4
+    ├── uniref30_2202_db_aln.5
+    ├── uniref30_2202_db_aln.6
+    ├── uniref30_2202_db_aln.7
+    ├── uniref30_2202_db_aln.dbtype
+    ├── uniref30_2202_db_aln.index
+    ├── uniref30_2202_db.dbtype
+    ├── uniref30_2202_db_h
+    ├── uniref30_2202_db_h.dbtype
+    ├── uniref30_2202_db_h.index
+    ├── uniref30_2202_db.idx
+    ├── uniref30_2202_db.idx.dbtype
+    ├── uniref30_2202_db.idx.index
+    ├── uniref30_2202_db.index
+    ├── uniref30_2202_db_seq.0
+    ├── uniref30_2202_db_seq.1
+    ├── uniref30_2202_db_seq.2
+    ├── uniref30_2202_db_seq.3
+    ├── uniref30_2202_db_seq.4
+    ├── uniref30_2202_db_seq.5
+    ├── uniref30_2202_db_seq.6
+    ├── uniref30_2202_db_seq.7
+    ├── uniref30_2202_db_seq.dbtype
+    ├── uniref30_2202_db_seq_h -> uniref30_2202_db_h
+    ├── uniref30_2202_db_seq_h.dbtype -> uniref30_2202_db_h.dbtype
+    ├── uniref30_2202_db_seq_h.index -> uniref30_2202_db_h.index
+    └── uniref30_2202_db_seq.index
 ```
 
 This will launch the pipeline with the `docker` configuration profile. See below for more information about profiles.
