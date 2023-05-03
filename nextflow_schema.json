@@ -113,9 +113,9 @@
                 },
                 "colabfold_model_preset": {
                     "type": "string",
-                    "default": "AlphaFold2-ptm",
+                    "default": "alphafold2_ptm",
                     "description": "Model preset for 'colabfold' mode",
-                    "enum": ["AlphaFold2-ptm", "AlphaFold2-multimer-v1", "AlphaFold2-multimer-v2"],
+                    "enum": ["auto", "alphafold2", "alphafold2_ptm", "alphafold2_multimer_v1", "alphafold2_multimer_v2", "alphafold2_multimer_v3"],
                     "fa_icon": "fas fa-stream"
                 },
                 "num_recycle": {
@@ -258,7 +258,7 @@
                 },
                 "alphafold2_params": {
                     "type": "string",
-                    "default": "https://storage.googleapis.com/alphafold/alphafold_params_2022-03-02.tar",
+                    "default": "https://storage.googleapis.com/alphafold/alphafold_params_2022-12-06.tar",
                     "description": "Link to the Alphafold2 parameters",
                     "fa_icon": "fas fa-link"
                 },
@@ -286,9 +286,9 @@
                     "description": "Link to the PDV obsolete database",
                     "fa_icon": "fas fa-link"
                 },
-                "uniclust30": {
+                "uniref30_alphafold2": {
                     "type": "string",
-                    "default": "https://storage.googleapis.com/alphafold-databases/casp14_versions/uniclust30_2018_08_hhsuite.tar.gz",
+                    "default": "https://storage.googleapis.com/alphafold-databases/v2.3/UniRef30_2021_03.tar.gz",
                     "description": "Link to the Uniclust30 database",
                     "fa_icon": "fas fa-link"
                 },
@@ -354,9 +354,9 @@
                     "description": "Path to the PDB mmCIF database",
                     "fa_icon": "fas fa-folder-open"
                 },
-                "uniclust30_path": {
+                "uniref30_alphafold2_path": {
                     "type": "string",
-                    "description": "Path to the Uniclust30 database",
+                    "description": "Path to the Uniref30 database",
                     "fa_icon": "fas fa-folder-open"
                 },
                 "uniref90_path": {
@@ -412,7 +412,7 @@
                     "description": "Link to the Colabfold database",
                     "fa_icon": "fas fa-folder-open"
                 },
-                "uniref30_path": {
+                "uniref30_colabfold_path": {
                     "type": "string",
                     "description": "Link to the UniRef30 database",
                     "fa_icon": "fas fa-folder-open"
