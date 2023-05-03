@@ -388,7 +388,7 @@
                     "description": "Link to the Colabfold database",
                     "fa_icon": "fas fa-link"
                 },
-                "uniref30": {
+                "uniref30_colabfold_link": {
                     "type": "string",
                     "default": "http://wwwuser.gwdg.de/~compbiol/colabfold/uniref30_2103.tar.gz",
                     "description": "Link to the UniRef30 database",
