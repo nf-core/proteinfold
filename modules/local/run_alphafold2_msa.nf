@@ -6,8 +6,8 @@ process RUN_ALPHAFOLD2_MSA {
     label 'process_medium'
 
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'docker://lmansouri/alphafold-msa:2.0.0' :
-        'lmansouri/alphafold-msa:2.0.0' }"
+        'docker://lmansouri/alphafold-msa:1.1.0' :
+        'lmansouri/alphafold-msa:1.1.0' }"
 
 
     input:

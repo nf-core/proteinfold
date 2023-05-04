@@ -6,8 +6,8 @@ process RUN_ALPHAFOLD2 {
     label 'process_medium'
 
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'docker://lmansouri/alphafold-standard:2.0.0' :
-        'lmansouri/alphafold-standard:2.0.0' }"
+        'docker://lmansouri/alphafold-standard:1.1.0' :
+        'lmansouri/alphafold-standard:1.1.0' }"
 
     input:
     tuple val(meta), path(fasta)
