@@ -3,12 +3,12 @@ process RUN_ESMFOLD {
     label 'process_medium'
 
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'docker://athbaltzis/esmfold:v0.1' :
-        'athbaltzis/esmfold:v0.1' }"
+        'docker://athbaltzis/esmfold:1.1.0' :
+        'athbaltzis/esmfold:1.1.0' }"
 
     input:
     tuple val(meta), path(fasta)
-    path ('./checkpoint')
+    path ('./checkpoints')
     val numRec
 
     output:
@@ -27,7 +27,7 @@ process RUN_ESMFOLD {
     esm-fold \
         -i ${fasta} \
         -o \$PWD \
-        -m ./checkpoints \
+        -m \$PWD \
         --num-recycles ${numRec} \
         $args
 

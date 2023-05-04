@@ -39,6 +39,8 @@ if (params.mode == "alphafold2") {
     include { ALPHAFOLD2 } from './workflows/alphafold2'
 } else if (params.mode == "colabfold") {
     include { COLABFOLD } from './workflows/colabfold'
+} else if (params.mode == "esmfold") {
+    include { ESMFOLD } from './workflows/esmfold'
 }
 
 workflow NFCORE_PROTEINFOLD {
@@ -52,9 +54,15 @@ workflow NFCORE_PROTEINFOLD {
     //
     // WORKFLOW: Run colabfold
     //
-    // else if(params.mode == "colabfold_webserver" || params.mode == "colabfold_local") {
     else if(params.mode == "colabfold") {
         COLABFOLD ()
+    }
+
+    //
+    // WORKFLOW: Run esmfold
+    //
+    else if(params.mode == "esmfold") {
+        ESMFOLD ()
     }
 }
 

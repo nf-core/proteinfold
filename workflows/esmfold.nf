@@ -46,7 +46,7 @@ include { PREPARE_ESMFOLD_DBS } from '../subworkflows/local/prepare_esmfold_dbs'
 // MODULE: Local to the pipeline
 //
 include { RUN_ESMFOLD            } from '../modules/local/run_esmfold'
-include { MULTIFASTA_TO_CSV      } from '../modules/local/multifasta_to_csv'
+include { MULTIFASTA_TO_SINGLEFASTA      } from '../modules/local/multifasta_to_singlefasta'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -81,19 +81,19 @@ workflow ESMFOLD {
     )
     ch_versions = ch_versions.mix(INPUT_CHECK.out.versions)
 
-    PREPARE_ESMFOLD( )
-    ch_versions = ch_versions.mix(PREPARE_ESMFOLD.out.versions)
+    PREPARE_ESMFOLD_DBS( )
+    ch_versions = ch_versions.mix(PREPARE_ESMFOLD_DBS.out.versions)
 
     //
     // MODULE: Run esmfold
     //
     if (params.esmfold_model_preset != 'monomer') {
-        MULTIFASTA_TO_CSV(
+        MULTIFASTA_TO_SINGLEFASTA(
             INPUT_CHECK.out.fastas
         )
-        ch_versions = ch_versions.mix(MULTIFASTA_TO_CSV.out.versions)
+        ch_versions = ch_versions.mix(MULTIFASTA_TO_SINGLEFASTA.out.versions)
         RUN_ESMFOLD(
-                MULTIFASTA_TO_CSV.out.input_csv,
+                MULTIFASTA_TO_SINGLEFASTA.out.input_fasta,
                 PREPARE_ESMFOLD_DBS.out.params,
                 params.num_recycles
             )
@@ -102,8 +102,6 @@ workflow ESMFOLD {
             RUN_ESMFOLD(
                 INPUT_CHECK.out.fastas,
                 PREPARE_ESMFOLD_DBS.out.params,
-                [],
-                [],
                 params.num_recycles
             )
             ch_versions = ch_versions.mix(RUN_ESMFOLD.out.versions)
