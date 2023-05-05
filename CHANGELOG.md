@@ -20,3 +20,9 @@ Initial release of nf-core/proteinfold, created with the [nf-core](https://nf-co
 - [#81] Support multiline fasta for colabfold multimer predictions
 
 - [#89] Fix issue with excessive symlinking in the pdb_mmcif database
+
+- [#90] Update pipeline template to [nf-core/tools 2.8](https://github.com/nf-core/tools/releases/tag/2.8)
+
+- [#91] Update ColabFold version to 1.5.2 and AlphaFold version to 2.3.2
+
+- [#92] Add ESMFold workflow to the pipeline
