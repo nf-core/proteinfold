@@ -37,7 +37,7 @@ An [example samplesheet](../assets/samplesheet.csv) has been provided with the p
 
 ## Running the pipeline
 
-The typical commands for running the pipeline on AlphaFold2 and Colabfold modes are as follows:
+The typical commands for running the pipeline on AlphaFold2, Colabfold and ESMFold modes are as follows:
 
 ```console
 nextflow run nf-core/proteinfold \
@@ -90,6 +90,18 @@ nextflow run nf-core/proteinfold \
       --num_recycle 3 \
       --use_amber <true/false> \
       --colabfold_model_preset "AlphaFold2-ptm" \
+      --use_gpu <true/false> \
+       -profile <docker>
+```
+
+```console
+nextflow run nf-core/proteinfold \
+      --input samplesheet.csv \
+      --outdir <OUTDIR> \
+      --mode esmfold
+      --esmfold_db <null (default) | DB_PATH> \
+      --num_recycles 4 \
+      --esmfold_model_preset <monomer/multimer> \
       --use_gpu <true/false> \
        -profile <docker>
 ```
