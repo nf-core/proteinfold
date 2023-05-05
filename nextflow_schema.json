@@ -32,7 +32,7 @@
                     "type": "string",
                     "default": "alphafold2",
                     "description": "Specifies the mode in which the pipeline will be run",
-                    "enum": ["alphafold2", "colabfold"],
+                    "enum": ["alphafold2", "colabfold", "esmfold"],
                     "fa_icon": "fas fa-cogs"
                 },
                 "use_gpu": {
@@ -159,6 +159,31 @@
                     "type": "boolean",
                     "description": "Create databases indexes when running colabfold_local mode",
                     "fa_icon": "fas fa-bezier-curve"
+                }
+            }
+        },
+        "esmfold_options": {
+            "title": "Esmfold options",
+            "type": "object",
+            "fa_icon": "fas fa-coins",
+            "description": "Esmfold options.",
+            "properties": {
+                "esmfold_db": {
+                    "type": "string",
+                    "description": "Specifies the PARAMS path used by 'esmfold' mode",
+                    "fa_icon": "fas fa-folder-open"
+                },
+                "num_recycles": {
+                    "type": "integer",
+                    "default": 4,
+                    "description": "Specifies the number of recycles used by Esmfold",
+                    "fa_icon": "fas fa-server"
+                },
+                "esmfold_model_preset": {
+                    "type": "string",
+                    "description": "Specifies whether is a 'monomer' or 'multimer' prediction",
+                    "enum": ["monomer", "multimer"],
+                    "fa_icon": "fas fa-stream"
                 }
             }
         },
@@ -436,6 +461,45 @@
                 }
             }
         },
+        "esmfold_parameters_link_options": {
+            "title": "Esmfold parameters links options",
+            "type": "object",
+            "description": "Parameters used to provide the links to the parameters public resources to Esmfold.",
+            "fa_icon": "fas fa-database",
+            "properties": {
+                "esmfold_3B_v1": {
+                    "type": "string",
+                    "default": "https://dl.fbaipublicfiles.com/fair-esm/models/esmfold_3B_v1.pt",
+                    "description": "Link to the Esmfold 3B-v1 model",
+                    "fa_icon": "fas fa-link"
+                },
+                "esm2_t36_3B_UR50D": {
+                    "type": "string",
+                    "default": "https://dl.fbaipublicfiles.com/fair-esm/models/esm2_t36_3B_UR50D.pt",
+                    "description": "Link to the Esmfold t36-3B-UR50D model",
+                    "fa_icon": "fas fa-link"
+                },
+                "esm2_t36_3B_UR50D_contact_regression": {
+                    "type": "string",
+                    "default": "https://dl.fbaipublicfiles.com/fair-esm/regression/esm2_t36_3B_UR50D-contact-regression.pt",
+                    "description": "Link to the Esmfold t36-3B-UR50D-contact-regression model",
+                    "fa_icon": "fas fa-link"
+                }
+            }
+        },
+        "esmfold_parameters_path_options": {
+            "title": "Esmfold parameters links options",
+            "type": "object",
+            "description": "Parameters used to provide the links to the parameters public resources to Esmfold.",
+            "fa_icon": "fas fa-database",
+            "properties": {
+                "esmfold_params_path": {
+                    "type": "string",
+                    "description": "Link to the Esmfold parameters",
+                    "fa_icon": "fas fa-folder-open"
+                }
+            }
+        },
         "generic_options": {
             "title": "Generic options",
             "type": "object",
@@ -551,6 +615,9 @@
             "$ref": "#/definitions/colabfold_options"
         },
         {
+            "$ref": "#/definitions/esmfold_options"
+        },
+        {
             "$ref": "#/definitions/institutional_config_options"
         },
         {
@@ -567,6 +634,12 @@
         },
         {
             "$ref": "#/definitions/colabfold_dbs_and_parameters_path_options"
+        },
+        {
+            "$ref": "#/definitions/esmfold_parameters_link_options"
+        },
+        {
+            "$ref": "#/definitions/esmfold_parameters_path_options"
         },
         {
             "$ref": "#/definitions/generic_options"
