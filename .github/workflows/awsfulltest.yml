@@ -24,7 +24,7 @@ jobs:
             "_colabfold_webserver",
             "_colabfold_multimer",
             "_esmfold",
-            "_esmfold_multimer"
+            "_esmfold_multimer",
           ]
     steps:
       - name: Launch workflow via tower
