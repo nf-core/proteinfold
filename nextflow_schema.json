@@ -175,7 +175,7 @@
                 "esmfold_model_preset": {
                     "type": "string",
                     "description": "Specifies whether is a 'monomer' or 'multimer' prediction",
-                    "enum": ["monomer","multimer"],
+                    "enum": ["monomer", "multimer"],
                     "fa_icon": "fas fa-stream"
                 }
             }
@@ -608,6 +608,9 @@
             "$ref": "#/definitions/colabfold_options"
         },
         {
+            "$ref": "#/definitions/esmfold_options"
+        },
+        {
             "$ref": "#/definitions/institutional_config_options"
         },
         {
@@ -624,6 +627,12 @@
         },
         {
             "$ref": "#/definitions/colabfold_dbs_and_parameters_path_options"
+        },
+        {
+            "$ref": "#/definitions/esmfold_parameters_link_options"
+        },
+        {
+            "$ref": "#/definitions/esmfold_parameters_path_options"
         },
         {
             "$ref": "#/definitions/generic_options"
