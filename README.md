@@ -119,6 +119,10 @@ On release, automated continuous integration tests run the pipeline on a full-si
       --use_gpu <true/false> \
       -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
   ```
+  > **Warning**
+  > If you aim to carry out a large amount of predictions using the colabfold_webserver mode, please setup and use your own custom MMSeqs2 API Server. You can find instructions [here](https://github.com/sokrypton/ColabFold/tree/main/MsaServer).
+
+
 
 - Typical command to run esmfold mode:
 
