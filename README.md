@@ -158,6 +158,8 @@ For further information or help, don't hesitate to get in touch on the [Slack `#
 
 ## Citations
 
+If you use nf-core/proteinfold for your analysis, please cite it using the following doi: [10.5281/zenodo.7437038](https://doi.org/10.5281/zenodo.7437038)
+
 An extensive list of references for the tools used by the pipeline can be found in the [`CITATIONS.md`](CITATIONS.md) file.
 
 You can cite the `nf-core` publication as follows:
