@@ -31,7 +31,9 @@ process RUN_ESMFOLD {
         --num-recycles ${numRec} \
         $args
 
-    awk '{print \$6"\\t"\$11}' "${fasta.baseName}"*.pdb | uniq > "${fasta.baseName}"_plddt_mqc.tsv
+    awk '{print \$2"\\t"\$3"\\t"\$4"\\t"\$6"\\t"\$11}' "${fasta.baseName}"*.pdb | grep -v 'N/A' | uniq > plddt.tsv
+    echo -e Atom_serial_number"\\t"Atom_name"\\t"Residue_name"\\t"Residue_sequence_number"\\t"pLDDT > header.tsv
+    cat header.tsv plddt.tsv > "${fasta.baseName}"_plddt_mqc.tsv
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
