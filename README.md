@@ -30,9 +30,9 @@ On release, automated continuous integration tests run the pipeline on a full-si
 
    iii. [ColabFold](https://github.com/sokrypton/ColabFold) - MMseqs2 API server followed by ColabFold
 
-   iv.  [ColabFold](https://github.com/sokrypton/ColabFold) - MMseqs2 local search followed by ColabFold
+   iv. [ColabFold](https://github.com/sokrypton/ColabFold) - MMseqs2 local search followed by ColabFold
 
-   v.   [ESMFold](https://github.com/facebookresearch/esm)
+   v. [ESMFold](https://github.com/facebookresearch/esm)
 
 ## Usage
 
@@ -50,7 +50,7 @@ nextflow run nf-core/proteinfold \
    --outdir <OUTDIR>
 ```
 
-   The pipeline takes care of downloading the required databases and parameters required by AlphaFold2, Colabfold or ESMFold. In case you have already downloaded the required files, you can skip this step by providing the path using the corresponding parameter [`--alphafold2_db`] or [`--colabfold_db`] or [`--esmfold_db`]
+The pipeline takes care of downloading the required databases and parameters required by AlphaFold2, Colabfold or ESMFold. In case you have already downloaded the required files, you can skip this step by providing the path using the corresponding parameter [`--alphafold2_db`] or [`--colabfold_db`] or [`--esmfold_db`]
 
 - Typical command to run AlphaFold2 mode:
 
@@ -114,6 +114,7 @@ nextflow run nf-core/proteinfold \
       --use_gpu <true/false> \
       -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
   ```
+
   > **Warning**
   > If you aim to carry out a large amount of predictions using the colabfold_webserver mode, please setup and use your own custom MMSeqs2 API Server. You can find instructions [here](https://github.com/sokrypton/ColabFold/tree/main/MsaServer).
 
