@@ -3,8 +3,8 @@ process MMSEQS_COLABFOLDSEARCH {
     label 'process_high_memory'
 
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'docker://lmansouri/colabfold:no_download' :
-        'lmansouri/colabfold:no_download' }"
+        'docker://nfcore/proteinfold_colabfold:1.1.0' :
+        'nfcore/proteinfold_colabfold:1.1.0' }"
 
 
     input:
