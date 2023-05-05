@@ -4,7 +4,7 @@ process MULTIFASTA_TO_CSV {
 
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'https://depot.galaxyproject.org/singularity/ubuntu:20.04' :
-        'docker.io/ubuntu:20.04' }"
+        'docker.io/library/ubuntu:20.04' }"
 
     input:
     tuple val(meta), path(fasta)
