@@ -40,7 +40,7 @@ workflow PREPARE_ALPHAFOLD2_DBS {
         ch_mmcif_files = file( params.pdb_mmcif_path, type: 'dir' )
         ch_mmcif_obsolete = file( params.pdb_mmcif_path, type: 'file' )
         ch_mmcif = ch_mmcif_files + ch_mmcif_obsolete
-        ch_uniclust30 = file( params.uniclust30_path, type: 'dir' )
+        ch_uniref30   = file( params.uniref30_alphafold2_path, type: 'any' )
         ch_uniref90   = file( params.uniref90_path )
         ch_pdb_seqres = file( params.pdb_seqres_path )
         ch_uniprot    = file( params.uniprot_path )
@@ -86,11 +86,11 @@ workflow PREPARE_ALPHAFOLD2_DBS {
         ch_mmcif = DOWNLOAD_PDBMMCIF.out.ch_db
         ch_versions = ch_versions.mix(DOWNLOAD_PDBMMCIF.out.versions)
 
-        ARIA2_UNICLUST30(
-            params.uniclust30
+        ARIA2_UNIREF30(
+            params.uniref30
         )
-        ch_uniclust30 = ARIA2_UNICLUST30.out.db
-        ch_versions = ch_versions.mix(ARIA2_UNICLUST30.out.versions)
+        ch_uniref30 = ARIA2_UNICLUST30.out.db
+        ch_versions = ch_versions.mix(ARIA2_UNIref30.out.versions)
 
         ARIA2_UNIREF90(
             params.uniref90
@@ -127,7 +127,7 @@ workflow PREPARE_ALPHAFOLD2_DBS {
     mgnify     = ch_mgnify
     pdb70      = ch_pdb70
     pdb_mmcif  = ch_mmcif
-    uniclust30 = ch_uniclust30
+    uniref30   = ch_uniref30
     uniref90   = ch_uniref90
     pdb_seqres = ch_pdb_seqres
     uniprot    = ch_uniprot

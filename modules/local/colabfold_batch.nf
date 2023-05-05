@@ -3,8 +3,8 @@ process COLABFOLD_BATCH {
     label 'process_medium'
 
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'docker://nfcore/proteinfold_colabfold:1.0.0' :
-        'nfcore/proteinfold_colabfold:1.0.0' }"
+        'docker://nfcore/proteinfold_colabfold:1.1.0' :
+        'nfcore/proteinfold_colabfold:1.1.0' }"
 
     input:
     tuple val(meta), path(fasta)
@@ -24,7 +24,7 @@ process COLABFOLD_BATCH {
 
     script:
     def args = task.ext.args ?: ''
-    def VERSION = '1.2.0' // WARN: Version information not provided by tool on CLI. Please update this string when bumping container versions.
+    def VERSION = '1.5.2' // WARN: Version information not provided by tool on CLI. Please update this string when bumping container versions.
 
     """
     ln -r -s params/alphafold_params_*/* params/
@@ -45,7 +45,7 @@ process COLABFOLD_BATCH {
     """
 
     stub:
-    def VERSION = '1.2.0' // WARN: Version information not provided by tool on CLI. Please update this string when bumping container versions.
+    def VERSION = '1.5.2' // WARN: Version information not provided by tool on CLI. Please update this string when bumping container versions.
     """
     touch ./"${fasta.baseName}"_colabfold.pdb
     touch ./"${fasta.baseName}"_mqc.png

@@ -21,7 +21,7 @@ workflow PREPARE_COLABFOLD_DBS {
         ch_params = file( params.colabfold_alphafold2_params_path, type: 'any' )
         if (params.colabfold_server == 'local') {
             ch_colabfold_db = file( params.colabfold_db_path, type: 'any' )
-            ch_uniref30     = file( params.uniref30_path , type: 'any' )
+            ch_uniref30     = file( params.uniref30_colabfold_path , type: 'any' )
         }
     }
     else {

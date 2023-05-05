@@ -3,8 +3,9 @@ process MMSEQS_COLABFOLDSEARCH {
     label 'process_high_memory'
 
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'docker://nfcore/proteinfold_colabfold:1.0.0' :
-        'nfcore/proteinfold_colabfold:1.0.0' }"
+        'docker://nfcore/proteinfold_colabfold:1.1.0' :
+        'nfcore/proteinfold_colabfold:1.1.0' }"
+
 
     input:
     tuple val(meta), path(fasta)
@@ -21,13 +22,13 @@ process MMSEQS_COLABFOLDSEARCH {
 
     script:
     def args = task.ext.args ?: ''
-    def VERSION = '1.2.0' // WARN: Version information not provided by tool on CLI. Please update this string when bumping container versions.
+    def VERSION = '1.5.2' // WARN: Version information not provided by tool on CLI. Please update this string when bumping container versions.
 
     """
     ln -r -s $uniref30/uniref30_* ./db
     ln -r -s $colabfold_db/colabfold_envdb* ./db
 
-    /colabfold_batch/colabfold-conda/bin/colabfold_search \\
+    /localcolabfold/colabfold-conda/bin/colabfold_search \\
         $args \\
         --threads $task.cpus ${fasta} \\
         ./db \\
@@ -42,7 +43,7 @@ process MMSEQS_COLABFOLDSEARCH {
     """
 
     stub:
-    def VERSION = '1.2.0' // WARN: Version information not provided by tool on CLI. Please update this string when bumping container versions.
+    def VERSION = '1.5.2' // WARN: Version information not provided by tool on CLI. Please update this string when bumping container versions.
     """
     touch ${meta.id}.a3m
 

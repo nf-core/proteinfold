@@ -6,8 +6,8 @@ process RUN_ALPHAFOLD2_PRED {
     label 'process_medium'
 
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'docker://nfcore/proteinfold_alphafold2_split:1.0.0' :
-        'nfcore/proteinfold_alphafold2_split:1.0.0' }"
+        'docker://nfcore/proteinfold_alphafold2_split:1.1.0' :
+        'nfcore/proteinfold_alphafold2_split:1.1.0' }"
 
     input:
     tuple val(meta), path(fasta)
@@ -19,7 +19,7 @@ process RUN_ALPHAFOLD2_PRED {
     path ('mgnify/*')
     path ('pdb70/*')
     path ('pdb_mmcif/*')
-    path ('uniclust30/*')
+    path ('uniref30/*')
     path ('uniref90/*')
     path ('pdb_seqres/*')
     path ('uniprot/*')
