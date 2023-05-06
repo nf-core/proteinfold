@@ -3,8 +3,8 @@ process RUN_ESMFOLD {
     label 'process_medium'
 
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'docker://athbaltzis/esmfold:1.1.0' :
-        'athbaltzis/esmfold:1.1.0' }"
+        'docker://quay.io/nf-core/proteinfold_esmfold:1.1.0' :
+        'nf-core/proteinfold_esmfold:1.1.0' }"
 
     input:
     tuple val(meta), path(fasta)
