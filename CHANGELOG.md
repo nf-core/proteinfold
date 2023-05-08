@@ -26,4 +26,4 @@ Initial release of nf-core/proteinfold, created with the [nf-core](https://nf-co
 - [#91] Update ColabFold version to 1.5.2 and AlphaFold version to 2.3.2
 
 - [#92] Add ESMFold workflow to the pipeline
--  Update metro map to include ESMFold flow.
+- Update metro map to include ESMFold flow.
