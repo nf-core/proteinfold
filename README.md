@@ -12,11 +12,11 @@
 
 ## Introduction
 
-**nf-core/proteinfold** is a bioinformatics best-practice analysis pipeline for Protein 3D structure prediction pipeline.
+**nf-core/proteinfold** is a bioinformatics best-practice analysis pipeline for Protein 3D structure prediction.
 
 The pipeline is built using [Nextflow](https://www.nextflow.io), a workflow tool to run tasks across multiple compute infrastructures in a very portable manner. It uses Docker/Singularity containers making installation trivial and results highly reproducible. The [Nextflow DSL2](https://www.nextflow.io/docs/latest/dsl2.html) implementation of this pipeline uses one container per process which makes it much easier to maintain and update software dependencies. Where possible, these processes have been submitted to and installed from [nf-core/modules](https://github.com/nf-core/modules) in order to make them available to all nf-core pipelines, and to everyone within the Nextflow community!
 
-On release, automated continuous integration tests run the pipeline on a full-sized dataset on the AWS cloud infrastructure. This ensures that the pipeline runs on AWS, has sensible resource allocation defaults set to run on real-world datasets, and permits the persistent storage of results to benchmark between pipeline releases and other analysis sources.The results obtained from the full-sized test can be viewed on the [nf-core website](https://nf-co.re/proteinfold/results).
+On release, automated continuous integration tests run the pipeline on a full-sized dataset on the AWS cloud infrastructure. This ensures that the pipeline runs on AWS, has sensible resource allocation defaults set to run on real-world datasets, and permits the persistent storage of results to benchmark between pipeline releases and other analysis sources. The results obtained from the full-sized test can be viewed on the [nf-core website](https://nf-co.re/proteinfold/results).
 
 ## Pipeline summary
 
@@ -50,7 +50,7 @@ nextflow run nf-core/proteinfold \
    --outdir <OUTDIR>
 ```
 
-The pipeline takes care of downloading the required databases and parameters required by AlphaFold2, Colabfold or ESMFold. In case you have already downloaded the required files, you can skip this step by providing the path using the corresponding parameter [`--alphafold2_db`] or [`--colabfold_db`] or [`--esmfold_db`]
+The pipeline takes care of downloading the required databases and parameters required by AlphaFold2, Colabfold or ESMFold. In case you have already downloaded the required files, you can skip this step by providing the path using the corresponding parameter [`--alphafold2_db`], [`--colabfold_db`] or [`--esmfold_db`]
 
 - Typical command to run AlphaFold2 mode:
 

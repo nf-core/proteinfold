@@ -93,10 +93,10 @@ workflow ESMFOLD {
         )
         ch_versions = ch_versions.mix(MULTIFASTA_TO_SINGLEFASTA.out.versions)
         RUN_ESMFOLD(
-                MULTIFASTA_TO_SINGLEFASTA.out.input_fasta,
-                PREPARE_ESMFOLD_DBS.out.params,
-                params.num_recycles
-            )
+            MULTIFASTA_TO_SINGLEFASTA.out.input_fasta,
+            PREPARE_ESMFOLD_DBS.out.params,
+            params.num_recycles
+        )
             ch_versions = ch_versions.mix(RUN_ESMFOLD.out.versions)
         } else {
             RUN_ESMFOLD(
