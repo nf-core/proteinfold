@@ -97,7 +97,7 @@ workflow ESMFOLD {
             PREPARE_ESMFOLD_DBS.out.params,
             params.num_recycles
         )
-            ch_versions = ch_versions.mix(RUN_ESMFOLD.out.versions)
+        ch_versions = ch_versions.mix(RUN_ESMFOLD.out.versions)
         } else {
             RUN_ESMFOLD(
                 INPUT_CHECK.out.fastas,
