@@ -1,4 +1,4 @@
-process MULTIFASTA_TO_CSV {
+process MULTIFASTA_TO_SINGLEFASTA {
     tag "$meta.id"
     label 'process_single'
 
@@ -10,7 +10,7 @@ process MULTIFASTA_TO_CSV {
     tuple val(meta), path(fasta)
 
     output:
-    tuple val(meta), path("input.csv"), emit: input_csv
+    tuple val(meta), path("${meta.id}.fasta"), emit: input_fasta
     path "versions.yml", emit: versions
 
     when:
@@ -19,7 +19,7 @@ process MULTIFASTA_TO_CSV {
     script:
     """
     awk '/^>/ {printf("\\n%s\\n",\$0);next; } { printf("%s",\$0);}  END {printf("\\n");}' ${fasta} > single_line.fasta
-    echo -e id,sequence'\\n'${meta.id},`awk '!/^>/ {print \$0}' single_line.fasta | tr '\\n' ':' | sed 's/:\$//' | sed 's/^://'` > input.csv
+    echo -e '>'${meta.id}'\\n'`awk '!/^>/ {print \$0}' single_line.fasta | tr '\\n' ':' | sed 's/:\$//' | sed 's/^://'` > ${meta.id}.fasta
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
