@@ -45,8 +45,8 @@ include { PREPARE_ESMFOLD_DBS } from '../subworkflows/local/prepare_esmfold_dbs'
 //
 // MODULE: Local to the pipeline
 //
-include { RUN_ESMFOLD            } from '../modules/local/run_esmfold'
-include { MULTIFASTA_TO_SINGLEFASTA      } from '../modules/local/multifasta_to_singlefasta'
+include { RUN_ESMFOLD               } from '../modules/local/run_esmfold'
+include { MULTIFASTA_TO_SINGLEFASTA } from '../modules/local/multifasta_to_singlefasta'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
