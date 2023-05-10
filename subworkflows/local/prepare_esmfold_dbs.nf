@@ -27,7 +27,7 @@ workflow PREPARE_ESMFOLD_DBS {
         ch_versions = ch_versions.mix(ARIA2_ESMFOLD_3B_V1.out.versions)
     }
 
-	emit:
+    emit:
     params     = ch_params
     versions   = ch_versions
 }
