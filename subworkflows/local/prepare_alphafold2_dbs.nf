@@ -8,7 +8,7 @@ include {
     ARIA2_UNCOMPRESS as ARIA2_SMALL_BFD
     ARIA2_UNCOMPRESS as ARIA2_MGNIFY
     ARIA2_UNCOMPRESS as ARIA2_PDB70
-    ARIA2_UNCOMPRESS as ARIA2_UNICLUST30
+    ARIA2_UNCOMPRESS as ARIA2_UNIREF30
     ARIA2_UNCOMPRESS as ARIA2_UNIREF90
     ARIA2_UNCOMPRESS as ARIA2_UNIPROT_SPROT
     ARIA2_UNCOMPRESS as ARIA2_UNIPROT_TREMBL } from './aria2_uncompress'
@@ -87,10 +87,10 @@ workflow PREPARE_ALPHAFOLD2_DBS {
         ch_versions = ch_versions.mix(DOWNLOAD_PDBMMCIF.out.versions)
 
         ARIA2_UNIREF30(
-            params.uniref30
+            params.uniref30_alphafold2
         )
-        ch_uniref30 = ARIA2_UNICLUST30.out.db
-        ch_versions = ch_versions.mix(ARIA2_UNIref30.out.versions)
+        ch_uniref30 = ARIA2_UNIREF30.out.db
+        ch_versions = ch_versions.mix(ARIA2_UNIREF30.out.versions)
 
         ARIA2_UNIREF90(
             params.uniref90
