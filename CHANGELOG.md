@@ -3,7 +3,7 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## 1.1.0
+## 1.1.0dev - [date]
 
 ### Enhancements & fixes
 
@@ -22,6 +22,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update metro map to include ESMFold workflow.
 
 - Update modules to remove quay from container url.
+
+- [nf-core/tools#2286](https://github.com/nf-core/tools/issues/2286) Set default container registry outside profile scope.
 
 ## 1.0.0 - White Silver Reebok
 
