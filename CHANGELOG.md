@@ -25,6 +25,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - [nf-core/tools#2286](https://github.com/nf-core/tools/issues/2286) Set default container registry outside profile scope.
 
+- [#97](https://github.com/nf-core/proteinfold/pull/97) Fix issue with uniref30 missing path when using the full BFD database in AlphaFold
+
 ## 1.0.0 - White Silver Reebok
 
 Initial release of nf-core/proteinfold, created with the [nf-core](https://nf-co.re/) template.
