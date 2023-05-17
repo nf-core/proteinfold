@@ -89,7 +89,7 @@ workflow COLABFOLD {
         //
         // MODULE: Run colabfold
         //
-        if (params.colabfold_model_preset != 'AlphaFold2-ptm') {
+        if (params.colabfold_model_preset != 'alphafold2_ptm' && params.colabfold_model_preset != 'alphafold2') {
             MULTIFASTA_TO_CSV(
                 INPUT_CHECK.out.fastas
             )
