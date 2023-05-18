@@ -6,8 +6,8 @@ process RUN_ALPHAFOLD2_PRED {
     label 'process_medium'
 
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'docker://quay.io/nf-core/proteinfold_alphafold2_split:1.1.0' :
-        'nf-core/proteinfold_alphafold2_split:1.1.0' }"
+        'docker://athbaltzis/alphafold2_split_proteinfold:1.1.0' :
+        'athbaltzis/alphafold2_split_proteinfold:1.1.0' }"
 
     input:
     tuple val(meta), path(fasta)
