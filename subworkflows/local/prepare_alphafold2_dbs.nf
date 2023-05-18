@@ -36,9 +36,9 @@ workflow PREPARE_ALPHAFOLD2_DBS {
 
         ch_params     = file( params.alphafold2_params_path )
         ch_mgnify     = file( params.mgnify_path )
-        ch_pdb70      = file( params.pdb70_path, type: 'dir' )
-        ch_mmcif_files = file( params.pdb_mmcif_path, type: 'dir' )
-        ch_mmcif_obsolete = file( params.pdb_mmcif_path, type: 'file' )
+        ch_pdb70      = file( params.pdb70_path, type: 'any' )
+        ch_mmcif_files = file( params.pdb_mmcif_path, type: 'any' )
+        ch_mmcif_obsolete = file( params.pdb_mmcif_path, type: 'any' )
         ch_mmcif = ch_mmcif_files + ch_mmcif_obsolete
         ch_uniref30   = file( params.uniref30_alphafold2_path, type: 'any' )
         ch_uniref90   = file( params.uniref90_path )
