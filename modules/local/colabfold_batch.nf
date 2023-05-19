@@ -3,8 +3,8 @@ process COLABFOLD_BATCH {
     label 'process_medium'
 
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'docker://athbaltzis/colabfold_proteinfold:1.1.0' :
-        'athbaltzis/colabfold_proteinfold:1.1.0' }"
+        'docker://nf-core/proteinfold_colabfold:1.1.0' :
+        'nf-core/proteinfold_colabfold:1.1.0' }"
 
     input:
     tuple val(meta), path(fasta)

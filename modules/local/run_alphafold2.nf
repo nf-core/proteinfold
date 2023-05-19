@@ -6,8 +6,8 @@ process RUN_ALPHAFOLD2 {
     label 'process_medium'
 
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'docker://athbaltzis/alphafold2_standard_proteinfold:1.1.0' :
-        'athbaltzis/alphafold2_standard_proteinfold:1.1.0' }"
+        'docker://nf-core/proteinfold_alphafold2_standard:1.1.0' :
+        'nf-core/proteinfold_alphafold2_standard:1.1.0' }"
 
     input:
     tuple val(meta), path(fasta)
