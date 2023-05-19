@@ -6,7 +6,6 @@ process MMSEQS_COLABFOLDSEARCH {
         'docker://quay.io/nf-core/proteinfold_colabfold:1.1.0' :
         'nf-core/proteinfold_colabfold:1.1.0' }"
 
-
     input:
     tuple val(meta), path(fasta)
     path ('db/params')
