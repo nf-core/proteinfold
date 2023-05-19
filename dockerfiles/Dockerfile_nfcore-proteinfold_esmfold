@@ -1,8 +1,8 @@
 FROM nvidia/cuda:11.0-cudnn8-runtime-ubuntu18.04
 LABEL authors="Athanasios Baltzis" \
-  title="nfcore/proteinfold_esmfold" \
-  Version="1.1.0" \
-  description="Docker image containing all software requirements to run ESMFold using the nf-core/proteinfold pipeline"
+    title="nfcore/proteinfold_esmfold" \
+		Version="1.1.0" \
+		description="Docker image containing all software requirements to run ESMFold using the nf-core/proteinfold pipeline"
 
 # Add env variables
 ENV LD_LIBRARY_PATH="/conda/lib:/usr/local/cuda-11.0/lib64:/conda/lib/python3.9/site-packages/nvidia/cusparse/lib:$LD_LIBRARY_PATH"
@@ -10,39 +10,39 @@ ENV PATH="/conda/bin:$PATH"
 
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys A4B469963BF863CC
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
-  build-essential \
-  cuda-command-line-tools-11-0 \
-  nvidia-cuda-dev \
-  wget \
-  git \
-  && rm -rf /var/lib/apt/lists/*
+    build-essential \
+		cuda-command-line-tools-11-0 \
+		nvidia-cuda-dev \
+		wget \
+		git \
+		&& rm -rf /var/lib/apt/lists/*
 
 # Install Miniconda package manager
 RUN wget -q -P /tmp \
-  https://repo.anaconda.com/miniconda/Miniconda3-py39_23.3.1-0-Linux-x86_64.sh \ 
-  && bash /tmp/Miniconda3-py39_23.3.1-0-Linux-x86_64.sh -b -p /conda \
-  && rm /tmp/Miniconda3-py39_23.3.1-0-Linux-x86_64.sh
+    https://repo.anaconda.com/miniconda/Miniconda3-py39_23.3.1-0-Linux-x86_64.sh \
+		&& bash /tmp/Miniconda3-py39_23.3.1-0-Linux-x86_64.sh -b -p /conda \
+		&& rm /tmp/Miniconda3-py39_23.3.1-0-Linux-x86_64.sh
 
 # Install ESMFold dependencies
 RUN	cd / && /conda/bin/conda update -qy conda \
-	&& /conda/bin/conda install -y -c conda-forge pip python
+    && /conda/bin/conda install -y -c conda-forge pip python
 RUN	/conda/bin/pip install --no-cache-dir git+https://github.com/facebookresearch/esm.git
 RUN	/conda/bin/pip install --no-cache-dir "fair-esm[esmfold]"
 RUN	/conda/bin/pip install --no-cache-dir \ 
-  torch==1.13.1 \
-  torchvision==0.14.1 \
-  pytorch_lightning==1.5.10 \
-  biopython==1.79 \ 
-  deepspeed==0.5.9 \ 
-  dm-tree==0.1.6 \ 
-  ml-collections==0.1.0 \ 
-  numpy==1.21.2 \
-  PyYAML==5.4.1 \
-  requests==2.26.0 \
-  scipy==1.7.1 \
-  tqdm==4.62.2 \
-  typing-extensions==3.10.0.2 \
-  wandb==0.12.21
+    torch==1.13.1 \
+		torchvision==0.14.1 \
+		pytorch_lightning==1.5.10 \
+		biopython==1.79 \
+		deepspeed==0.5.9 \
+		dm-tree==0.1.6 \
+    ml-collections==0.1.0 \ 
+    numpy==1.21.2 \
+    PyYAML==5.4.1 \
+    requests==2.26.0 \
+    scipy==1.7.1 \
+    tqdm==4.62.2 \
+    typing-extensions==3.10.0.2 \
+    wandb==0.12.21
 RUN	/conda/bin/pip uninstall -y nvidia_cublas_cu11
 RUN	/conda/bin/pip install --no-cache-dir 'dllogger @ git+https://github.com/NVIDIA/dllogger.git'
 RUN	/conda/bin/pip install --no-cache-dir 'openfold @ git+https://github.com/aqlaboratory/openfold.git@4b41059694619831a7db195b7e0988fc4ff3a307'
