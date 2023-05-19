@@ -1,0 +1,33 @@
+FROM nvidia/cuda:11.4.2-cudnn8-runtime-ubuntu18.04
+LABEL authors="Athanasios Baltzis, Leila Mansouri" \
+    title="nfcore/proteinfold_colabfold" \
+    Version="1.1.0" \
+    description="Docker image containing all software requirements to run the COLABFOLD_BATCH module using the nf-core/proteinfold pipeline"
+
+ENV PATH="/localcolabfold/colabfold-conda/bin:$PATH"
+ENV LD_LIBRARY_PATH="/localcolabfold/colabfold-conda/lib:/usr/local/cuda/lib64"
+ENV PYTHONPATH="/localcolabfold/colabfold-conda/lib"
+ENV PATH="/MMseqs2/build/bin:$PATH"
+
+# Use bash to support string substitution.
+RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys A4B469963BF863CC
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
+    build-essential \
+    cuda-command-line-tools-11-4 \
+    git \
+    hmmer \
+    kalign \
+    tzdata \
+    wget \
+    curl \
+    cmake \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN cd / \
+    && wget https://raw.githubusercontent.com/YoshitakaMo/localcolabfold/fb0598ebbd8227096a052d3684a549ddf33d06bb/install_colabbatch_linux.sh \
+    && sed -i "/colabfold.download/d" install_colabbatch_linux.sh \
+    && bash install_colabbatch_linux.sh
+
+#Silence download of the AlphaFold2 params
+RUN  sed -i "s|download_alphafold_params(|#download_alphafold_params(|g" /localcolabfold/colabfold-conda/lib/python3.10/site-packages/colabfold/batch.py
+
