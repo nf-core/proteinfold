@@ -29,6 +29,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - [#100](https://github.com/nf-core/proteinfold/pull/100) Update containers for AlphaFold2 and ColabFold local modules
 
+- [#105](https://github.com/nf-core/proteinfold/pull/105) Update COLABFOLD_BATCH docker container, metro map figure and nextflow schema description
+
 ## 1.0.0 - White Silver Reebok
 
 Initial release of nf-core/proteinfold, created with the [nf-core](https://nf-co.re/) template.
