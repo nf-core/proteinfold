@@ -74,7 +74,7 @@
                 "full_dbs": {
                     "type": "boolean",
                     "default": false,
-                    "description": "If true uses full DBs otherwise, otherwise it uses the reduced version of DBs",
+                    "description": "If true uses the full version of the BFD database otherwise, otherwise it uses its reduced version, small bfd",
                     "fa_icon": "fas fa-battery-full"
                 },
                 "alphafold2_mode": {
