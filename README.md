@@ -20,7 +20,7 @@ On release, automated continuous integration tests run the pipeline on a full-si
 
 ## Pipeline summary
 
-![Alt text](docs/images/nf-core-proteinfold_metro_map_1.1.0.png?raw=true "nf-core-proteinfold 1.1.0 metro map")
+![Alt text](docs/images/nf-core-proteinfold_metro_map_1.1.0_white_bg.png?raw=true "nf-core-proteinfold 1.1.0 metro map")
 
 1. Choice of protein structure prediction method:
 
