@@ -35,7 +35,7 @@ process COLABFOLD_BATCH {
         --model-type ${colabfold_model_preset} \\
         ${fasta} \\
         \$PWD
-    for i in `find *_relaxed_rank_1*.pdb`; do cp \$i `echo \$i | sed "s|_relaxed_rank_|\t|g" | cut -f1`"_colabfold.pdb"; done
+    for i in `find *_relaxed_rank_001*.pdb`; do cp \$i `echo \$i | sed "s|_relaxed_rank_|\t|g" | cut -f1`"_colabfold.pdb"; done
     for i in `find *.png -maxdepth 0`; do cp \$i \${i%'.png'}_mqc.png; done
 
     cat <<-END_VERSIONS > versions.yml
