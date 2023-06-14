@@ -2,9 +2,7 @@ process COLABFOLD_BATCH {
     tag "$meta.id"
     label 'process_medium'
 
-    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'docker://quay.io/nf-core/proteinfold_colabfold:1.1.0' :
-        'nf-core/proteinfold_colabfold:1.1.0' }"
+    container "nf-core/proteinfold_colabfold:1.1.0"
 
     input:
     tuple val(meta), path(fasta)
