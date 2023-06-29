@@ -41,7 +41,7 @@ process DOWNLOAD_PDBMMCIF {
         raw
 
     echo "Unzipping all mmCIF files..."
-    find ./raw -type f -iname "*.gz" -exec gunzip {} +
+    find ./raw -type f -iname '*.gz' -exec gunzip {} +
 
     echo "Flattening all mmCIF files..."
     mkdir mmcif_files
