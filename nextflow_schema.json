@@ -455,6 +455,7 @@
                     "fa_icon": "fas fa-folder-open"
                 },
                 "colabfold_alphafold2_params_tags": {
+                    "type": "string",
                     "description": "Dictionary with Alphafold2 parameters tags",
                     "fa_icon": "fas fa-stream"
                 }
