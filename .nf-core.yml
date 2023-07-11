@@ -2,3 +2,4 @@ repository_type: pipeline
 lint:
   files_unchanged:
     - .github/ISSUE_TEMPLATE/bug_report.yml
+  multiqc_config: false
