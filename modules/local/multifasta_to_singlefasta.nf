@@ -29,7 +29,7 @@ process MULTIFASTA_TO_SINGLEFASTA {
 
     stub:
     """
-    touch input.csv
+    touch ${meta.id}.fasta
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
