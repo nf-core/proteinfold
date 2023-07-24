@@ -4,7 +4,7 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { paramsSummaryLog; paramsSummaryMap } from 'plugin/nf-validation'
+include { paramsSummaryLog; paramsSummaryMap; fromSamplesheet } from 'plugin/nf-validation'
 
 def logo = NfcoreTemplate.logo(workflow, params.monochrome_logs)
 def citation = '\n' + WorkflowMain.citation(workflow) + '\n'
@@ -16,16 +16,6 @@ log.info logo + paramsSummaryLog(workflow) + citation
 // Validate input parameters
 WorkflowAlphafold2.initialise(params, log)
 
-// Check input path parameters to see if they exist
-def checkPathParamList = [
-    params.input,
-    params.alphafold2_db
-]
-for (param in checkPathParamList) { if (param) { file(param, checkIfExists: true) } }
-
-// Check mandatory parameters
-if (params.input) { ch_input = file(params.input) } else { exit 1, 'Input file not specified!' }
-
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     CONFIG FILES
@@ -33,9 +23,9 @@ if (params.input) { ch_input = file(params.input) } else { exit 1, 'Input file n
 */
 
 ch_multiqc_config          = Channel.fromPath("$projectDir/assets/multiqc_config.yml", checkIfExists: true)
-ch_multiqc_custom_config   = params.multiqc_config ? Channel.fromPath( params.multiqc_config, checkIfExists: true ) : Channel.empty()
-ch_multiqc_logo            = params.multiqc_logo   ? Channel.fromPath( params.multiqc_logo, checkIfExists: true ) : Channel.empty()
-ch_multiqc_custom_methods_description = params.multiqc_methods_description ? file(params.multiqc_methods_description, checkIfExists: true) : file("$projectDir/assets/methods_description_template.yml", checkIfExists: true)
+ch_multiqc_custom_config   = params.multiqc_config ? Channel.fromPath( params.multiqc_config ) : Channel.empty()
+ch_multiqc_logo            = params.multiqc_logo   ? Channel.fromPath( params.multiqc_logo )   : Channel.empty()
+ch_multiqc_custom_methods_description = params.multiqc_methods_description ? file(params.multiqc_methods_description) : file("$projectDir/assets/methods_description_template.yml", checkIfExists: true)
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -46,7 +36,6 @@ ch_multiqc_custom_methods_description = params.multiqc_methods_description ? fil
 //
 // SUBWORKFLOW: Consisting of a mix of local and nf-core/modules
 //
-include { INPUT_CHECK } from '../subworkflows/local/input_check'
 include { PREPARE_ALPHAFOLD2_DBS } from '../subworkflows/local/prepare_alphafold2_dbs'
 
 //
@@ -82,28 +71,22 @@ workflow ALPHAFOLD2 {
     ch_versions = Channel.empty()
 
     //
-    // SUBWORKFLOW: Read in samplesheet, validate and stage input files
+    // Create input channel from input file provided through params.input
     //
-    if (params.alphafold2_model_preset != 'multimer') {
-        INPUT_CHECK (
-            ch_input
-        )
-        .fastas
-        .map {
-            meta, fasta ->
-            [ meta, fasta.splitFasta(file:true) ]
-        }
-        .transpose()
+    Channel
+        .fromSamplesheet("input")
         .set { ch_fasta }
-    } else {
-        INPUT_CHECK (
-            ch_input
-        )
-        .fastas
-        .set { ch_fasta }
-    }
-    ch_versions = ch_versions.mix(INPUT_CHECK.out.versions)
 
+    if (params.alphafold2_model_preset != 'multimer') {
+        ch_fasta
+            .map {
+                meta, fasta ->
+                [ meta, fasta.splitFasta(file:true) ]
+            }
+            .transpose()
+            .set { ch_fasta }
+    } 
+    
     //
     // SUBWORKFLOW: Download databases and params for Alphafold2
     //

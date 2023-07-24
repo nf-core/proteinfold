@@ -18,6 +18,7 @@
                     "exists": true,
                     "mimetype": "text/csv",
                     "pattern": "^\\S+\\.csv$",
+                    "schema": "assets/schema_input.json",
                     "description": "Path to comma-separated file containing information about the samples in the experiment.",
                     "help_text": "You will need to create a design file with information about the samples in your experiment before running the pipeline. Use this parameter to specify its location. It has to be a comma-separated file with 3 columns, and a header row. See [usage docs](https://nf-co.re/proteinfold/usage#samplesheet-input).",
                     "fa_icon": "fas fa-file-csv"
@@ -68,6 +69,8 @@
                 },
                 "alphafold2_db": {
                     "type": "string",
+                    "format": "path",
+                    "exists": true,
                     "description": "Specifies the DB and PARAMS path used by 'AlphaFold2' mode",
                     "fa_icon": "fas fa-database"
                 },
@@ -101,6 +104,8 @@
             "properties": {
                 "colabfold_db": {
                     "type": "string",
+                    "format": "path",
+                    "exists": true,
                     "description": "Specifies the PARAMS and DB path used by 'colabfold'  mode",
                     "fa_icon": "fas fa-folder-open"
                 },
@@ -170,6 +175,8 @@
             "properties": {
                 "esmfold_db": {
                     "type": "string",
+                    "format": "path",
+                    "exists": true,
                     "description": "Specifies the PARAMS path used by 'esmfold' mode",
                     "fa_icon": "fas fa-folder-open"
                 },
@@ -570,18 +577,26 @@
                 "multiqc_config": {
                     "type": "string",
                     "format": "file-path",
+                    "exists": true,
+                    "mimetype": "text/plain",
                     "description": "Custom config file to supply to MultiQC.",
                     "fa_icon": "fas fa-cog",
                     "hidden": true
                 },
                 "multiqc_logo": {
                     "type": "string",
+                    "format": "file-path",
+                    "exists": true,
+                    "mimetype": "text/plain",
                     "description": "Custom logo file to supply to MultiQC. File name must also be set in the MultiQC config file",
                     "fa_icon": "fas fa-image",
                     "hidden": true
                 },
                 "multiqc_methods_description": {
                     "type": "string",
+                    "format": "file-path",
+                    "exists": true,
+                    "mimetype": "text/plain",
                     "description": "Custom MultiQC yaml file containing HTML including a methods description.",
                     "fa_icon": "fas fa-cog"
                 },

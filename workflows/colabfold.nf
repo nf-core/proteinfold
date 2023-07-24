@@ -4,7 +4,7 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { paramsSummaryLog; paramsSummaryMap } from 'plugin/nf-validation'
+include { paramsSummaryLog; paramsSummaryMap; fromSamplesheet } from 'plugin/nf-validation'
 
 def logo = NfcoreTemplate.logo(workflow, params.monochrome_logs)
 def citation = '\n' + WorkflowMain.citation(workflow) + '\n'
@@ -16,16 +16,6 @@ log.info logo + paramsSummaryLog(workflow) + citation
 // Validate input parameters
 WorkflowColabfold.initialise(params, log)
 
-// Check input path parameters to see if they exist
-def checkPathParamList = [
-    params.input,
-    params.colabfold_db
-]
-for (param in checkPathParamList) { if (param) { file(param, checkIfExists: true) } }
-
-// Check mandatory parameters
-if (params.input) { ch_input = file(params.input) } else { exit 1, 'Input file not specified!' }
-
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     CONFIG FILES
@@ -33,9 +23,9 @@ if (params.input) { ch_input = file(params.input) } else { exit 1, 'Input file n
 */
 
 ch_multiqc_config          = Channel.fromPath("$projectDir/assets/multiqc_config.yml", checkIfExists: true)
-ch_multiqc_custom_config   = params.multiqc_config ? Channel.fromPath( params.multiqc_config, checkIfExists: true ) : Channel.empty()
-ch_multiqc_logo            = params.multiqc_logo   ? Channel.fromPath( params.multiqc_logo, checkIfExists: true ) : Channel.empty()
-ch_multiqc_custom_methods_description = params.multiqc_methods_description ? file(params.multiqc_methods_description, checkIfExists: true) : file("$projectDir/assets/methods_description_template.yml", checkIfExists: true)
+ch_multiqc_custom_config   = params.multiqc_config ? Channel.fromPath( params.multiqc_config ) : Channel.empty()
+ch_multiqc_logo            = params.multiqc_logo   ? Channel.fromPath( params.multiqc_logo )   : Channel.empty()
+ch_multiqc_custom_methods_description = params.multiqc_methods_description ? file(params.multiqc_methods_description) : file("$projectDir/assets/methods_description_template.yml", checkIfExists: true)
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -46,7 +36,6 @@ ch_multiqc_custom_methods_description = params.multiqc_methods_description ? fil
 //
 // SUBWORKFLOW: Consisting of a mix of local and nf-core/modules
 //
-include { INPUT_CHECK           } from '../subworkflows/local/input_check'
 include { PREPARE_COLABFOLD_DBS } from '../subworkflows/local/prepare_colabfold_dbs'
 
 //
@@ -82,12 +71,11 @@ workflow COLABFOLD {
     ch_versions = Channel.empty()
 
     //
-    // SUBWORKFLOW: Read in samplesheet, validate and stage input files
+    // Create input channel from input file provided through params.input
     //
-    INPUT_CHECK (
-        ch_input
-    )
-    ch_versions = ch_versions.mix(INPUT_CHECK.out.versions)
+    Channel
+        .fromSamplesheet("input")
+        .set { ch_fasta }
 
     PREPARE_COLABFOLD_DBS ( )
     ch_versions = ch_versions.mix(PREPARE_COLABFOLD_DBS.out.versions)
@@ -98,7 +86,7 @@ workflow COLABFOLD {
         //
         if (params.colabfold_model_preset != 'alphafold2_ptm' && params.colabfold_model_preset != 'alphafold2') {
             MULTIFASTA_TO_CSV(
-                INPUT_CHECK.out.fastas
+                ch_fasta
             )
             ch_versions = ch_versions.mix(MULTIFASTA_TO_CSV.out.versions)
             COLABFOLD_BATCH(
@@ -112,7 +100,7 @@ workflow COLABFOLD {
             ch_versions = ch_versions.mix(COLABFOLD_BATCH.out.versions)
         } else {
             COLABFOLD_BATCH(
-                INPUT_CHECK.out.fastas,
+                ch_fasta,
                 params.colabfold_model_preset,
                 PREPARE_COLABFOLD_DBS.out.params,
                 [],
@@ -128,7 +116,7 @@ workflow COLABFOLD {
         //
         if (params.colabfold_model_preset != 'AlphaFold2-ptm') {
             MULTIFASTA_TO_CSV(
-                INPUT_CHECK.out.fastas
+                ch_fasta
             )
             ch_versions = ch_versions.mix(MULTIFASTA_TO_CSV.out.versions)
             MMSEQS_COLABFOLDSEARCH (
@@ -140,7 +128,7 @@ workflow COLABFOLD {
             ch_versions = ch_versions.mix(MMSEQS_COLABFOLDSEARCH.out.versions)
         } else {
             MMSEQS_COLABFOLDSEARCH (
-                INPUT_CHECK.out.fastas,
+                ch_fasta,
                 PREPARE_COLABFOLD_DBS.out.params,
                 PREPARE_COLABFOLD_DBS.out.colabfold_db,
                 PREPARE_COLABFOLD_DBS.out.uniref30,
