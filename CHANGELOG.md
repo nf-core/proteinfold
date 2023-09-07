@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [PR #108](https://github.com/nf-core/proteinfold/pull/108) - Fix gunzip error when providing too many files when downloading PDBMMCIF database.
 - [PR #111](https://github.com/nf-core/proteinfold/pull/111) - Update pipeline template to [nf-core/tools 2.9](https://github.com/nf-core/tools/releases/tag/2.9).
 - [PR #112](https://github.com/nf-core/rnaseq/pull/112) - Use `nf-validation` plugin for parameter and samplesheet validation.
+- [#113](https://github.com/nf-core/proteinfold/pull/113) - Include esmfold dbs for full data sets.
 - [PR #114](https://github.com/nf-core/rnaseq/pull/114) - Update paths to test dbs.
 
 ## 1.0.0 - White Silver Reebok
