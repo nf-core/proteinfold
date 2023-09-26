@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [PR #112](https://github.com/nf-core/rnaseq/pull/112) - Use `nf-validation` plugin for parameter and samplesheet validation.
 - [#113](https://github.com/nf-core/proteinfold/pull/113) - Include esmfold dbs for full data sets.
 - [PR #114](https://github.com/nf-core/rnaseq/pull/114) - Update paths to test dbs.
+- [PR #117](https://github.com/nf-core/proteinfold/pull/117) - Update pipeline template to [nf-core/tools 2.10](https://github.com/nf-core/tools/releases/tag/2.10).
 
 ## 1.0.0 - White Silver Reebok
 
