@@ -41,7 +41,7 @@ process DOWNLOAD_PDBMMCIF {
         raw
 
     echo "Unzipping all mmCIF files..."
-    find ./raw -type f -name '*.[gG][zZ]' -print0 | while IFS= read -r -d $'\0' file; do
+    find ./raw -type f -name '*.[gG][zZ]' -print0 | while IFS= read -r -d \$'\\0' file; do
         gunzip "$file"
     done
 
