@@ -150,7 +150,7 @@ workflow COLABFOLD {
         ch_versions = ch_versions.mix(COLABFOLD_BATCH.out.versions)
     }
 
-     //
+    //
     // MODULE: Pipeline reporting
     //
     CUSTOM_DUMPSOFTWAREVERSIONS (

@@ -11,7 +11,7 @@ include { MMSEQS_TSV2EXPROFILEDB as MMSEQS_TSV2EXPROFILEDB_COLABFOLDDB } from '.
 include { MMSEQS_TSV2EXPROFILEDB as MMSEQS_TSV2EXPROFILEDB_UNIPROT30   } from '../../modules/nf-core/mmseqs/tsv2exprofiledb/main'
 
 workflow PREPARE_COLABFOLD_DBS {
-	main:
+    main:
     ch_params       = Channel.empty()
     ch_colabfold_db = Channel.empty()
     ch_uniref30     = Channel.empty()
@@ -72,7 +72,7 @@ workflow PREPARE_COLABFOLD_DBS {
         }
     }
 
-	emit:
+    emit:
     params       = ch_params
     colabfold_db = ch_colabfold_db
     uniref30     = ch_uniref30
