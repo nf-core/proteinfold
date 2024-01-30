@@ -41,7 +41,7 @@ jobs:
               "outdir": "s3://${{ secrets.AWS_S3_BUCKET }}/proteinfold/results-${{ github.sha }}/mode_${{ matrix.mode }}"
             }
           profiles: test_full_${{ matrix.mode }},aws_tower
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: Tower debug log file
           path: |

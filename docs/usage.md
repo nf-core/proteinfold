@@ -22,7 +22,7 @@ The samplesheet can have as many columns as you desire, however, there is a stri
 
 A final samplesheet file may look something like the one below. This is for 2 sequences.
 
-```console
+```csv title="samplesheet.csv"
 sequence,fasta
 T1024,https://raw.githubusercontent.com/nf-core/test-datasets/proteinfold/testdata/sequences/T1024.fasta
 T1026,https://raw.githubusercontent.com/nf-core/test-datasets/proteinfold/testdata/sequences/T1026.fasta
@@ -39,29 +39,29 @@ An [example samplesheet](../assets/samplesheet.csv) has been provided with the p
 
 The typical commands for running the pipeline on AlphaFold2, Colabfold and ESMFold modes are as follows:
 
-```console
+```csv title="samplesheet.csv"
 nextflow run nf-core/proteinfold \
-       --input samplesheet.csv \
-       --outdir <OUTDIR> \
-       --mode alphafold2 \
-       --alphafold2_db <null (default) | DB_PATH> \
-       --full_dbs <true/false> \
-       --alphafold2_model_preset monomer \
-       --use_gpu <true/false> \
-       -profile <docker>
+      --input samplesheet.csv \
+      --outdir <OUTDIR> \
+      --mode alphafold2 \
+      --alphafold2_db <null (default) | DB_PATH> \
+      --full_dbs <true/false> \
+      --alphafold2_model_preset monomer \
+      --use_gpu <true/false> \
+      -profile <docker>
 ```
 
 ```console
 nextflow run nf-core/proteinfold \
-    --input samplesheet.csv \
-    --outdir <OUTDIR> \
-    --mode alphafold2 \
-    --alphafold2_mode split_msa_prediction \
-    --alphafold2_db <null (default) | DB_PATH> \
-    --full_dbs <true/false> \
-    --alphafold2_model_preset monomer \
-    --use_gpu <true/false> \
-    -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
+      --input samplesheet.csv \
+      --outdir <OUTDIR> \
+      --mode alphafold2 \
+      --alphafold2_mode split_msa_prediction \
+      --alphafold2_db <null (default) | DB_PATH> \
+      --full_dbs <true/false> \
+      --alphafold2_model_preset monomer \
+      --use_gpu <true/false> \
+      -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
 ```
 
 If you specify the `--alphafold2_db ` parameter, the directory structure of your path should be like this:
@@ -233,7 +233,7 @@ nextflow run nf-core/proteinfold \
       --colabfold_model_preset "AlphaFold2-ptm" \
       --use_gpu <true/false> \
       --db_load_mode 0
-       -profile <docker>
+      -profile <docker>
 ```
 
 ```console
@@ -248,7 +248,7 @@ nextflow run nf-core/proteinfold \
       --use_amber <true/false> \
       --colabfold_model_preset "AlphaFold2-ptm" \
       --use_gpu <true/false> \
-       -profile <docker>
+      -profile <docker>
 ```
 
 If you specify the `--colabfold_db ` parameter, the directory structure of your path should be like this:
@@ -395,7 +395,7 @@ nextflow run nf-core/proteinfold \
       --num_recycles 4 \
       --esmfold_model_preset <monomer/multimer> \
       --use_gpu <true/false> \
-       -profile <docker>
+      -profile <docker>
 ```
 
 If you specify the `--esmfold_db ` parameter, the directory structure of your path should be like this:

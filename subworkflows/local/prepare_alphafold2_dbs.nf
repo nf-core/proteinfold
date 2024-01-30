@@ -120,7 +120,7 @@ workflow PREPARE_ALPHAFOLD2_DBS {
         ch_version =  ch_versions.mix(COMBINE_UNIPROT.out.versions)
     }
 
-	emit:
+    emit:
     bfd        = ch_bfd
     small_bfd  = ch_small_bfd
     params     = ch_params
