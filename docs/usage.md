@@ -22,7 +22,7 @@ The samplesheet can have as many columns as you desire, however, there is a stri
 
 A final samplesheet file may look something like the one below. This is for 2 sequences.
 
-```console
+```csv title="samplesheet.csv"
 sequence,fasta
 T1024,https://raw.githubusercontent.com/nf-core/test-datasets/proteinfold/testdata/sequences/T1024.fasta
 T1026,https://raw.githubusercontent.com/nf-core/test-datasets/proteinfold/testdata/sequences/T1026.fasta
@@ -39,7 +39,7 @@ An [example samplesheet](../assets/samplesheet.csv) has been provided with the p
 
 The typical commands for running the pipeline on AlphaFold2, Colabfold and ESMFold modes are as follows:
 
-```console
+```csv title="samplesheet.csv"
 nextflow run nf-core/proteinfold \
        --input samplesheet.csv \
        --outdir <OUTDIR> \
