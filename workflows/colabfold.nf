@@ -112,7 +112,7 @@ workflow COLABFOLD {
 
     } else if (params.colabfold_server == 'local') {
         //
-	    // MODULE: Run mmseqs
+        // MODULE: Run mmseqs
         //
         if (params.colabfold_model_preset != 'AlphaFold2-ptm') {
             MULTIFASTA_TO_CSV(
