@@ -39,6 +39,8 @@ if (params.mode == "alphafold2") {
     include { ALPHAFOLD2 } from './workflows/alphafold2'
 } else if (params.mode == "colabfold") {
     include { COLABFOLD } from './workflows/colabfold'
+} else if (params.mode == "tcrdock") {
+    include { TCRDOCK } from './workflows/tcrdock'
 }
 
 workflow NFCORE_PROTEINFOLD {
@@ -55,6 +57,13 @@ workflow NFCORE_PROTEINFOLD {
     // else if(params.mode == "colabfold_webserver" || params.mode == "colabfold_local") {
     else if(params.mode == "colabfold") {
         COLABFOLD ()
+    }
+
+    //
+    // WORKFLOW: Run tcrdock
+    //
+    else if(params.mode == "tcrdock") {
+        TCRDOCK ()
     }
 }
 

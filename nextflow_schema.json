@@ -10,7 +10,10 @@
             "type": "object",
             "fa_icon": "fas fa-coins",
             "description": "Define where the pipeline should find input data and save output data.",
-            "required": ["input", "outdir"],
+            "required": [
+                "input",
+                "outdir"
+            ],
             "properties": {
                 "input": {
                     "type": "string",
@@ -32,7 +35,11 @@
                     "type": "string",
                     "default": "alphafold2",
                     "description": "Specifies the mode in which the pipeline will be run",
-                    "enum": ["alphafold2", "colabfold"],
+                    "enum": [
+                        "alphafold2",
+                        "colabfold",
+                        "tcrdock"
+                    ],
                     "fa_icon": "fas fa-cogs"
                 },
                 "use_gpu": {
@@ -73,7 +80,6 @@
                 },
                 "full_dbs": {
                     "type": "boolean",
-                    "default": false,
                     "description": "If true uses full DBs otherwise, otherwise it uses the reduced version of DBs",
                     "fa_icon": "fas fa-battery-full"
                 },
@@ -81,14 +87,22 @@
                     "type": "string",
                     "default": "standard",
                     "description": "Specifies the mode in which Alphafold2 will be run",
-                    "enum": ["standard", "split_msa_prediction"],
+                    "enum": [
+                        "standard",
+                        "split_msa_prediction"
+                    ],
                     "fa_icon": "fas fa-exchange-alt"
                 },
                 "alphafold2_model_preset": {
                     "type": "string",
                     "default": "monomer_ptm",
                     "description": "Model preset for 'AlphaFold2' mode",
-                    "enum": ["monomer", "monomer_casp14", "monomer_ptm", "multimer"],
+                    "enum": [
+                        "monomer",
+                        "monomer_casp14",
+                        "monomer_ptm",
+                        "multimer"
+                    ],
                     "fa_icon": "fas fa-stream"
                 }
             }
@@ -108,14 +122,21 @@
                     "type": "string",
                     "default": "webserver",
                     "description": "Specifies the MSA server used by Colabfold",
-                    "enum": ["webserver", "local"],
+                    "enum": [
+                        "webserver",
+                        "local"
+                    ],
                     "fa_icon": "fas fa-server"
                 },
                 "colabfold_model_preset": {
                     "type": "string",
                     "default": "AlphaFold2-ptm",
                     "description": "Model preset for 'colabfold' mode",
-                    "enum": ["AlphaFold2-ptm", "AlphaFold2-multimer-v1", "AlphaFold2-multimer-v2"],
+                    "enum": [
+                        "AlphaFold2-ptm",
+                        "AlphaFold2-multimer-v1",
+                        "AlphaFold2-multimer-v2"
+                    ],
                     "fa_icon": "fas fa-stream"
                 },
                 "num_recycle": {
@@ -135,7 +156,12 @@
                     "default": 0,
                     "description": "Specify the way that MMSeqs2 will load the required databases in memory",
                     "fa_icon": "fas fa-download",
-                    "enum": [0, 1, 2, 3]
+                    "enum": [
+                        0,
+                        1,
+                        2,
+                        3
+                    ]
                 },
                 "host_url": {
                     "type": "string",
@@ -152,6 +178,76 @@
                     "type": "boolean",
                     "description": "Create databases indexes when running colabfold_local mode",
                     "fa_icon": "fas fa-bezier-curve"
+                }
+            }
+        },
+        "tcrdock_options": {
+            "title": "TCRdock options",
+            "type": "object",
+            "fa_icon": "fas fa-hotdog",
+            "description": "TCRdock options. Most parameter descriptions were taken from https://github.com/phbradley/TCRdock.",
+            "properties": {
+                "batch_size": {
+                    "type": "integer",
+                    "default": 10,
+                    "description": "Amount of targets to predict in one process. Model will only be compiled once per process (results ~5x time consumption for first target in process), however multiple processes can be parallelized. When using a much larger batch_size, the 'TCRDOCK_PREDICTION' process might be stopped by the time limit defined in the configs before the prediction for all targets finishes. In this case, make sure to adjust its time limit in your configs (default is 'process_medium').",
+                    "fa_icon": "fas fa-copy"
+                },
+                "no_batch_parallel": {
+                    "type": "boolean",
+                    "description": "Do not predict batches in parallel. E.g., this can help when there is an error because more GPU memory is trying to be allocated than exists. Do not overwrite maxForks on TCRDOCK_PREDICTION when used.",
+                    "fa_icon": "fas fa-copy"
+                },
+                "num_runs": {
+                    "type": "integer",
+                    "default": 3,
+                    "description": "Number of alphafold runs per target.",
+                    "fa_icon": "fas fa-hashtag"
+                },
+                "benchmark": {
+                    "type": "boolean",
+                    "description": "Exclude sequence-similar templates (for benchmarking).",
+                    "fa_icon": "fas fa-dumbbell"
+                },
+                "exclude_pdbids_column": {
+                    "type": "string",
+                    "description": "Column in the --input file with comma-separated lists of pdbfiles to exclude from modeling.",
+                    "fa_icon": "fas fa-times-circle"
+                },
+                "new_docking": {
+                    "type": "boolean",
+                    "description": "Use a new, unpublished approach for constructing the TCR:pMHC docking geometry in the AlphaFold templates. This only requires 1 run per target (ie, it is 3x faster than the default) and preliminary tests of the fine-tuned version are promising.",
+                    "fa_icon": "fas fa-tachometer-alt"
+                },
+                "use_finetuned_params": {
+                    "type": "boolean",
+                    "description": "Use neural network parameters which were finetuned for use with '--new_docking true'. When using this flag, '--new_docking true' also needs to be used. The finetuned parameters are better suited for structure prediction, the non-finetuned (default) parameters are better suited for specificity prediction.",
+                    "fa_icon": "fas fa-asterisk"
+                },
+                "verbose": {
+                    "type": "boolean",
+                    "description": "Print more information to the console.",
+                    "fa_icon": "fas fa-bullhorn"
+                },
+                "ignore_identities": {
+                    "type": "boolean",
+                    "description": "Ignore the sequence identities column in the templates alignment files. Useful when modeling many different peptides using the same alignment file.",
+                    "fa_icon": "fas fa-times-circle"
+                },
+                "no_pdbs": {
+                    "type": "boolean",
+                    "description": "Don't write out pdbs.",
+                    "fa_icon": "far fa-file"
+                },
+                "terse": {
+                    "type": "boolean",
+                    "description": "Don't write out pdbs or matrices with alphafold confidence values.",
+                    "fa_icon": "far fa-file"
+                },
+                "no_resample_msa": {
+                    "type": "boolean",
+                    "description": "Don't randomly resample from the MSA during recycling. Perhaps useful for testing...",
+                    "fa_icon": "fas fa-flask"
                 }
             }
         },
@@ -454,7 +550,14 @@
                     "description": "Method used to save pipeline results to output directory.",
                     "help_text": "The Nextflow `publishDir` option specifies which intermediate files should be saved to the output directory. This option tells the pipeline what method should be used to move these files. See [Nextflow docs](https://www.nextflow.io/docs/latest/process.html#publishdir) for details.",
                     "fa_icon": "fas fa-copy",
-                    "enum": ["symlink", "rellink", "link", "copy", "copyNoFollow", "move"],
+                    "enum": [
+                        "symlink",
+                        "rellink",
+                        "link",
+                        "copy",
+                        "copyNoFollow",
+                        "move"
+                    ],
                     "hidden": true
                 },
                 "email_on_fail": {
@@ -542,6 +645,9 @@
         },
         {
             "$ref": "#/definitions/colabfold_options"
+        },
+        {
+            "$ref": "#/definitions/tcrdock_options"
         },
         {
             "$ref": "#/definitions/institutional_config_options"

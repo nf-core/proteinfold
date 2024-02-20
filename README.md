@@ -36,6 +36,8 @@ On release, automated continuous integration tests run the pipeline on a full-si
 
    iv. [ColabFold](https://github.com/sokrypton/ColabFold) - MMseqs2 local search followed by ColabFold
 
+   v. [TCRdock](https://github.com/phbradley/TCRdock) - Specialized tool for structure prediction of TCR:pMHC complexes. Requires different samplesheet.csv file (see Input).
+
 ## Quick Start
 
 1. Install [`Nextflow`](https://www.nextflow.io/docs/latest/getstarted.html#installation) (`>=22.10.1`)
@@ -120,6 +122,32 @@ On release, automated continuous integration tests run the pipeline on a full-si
       --colabfold_model_preset "AlphaFold2-ptm" \
       --use_gpu <true/false> \
       -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
+  ```
+
+- Typical command to run tcrdock mode using CPU:
+
+  ```console
+  nextflow run nf-core/proteinfold \
+    --input samplesheet.csv \
+    --outdir <OUTDIR> \
+    --mode tcrdock \
+    --new_docking <true/false> \
+    --batch_size 10 \
+    -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
+  ```
+
+- Typical command to run tcrdock mode using GPU:
+
+  ```console
+  nextflow run nf-core/proteinfold \
+    --input samplesheet.csv \
+    --outdir <OUTDIR> \
+    --mode tcrdock \
+    --new_docking <true/false> \
+    --batch_size 100 \
+    --use_gpu \
+    --no_batch_parallel \
+    -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
   ```
 
 ## Documentation

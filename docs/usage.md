@@ -11,6 +11,7 @@
 ## Samplesheet input
 
 You will need to create a samplesheet with information about the sequences you would like to analyse before running the pipeline. Use this parameter to specify its location. It has to be a comma-separated file with 2 columns, and a header row as shown in the examples below.
+If using the TCRdock mode, the file needs to look different, see examples below.
 
 ```bash
 --input '[path to samplesheet file]'
@@ -35,9 +36,36 @@ T1026,https://raw.githubusercontent.com/nf-core/test-datasets/proteinfold/testda
 
 An [example samplesheet](../assets/samplesheet.csv) has been provided with the pipeline.
 
+#### TCRdock samplesheet
+
+The samplesheet can have as many columns as you need, however the first few need to match those defined below.
+
+A samplesheet might look like this for 2 targets.
+
+```console
+organism,mhc_class,mhc,peptide,va,ja,cdr3a,vb,jb,cdr3b
+human,1,A*02:01:48,RLQSLQTYV,TRAV16*01,TRAJ39*01,CALSGFNNAGNMLTF,TRBV11-2*01,TRBJ2-3*01,CASSLGGAGGADTQYF
+human,1,A*02:01:48,YLQPRTFLL,TRAV12-2*01,TRAJ30*01,CAVNRDDKIIF,TRBV7-9*01,TRBJ2-7*01,CASSPDIEQYF
+```
+
+| Column | Description |
+| ---------- | --------------------------------------------------------------------------------------------------- |
+| `organism` | 'mouse' or 'human'. |
+| `mhc_class` | 1 or 2. |
+| `mhc` | The MHC allele, e.g. 'A\*02:01' or 'H2Db' or '"DPA1\*01:12,DPB1\*141:01"'. |
+| `peptide` | The peptide sequence, for MHC class 2 should have length exactly 11 (the 9 residue core plus 1 residue on either side). |
+| `va` | V-alpha gene. |
+| `ja` | J-alpha gene. |
+| `cdr3a` | CDR3-alpha sequence, starts with C, ends with the F/W/etc right before the GXG sequence in the J gene. |
+| `vb` | V-beta gene. |
+| `jb` | J-beta gene. |
+| `cdr3b` | CDR3-beta sequence, starts with C, ends with the F/W/etc right before the GXG sequence in the J gene. |
+
+(Column descriptions taken from [https://github.com/phbradley/TCRdock](https://github.com/phbradley/TCRdock))
+
 ## Running the pipeline
 
-The typical commands for running the pipeline on AlphaFold2 and Colabfold modes are as follows:
+The typical commands for running the pipeline on AlphaFold2, Colabfold, and TCRdock modes are as follows:
 
 ```console
 nextflow run nf-core/proteinfold \
@@ -92,6 +120,28 @@ nextflow run nf-core/proteinfold \
       --colabfold_model_preset "AlphaFold2-ptm" \
       --use_gpu <true/false> \
        -profile <docker>
+```
+
+```console
+  nextflow run nf-core/proteinfold \
+    --input samplesheet.csv \
+    --outdir <OUTDIR> \
+    --mode tcrdock \
+    --new_docking <true/false> \
+    --batch_size 10 \
+    -profile <docker>
+```
+
+```console
+  nextflow run nf-core/proteinfold \
+    --input samplesheet.csv \
+    --outdir <OUTDIR> \
+    --mode tcrdock \
+    --new_docking <true/false> \
+    --batch_size 100 \
+    --use_gpu \
+    --no_batch_parallel \
+    -profile <docker>
 ```
 
 This will launch the pipeline with the `docker` configuration profile. See below for more information about profiles.
