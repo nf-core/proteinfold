@@ -136,7 +136,7 @@ workflow TCRDOCK {
     workflow_summary    = WorkflowTCRdock.paramsSummaryMultiqc(workflow, summary_params)
     ch_workflow_summary = Channel.value(workflow_summary)
 
-    methods_description    = WorkflowTCRdock.methodsDescriptionText(workflow, ch_multiqc_custom_methods_description)
+    methods_description    = WorkflowTCRdock.methodsDescriptionText(workflow, ch_multiqc_custom_methods_description, params)
     ch_methods_description = Channel.value(methods_description)
 
     ch_multiqc_files = Channel.empty()
@@ -146,7 +146,7 @@ workflow TCRDOCK {
 
     MULTIQC (
         ch_multiqc_files.collect(),
-        ch_multiqc_config.collect(),
+        ch_multiqc_config.toList(),
         ch_multiqc_custom_config.toList(),
         ch_multiqc_logo.toList()
     )
