@@ -56,6 +56,8 @@ if (params.mode == "alphafold2") {
     include { COLABFOLD } from './workflows/colabfold'
 } else if (params.mode == "esmfold") {
     include { ESMFOLD } from './workflows/esmfold'
+} else if (params.mode == "tcrdock") {
+    include { TCRDOCK } from './workflows/tcrdock'
 }
 
 workflow NFCORE_PROTEINFOLD {
@@ -78,6 +80,12 @@ workflow NFCORE_PROTEINFOLD {
     //
     else if(params.mode == "esmfold") {
         ESMFOLD ()
+    }
+    
+    // WORKFLOW: Run tcrdock
+    //
+    else if(params.mode == "tcrdock") {
+        TCRDOCK ()
     }
 }
 
