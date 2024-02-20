@@ -16,11 +16,11 @@
 - [ColabFold](https://pubmed.ncbi.nlm.nih.gov/35637307/)
   Mirdita M, Schütze K, Moriwaki Y, Heo L, Ovchinnikov S, Steinegger M. ColabFold: making protein folding accessible to all. Nat Methods. 2022 Jun;19(6):679-682. doi: 10.1038/s41592-022-01488-1. Epub 2022 May 30. PMID: 35637307; PMCID: PMC9184281.
 
-- [TCRdock](https://doi.org/10.7554/eLife.82813)
-  Bradley, P. (2023). Structure-based prediction of T cell receptor: peptide-MHC interactions. Elife, 12, e82813.
-
 - [MMseqs2](https://pubmed.ncbi.nlm.nih.gov/26743509/)
   Hauser M, Steinegger M, Söding J. MMseqs software suite for fast and deep clustering and searching of large protein sequence sets. Bioinformatics. 2016 May 1;32(9):1323-30. doi: 10.1093/bioinformatics/btw006. Epub 2016 Jan 6. PubMed PMID: 26743509.
+
+- [TCRdock](https://doi.org/10.7554/eLife.82813)
+  Bradley, P. (2023). Structure-based prediction of T cell receptor: peptide-MHC interactions. Elife, 12, e82813.
 
 - [ESMFold](https://pubmed.ncbi.nlm.nih.gov/36927031/)
   Lin Z, Akin H, Rao R, Hie B, Zhu Z, Lu W, Smetanin N, Verkuil R, Kabeli O, Shmueli Y, Dos Santos Costa A, Fazel-Zarandi M, Sercu T, Candido S, Rives A. Evolutionary-scale prediction of atomic-level protein structure with a language model. Science. 2023 Mar 17;379(6637):1123-1130. doi: 10.1126/science.ade2574. Epub 2023 Mar 16. PMID: 36927031.
