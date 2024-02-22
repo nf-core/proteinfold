@@ -185,7 +185,7 @@ nf-core/proteinfold was originally written by Athanasios Baltzis ([@athbaltzis](
 
 We thank the following people for their extensive assistance in the development of this pipeline:
 
-Many thanks to others who have helped out and contributed along the way too, including (but not limited to): Norman Goodacre and Waleed Osman from Interline Therapeutics ([@interlinetx](https://github.com/interlinetx)), Martin Steinegger ([@martin-steinegger](https://github.com/martin-steinegger)) and Raoul J.P. Bonnal ([@rjpbonnal](https://github.com/rjpbonnal))
+Many thanks to others who have helped out and contributed along the way too, including (but not limited to): Norman Goodacre and Waleed Osman from Interline Therapeutics ([@interlinetx](https://github.com/interlinetx)), Martin Steinegger ([@martin-steinegger](https://github.com/martin-steinegger)), Raoul J.P. Bonnal ([@rjpbonnal](https://github.com/rjpbonnal)), and Elias Ball ([@eliasball](https://github.com/eliasball)).
 
 ## Contributions and Support
 
