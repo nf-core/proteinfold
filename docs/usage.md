@@ -435,6 +435,8 @@ If you specify the `--esmfold_db ` parameter, the directory structure of your pa
     └── esmfold_3B_v1.pt
 ```
 
+Typical command to run TCRdock mode using CPU:
+
 ```console
   nextflow run nf-core/proteinfold \
     --input samplesheet.csv \
@@ -444,6 +446,8 @@ If you specify the `--esmfold_db ` parameter, the directory structure of your pa
     --batch_size 10 \
     -profile <docker>
 ```
+
+Typical command to run TCRdock mode using GPU:
 
 ```console
   nextflow run nf-core/proteinfold \

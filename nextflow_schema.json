@@ -10,7 +10,10 @@
             "type": "object",
             "fa_icon": "fas fa-coins",
             "description": "Define where the pipeline should find input data and save output data.",
-            "required": ["input", "outdir"],
+            "required": [
+                "input",
+                "outdir"
+            ],
             "properties": {
                 "input": {
                     "type": "string",
@@ -32,7 +35,12 @@
                     "type": "string",
                     "default": "alphafold2",
                     "description": "Specifies the mode in which the pipeline will be run",
-                    "enum": ["alphafold2", "colabfold", "esmfold", "tcrdock"],
+                    "enum": [
+                        "alphafold2",
+                        "colabfold",
+                        "esmfold",
+                        "tcrdock"
+                    ],
                     "fa_icon": "fas fa-cogs"
                 },
                 "use_gpu": {
@@ -75,7 +83,6 @@
                 },
                 "full_dbs": {
                     "type": "boolean",
-                    "default": false,
                     "description": "If true uses the full version of the BFD database otherwise, otherwise it uses its reduced version, small bfd",
                     "fa_icon": "fas fa-battery-full"
                 },
@@ -83,14 +90,22 @@
                     "type": "string",
                     "default": "standard",
                     "description": "Specifies the mode in which Alphafold2 will be run",
-                    "enum": ["standard", "split_msa_prediction"],
+                    "enum": [
+                        "standard",
+                        "split_msa_prediction"
+                    ],
                     "fa_icon": "fas fa-exchange-alt"
                 },
                 "alphafold2_model_preset": {
                     "type": "string",
                     "default": "monomer",
                     "description": "Model preset for 'AlphaFold2' mode",
-                    "enum": ["monomer", "monomer_casp14", "monomer_ptm", "multimer"],
+                    "enum": [
+                        "monomer",
+                        "monomer_casp14",
+                        "monomer_ptm",
+                        "multimer"
+                    ],
                     "fa_icon": "fas fa-stream"
                 }
             }
@@ -112,7 +127,10 @@
                     "type": "string",
                     "default": "webserver",
                     "description": "Specifies the MSA server used by Colabfold",
-                    "enum": ["webserver", "local"],
+                    "enum": [
+                        "webserver",
+                        "local"
+                    ],
                     "fa_icon": "fas fa-server"
                 },
                 "colabfold_model_preset": {
@@ -146,7 +164,12 @@
                     "default": 0,
                     "description": "Specify the way that MMSeqs2 will load the required databases in memory",
                     "fa_icon": "fas fa-download",
-                    "enum": [0, 1, 2, 3]
+                    "enum": [
+                        0,
+                        1,
+                        2,
+                        3
+                    ]
                 },
                 "host_url": {
                     "type": "string",
@@ -188,7 +211,10 @@
                 "esmfold_model_preset": {
                     "type": "string",
                     "description": "Specifies whether is a 'monomer' or 'multimer' prediction",
-                    "enum": ["monomer", "multimer"],
+                    "enum": [
+                        "monomer",
+                        "multimer"
+                    ],
                     "fa_icon": "fas fa-stream"
                 }
             }
@@ -202,13 +228,15 @@
                 "batch_size": {
                     "type": "integer",
                     "default": 10,
-                    "description": "Amount of targets to predict in one process. Model will only be compiled once per process (results ~5x time consumption for first target in process), however multiple processes can be parallelized. When using a much larger batch_size, the 'TCRDOCK_PREDICTION' process might be stopped by the time limit defined in the configs before the prediction for all targets finishes. In this case, make sure to adjust its time limit in your configs (default is 'process_medium').",
-                    "fa_icon": "fas fa-copy"
+                    "description": "Amount of targets to predict per process. Model will only be compiled once per process (results ~5x time consumption for first target in process), however multiple processes can be parallelized.",
+                    "fa_icon": "fas fa-copy",
+                    "help_text": "When using a much larger batch_size, the 'TCRDOCK_PREDICTION' process might be stopped by the time limit defined in the configs before the prediction for all targets finishes. In this case, make sure to adjust its time limit in your configs (default is 'process_medium')."
                 },
                 "no_batch_parallel": {
                     "type": "boolean",
-                    "description": "Do not predict batches in parallel. E.g., this can help when there is an error because more GPU memory is trying to be allocated than exists. Do not overwrite maxForks on TCRDOCK_PREDICTION when used.",
-                    "fa_icon": "fas fa-copy"
+                    "description": "Do not predict batches in parallel. E.g., this can help when there is an error because more GPU memory is trying to be allocated than exists.",
+                    "fa_icon": "fas fa-copy",
+                    "help_text": "Do not overwrite maxForks on TCRDOCK_PREDICTION when used."
                 },
                 "num_runs": {
                     "type": "integer",
@@ -601,7 +629,14 @@
                     "description": "Method used to save pipeline results to output directory.",
                     "help_text": "The Nextflow `publishDir` option specifies which intermediate files should be saved to the output directory. This option tells the pipeline what method should be used to move these files. See [Nextflow docs](https://www.nextflow.io/docs/latest/process.html#publishdir) for details.",
                     "fa_icon": "fas fa-copy",
-                    "enum": ["symlink", "rellink", "link", "copy", "copyNoFollow", "move"],
+                    "enum": [
+                        "symlink",
+                        "rellink",
+                        "link",
+                        "copy",
+                        "copyNoFollow",
+                        "move"
+                    ],
                     "hidden": true
                 },
                 "email_on_fail": {
