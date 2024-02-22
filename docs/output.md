@@ -13,6 +13,7 @@ The pipeline is built using [Nextflow](https://www.nextflow.io/) and predicts pr
 - [AlphaFold2](https://github.com/deepmind/alphafold)
 - [ColabFold](https://github.com/sokrypton/ColabFold) - MMseqs2 (API server or local search) followed by ColabFold
 - [ESMFold](https://github.com/facebookresearch/esm)
+- [TCRdock](https://github.com/phbradley/TCRdock) - Specialized tool for structure prediction of TCR:pMHC complexes.
 
 See main [README.md](https://github.com/nf-core/proteinfold/blob/master/README.md) for a condensed overview of the steps in the pipeline, and the bioinformatics tools used at each step.
 
@@ -176,6 +177,17 @@ Below you can find an indicative example of the TSV file with the pLDDT scores p
 | 48                 | C         | VAL          | 7                       | 57.39 |
 | 49                 | CB        | VAL          | 7                       | 52.74 |
 | 50                 | O         | VAL          | 7                       | 56.46 |
+
+### TCRdock
+
+<details markdown="1">
+<summary>Output files</summary>
+
+- `tcrdock/batches/` contains the batches that the pipeline splits the input file into.
+- `tcrdock/setup/` contains a folder for each batch with the preprocessed files created by the TCRdock setup command. These files are needed in the prediction step.
+- `tcrdock/prediction/` contains a folder for each batch with the final TCRdock structure predictions and related metadata.
+
+</details>
 
 ### MultiQC report
 

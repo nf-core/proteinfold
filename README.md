@@ -38,6 +38,10 @@ On release, automated continuous integration tests run the pipeline on a full-si
    iv. [ColabFold](https://github.com/sokrypton/ColabFold) - MMseqs2 local search followed by ColabFold
 
    v. [ESMFold](https://github.com/facebookresearch/esm)
+   
+   vi. [TCRdock](https://github.com/phbradley/TCRdock) - Specialized tool for structure prediction of TCR:pMHC complexes. Requires different samplesheet.csv file (see Input).
+
+## Quick Start
 
 ## Usage
 
@@ -120,6 +124,34 @@ The pipeline takes care of downloading the required databases and parameters req
 
   > **Warning**
   > If you aim to carry out a large amount of predictions using the colabfold_webserver mode, please setup and use your own custom MMSeqs2 API Server. You can find instructions [here](https://github.com/sokrypton/ColabFold/tree/main/MsaServer).
+  
+- Typical command to run tcrdock mode using CPU:
+
+  ```console
+  nextflow run nf-core/proteinfold \
+    --input samplesheet.csv \
+    --outdir <OUTDIR> \
+    --mode tcrdock \
+    --new_docking <true/false> \
+    --batch_size 10 \
+    -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
+  ```
+
+- Typical command to run tcrdock mode using GPU:
+
+  ```console
+  nextflow run nf-core/proteinfold \
+    --input samplesheet.csv \
+    --outdir <OUTDIR> \
+    --mode tcrdock \
+    --new_docking <true/false> \
+    --batch_size 100 \
+    --use_gpu \
+    --no_batch_parallel \
+    -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
+  ```
+
+## Documentation
 
 - Typical command to run esmfold mode:
 
@@ -153,7 +185,7 @@ nf-core/proteinfold was originally written by Athanasios Baltzis ([@athbaltzis](
 
 We thank the following people for their extensive assistance in the development of this pipeline:
 
-Many thanks to others who have helped out and contributed along the way too, including (but not limited to): Norman Goodacre and Waleed Osman from Interline Therapeutics ([@interlinetx](https://github.com/interlinetx)), Martin Steinegger ([@martin-steinegger](https://github.com/martin-steinegger)) and Raoul J.P. Bonnal ([@rjpbonnal](https://github.com/rjpbonnal))
+Many thanks to others who have helped out and contributed along the way too, including (but not limited to): Norman Goodacre and Waleed Osman from Interline Therapeutics ([@interlinetx](https://github.com/interlinetx)), Martin Steinegger ([@martin-steinegger](https://github.com/martin-steinegger)), Raoul J.P. Bonnal ([@rjpbonnal](https://github.com/rjpbonnal)), and Elias Ball ([@eliasball](https://github.com/eliasball)).
 
 ## Contributions and Support
 
