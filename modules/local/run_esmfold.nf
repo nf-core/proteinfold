@@ -43,7 +43,7 @@ process RUN_ESMFOLD {
     def VERSION = '1.0.3' // WARN: Version information not provided by tool on CLI. Please update this string when bumping container versions.
     """
     touch ./"${fasta.baseName}".pdb
-    touch ./"${fasta.baseName}"_mqc.tsv
+    touch ./"${fasta.baseName}"_plddt_mqc.tsv
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
