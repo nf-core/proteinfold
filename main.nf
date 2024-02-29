@@ -22,9 +22,10 @@ if (params.mode == "alphafold2") {
     include { ALPHAFOLD2             } from './workflows/alphafold2'
 } else if (params.mode == "colabfold") {
     include { PREPARE_COLABFOLD_DBS } from './subworkflows/local/prepare_colabfold_dbs'
-    include { COLABFOLD  } from './workflows/colabfold'
+    include { COLABFOLD             } from './workflows/colabfold'
 } else if (params.mode == "esmfold") {
-    include { ESMFOLD    } from './workflows/esmfold'
+    include { PREPARE_ESMFOLD_DBS } from './subworkflows/local/prepare_esmfold_dbs'
+    include { ESMFOLD             } from './workflows/esmfold'
 }
 
 include { PIPELINE_INITIALISATION          } from './subworkflows/local/utils_nfcore_proteinfold_pipeline'
@@ -40,30 +41,6 @@ include { getColabfoldAlphafold2ParamsPath } from './subworkflows/local/utils_nf
 
 params.colabfold_alphafold2_params      = getColabfoldAlphafold2Params()
 params.colabfold_alphafold2_params_path = getColabfoldAlphafold2ParamsPath()
-
-/*
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    VALIDATE & PRINT PARAMETER SUMMARY
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-*/
-
-// include { validateParameters; paramsHelp } from 'plugin/nf-validation'
-
-// // Print help message if needed
-// if (params.help) {
-//     def logo = NfcoreTemplate.logo(workflow, params.monochrome_logs)
-//     def citation = '\n' + WorkflowMain.citation(workflow) + '\n'
-//     def String command = "nextflow run ${workflow.manifest.name} --input samplesheet.csv --genome GRCh37 -profile docker"
-//     log.info logo + paramsHelp(command) + citation + NfcoreTemplate.dashedLine(params.monochrome_logs)
-//     System.exit(0)
-// }
-
-// // Validate input parameters
-// if (params.validate_params) {
-//     validateParameters()
-// }
-
-// WorkflowMain.initialise(workflow, params, log, args)
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -87,7 +64,22 @@ workflow NFCORE_PROTEINFOLD {
         //
         // SUBWORKFLOW: Prepare Alphafold2 DBs
         //
-        PREPARE_ALPHAFOLD2_DBS ( )
+        PREPARE_ALPHAFOLD2_DBS (
+            params.alphafold2_db,
+            params.full_dbs,
+            params.bfd_path,
+            params.small_bfd_path,
+            params.alphafold2_params_path,
+            params.mgnify_path,
+            params.pdb70_path,
+            params.pdb_mmcif_path,
+            params.uniref30_alphafold2_path,
+            params.uniref90_path,
+            params.pdb_seqres_path,
+            params.uniprot_path,
+            params.uniprot_sprot,
+            params.uniprot_trembl
+        )
         ch_versions = ch_versions.mix(PREPARE_ALPHAFOLD2_DBS.out.versions)
 
         //
@@ -121,6 +113,8 @@ workflow NFCORE_PROTEINFOLD {
         // SUBWORKFLOW: Prepare Colabfold DBs
         //
         PREPARE_COLABFOLD_DBS (
+            params.colabfold_db,
+            params.colabfold_server,
             params.colabfold_alphafold2_params_path,
             params.colabfold_db_path,
             params.uniref30_colabfold_path,
@@ -153,11 +147,17 @@ workflow NFCORE_PROTEINFOLD {
         //
         // SUBWORKFLOW: Prepare esmfold DBs
         //
-        PREPARE_ESMFOLD_DBS ()
+        PREPARE_ESMFOLD_DBS (
+            params.esmfold_db,
+            params.esmfold_params_path,
+            params.esmfold_3B_v1,
+            params.esm2_t36_3B_UR50D,
+            params.esm2_t36_3B_UR50D_contact_regression
+        )
         ch_versions = ch_versions.mix(PREPARE_ESMFOLD_DBS.out.versions)
 
         //
-        // WORKFLOW: Run esmfold
+        // WORKFLOW: Run nf-core/esmfold workflow
         //
         ESMFOLD (
             ch_versions,
