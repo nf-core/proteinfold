@@ -70,8 +70,8 @@ workflow COLABFOLD {
                 MULTIFASTA_TO_CSV.out.input_csv,
                 colabfold_model_preset,
                 ch_colabfold_params,
-                ch_colabfold_db,
-                ch_uniref30,
+                [],
+                [],
                 num_recycle
             )
             ch_versions = ch_versions.mix(COLABFOLD_BATCH.out.versions)
@@ -80,8 +80,8 @@ workflow COLABFOLD {
                 ch_fasta,
                 colabfold_model_preset,
                 ch_colabfold_params,
-                ch_colabfold_db,
-                ch_uniref30,
+                [],
+                [],
                 num_recycle
             )
             ch_versions = ch_versions.mix(COLABFOLD_BATCH.out.versions)
