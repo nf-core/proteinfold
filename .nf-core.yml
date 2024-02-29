@@ -6,4 +6,6 @@ lint:
     - .github/workflows/branch.yml
     - .github/workflows/linting_comment.yml
     - .github/workflows/linting.yml
+    - .github/CONTRIBUTING.md
+    - .github/PULL_REQUEST_TEMPLATE.md
   multiqc_config: false
