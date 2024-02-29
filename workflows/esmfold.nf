@@ -42,7 +42,7 @@ workflow ESMFOLD {
     ch_versions       // channel: [ path(versions.yml) ]
     ch_esmfold_params // directory: /path/to/esmfold/params/
     ch_num_recycle    // int: Number of recycles for esmfold
-    
+
     main:
     ch_multiqc_files = Channel.empty()
 

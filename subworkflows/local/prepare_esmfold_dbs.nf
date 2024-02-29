@@ -7,8 +7,8 @@ include { ARIA2 as ARIA2_ESM2_T36_3B_UR50D                    } from '../../modu
 include { ARIA2 as ARIA2_ESM2_T36_3B_UR50D_CONTACT_REGRESSION } from '../../modules/nf-core/aria2/main'
 
 workflow PREPARE_ESMFOLD_DBS {
-    
-    take: 
+
+    take:
     esmfold_db                           // directory: /path/to/esmfold/db/
     esmfold_params_path                  // directory: /path/to/esmfold/params/
     esmfold_3B_v1                        // string: Specifies the link to download esmfold 3B v1

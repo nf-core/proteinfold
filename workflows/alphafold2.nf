@@ -39,11 +39,11 @@ include { methodsDescriptionText } from '../subworkflows/local/utils_nfcore_prot
 
 workflow ALPHAFOLD2 {
 
-    take: 
+    take:
     ch_versions             // channel: [ path(versions.yml) ]
     full_dbs                // boolean: Use full databases (otherwise reduced version)
     alphafold2_mode         // string: Mode to run Alphafold2 in
-    alphafold2_model_preset // string: Specifies the model preset to use for Alphafold2 
+    alphafold2_model_preset // string: Specifies the model preset to use for Alphafold2
     ch_alphafold2_params    // channel: path(alphafold2_params)
     ch_bfd                  // channel: path(bfd)
     ch_small_bfd            // channel: path(small_bfd)
@@ -57,7 +57,7 @@ workflow ALPHAFOLD2 {
 
     main:
     ch_multiqc_files = Channel.empty()
-    
+
     //
     // Create input channel from input file provided through params.input
     //
@@ -96,7 +96,7 @@ workflow ALPHAFOLD2 {
         )
         ch_multiqc_rep = RUN_ALPHAFOLD2.out.multiqc.collect()
         ch_versions    = ch_versions.mix(RUN_ALPHAFOLD2.out.versions)
-        
+
     } else if (alphafold2_mode == 'split_msa_prediction') {
         //
         // SUBWORKFLOW: Run Alphafold2 split mode, MSA and predicition
@@ -118,7 +118,7 @@ workflow ALPHAFOLD2 {
         )
         ch_multiqc_rep = RUN_ALPHAFOLD2_MSA.out.multiqc.collect()
         ch_versions    = ch_versions.mix(RUN_ALPHAFOLD2_MSA.out.versions)
-        
+
         RUN_ALPHAFOLD2_PRED (
             ch_fasta,
             full_dbs,
@@ -136,9 +136,9 @@ workflow ALPHAFOLD2 {
             RUN_ALPHAFOLD2_MSA.out.features
         )
         ch_multiqc_rep = RUN_ALPHAFOLD2_PRED.out.multiqc.collect()
-        ch_versions = ch_versions.mix(RUN_ALPHAFOLD2_PRED.out.versions)        
+        ch_versions = ch_versions.mix(RUN_ALPHAFOLD2_PRED.out.versions)
     }
-    
+
     //
     // Collate and save software versions
     //

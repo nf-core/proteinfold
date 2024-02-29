@@ -38,7 +38,7 @@ include { methodsDescriptionText } from '../subworkflows/local/utils_nfcore_prot
 */
 
 workflow COLABFOLD {
-    
+
     take:
     ch_versions            // channel: [ path(versions.yml) ]
     colabfold_model_preset // string: Specifies the model preset to use for colabfold
@@ -159,7 +159,7 @@ workflow COLABFOLD {
         ch_multiqc_logo.toList()
     )
     ch_multiqc_report = MULTIQC.out.report.toList()
-    
+
     emit:
     multiqc_report = ch_multiqc_report // channel: /path/to/multiqc_report.html
     versions       = ch_versions       // channel: [ path(versions.yml) ]
