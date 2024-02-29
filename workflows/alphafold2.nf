@@ -116,7 +116,6 @@ workflow ALPHAFOLD2 {
             ch_pdb_seqres,
             ch_uniprot
         )
-        ch_multiqc_rep = RUN_ALPHAFOLD2_MSA.out.multiqc.collect()
         ch_versions    = ch_versions.mix(RUN_ALPHAFOLD2_MSA.out.versions)
 
         RUN_ALPHAFOLD2_PRED (
