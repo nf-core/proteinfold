@@ -1,49 +1,11 @@
-/* //TODO: change header
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    VALIDATE INPUTS
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-*/
-
-include { paramsSummaryMap       } from 'plugin/nf-validation'
-include { fromSamplesheet        } from 'plugin/nf-validation'
-include { paramsSummaryMultiqc   } from '../subworkflows/nf-core/utils_nfcore_pipeline'
-include { softwareVersionsToYAML } from '../subworkflows/nf-core/utils_nfcore_pipeline'
-include { methodsDescriptionText } from '../subworkflows/local/utils_nfcore_proteinfold_pipeline'
-
-// def logo = NfcoreTemplate.logo(workflow, params.monochrome_logs)
-// def citation = '\n' + WorkflowMain.citation(workflow) + '\n'
-// def summary_params = paramsSummaryMap(workflow)
-
-// // Print parameter summary log to screen
-// log.info logo + paramsSummaryLog(workflow) + citation
-
-// // Validate input parameters
-// WorkflowColabfold.initialise(params, log)
-
-// /*
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-//     CONFIG FILES
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// */
-
-// ch_multiqc_config          = Channel.fromPath("$projectDir/assets/multiqc_config.yml", checkIfExists: true)
-// ch_multiqc_custom_config   = params.multiqc_config ? Channel.fromPath( params.multiqc_config ) : Channel.empty()
-// ch_multiqc_logo            = params.multiqc_logo   ? Channel.fromPath( params.multiqc_logo )   : Channel.empty()
-// ch_multiqc_custom_methods_description = params.multiqc_methods_description ? file(params.multiqc_methods_description) : file("$projectDir/assets/methods_description_template.yml", checkIfExists: true)
-
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     IMPORT LOCAL MODULES/SUBWORKFLOWS
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-// //
-// // SUBWORKFLOW: Consisting of a mix of local and nf-core/modules
-// //
-// include { PREPARE_COLABFOLD_DBS } from '../subworkflows/local/prepare_colabfold_dbs'
-
 //
-// MODULE: Local to the pipeline
+// MODULE: Loaded from modules/local/
 //
 include { COLABFOLD_BATCH        } from '../modules/local/colabfold_batch'
 include { MMSEQS_COLABFOLDSEARCH } from '../modules/local/mmseqs_colabfoldsearch'
@@ -58,8 +20,16 @@ include { MULTIFASTA_TO_CSV      } from '../modules/local/multifasta_to_csv'
 //
 // MODULE: Installed directly from nf-core/modules
 //
-include { MULTIQC                     } from '../modules/nf-core/multiqc/main'
-// include { CUSTOM_DUMPSOFTWAREVERSIONS } from '../modules/nf-core/custom/dumpsoftwareversions/main'
+include { MULTIQC } from '../modules/nf-core/multiqc/main'
+
+//
+// SUBWORKFLOW: Consisting entirely of nf-core/modules
+//
+include { paramsSummaryMap       } from 'plugin/nf-validation'
+include { fromSamplesheet        } from 'plugin/nf-validation'
+include { paramsSummaryMultiqc   } from '../subworkflows/nf-core/utils_nfcore_pipeline'
+include { softwareVersionsToYAML } from '../subworkflows/nf-core/utils_nfcore_pipeline'
+include { methodsDescriptionText } from '../subworkflows/local/utils_nfcore_proteinfold_pipeline'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -67,18 +37,15 @@ include { MULTIQC                     } from '../modules/nf-core/multiqc/main'
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-// Info required for completion email and summary
-// def multiqc_report = []
-
 workflow COLABFOLD {
     
     take:
-    ch_versions
-    ch_colabfold_model_preset
-    ch_colabfold_params
-    ch_colabfold_db
-    ch_uniref30
-    ch_num_recycle
+    ch_versions            // channel: [ path(versions.yml) ]
+    colabfold_model_preset // string: Specifies the model preset to use for colabfold
+    ch_colabfold_params    // channel: path(colabfold_params)
+    ch_colabfold_db        // channel: path(colabfold_db)
+    ch_uniref30            // channel: path(uniref30)
+    num_recycle            // int: Number of recycles for esmfold
 
     main:
     ch_multiqc_files = Channel.empty()
@@ -89,9 +56,6 @@ workflow COLABFOLD {
     Channel
         .fromSamplesheet("input")
         .set { ch_fasta }
-
-    // PREPARE_COLABFOLD_DBS ( )
-    // ch_versions = ch_versions.mix(PREPARE_COLABFOLD_DBS.out.versions)
 
     if (params.colabfold_server == 'webserver') {
         //
@@ -104,21 +68,21 @@ workflow COLABFOLD {
             ch_versions = ch_versions.mix(MULTIFASTA_TO_CSV.out.versions)
             COLABFOLD_BATCH(
                 MULTIFASTA_TO_CSV.out.input_csv,
-                ch_colabfold_model_preset,
+                colabfold_model_preset,
                 ch_colabfold_params,
                 ch_colabfold_db,
                 ch_uniref30,
-                ch_num_recycle
+                num_recycle
             )
             ch_versions = ch_versions.mix(COLABFOLD_BATCH.out.versions)
         } else {
             COLABFOLD_BATCH(
                 ch_fasta,
-                ch_colabfold_model_preset,
+                colabfold_model_preset,
                 ch_colabfold_params,
                 ch_colabfold_db,
                 ch_uniref30,
-                ch_num_recycle
+                num_recycle
             )
             ch_versions = ch_versions.mix(COLABFOLD_BATCH.out.versions)
         }
@@ -154,11 +118,11 @@ workflow COLABFOLD {
         //
         COLABFOLD_BATCH(
             MMSEQS_COLABFOLDSEARCH.out.a3m,
-            ch_colabfold_model_preset,
+            colabfold_model_preset,
             ch_colabfold_params,
             ch_colabfold_db,
             ch_uniref30,
-            ch_num_recycle
+            num_recycle
         )
         ch_versions = ch_versions.mix(COLABFOLD_BATCH.out.versions)
     }
@@ -170,21 +134,9 @@ workflow COLABFOLD {
         .collectFile(storeDir: "${params.outdir}/pipeline_info", name: 'nf_core_proteinfold_software_mqc_versions.yml', sort: true, newLine: true)
         .set { ch_collated_versions }
 
-    // //
-    // // MODULE: Pipeline reporting
-    // //
-    // CUSTOM_DUMPSOFTWAREVERSIONS (
-    //     ch_versions.unique().collectFile(name: 'collated_versions.yml')
-    // )
-
     //
     // MODULE: MultiQC
     //
-    // workflow_summary    = WorkflowColabfold.paramsSummaryMultiqc(workflow, summary_params)
-    // ch_workflow_summary = Channel.value(workflow_summary)
-
-    // methods_description    = WorkflowColabfold.methodsDescriptionText(workflow, ch_multiqc_custom_methods_description, params)
-    // ch_methods_description = Channel.value(methods_description)
     ch_multiqc_report        = Channel.empty()
     ch_multiqc_config        = Channel.fromPath("$projectDir/assets/multiqc_config.yml", checkIfExists: true)
     ch_multiqc_custom_config = params.multiqc_config ? Channel.fromPath( params.multiqc_config ) : Channel.empty()
@@ -212,23 +164,6 @@ workflow COLABFOLD {
     multiqc_report = ch_multiqc_report // channel: /path/to/multiqc_report.html
     versions       = ch_versions       // channel: [ path(versions.yml) ]
 }
-
-// /*
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-//     COMPLETION EMAIL AND SUMMARY
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// */
-
-// workflow.onComplete {
-//     if (params.email || params.email_on_fail) {
-//         NfcoreTemplate.email(workflow, params, summary_params, projectDir, log, multiqc_report)
-//     }
-//     NfcoreTemplate.dump_parameters(workflow, params)
-//     NfcoreTemplate.summary(workflow, params, log)
-//     if (params.hook_url) {
-//         NfcoreTemplate.IM_notification(workflow, params, summary_params, projectDir, log)
-//     }
-// }
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
