@@ -138,12 +138,10 @@ def getColabfoldAlphafold2Params() {
 //
 def getColabfoldAlphafold2ParamsPath() {
     def path = null
-    println ("params.colabfold_alphafold2_params_tags...................${params.colabfold_alphafold2_params_tags}")
     params.colabfold_model_preset.toString()
     if (params.colabfold_alphafold2_params_tags) {
         if (params.colabfold_alphafold2_params_tags.containsKey(params.colabfold_model_preset.toString())) {
             path = "${params.colabfold_db}/params/" + params.colabfold_alphafold2_params_tags[ params.colabfold_model_preset.toString() ]
-            println ("path...................${path}")
         }
     }
     return path
