@@ -1,8 +1,6 @@
 //
-// Subworkflow with functionality specific to the nf-core/pipeline pipeline
+// Subworkflow with functionality specific to the nf-core/proteinfold pipeline
 //
-
-import groovy.json.JsonSlurper
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -53,7 +51,7 @@ workflow PIPELINE_INITIALISATION {
     //
     pre_help_text = nfCoreLogo(monochrome_logs)
     post_help_text = '\n' + workflowCitation() + '\n' + dashedLine(monochrome_logs)
-    def String workflow_command = "nextflow run ${workflow.manifest.name} -profile <docker/singularity/.../institute> --input samplesheet.csv --genome GRCh37 --outdir <OUTDIR>"
+    def String workflow_command = "nextflow run ${workflow.manifest.name} -profile <docker/singularity/.../institute> --input samplesheet.csv --outdir <OUTDIR>"
     UTILS_NFVALIDATION_PLUGIN (
         help,
         workflow_command,
@@ -63,18 +61,12 @@ workflow PIPELINE_INITIALISATION {
         "nextflow_schema.json"
     )
 
-//
+    //
     // Check config provided to the pipeline
     //
     UTILS_NFCORE_PIPELINE (
         nextflow_cli_args
     )
-
-    // // TODO: remove
-    // // Custom validation for pipeline parameters
-    // //
-    // validateInputParameters()
-
 }
 
 /*
