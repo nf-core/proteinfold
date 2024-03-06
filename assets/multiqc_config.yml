@@ -18,3 +18,5 @@ run_modules:
   - run_alphafold2
   - run_alphafold2_pred
   - colabfold_batch
+
+disable_version_detection: true
