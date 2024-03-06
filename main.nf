@@ -172,22 +172,6 @@ workflow NFCORE_PROTEINFOLD {
     versions       = ch_versions // channel: [version1, version2, ...]
 }
 
-    take:
-    samplesheet // channel: samplesheet read in from --input
-
-    main:
-
-    //
-    // WORKFLOW: Run pipeline
-    //
-    PROTEINFOLD (
-        samplesheet
-    )
-
-    emit:
-    multiqc_report = PROTEINFOLD.out.multiqc_report // channel: /path/to/multiqc_report.html
-
-}
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     RUN MAIN WORKFLOW
