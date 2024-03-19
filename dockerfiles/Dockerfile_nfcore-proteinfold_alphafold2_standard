@@ -1,9 +1,9 @@
-FROM nvidia/cuda:11.4.2-cudnn8-runtime-ubuntu18.04
-LABEL authors="Athanasios Baltzis, Leila Mansouri" \
+FROM nvidia/cuda:11.4.3-cudnn8-runtime-ubuntu18.04
+
+LABEL authors="Athanasios Baltzis, Jose Espinosa-Carrasco, Leila Mansouri" \
     title="nfcore/proteinfold_alphafold2_standard" \
     Version="1.1.0" \
     description="Docker image containing all software requirements to run the RUN_ALPHAFOLD2 module using the nf-core/proteinfold pipeline"
-
 
 # Use bash to support string substitution.
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
@@ -48,8 +48,7 @@ RUN wget -q -P /tmp \
     && rm /tmp/Miniconda3-latest-Linux-x86_64.sh
 
 # Install conda packages
-RUN /conda/bin/conda install -qy conda=4.13.0 \
-    && /conda/bin/conda install -y -c conda-forge \
+RUN /conda/bin/conda install -y -c conda-forge \
     openmm=7.7.0 \
     cudatoolkit==11.1.1 \
     pdbfixer \
@@ -57,7 +56,6 @@ RUN /conda/bin/conda install -qy conda=4.13.0 \
     python=3.10 \
     && conda clean --all --force-pkgs-dirs --yes
 
-COPY . /app/alphafold
 RUN wget -q -P /app/alphafold/alphafold/common/ \
     https://git.scicore.unibas.ch/schwede/openstructure/-/raw/7102c63615b64735c4941278d92b554ec94415f8/modules/mol/alg/src/stereo_chemical_props.txt
 
