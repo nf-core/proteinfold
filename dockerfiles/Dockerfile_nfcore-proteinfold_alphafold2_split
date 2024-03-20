@@ -1,9 +1,9 @@
-FROM nvidia/cuda:11.4.2-cudnn8-runtime-ubuntu18.04
-LABEL authors="Athanasios Baltzis, Leila Mansouri" \
+FROM nvidia/cuda:11.4.3-cudnn8-runtime-ubuntu18.04
+
+LABEL authors="Athanasios Baltzis, Jose Espinosa-Carrasco, Leila Mansouri" \
     title="nfcore/proteinfold_alphafold2_split" \
     Version="1.1.0" \
     description="Docker image containing all software requirements to run the RUN_ALPHAFOLD2_PRED module using the nf-core/proteinfold pipeline"
-
 
 # Use bash to support string substitution.
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
@@ -29,7 +29,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --no-instal
 # Clone AlphaFold2
 RUN git clone https://github.com/cbcrg/alphafold.git /app/alphafold && \
     cd /app/alphafold && \
-    git checkout b35b26e0ef88cc00498a73a8dffe429a119c6ee4 && \
+    git checkout 1b3170e9409472ec8ad044f9935c92bedd7b4674 && \
     cd -
 
 # Compile HHsuite from source
@@ -48,8 +48,7 @@ RUN wget -q -P /tmp \
     && rm /tmp/Miniconda3-latest-Linux-x86_64.sh
 
 # Install conda packages
-RUN /conda/bin/conda install -qy conda=4.13.0 \
-    && /conda/bin/conda install -y -c conda-forge \
+RUN /conda/bin/conda install -y -c conda-forge \
     openmm=7.7.0 \
     cudatoolkit==11.1.1 \
     pdbfixer \
@@ -59,7 +58,6 @@ RUN /conda/bin/conda install -qy conda=4.13.0 \
 
 RUN wget -q -P /app/alphafold/alphafold/common/ \
     https://git.scicore.unibas.ch/schwede/openstructure/-/raw/7102c63615b64735c4941278d92b554ec94415f8/modules/mol/alg/src/stereo_chemical_props.txt
-
 
 # Install pip packages.
 RUN pip3 install --upgrade pip --no-cache-dir \
@@ -79,4 +77,3 @@ RUN chmod u+s /sbin/ldconfig.real
 # details.
 RUN cd /app/alphafold
 RUN ldconfig
-

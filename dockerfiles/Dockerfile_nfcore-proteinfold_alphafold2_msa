@@ -1,9 +1,9 @@
-FROM nvidia/cuda:11.4.2-cudnn8-runtime-ubuntu18.04
-LABEL authors="Luisa Santus, Athanasios Baltzis, Leila Mansouri" \
+FROM nvidia/cuda:11.4.3-cudnn8-runtime-ubuntu18.04
+
+LABEL authors="Luisa Santus, Athanasios Baltzis, Jose Espinosa-Carrasco, Leila Mansouri" \
     title="nfcore/proteinfold_alphafold2_msa" \
     Version="1.1.0" \
     description="Docker image containing all software requirements to run the RUN_ALPHAFOLD2_MSA module using the nf-core/proteinfold pipeline"
-
 
 # Use bash to support string substitution.
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
@@ -29,7 +29,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --no-instal
 # Clone AlphaFold2
 RUN git clone https://github.com/cbcrg/alphafold.git /app/alphafold && \
     cd /app/alphafold && \
-    git checkout b35b26e0ef88cc00498a73a8dffe429a119c6ee4 && \
+    git checkout 1b3170e9409472ec8ad044f9935c92bedd7b4674 && \
     cd -
 
 # Compile HHsuite from source
@@ -48,8 +48,7 @@ RUN wget -q -P /tmp \
     && rm /tmp/Miniconda3-latest-Linux-x86_64.sh
 
 # Install conda packages
-RUN /conda/bin/conda install -qy conda=4.13.0  \
-    && /conda/bin/conda install -y -c conda-forge \
+RUN /conda/bin/conda install -y -c conda-forge \
     pip \
     python=3.10 \
     && conda clean --all --force-pkgs-dirs --yes
@@ -57,4 +56,3 @@ RUN /conda/bin/conda install -qy conda=4.13.0  \
 # Install pip packages
 RUN pip3 install --upgrade pip --no-cache-dir \
     && pip3 install -r /app/alphafold/requirements_msa.txt --no-cache-dir
-

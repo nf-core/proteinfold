@@ -29,7 +29,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --no-instal
 # Clone AlphaFold2
 RUN git clone https://github.com/deepmind/alphafold.git /app/alphafold && \
     cd /app/alphafold && \
-    git checkout 6a3af1adb3bbbc53562da100e3819b2fc882f915 && \
+    git checkout 7c9114c8423ac9db981d8365168464bab09b3e54 && \
     cd -
 
 # Compile HHsuite from source
@@ -77,4 +77,3 @@ RUN chmod u+s /sbin/ldconfig.real
 # details.
 RUN cd /app/alphafold
 RUN ldconfig
-
