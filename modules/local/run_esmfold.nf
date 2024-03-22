@@ -2,6 +2,10 @@ process RUN_ESMFOLD {
     tag "$meta.id"
     label 'process_medium'
 
+    if (workflow.profile.tokenize(',').intersect(['conda', 'mamba']).size() >= 1) {
+        error("Local RUN_ESMFOLD module does not support Conda. Please use Docker / Singularity / Podman instead.")
+    }
+
     container "nf-core/proteinfold_esmfold:1.1.0"
 
     input:

@@ -5,6 +5,11 @@ process RUN_ALPHAFOLD2_PRED {
     tag   "$meta.id"
     label 'process_medium'
 
+    // Exit if running this module with -profile conda / -profile mamba
+    if (workflow.profile.tokenize(',').intersect(['conda', 'mamba']).size() >= 1) {
+        error("Local RUN_ALPHAFOLD2_PRED module does not support Conda. Please use Docker / Singularity / Podman instead.")
+    }
+
     container "nf-core/proteinfold_alphafold2_split:dev"
 
     input:
