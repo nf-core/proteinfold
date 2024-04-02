@@ -28,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[PR #132](https://github.com/nf-core/proteinfold/pull/132)] - Remove `lib/` directory.
 - [[#135](https://github.com/nf-core/proteinfold/issues/135)] - Reduce Alphafold Docker images sizes.
 - [[#115](https://github.com/nf-core/proteinfold/issues/115)] - Throw message error when profile conda is used.
+- [[#131](https://github.com/nf-core/proteinfold/issues/131)] - Add esmfold small tests.
 
 ## 1.0.0 - White Silver Reebok
 
