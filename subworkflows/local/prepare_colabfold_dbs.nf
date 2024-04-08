@@ -47,7 +47,7 @@ workflow PREPARE_COLABFOLD_DBS {
                 MMSEQS_CREATEINDEX_COLABFOLDDB (
                     MMSEQS_TSV2EXPROFILEDB_COLABFOLDDB.out.db_exprofile
                 )
-                ch_colabfold_db = MMSEQS_CREATEINDEX_COLABFOLDDB.out.db_index
+                ch_colabfold_db = MMSEQS_CREATEINDEX_COLABFOLDDB.out.db_indexed
                 ch_versions = ch_versions.mix(MMSEQS_CREATEINDEX_COLABFOLDDB.out.versions)
             }
 
@@ -66,7 +66,7 @@ workflow PREPARE_COLABFOLD_DBS {
                 MMSEQS_CREATEINDEX_UNIPROT30 (
                     MMSEQS_TSV2EXPROFILEDB_UNIPROT30.out.db_exprofile
                 )
-                ch_uniref30 = MMSEQS_CREATEINDEX_UNIPROT30.out.db_index
+                ch_uniref30 = MMSEQS_CREATEINDEX_UNIPROT30.out.db_indexed
                 ch_versions = ch_versions.mix(MMSEQS_CREATEINDEX_UNIPROT30.out.versions)
             }
         }
