@@ -21,7 +21,7 @@ workflow PREPARE_ALPHAFOLD2_DBS {
 
     take:
     alphafold2_db            // directory: path to alphafold2 DBs
-    full_dbs                   // boolean: Use full databases (otherwise reduced version)
+    full_dbs                 //   boolean: Use full databases (otherwise reduced version)
     bfd_path                 // directory: /path/to/bfd/
     small_bfd_path           // directory: /path/to/small_bfd/
     alphafold2_params_path   // directory: /path/to/alphafold2/params/
@@ -32,18 +32,18 @@ workflow PREPARE_ALPHAFOLD2_DBS {
     uniref90_path            // directory: /path/to/uniref90/
     pdb_seqres_path          // directory: /path/to/pdb_seqres/
     uniprot_path             // directory: /path/to/uniprot/
-    bfd_link                    // string: Specifies the link to download bfd
-    small_bfd_link              // string: Specifies the link to download small_bfd
-    alphafold2_params           // string: Specifies the link to download alphafold2_params
-    mgnify_link                 // string: Specifies the link to download mgnify
-    pdb70_link                  // string: Specifies the link to download pdb70
-    pdb_mmcif_link              // string: Specifies the link to download pdb_mmcif
-    pdb_obsolete_link           // string: Specifies the link to download pdb_obsolete
-    uniref30_alphafold2_link    // string: Specifies the link to download uniref30_alphafold2
-    uniref90_link               // string: Specifies the link to download uniref90
-    pdb_seqres_link             // string: Specifies the link to download pdb_seqres
-    uniprot_sprot_link          // string: Specifies the link to download uniprot_sprot
-    uniprot_trembl_link         // string: Specifies the link to download uniprot_trembl
+    bfd_link                 //   string: Specifies the link to download bfd
+    small_bfd_link           //   string: Specifies the link to download small_bfd
+    alphafold2_params        //   string: Specifies the link to download alphafold2_params
+    mgnify_link              //   string: Specifies the link to download mgnify
+    pdb70_link               //   string: Specifies the link to download pdb70
+    pdb_mmcif_link           //   string: Specifies the link to download pdb_mmcif
+    pdb_obsolete_link        //   string: Specifies the link to download pdb_obsolete
+    uniref30_alphafold2_link //   string: Specifies the link to download uniref30_alphafold2
+    uniref90_link            //   string: Specifies the link to download uniref90
+    pdb_seqres_link          //   string: Specifies the link to download pdb_seqres
+    uniprot_sprot_link       //   string: Specifies the link to download uniprot_sprot
+    uniprot_trembl_link      //   string: Specifies the link to download uniprot_trembl
 
     main:
     ch_bfd        = Channel.empty()
