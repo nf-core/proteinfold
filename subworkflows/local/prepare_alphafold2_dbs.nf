@@ -21,7 +21,7 @@ workflow PREPARE_ALPHAFOLD2_DBS {
 
     take:
     alphafold2_db            // directory: path to alphafold2 DBs
-    full_dbs                 // boolean: Use full databases (otherwise reduced version)
+    full_dbs                   // boolean: Use full databases (otherwise reduced version)
     bfd_path                 // directory: /path/to/bfd/
     small_bfd_path           // directory: /path/to/small_bfd/
     alphafold2_params_path   // directory: /path/to/alphafold2/params/
@@ -32,8 +32,18 @@ workflow PREPARE_ALPHAFOLD2_DBS {
     uniref90_path            // directory: /path/to/uniref90/
     pdb_seqres_path          // directory: /path/to/pdb_seqres/
     uniprot_path             // directory: /path/to/uniprot/
-    uniprot_sprot            // string: Specifies the link to download uniprot_sprot
-    uniprot_trembl
+    bfd_link                    // string: Specifies the link to download bfd
+    small_bfd_link              // string: Specifies the link to download small_bfd
+    alphafold2_params           // string: Specifies the link to download alphafold2_params
+    mgnify_link                 // string: Specifies the link to download mgnify
+    pdb70_link                  // string: Specifies the link to download pdb70
+    pdb_mmcif_link              // string: Specifies the link to download pdb_mmcif
+    pdb_obsolete_link           // string: Specifies the link to download pdb_obsolete
+    uniref30_alphafold2_link    // string: Specifies the link to download uniref30_alphafold2
+    uniref90_link               // string: Specifies the link to download uniref90
+    pdb_seqres_link             // string: Specifies the link to download pdb_seqres
+    uniprot_sprot_link          // string: Specifies the link to download uniprot_sprot
+    uniprot_trembl_link         // string: Specifies the link to download uniprot_trembl
 
     main:
     ch_bfd        = Channel.empty()
@@ -51,27 +61,27 @@ workflow PREPARE_ALPHAFOLD2_DBS {
             ch_small_bfd = file( small_bfd_path )
         }
 
-        ch_params     = file( alphafold2_params_path )
-        ch_mgnify     = file( mgnify_path )
-        ch_pdb70      = file( pdb70_path, type: 'dir' )
-        ch_mmcif_files = file( pdb_mmcif_path, type: 'dir' )
+        ch_params         = file( alphafold2_params_path )
+        ch_mgnify         = file( mgnify_path )
+        ch_pdb70          = file( pdb70_path, type: 'dir' )
+        ch_mmcif_files    = file( pdb_mmcif_path, type: 'dir' )
         ch_mmcif_obsolete = file( pdb_mmcif_path, type: 'file' )
-        ch_mmcif = ch_mmcif_files + ch_mmcif_obsolete
-        ch_uniref30   = file( uniref30_alphafold2_path, type: 'any' )
-        ch_uniref90   = file( uniref90_path )
-        ch_pdb_seqres = file( pdb_seqres_path )
-        ch_uniprot    = file( uniprot_path )
+        ch_mmcif          = ch_mmcif_files + ch_mmcif_obsolete
+        ch_uniref30       = file( uniref30_alphafold2_path, type: 'any' )
+        ch_uniref90       = file( uniref90_path )
+        ch_pdb_seqres     = file( pdb_seqres_path )
+        ch_uniprot        = file( uniprot_path )
     }
     else {
         if (full_dbs) {
             ARIA2_BFD(
-                bfd
+                bfd_link
             )
             ch_bfd =  ARIA2_BFD.out.db
             ch_versions = ch_versions.mix(ARIA2_BFD.out.versions)
         } else {
             ARIA2_SMALL_BFD(
-                small_bfd
+                small_bfd_link
             )
             ch_small_bfd = ARIA2_SMALL_BFD.out.db
             ch_versions = ch_versions.mix(ARIA2_SMALL_BFD.out.versions)
@@ -84,49 +94,48 @@ workflow PREPARE_ALPHAFOLD2_DBS {
         ch_versions = ch_versions.mix(ARIA2_ALPHAFOLD2_PARAMS.out.versions)
 
         ARIA2_MGNIFY(
-            mgnify
+            mgnify_link
         )
         ch_mgnify = ARIA2_MGNIFY.out.db
         ch_versions = ch_versions.mix(ARIA2_MGNIFY.out.versions)
 
-
         ARIA2_PDB70(
-            pdb70
+            pdb70_link
         )
         ch_pdb70 = ARIA2_PDB70.out.db
         ch_versions = ch_versions.mix(ARIA2_PDB70.out.versions)
 
         DOWNLOAD_PDBMMCIF(
-            pdb_mmcif,
-            pdb_obsolete
+            pdb_mmcif_link,
+            pdb_obsolete_link
         )
         ch_mmcif = DOWNLOAD_PDBMMCIF.out.ch_db
         ch_versions = ch_versions.mix(DOWNLOAD_PDBMMCIF.out.versions)
 
         ARIA2_UNIREF30(
-            uniref30_alphafold2
+            uniref30_alphafold2_link
         )
         ch_uniref30 = ARIA2_UNIREF30.out.db
         ch_versions = ch_versions.mix(ARIA2_UNIREF30.out.versions)
 
         ARIA2_UNIREF90(
-            uniref90
+            uniref90_link
         )
         ch_uniref90 = ARIA2_UNIREF90.out.db
         ch_versions = ch_versions.mix(ARIA2_UNIREF90.out.versions)
 
         ARIA2 (
-            pdb_seqres
+            pdb_seqres_link
         )
         ch_pdb_seqres = ARIA2.out.downloaded_file
         ch_versions = ch_versions.mix(ARIA2.out.versions)
 
         ARIA2_UNIPROT_SPROT(
-            uniprot_sprot
+            uniprot_sprot_link
         )
         ch_versions = ch_versions.mix(ARIA2_UNIPROT_SPROT.out.versions)
         ARIA2_UNIPROT_TREMBL(
-            uniprot_trembl
+            uniprot_trembl_link
         )
         ch_versions = ch_versions.mix(ARIA2_UNIPROT_TREMBL.out.versions)
         COMBINE_UNIPROT (
