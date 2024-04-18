@@ -89,3 +89,19 @@ jobs:
       - name: Run pipeline with stub-run in colabfold_webserver mode
         run: |
           nextflow run ${GITHUB_WORKSPACE} -profile test_colabfold_webserver,docker --outdir ./results
+
+  test_esmfold:
+    name: Test ESMFold workflow
+    if: ${{ github.event_name != 'push' || (github.event_name == 'push' && github.repository == 'nf-core/proteinfold') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out pipeline code
+        uses: actions/checkout@v2
+
+      - name: Install Nextflow
+        run: |
+          wget -qO- get.nextflow.io | bash
+          sudo mv nextflow /usr/local/bin/
+      - name: Run pipeline with stub-run in esmfold mode
+        run: |
+          nextflow run ${GITHUB_WORKSPACE} -profile test_esmfold,docker --outdir ./results
