@@ -39,7 +39,7 @@ include { getColabfoldAlphafold2ParamsPath } from './subworkflows/local/utils_nf
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-params.colabfold_alphafold2_params      = getColabfoldAlphafold2Params()
+params.colabfold_alphafold2_params_link = getColabfoldAlphafold2Params()
 params.colabfold_alphafold2_params_path = getColabfoldAlphafold2ParamsPath()
 
 /*
@@ -79,7 +79,7 @@ workflow NFCORE_PROTEINFOLD {
             params.uniprot_path,
             params.bfd_link,
             params.small_bfd_link,
-            params.alphafold2_params,
+            params.alphafold2_params_link,
             params.mgnify_link,
             params.pdb70_link,
             params.pdb_mmcif_link,
@@ -128,7 +128,7 @@ workflow NFCORE_PROTEINFOLD {
             params.colabfold_alphafold2_params_path,
             params.colabfold_db_path,
             params.uniref30_colabfold_path,
-            params.colabfold_alphafold2_params,
+            params.colabfold_alphafold2_params_link,
             params.colabfold_db_link,
             params.uniref30_colabfold_link,
             params.create_colabfold_index

@@ -34,7 +34,7 @@ workflow PREPARE_ALPHAFOLD2_DBS {
     uniprot_path             // directory: /path/to/uniprot/
     bfd_link                 //   string: Specifies the link to download bfd
     small_bfd_link           //   string: Specifies the link to download small_bfd
-    alphafold2_params        //   string: Specifies the link to download alphafold2_params
+    alphafold2_params_link   //   string: Specifies the link to download alphafold2_params
     mgnify_link              //   string: Specifies the link to download mgnify
     pdb70_link               //   string: Specifies the link to download pdb70
     pdb_mmcif_link           //   string: Specifies the link to download pdb_mmcif
@@ -88,7 +88,7 @@ workflow PREPARE_ALPHAFOLD2_DBS {
         }
 
         ARIA2_ALPHAFOLD2_PARAMS(
-            alphafold2_params
+            alphafold2_params_link
         )
         ch_params = ARIA2_ALPHAFOLD2_PARAMS.out.db
         ch_versions = ch_versions.mix(ARIA2_ALPHAFOLD2_PARAMS.out.versions)
