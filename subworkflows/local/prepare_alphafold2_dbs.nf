@@ -21,7 +21,7 @@ workflow PREPARE_ALPHAFOLD2_DBS {
 
     take:
     alphafold2_db            // directory: path to alphafold2 DBs
-    full_dbs                 //   boolean: Use full databases (otherwise reduced version)
+    full_dbs                 //  boolean: Use full databases (otherwise reduced version)
     bfd_path                 // directory: /path/to/bfd/
     small_bfd_path           // directory: /path/to/small_bfd/
     alphafold2_params_path   // directory: /path/to/alphafold2/params/
