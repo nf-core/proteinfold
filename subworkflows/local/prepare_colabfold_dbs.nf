@@ -18,7 +18,7 @@ workflow PREPARE_COLABFOLD_DBS {
     colabfold_alphafold2_params_path // directory: /path/to/colabfold/alphafold2/params/
     colabfold_db_path                // directory: /path/to/colabfold/db/
     uniref30_colabfold_path          // directory: /path/to/uniref30/colabfold/
-    colabfold_alphafold2_params      //    string: Specifies the link to download colabfold alphafold2 params
+    colabfold_alphafold2_params_link //    string: Specifies the link to download colabfold alphafold2 params
     colabfold_db_link                //    string: Specifies the link to download colabfold db
     uniref30_colabfold_link          //    string: Specifies the link to download uniref30
     create_colabfold_index           //   boolean: Create index for colabfold db
@@ -38,7 +38,7 @@ workflow PREPARE_COLABFOLD_DBS {
     }
     else {
         ARIA2_COLABFOLD_PARAMS (
-            colabfold_alphafold2_params
+            colabfold_alphafold2_params_link
         )
         ch_params = ARIA2_COLABFOLD_PARAMS.out.db
         ch_versions = ch_versions.mix(ARIA2_COLABFOLD_PARAMS.out.versions)

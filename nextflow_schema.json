@@ -283,73 +283,73 @@
             "fa_icon": "fas fa-database",
             "description": "Parameters used to provide the links to the DBs and parameters public resources to Alphafold2.",
             "properties": {
-                "bfd": {
+                "bfd_link": {
                     "type": "string",
                     "default": "https://storage.googleapis.com/alphafold-databases/casp14_versions/bfd_metaclust_clu_complete_id30_c90_final_seq.sorted_opt.tar.gz",
                     "description": "Link to BFD dababase",
                     "fa_icon": "fas fa-link"
                 },
-                "small_bfd": {
+                "small_bfd_link": {
                     "type": "string",
                     "default": "https://storage.googleapis.com/alphafold-databases/reduced_dbs/bfd-first_non_consensus_sequences.fasta.gz",
                     "description": "Link to a reduced version of the BFD dababase",
                     "fa_icon": "fas fa-link"
                 },
-                "alphafold2_params": {
+                "alphafold2_params_link": {
                     "type": "string",
                     "default": "https://storage.googleapis.com/alphafold/alphafold_params_2022-12-06.tar",
                     "description": "Link to the Alphafold2 parameters",
                     "fa_icon": "fas fa-link"
                 },
-                "mgnify": {
+                "mgnify_link": {
                     "type": "string",
                     "default": "https://storage.googleapis.com/alphafold-databases/casp14_versions/mgy_clusters_2018_12.fa.gz",
                     "description": "Link to the MGnify database",
                     "fa_icon": "fas fa-link"
                 },
-                "pdb70": {
+                "pdb70_link": {
                     "type": "string",
                     "default": "http://wwwuser.gwdg.de/~compbiol/data/hhsuite/databases/hhsuite_dbs/old-releases/pdb70_from_mmcif_200916.tar.gz",
                     "description": "Link to the PDB70 database",
                     "fa_icon": "fas fa-link"
                 },
-                "pdb_mmcif": {
+                "pdb_mmcif_link": {
                     "type": "string",
                     "default": "rsync.rcsb.org::ftp_data/structures/divided/mmCIF/",
                     "description": "Link to the PDB mmCIF database",
                     "fa_icon": "fas fa-link"
                 },
-                "pdb_obsolete": {
+                "pdb_obsolete_link": {
                     "type": "string",
                     "default": "ftp://ftp.wwpdb.org/pub/pdb/data/status/obsolete.dat",
                     "description": "Link to the PDV obsolete database",
                     "fa_icon": "fas fa-link"
                 },
-                "uniref30_alphafold2": {
+                "uniref30_alphafold2_link": {
                     "type": "string",
                     "default": "https://storage.googleapis.com/alphafold-databases/v2.3/UniRef30_2021_03.tar.gz",
                     "description": "Link to the Uniclust30 database",
                     "fa_icon": "fas fa-link"
                 },
-                "uniref90": {
+                "uniref90_link": {
                     "type": "string",
                     "default": "ftp://ftp.uniprot.org/pub/databases/uniprot/uniref/uniref90/uniref90.fasta.gz",
                     "description": "Link to the UniRef90 database",
                     "fa_icon": "fas fa-link"
                 },
-                "pdb_seqres": {
+                "pdb_seqres_link": {
                     "type": "string",
                     "default": "ftp://ftp.wwpdb.org/pub/pdb/derived_data/pdb_seqres.txt",
                     "description": "Link to the PDB SEQRES database",
                     "fa_icon": "fas fa-link"
                 },
-                "uniprot_sprot": {
+                "uniprot_sprot_link": {
                     "type": "string",
                     "default": "ftp://ftp.ebi.ac.uk/pub/databases/uniprot/current_release/knowledgebase/complete/uniprot_sprot.fasta.gz",
                     "description": "Link to the SwissProt UniProt database",
                     "fa_icon": "fas fa-link"
                 },
-                "uniprot_trembl": {
+                "uniprot_trembl_link": {
                     "type": "string",
                     "default": "ftp://ftp.ebi.ac.uk/pub/databases/uniprot/current_release/knowledgebase/complete/uniprot_trembl.fasta.gz",
                     "description": "Link to the TrEMBL UniProt database",
@@ -433,7 +433,7 @@
                     "description": "Link to the UniRef30 database",
                     "fa_icon": "fas fa-link"
                 },
-                "colabfold_alphafold2_params": {
+                "colabfold_alphafold2_params_link": {
                     "type": "string",
                     "description": "Link to the Alphafold2 parameters for Colabfold",
                     "fa_icon": "fas fa-link"
