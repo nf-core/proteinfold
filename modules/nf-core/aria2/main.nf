@@ -1,5 +1,5 @@
 process ARIA2 {
-    tag "$meta.id"
+    tag "$source_url"
     label 'process_single'
 
     conda "${moduleDir}/environment.yml"

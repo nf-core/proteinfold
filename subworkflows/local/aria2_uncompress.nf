@@ -13,14 +13,17 @@ workflow ARIA2_UNCOMPRESS {
 
     main:
     ARIA2 (
-        source_url
+        [
+            [:],
+            source_url
+        ]
     )
     ch_db = Channel.empty()
 
     if (source_url.toString().endsWith('.tar') || source_url.toString().endsWith('.tar.gz')) {
-        ch_db = UNTAR ( ARIA2.out.downloaded_file.flatten().map{ [ [:], it ] } ).untar.map{ it[1] }
+        ch_db = UNTAR ( ARIA2.out.downloaded_file ).untar.map{ it[1] }
     } else if (source_url.toString().endsWith('.gz')) {
-        ch_db = GUNZIP ( ARIA2.out.downloaded_file.flatten().map{ [ [:], it ] } ).gunzip.map { it[1] }
+        ch_db = GUNZIP ( ARIA2.out.downloaded_file ).gunzip.map { it[1] }
     }
 
     emit:
