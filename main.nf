@@ -141,9 +141,9 @@ workflow NFCORE_PROTEINFOLD {
         COLABFOLD (
             ch_versions,
             params.colabfold_model_preset,
-            PREPARE_COLABFOLD_DBS.out.params.first(),
-            PREPARE_COLABFOLD_DBS.out.colabfold_db.first(),
-            PREPARE_COLABFOLD_DBS.out.uniref30.first(),
+            PREPARE_COLABFOLD_DBS.out.params,
+            PREPARE_COLABFOLD_DBS.out.colabfold_db,
+            PREPARE_COLABFOLD_DBS.out.uniref30,
             params.num_recycle
         )
         ch_multiqc  = COLABFOLD.out.multiqc_report
