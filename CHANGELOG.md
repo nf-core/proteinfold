@@ -30,6 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[#115](https://github.com/nf-core/proteinfold/issues/115)] - Throw message error when profile conda is used.
 - [[#131](https://github.com/nf-core/proteinfold/issues/131)] - Add esmfold small tests.
 - [[#144](https://github.com/nf-core/proteinfold/issues/144)] - Force value channels when providing dbs (downloaded) in `main.nf` to enable the processing of multiple samples.
+- [[#147](https://github.com/nf-core/proteinfold/issues/147)] - Update modules to last version.
 
 ## 1.0.0 - White Silver Reebok
 
