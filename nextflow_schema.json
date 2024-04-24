@@ -654,6 +654,9 @@
             "$ref": "#/definitions/esmfold_options"
         },
         {
+            "$ref": "#/definitions/process_skipping_options"
+        },
+        {
             "$ref": "#/definitions/institutional_config_options"
         },
         {
