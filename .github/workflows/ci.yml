@@ -58,6 +58,22 @@ jobs:
         run: |
           nextflow run ${GITHUB_WORKSPACE} -profile test_alphafold2_split,docker --outdir ./results
 
+  test_alphafold2_download:
+    name: Test alphafold2 download workflow
+    if: ${{ github.event_name != 'push' || (github.event_name == 'push' && github.repository == 'nf-core/proteinfold') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out pipeline code
+        uses: actions/checkout@v2
+
+      - name: Install Nextflow
+        run: |
+          wget -qO- get.nextflow.io | bash
+          sudo mv nextflow /usr/local/bin/
+      - name: Run pipeline with stub-run in alphafold2 standard mode (download)
+        run: |
+          nextflow run ${GITHUB_WORKSPACE} -profile test_alphafold2_download,docker --outdir ./results
+
   test_colabfold_local:
     name: Test Colabfold local workflow
     if: ${{ github.event_name != 'push' || (github.event_name == 'push' && github.repository == 'nf-core/proteinfold') }}
@@ -89,6 +105,22 @@ jobs:
       - name: Run pipeline with stub-run in colabfold_webserver mode
         run: |
           nextflow run ${GITHUB_WORKSPACE} -profile test_colabfold_webserver,docker --outdir ./results
+
+  test_colabfold_download:
+    name: Test colabfold download workflow
+    if: ${{ github.event_name != 'push' || (github.event_name == 'push' && github.repository == 'nf-core/proteinfold') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out pipeline code
+        uses: actions/checkout@v2
+
+      - name: Install Nextflow
+        run: |
+          wget -qO- get.nextflow.io | bash
+          sudo mv nextflow /usr/local/bin/
+      - name: Run pipeline with stub-run in colabfold webserver (download)
+        run: |
+          nextflow run ${GITHUB_WORKSPACE} -profile test_colabfold_download,docker --outdir ./results
 
   test_esmfold:
     name: Test ESMFold workflow
