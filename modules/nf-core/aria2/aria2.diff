@@ -1,0 +1,12 @@
+Changes in module 'nf-core/aria2'
+--- modules/nf-core/aria2/main.nf
++++ modules/nf-core/aria2/main.nf
+@@ -1,5 +1,5 @@
+ process ARIA2 {
+-    tag "$meta.id"
++    tag "$source_url"
+     label 'process_single'
+ 
+     conda "${moduleDir}/environment.yml"
+
+************************************************************

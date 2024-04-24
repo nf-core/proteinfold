@@ -100,16 +100,16 @@ workflow NFCORE_PROTEINFOLD {
             params.full_dbs,
             params.alphafold2_mode,
             params.alphafold2_model_preset,
-            PREPARE_ALPHAFOLD2_DBS.out.params.first(),
-            PREPARE_ALPHAFOLD2_DBS.out.bfd.ifEmpty([]).first(),
-            PREPARE_ALPHAFOLD2_DBS.out.small_bfd.ifEmpty([]).first(),
-            PREPARE_ALPHAFOLD2_DBS.out.mgnify.first(),
-            PREPARE_ALPHAFOLD2_DBS.out.pdb70.first(),
-            PREPARE_ALPHAFOLD2_DBS.out.pdb_mmcif.first(),
-            PREPARE_ALPHAFOLD2_DBS.out.uniref30.first(),
-            PREPARE_ALPHAFOLD2_DBS.out.uniref90.first(),
-            PREPARE_ALPHAFOLD2_DBS.out.pdb_seqres.first(),
-            PREPARE_ALPHAFOLD2_DBS.out.uniprot.first()
+            PREPARE_ALPHAFOLD2_DBS.out.params,
+            PREPARE_ALPHAFOLD2_DBS.out.bfd.ifEmpty([]),
+            PREPARE_ALPHAFOLD2_DBS.out.small_bfd.ifEmpty([]),
+            PREPARE_ALPHAFOLD2_DBS.out.mgnify,
+            PREPARE_ALPHAFOLD2_DBS.out.pdb70,
+            PREPARE_ALPHAFOLD2_DBS.out.pdb_mmcif,
+            PREPARE_ALPHAFOLD2_DBS.out.uniref30,
+            PREPARE_ALPHAFOLD2_DBS.out.uniref90,
+            PREPARE_ALPHAFOLD2_DBS.out.pdb_seqres,
+            PREPARE_ALPHAFOLD2_DBS.out.uniprot
         )
         ch_multiqc  = ALPHAFOLD2.out.multiqc_report
         ch_versions = ch_versions.mix(ALPHAFOLD2.out.versions)
@@ -141,9 +141,9 @@ workflow NFCORE_PROTEINFOLD {
         COLABFOLD (
             ch_versions,
             params.colabfold_model_preset,
-            PREPARE_COLABFOLD_DBS.out.params.first(),
-            PREPARE_COLABFOLD_DBS.out.colabfold_db.first(),
-            PREPARE_COLABFOLD_DBS.out.uniref30.first(),
+            PREPARE_COLABFOLD_DBS.out.params,
+            PREPARE_COLABFOLD_DBS.out.colabfold_db,
+            PREPARE_COLABFOLD_DBS.out.uniref30,
             params.num_recycle
         )
         ch_multiqc  = COLABFOLD.out.multiqc_report

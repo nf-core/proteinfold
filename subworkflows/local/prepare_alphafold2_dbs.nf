@@ -125,9 +125,12 @@ workflow PREPARE_ALPHAFOLD2_DBS {
         ch_versions = ch_versions.mix(ARIA2_UNIREF90.out.versions)
 
         ARIA2 (
-            pdb_seqres_link
+            [
+                [:],
+                pdb_seqres_link
+            ]
         )
-        ch_pdb_seqres = ARIA2.out.downloaded_file
+        ch_pdb_seqres = ARIA2.out.downloaded_file.map{ it[1] }
         ch_versions = ch_versions.mix(ARIA2.out.versions)
 
         ARIA2_UNIPROT_SPROT(
