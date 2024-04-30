@@ -111,7 +111,7 @@ workflow ESMFOLD {
         )
         ch_multiqc_report = MULTIQC.out.report.toList()
     }
-    
+
     emit:
     multiqc_report = ch_multiqc_report // channel: /path/to/multiqc_report.html
     versions       = ch_versions       // channel: [ path(versions.yml) ]
