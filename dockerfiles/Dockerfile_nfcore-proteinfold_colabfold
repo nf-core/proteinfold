@@ -29,11 +29,6 @@ RUN cd / \
     && sed -i "/colabfold.download/d" install_colabbatch_linux.sh \
     && sed -i "s|cudatoolkit==.*\sopenmm|cudatoolkit==11.1.1 openmm|g" install_colabbatch_linux.sh \
     && bash install_colabbatch_linux.sh
-# RUN cd / \
-#     && wget https://raw.githubusercontent.com/YoshitakaMo/localcolabfold/fb0598ebbd8227096a052d3684a549ddf33d06bb/install_colabbatch_linux.sh \
-#     && sed -i "/colabfold.download/d" install_colabbatch_linux.sh \
-#     && sed -i "s|cudatoolkit==.*\sopenmm|cudatoolkit==11.1.1 openmm|g" install_colabbatch_linux.sh \
-#     && bash install_colabbatch_linux.sh
 
 RUN /localcolabfold/colabfold-conda/bin/python3.10 -m pip install tensorflow-cpu==2.11.0
 
