@@ -34,4 +34,4 @@ RUN /localcolabfold/colabfold-conda/bin/python3.10 -m pip install tensorflow-cpu
 
 #Silence download of the AlphaFold2 params
 RUN  sed -i "s|download_alphafold_params(|#download_alphafold_params(|g" /localcolabfold/colabfold-conda/lib/python3.10/site-packages/colabfold/batch.py
-
+RUN  sed -i "s|if args\.num_models|#if args\.num_models|g" /localcolabfold/colabfold-conda/lib/python3.10/site-packages/colabfold/batch.py
