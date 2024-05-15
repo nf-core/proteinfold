@@ -36,8 +36,6 @@ process MMSEQS_COLABFOLDSEARCH {
         ./db \\
         "result/"
 
-    cp result/0.a3m ${meta.id}.a3m
-
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         colabfold_search: $VERSION
