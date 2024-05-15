@@ -16,7 +16,7 @@ process MMSEQS_COLABFOLDSEARCH {
     path uniref30
 
     output:
-    tuple val(meta), path("${meta.id}.a3m"), emit: a3m
+    tuple val(meta), path("results/**.a3m"), emit: a3m
     path "versions.yml", emit: versions
 
     when:
