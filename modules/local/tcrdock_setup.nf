@@ -3,13 +3,8 @@ process TCRDOCK_SETUP {
     label 'process_low'
 
     publishDir path: "$params.outdir/$params.mode/setup/$batch_name", mode: 'copy', saveAs: { filename -> filename.equals('versions.yml') ? null : filename }
-
-    // // TODO nf-core: See section in main README for further information regarding finding and adding container addresses to the section below.
-    // container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-    //     'https://depot.galaxyproject.org/singularity/YOUR-TOOL-HERE':
-    //     'biocontainers/YOUR-TOOL-HERE' }"
-    // TODO elias: add the container the right way.
-    def VERSION = '1.0.0'
+    
+    def VERSION = '2.0.0'
     container "tcrdock:${VERSION}"
 
     input:

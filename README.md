@@ -15,6 +15,21 @@
 
 [![Get help on Slack](http://img.shields.io/badge/slack-nf--core%20%23proteinfold-4A154B?labelColor=000000&logo=slack)](https://nfcore.slack.com/channels/proteinfold)[![Follow on Twitter](http://img.shields.io/badge/twitter-%40nf__core-1DA1F2?labelColor=000000&logo=twitter)](https://twitter.com/nf_core)[![Follow on Mastodon](https://img.shields.io/badge/mastodon-nf__core-6364ff?labelColor=FFFFFF&logo=mastodon)](https://mstdn.science/@nf_core)[![Watch on YouTube](http://img.shields.io/badge/youtube-nf--core-FF0000?labelColor=000000&logo=youtube)](https://www.youtube.com/c/nf-core)
 
+## TCRdock
+
+This fork of the pipeline allows users to run TCRdock. Because of licensing restrictions the hosting of the required Docker container was not possible. Instead, the respective Dockerfile is included in the source code and the required container can be built locally by running:
+
+```bash
+cd proteinfold/dockerfiles
+docker build -t tcrdock:2.0.0 -f Dockerfile_nfcore-proteinfold_tcrdock .
+```
+
+Because the default config will look for images online, you need to include a custom config file with the following content in your `nextflow run` commands (by using the `-c` flag):
+
+```conf
+docker.registry = ''
+```
+
 ## Introduction
 
 **nf-core/proteinfold** is a bioinformatics best-practice analysis pipeline for Protein 3D structure prediction.
@@ -124,7 +139,7 @@ The pipeline takes care of downloading the required databases and parameters req
 
   > **Warning**
   > If you aim to carry out a large amount of predictions using the colabfold_webserver mode, please setup and use your own custom MMSeqs2 API Server. You can find instructions [here](https://github.com/sokrypton/ColabFold/tree/main/MsaServer).
-  
+
 - Typical command to run tcrdock mode using CPU:
 
   ```console
