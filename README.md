@@ -24,6 +24,8 @@ cd proteinfold/dockerfiles
 docker build -t tcrdock:2.0.0 -f Dockerfile_nfcore-proteinfold_tcrdock .
 ```
 
+(All parts of the image are subject to their respective licenses)
+
 Because the default config will look for images online, you need to include a custom config file with the following content in your `nextflow run` commands (by using the `-c` flag):
 
 ```conf
