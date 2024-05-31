@@ -10,7 +10,7 @@ process RUN_ALPHAFOLD2_PRED {
         error("Local RUN_ALPHAFOLD2_PRED module does not support Conda. Please use Docker / Singularity / Podman instead.")
     }
 
-    container "nf-core/proteinfold_alphafold2_split:dev"
+    container "nf-core/proteinfold_alphafold2_split:1.1.0"
 
     input:
     tuple val(meta), path(fasta)
