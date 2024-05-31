@@ -9,7 +9,7 @@ LABEL authors="Athanasios Baltzis, Jose Espinosa-Carrasco, Leila Mansouri" \
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 # Add env variables
-ENV LD_LIBRARY_PATH="/conda/lib:/usr/local/cuda-11.1/lib64:$LD_LIBRARY_PATH"
+ENV LD_LIBRARY_PATH="/conda/lib:/usr/local/cuda-11.4/lib64:$LD_LIBRARY_PATH"
 ENV PATH="/conda/bin:$PATH"
 
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys A4B469963BF863CC

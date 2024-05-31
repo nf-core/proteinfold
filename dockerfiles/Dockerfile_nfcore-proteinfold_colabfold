@@ -1,5 +1,6 @@
-FROM nvidia/cuda:11.4.2-cudnn8-runtime-ubuntu18.04
-LABEL authors="Athanasios Baltzis, Leila Mansouri" \
+FROM nvidia/cuda:11.4.3-cudnn8-runtime-ubuntu18.04
+
+LABEL authors="Athanasios Baltzis, Jose Espinosa-Carrasco, Leila Mansouri" \
     title="nfcore/proteinfold_colabfold" \
     Version="1.1.0" \
     description="Docker image containing all software requirements to run the COLABFOLD_BATCH module using the nf-core/proteinfold pipeline"
@@ -24,7 +25,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 RUN cd / \
-    && wget https://raw.githubusercontent.com/YoshitakaMo/localcolabfold/fb0598ebbd8227096a052d3684a549ddf33d06bb/install_colabbatch_linux.sh \
+    && wget https://raw.githubusercontent.com/YoshitakaMo/localcolabfold/82a3635/install_colabbatch_linux.sh \
     && sed -i "/colabfold.download/d" install_colabbatch_linux.sh \
     && sed -i "s|cudatoolkit==.*\sopenmm|cudatoolkit==11.1.1 openmm|g" install_colabbatch_linux.sh \
     && bash install_colabbatch_linux.sh
@@ -33,4 +34,4 @@ RUN /localcolabfold/colabfold-conda/bin/python3.10 -m pip install tensorflow-cpu
 
 #Silence download of the AlphaFold2 params
 RUN  sed -i "s|download_alphafold_params(|#download_alphafold_params(|g" /localcolabfold/colabfold-conda/lib/python3.10/site-packages/colabfold/batch.py
-
+RUN  sed -i "s|if args\.num_models|#if args\.num_models|g" /localcolabfold/colabfold-conda/lib/python3.10/site-packages/colabfold/batch.py

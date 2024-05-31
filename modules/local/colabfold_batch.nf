@@ -7,7 +7,7 @@ process COLABFOLD_BATCH {
         error("Local COLABFOLD_BATCH module does not support Conda. Please use Docker / Singularity / Podman instead.")
     }
 
-    container "nf-core/proteinfold_colabfold:1.1.0"
+    container "nf-core/proteinfold_colabfold:dev"
 
     input:
     tuple val(meta), path(fasta)
