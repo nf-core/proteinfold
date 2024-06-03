@@ -68,7 +68,7 @@ If you specify the `--alphafold2_db ` parameter, the directory structure of your
 
 ```
 ├── mgnify
-│   └── mgy_clusters_2018_12.fa
+│   └── mgy_clusters_2022_05.fa
 ├── alphafold_params_2022-03-02
 │   ├── LICENSE
 │   ├── params_model_1_multimer.npz
