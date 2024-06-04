@@ -13,7 +13,8 @@ include {
     ARIA2_UNCOMPRESS as ARIA2_UNIPROT_SPROT
     ARIA2_UNCOMPRESS as ARIA2_UNIPROT_TREMBL } from './aria2_uncompress'
 
-include { ARIA2             } from '../../modules/nf-core/aria2/main'
+include { ARIA2 as ARIA2_PDB_SEQRES } from '../../modules/nf-core/aria2/main'
+
 include { COMBINE_UNIPROT   } from '../../modules/local/combine_uniprot'
 include { DOWNLOAD_PDBMMCIF } from '../../modules/local/download_pdbmmcif'
 
@@ -124,14 +125,14 @@ workflow PREPARE_ALPHAFOLD2_DBS {
         ch_uniref90 = ARIA2_UNIREF90.out.db
         ch_versions = ch_versions.mix(ARIA2_UNIREF90.out.versions)
 
-        ARIA2 (
+        ARIA2_PDB_SEQRES (
             [
                 [:],
                 pdb_seqres_link
             ]
         )
-        ch_pdb_seqres = ARIA2.out.downloaded_file.map{ it[1] }
-        ch_versions = ch_versions.mix(ARIA2.out.versions)
+        ch_pdb_seqres = ARIA2_PDB_SEQRES.out.downloaded_file.map{ it[1] }
+        ch_versions = ch_versions.mix(ARIA2_PDB_SEQRES.out.versions)
 
         ARIA2_UNIPROT_SPROT(
             uniprot_sprot_link
