@@ -39,7 +39,7 @@ An [example samplesheet](../assets/samplesheet.csv) has been provided with the p
 
 The typical commands for running the pipeline on AlphaFold2, Colabfold and ESMFold modes are as follows:
 
-```csv title="samplesheet.csv"
+```bash
 nextflow run nf-core/proteinfold \
       --input samplesheet.csv \
       --outdir <OUTDIR> \
@@ -51,7 +51,7 @@ nextflow run nf-core/proteinfold \
       -profile <docker>
 ```
 
-```console
+```bash
 nextflow run nf-core/proteinfold \
       --input samplesheet.csv \
       --outdir <OUTDIR> \
@@ -66,7 +66,9 @@ nextflow run nf-core/proteinfold \
 
 If you specify the `--alphafold2_db ` parameter, the directory structure of your path should be like this:
 
-```
+<details markdown="1">
+<summary>Directory structure</summary>
+```console
 ├── mgnify
 │   └── mgy_clusters_2022_05.fa
 ├── alphafold_params_2022-03-02
@@ -220,8 +222,9 @@ If you specify the `--alphafold2_db ` parameter, the directory structure of your
 └── uniref90
     └── uniref90.fasta
 ```
+</details>
 
-```console
+```bash
 nextflow run nf-core/proteinfold \
       --input samplesheet.csv \
       --outdir <OUTDIR> \
@@ -236,7 +239,7 @@ nextflow run nf-core/proteinfold \
       -profile <docker>
 ```
 
-```console
+```bash
 nextflow run nf-core/proteinfold \
       --input samplesheet.csv \
       --outdir <OUTDIR> \
@@ -253,7 +256,9 @@ nextflow run nf-core/proteinfold \
 
 If you specify the `--colabfold_db ` parameter, the directory structure of your path should be like this:
 
-```
+<details markdown="1">
+<summary>Directory structure</summary>
+```console
 ├── colabfold_envdb_202108
 │   ├── colabfold_envdb_202108_db.0
 │   ├── colabfold_envdb_202108_db.1
@@ -385,6 +390,7 @@ If you specify the `--colabfold_db ` parameter, the directory structure of your 
     ├── uniref30_2202_db_seq_h.index -> uniref30_2202_db_h.index
     └── uniref30_2202_db_seq.index
 ```
+</details>
 
 ```console
 nextflow run nf-core/proteinfold \
