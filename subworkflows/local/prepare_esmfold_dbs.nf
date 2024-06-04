@@ -11,9 +11,9 @@ workflow PREPARE_ESMFOLD_DBS {
     take:
     esmfold_db                           // directory: /path/to/esmfold/db/
     esmfold_params_path                  // directory: /path/to/esmfold/params/
-    esmfold_3B_v1                        // string: Specifies the link to download esmfold 3B v1
-    esm2_t36_3B_UR50D                    // string: Specifies the link to download esm2 t36 3B UR50D
-    esm2_t36_3B_UR50D_contact_regression // string: Specifies the link to download esm2 t36 3B UR50D contact regression
+    esmfold_3B_v1                        //    string: Specifies the link to download esmfold 3B v1
+    esm2_t36_3B_UR50D                    //    string: Specifies the link to download esm2 t36 3B UR50D
+    esm2_t36_3B_UR50D_contact_regression //    string: Specifies the link to download esm2 t36 3B UR50D contact regression
 
     main:
     ch_versions   = Channel.empty()

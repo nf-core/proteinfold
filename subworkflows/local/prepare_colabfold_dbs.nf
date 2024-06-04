@@ -14,7 +14,7 @@ workflow PREPARE_COLABFOLD_DBS {
 
     take:
     colabfold_db                     // directory: path/to/colabfold/DBs and params
-    colabfold_server                 // string: Specifies the server to use for colabfold
+    colabfold_server                 //    string: Specifies the server to use for colabfold
     colabfold_alphafold2_params_path // directory: /path/to/colabfold/alphafold2/params/
     colabfold_db_path                // directory: /path/to/colabfold/db/
     uniref30_colabfold_path          // directory: /path/to/uniref30/colabfold/
