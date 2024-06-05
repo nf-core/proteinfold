@@ -23,13 +23,22 @@ workflow PREPARE_ESMFOLD_DBS {
     }
     else {
         ARIA2_ESMFOLD_3B_V1 (
-            esmfold_3B_v1
+            [
+                [:],
+                esmfold_3B_v1
+            ]
         )
         ARIA2_ESM2_T36_3B_UR50D (
-            esm2_t36_3B_UR50D
+            [
+                [:],
+                esm2_t36_3B_UR50D
+            ]
         )
         ARIA2_ESM2_T36_3B_UR50D_CONTACT_REGRESSION (
-            esm2_t36_3B_UR50D_contact_regression
+            [
+                [:],
+                esm2_t36_3B_UR50D_contact_regression
+            ]
         )
         ch_params = ARIA2_ESMFOLD_3B_V1
                         .out
