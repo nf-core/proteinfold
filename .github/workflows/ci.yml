@@ -34,7 +34,7 @@ jobs:
           - "test_colabfold_webserver"
           - "test_colabfold_download"
           - "test_esmfold"
-          
+
     steps:
       - name: Check out pipeline code
         uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b # v4
