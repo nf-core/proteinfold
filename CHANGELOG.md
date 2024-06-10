@@ -41,14 +41,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 | Old parameter         | New parameter                                |
 | --------------------- | -------------------------------------------- |
+|  `--uniclust30`       |                                              |
 | `--bfd`               | `--bfd_link`                                 |
-|  `--small_bfd`        | `small_bfd_link`                             |
+|  `--small_bfd`        | `--small_bfd_link`                           |
 |  `--alphafold2_params`| `--alphafold2_params_link`                   |
 |  `--mgnify`           | `--mgnify_link`                              |
 |  `--pdb70`            | `--pdb70_link`                               |
 |  `--pdb_mmcif`        | `--pdb_mmcif_link`                           |
 |  `--pdb_obsolete`     | `--pdb_obsolete_link`                        |
-|  `--uniclust30`       | `--uniclust30_link`                          |
 |  `--uniref90`         | `--uniref90_link`                            |
 |  `--pdb_seqres`       | `--pdb_seqres_link`                          |
 |  `--uniprot_sprot`    | `--uniprot_sprot_link`                       |
@@ -56,6 +56,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 |  `--uniclust30_path`  | `--uniref30_alphafold2_path`                 |
 |  `--uniref30`         | `--uniref30_colabfold_link`                  |
 |  `--uniref30_path`    | `--uniref30_colabfold_path`                  |
+|                       | `--uniref30_alphafold2_link`                 |
 |                       | `--esmfold_db`                               |       
 |                       | `--esmfold_model_preset`                     |  
 |                       | `--esmfold_3B_v1`                            |  
