@@ -55,7 +55,7 @@ nextflow run nf-core/proteinfold \
    --outdir <OUTDIR>
 ```
 
-The pipeline takes care of downloading the databases and parameters required by AlphaFold2, Colabfold or ESMFold. In case you have already downloaded the required files, you can skip this step by providing the path to the databases using the corresponding parameter [`--alphafold2_db`], [`--colabfold_db`] or [`--esmfold_db`]. Please refer to the [usage documentation](https://nf-co.re/proteinfold/usage) to check the directory structure you need to provide for each of the databases. 
+The pipeline takes care of downloading the databases and parameters required by AlphaFold2, Colabfold or ESMFold. In case you have already downloaded the required files, you can skip this step by providing the path to the databases using the corresponding parameter [`--alphafold2_db`], [`--colabfold_db`] or [`--esmfold_db`]. Please refer to the [usage documentation](https://nf-co.re/proteinfold/usage) to check the directory structure you need to provide for each of the databases.
 
 - The typical command to run AlphaFold2 mode is shown below:
 
@@ -121,6 +121,7 @@ The pipeline takes care of downloading the databases and parameters required by 
   ```
 
   [!WARNING]
+
   > If you aim to carry out a large amount of predictions using the colabfold_webserver mode, please setup and use your own custom MMSeqs2 API Server. You can find instructions [here](https://github.com/sokrypton/ColabFold/tree/main/MsaServer).
 
 - The esmfold mode can be run using the command below:
