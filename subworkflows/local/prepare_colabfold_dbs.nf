@@ -30,10 +30,10 @@ workflow PREPARE_COLABFOLD_DBS {
     ch_versions     = Channel.empty()
 
     if (colabfold_db) {
-        ch_params = file( colabfold_alphafold2_params_path, type: 'any' )
+        ch_params = Channel.value(file( colabfold_alphafold2_params_path, type: 'any' ))
         if (colabfold_server == 'local') {
-            ch_colabfold_db = file( colabfold_db_path, type: 'any' )
-            ch_uniref30     = file( uniref30_colabfold_path , type: 'any' )
+            ch_colabfold_db = Channel.value(file( colabfold_db_path, type: 'any' ))
+            ch_uniref30     = Channel.value(file( uniref30_colabfold_path , type: 'any' ))
         }
     }
     else {
