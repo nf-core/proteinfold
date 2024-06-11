@@ -35,12 +35,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[#130](https://github.com/nf-core/proteinfold/issues/130)] - Add `--skip_multiqc` parameter.
 - [[PR #154](https://github.com/nf-core/proteinfold/pull/154)] - Update pipeline template to [nf-core/tools 2.14.1](https://github.com/nf-core/tools/releases/tag/2.14.1).
 - [[#148](https://github.com/nf-core/proteinfold/issues/148)] - Update Colabfold DBs.
+- [[PR #159](https://github.com/nf-core/proteinfold/pull/159)] - Update `mgnify` paths to new available version.
 
 ### Parameters
 
-| Old parameter | New parameter    |
-| ------------- | ---------------- |
-|               | `--skip_multiqc` |
+| Old parameter         | New parameter                            |
+| --------------------- | ---------------------------------------- |
+| `--uniclust30`        |                                          |
+| `--bfd`               | `--bfd_link`                             |
+| `--small_bfd`         | `--small_bfd_link`                       |
+| `--alphafold2_params` | `--alphafold2_params_link`               |
+| `--mgnify`            | `--mgnify_link`                          |
+| `--pdb70`             | `--pdb70_link`                           |
+| `--pdb_mmcif`         | `--pdb_mmcif_link`                       |
+| `--pdb_obsolete`      | `--pdb_obsolete_link`                    |
+| `--uniref90`          | `--uniref90_link`                        |
+| `--pdb_seqres`        | `--pdb_seqres_link`                      |
+| `--uniprot_sprot`     | `--uniprot_sprot_link`                   |
+| `--uniprot_trembl`    | `--uniprot_trembl_link`                  |
+| `--uniclust30_path`   | `--uniref30_alphafold2_path`             |
+| `--uniref30`          | `--uniref30_colabfold_link`              |
+| `--uniref30_path`     | `--uniref30_colabfold_path`              |
+|                       | `--uniref30_alphafold2_link`             |
+|                       | `--esmfold_db`                           |
+|                       | `--esmfold_model_preset`                 |
+|                       | `--esmfold_3B_v1`                        |
+|                       | `--esm2_t36_3B_UR50D`                    |
+|                       | `--esm2_t36_3B_UR50D_contact_regression` |
+|                       | `--esmfold_params_path`                  |
+|                       | `--skip_multiqc`                         |
 
 > **NB:** Parameter has been **updated** if both old and new parameter information is present.
 > **NB:** Parameter has been **added** if just the new parameter information is present.

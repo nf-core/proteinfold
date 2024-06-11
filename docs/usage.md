@@ -18,15 +18,15 @@ You will need to create a samplesheet with information about the sequences you w
 
 ### Full samplesheet
 
-The samplesheet can have as many columns as you desire, however, there is a strict requirement for the first 2 columns to match those defined in the table below.
-
-A final samplesheet file may look something like the one below. This is for 2 sequences.
+A sample of the final samplesheet file for two sequences is shown below:
 
 ```csv title="samplesheet.csv"
 sequence,fasta
 T1024,https://raw.githubusercontent.com/nf-core/test-datasets/proteinfold/testdata/sequences/T1024.fasta
 T1026,https://raw.githubusercontent.com/nf-core/test-datasets/proteinfold/testdata/sequences/T1026.fasta
 ```
+
+The samplesheet can have as many columns as you desire, however, there is a strict requirement for the first 2 columns to match those defined in the table below:
 
 | Column     | Description                                                                                         |
 | ---------- | --------------------------------------------------------------------------------------------------- |
@@ -37,9 +37,11 @@ An [example samplesheet](../assets/samplesheet.csv) has been provided with the p
 
 ## Running the pipeline
 
-The typical commands for running the pipeline on AlphaFold2, Colabfold and ESMFold modes are as follows:
+The typical commands for running the pipeline on AlphaFold2, Colabfold and ESMFold modes are shown below.
 
-```csv title="samplesheet.csv"
+AlphaFold2 regular can be run using this command:
+
+```bash
 nextflow run nf-core/proteinfold \
       --input samplesheet.csv \
       --outdir <OUTDIR> \
@@ -48,10 +50,12 @@ nextflow run nf-core/proteinfold \
       --full_dbs <true/false> \
       --alphafold2_model_preset monomer \
       --use_gpu <true/false> \
-      -profile <docker>
+      -profile <docker/singularity/.../institute>
 ```
 
-```console
+To run the AlphaFold2 that splits the MSA calculation from the model inference, you can use the `--alphafold2_mode split_msa_prediction` parameter, as shown below:
+
+```bash
 nextflow run nf-core/proteinfold \
       --input samplesheet.csv \
       --outdir <OUTDIR> \
@@ -61,36 +65,43 @@ nextflow run nf-core/proteinfold \
       --full_dbs <true/false> \
       --alphafold2_model_preset monomer \
       --use_gpu <true/false> \
-      -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
+      -profile <docker/singularity/.../institute>
 ```
 
-If you specify the `--alphafold2_db ` parameter, the directory structure of your path should be like this:
+To provide the predownloaded AlphaFold2 databases and parameters you can specify the `--alphafold2_db <PATH>` parameter and the directory structure of your path should be like this:
 
-```
-├── mgnify
-│   └── mgy_clusters_2022_05.fa
-├── alphafold_params_2022-03-02
+<details markdown="1">
+<summary>Directory structure</summary>
+```console
+├── alphafold_params_2022-12-06
 │   ├── LICENSE
 │   ├── params_model_1_multimer.npz
 │   ├── params_model_1_multimer_v2.npz
+│   ├── params_model_1_multimer_v3.npz
 │   ├── params_model_1.npz
 │   ├── params_model_1_ptm.npz
 │   ├── params_model_2_multimer.npz
 │   ├── params_model_2_multimer_v2.npz
+│   ├── params_model_2_multimer_v3.npz
 │   ├── params_model_2.npz
 │   ├── params_model_2_ptm.npz
 │   ├── params_model_3_multimer.npz
 │   ├── params_model_3_multimer_v2.npz
+│   ├── params_model_3_multimer_v3.npz
 │   ├── params_model_3.npz
 │   ├── params_model_3_ptm.npz
 │   ├── params_model_4_multimer.npz
 │   ├── params_model_4_multimer_v2.npz
+│   ├── params_model_4_multimer_v3.npz
 │   ├── params_model_4.npz
 │   ├── params_model_4_ptm.npz
 │   ├── params_model_5_multimer.npz
 │   ├── params_model_5_multimer_v2.npz
+│   ├── params_model_5_multimer_v3.npz
 │   ├── params_model_5.npz
 │   └── params_model_5_ptm.npz
+├── mgnify
+│   └── mgy_clusters_2022_05.fa
 ├── pdb70
 │   └── pdb70_from_mmcif_200916
 │       ├── md5sum
@@ -200,28 +211,23 @@ If you specify the `--alphafold2_db ` parameter, the directory structure of your
 │   └── pdb_seqres.txt
 ├── small_bfd
 │   └── bfd-first_non_consensus_sequences.fasta
-├── uniclust30
-│   └── uniclust30_2018_08
-│       ├── uniclust30_2018_08_a3m_db -> uniclust30_2018_08_a3m.ffdata
-│       ├── uniclust30_2018_08_a3m_db.index
-│       ├── uniclust30_2018_08_a3m.ffdata
-│       ├── uniclust30_2018_08_a3m.ffindex
-│       ├── uniclust30_2018_08.cs219
-│       ├── uniclust30_2018_08_cs219.ffdata
-│       ├── uniclust30_2018_08_cs219.ffindex
-│       ├── uniclust30_2018_08.cs219.sizes
-│       ├── uniclust30_2018_08_hhm_db -> uniclust30_2018_08_hhm.ffdata
-│       ├── uniclust30_2018_08_hhm_db.index
-│       ├── uniclust30_2018_08_hhm.ffdata
-│       ├── uniclust30_2018_08_hhm.ffindex
-│       └── uniclust30_2018_08_md5sum
 ├── uniprot
 │   └── uniprot.fasta
+├── uniref30
+│   ├── UniRef30_2021_03_a3m.ffdata
+│   ├── UniRef30_2021_03_a3m.ffindex
+│   ├── UniRef30_2021_03_cs219.ffdata
+│   ├── UniRef30_2021_03_cs219.ffindex
+|   ├── UniRef30_2021_03_hhm.ffdata
+│   └── UniRef30_2021_03_hhm.ffindex
 └── uniref90
     └── uniref90.fasta
 ```
+</details>
 
-```console
+Colabfold mode using use your own custom MMSeqs2 API server (`--colabfold_server local`) can be run using the following command:
+
+```bash
 nextflow run nf-core/proteinfold \
       --input samplesheet.csv \
       --outdir <OUTDIR> \
@@ -232,11 +238,13 @@ nextflow run nf-core/proteinfold \
       --use_amber <true/false> \
       --colabfold_model_preset "AlphaFold2-ptm" \
       --use_gpu <true/false> \
-      --db_load_mode 0
-      -profile <docker>
+      --db_load_mode 0 \
+      -profile <docker/singularity/.../institute>
 ```
 
-```console
+The command to run run Colabfold, using the Colabfold webserver is shown below:
+
+```bash
 nextflow run nf-core/proteinfold \
       --input samplesheet.csv \
       --outdir <OUTDIR> \
@@ -248,12 +256,14 @@ nextflow run nf-core/proteinfold \
       --use_amber <true/false> \
       --colabfold_model_preset "AlphaFold2-ptm" \
       --use_gpu <true/false> \
-      -profile <docker>
+      -profile <docker/singularity/.../institute>
 ```
 
-If you specify the `--colabfold_db ` parameter, the directory structure of your path should be like this:
+If you specify the `--colabfold_db <PATH>` parameter, the directory structure of your path should be like this:
 
-```
+<details markdown="1">
+<summary>Directory structure</summary>
+```console
 ├── colabfold_envdb_202108
 │   ├── colabfold_envdb_202108_db.0
 │   ├── colabfold_envdb_202108_db.1
@@ -331,60 +341,65 @@ If you specify the `--colabfold_db ` parameter, the directory structure of your 
 │   │   ├── params_model_4_ptm.npz
 │   │   ├── params_model_5.npz
 │   │   └── params_model_5_ptm.npz
-│   └── alphafold_params_colab_2022-03-02
+│   └── alphafold_params_colab_2022-12-06
 │       ├── LICENSE
-│       ├── params_model_1_multimer_v2.npz
+│       ├── params_model_1_multimer_v3.npz
 │       ├── params_model_1.npz
-│       ├── params_model_2_multimer_v2.npz
+│       ├── params_model_2_multimer_v3.npz
 │       ├── params_model_2.npz
 │       ├── params_model_2_ptm.npz
-│       ├── params_model_3_multimer_v2.npz
+│       ├── params_model_3_multimer_v3.npz
 │       ├── params_model_3.npz
-│       ├── params_model_4_multimer_v2.npz
+│       ├── params_model_4_multimer_v3.npz
 │       ├── params_model_4.npz
-│       ├── params_model_5_multimer_v2.npz
+│       ├── params_model_5_multimer_v3.npz
 │       └── params_model_5.npz
-└── uniref30_2202
-    ├── uniref30_2202_db.0
-    ├── uniref30_2202_db.1
-    ├── uniref30_2202_db.2
-    ├── uniref30_2202_db.3
-    ├── uniref30_2202_db.4
-    ├── uniref30_2202_db.5
-    ├── uniref30_2202_db.6
-    ├── uniref30_2202_db.7
-    ├── uniref30_2202_db_aln.0
-    ├── uniref30_2202_db_aln.1
-    ├── uniref30_2202_db_aln.2
-    ├── uniref30_2202_db_aln.3
-    ├── uniref30_2202_db_aln.4
-    ├── uniref30_2202_db_aln.5
-    ├── uniref30_2202_db_aln.6
-    ├── uniref30_2202_db_aln.7
-    ├── uniref30_2202_db_aln.dbtype
-    ├── uniref30_2202_db_aln.index
-    ├── uniref30_2202_db.dbtype
-    ├── uniref30_2202_db_h
-    ├── uniref30_2202_db_h.dbtype
-    ├── uniref30_2202_db_h.index
-    ├── uniref30_2202_db.idx
-    ├── uniref30_2202_db.idx.dbtype
-    ├── uniref30_2202_db.idx.index
-    ├── uniref30_2202_db.index
-    ├── uniref30_2202_db_seq.0
-    ├── uniref30_2202_db_seq.1
-    ├── uniref30_2202_db_seq.2
-    ├── uniref30_2202_db_seq.3
-    ├── uniref30_2202_db_seq.4
-    ├── uniref30_2202_db_seq.5
-    ├── uniref30_2202_db_seq.6
-    ├── uniref30_2202_db_seq.7
-    ├── uniref30_2202_db_seq.dbtype
-    ├── uniref30_2202_db_seq_h -> uniref30_2202_db_h
-    ├── uniref30_2202_db_seq_h.dbtype -> uniref30_2202_db_h.dbtype
-    ├── uniref30_2202_db_seq_h.index -> uniref30_2202_db_h.index
-    └── uniref30_2202_db_seq.index
+└── uniref30_2302
+    ├── uniref30_2302_aln.tsv
+    ├── uniref30_2302_db.0
+    ├── uniref30_2302_db.1
+    ├── uniref30_2302_db.2
+    ├── uniref30_2302_db.3
+    ├── uniref30_2302_db.4
+    ├── uniref30_2302_db.5
+    ├── uniref30_2302_db.6
+    ├── uniref30_2302_db.7
+    ├── uniref30_2302_db_aln.0
+    ├── uniref30_2302_db_aln.1
+    ├── uniref30_2302_db_aln.2
+    ├── uniref30_2302_db_aln.3
+    ...
+    ├── uniref30_2302_db_aln.97
+    ├── uniref30_2302_db_aln.98
+    ├── uniref30_2302_db_aln.99
+    ├── uniref30_2302_db_aln.dbtype
+    ├── uniref30_2302_db_aln.index
+    ├── uniref30_2302_db.dbtype
+    ├── uniref30_2302_db_h
+    ├── uniref30_2302_db_h.dbtype
+    ├── uniref30_2302_db_h.index
+    ├── uniref30_2302_db.idx
+    ├── uniref30_2302_db.idx.dbtype
+    ├── uniref30_2302_db.idx.index
+    ├── uniref30_2302_db.idx_mapping
+    ├── uniref30_2302_db.idx_taxonomy
+    ├── uniref30_2302_db.index
+    ├── uniref30_2302_db_mapping
+    ├── uniref30_2302_db_seq.0
+    ├── uniref30_2302_db_seq.1
+    ├── uniref30_2302_db_seq.2
+    ├── uniref30_2302_db_seq.3
+    ...
+    ├── uniref30_2302_db_seq.97
+    ├── uniref30_2302_db_seq.98
+    ├── uniref30_2302_db_seq.99
+    ├── uniref30_2302_db_seq.dbtype
+    ├── uniref30_2302_db_seq_h -> uniref30_2302_db_h
+    ├── uniref30_2302_db_seq_h.dbtype -> uniref30_2302_db_h.dbtype
+    ├── uniref30_2302_db_seq_h.index -> uniref30_2302_db_h.index
+    └── uniref30_2302_db_seq.index
 ```
+</details>
 
 ```console
 nextflow run nf-core/proteinfold \
@@ -398,7 +413,7 @@ nextflow run nf-core/proteinfold \
       -profile <docker>
 ```
 
-If you specify the `--esmfold_db ` parameter, the directory structure of your path should be like this:
+If you specify the `--esmfold_db <PATH>` parameter, the directory structure of your path should be like this:
 
 ```console
 └── checkpoints

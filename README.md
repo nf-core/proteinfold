@@ -31,7 +31,7 @@ On release, automated continuous integration tests run the pipeline on a full-si
 
 1. Choice of protein structure prediction method:
 
-   i. [AlphaFold2](https://github.com/deepmind/alphafold)
+   i. [AlphaFold2](https://github.com/deepmind/alphafold) - Regular AlphaFold2 (MSA computation and model inference in the same process)
 
    ii. [AlphaFold2 split](https://github.com/luisas/alphafold_split) - AlphaFold2 MSA computation and model inference in separate processes
 
@@ -39,7 +39,7 @@ On release, automated continuous integration tests run the pipeline on a full-si
 
    iv. [ColabFold](https://github.com/sokrypton/ColabFold) - MMseqs2 local search followed by ColabFold
 
-   v. [ESMFold](https://github.com/facebookresearch/esm)
+   v. [ESMFold](https://github.com/facebookresearch/esm) - Regular ESM
 
 ## Usage
 
@@ -55,9 +55,9 @@ nextflow run nf-core/proteinfold \
    --outdir <OUTDIR>
 ```
 
-The pipeline takes care of downloading the databases and parameters required by AlphaFold2, Colabfold or ESMFold. In case you have already downloaded the required files, you can skip this step by providing the path to the databases in parameters using the corresponding parameter [`--alphafold2_db`], [`--colabfold_db`] or [`--esmfold_db`]
+The pipeline takes care of downloading the databases and parameters required by AlphaFold2, Colabfold or ESMFold. In case you have already downloaded the required files, you can skip this step by providing the path to the databases using the corresponding parameter [`--alphafold2_db`], [`--colabfold_db`] or [`--esmfold_db`]. Please refer to the [usage documentation](https://nf-co.re/proteinfold/usage) to check the directory structure you need to provide for each of the databases.
 
-- Typical command to run AlphaFold2 mode:
+- The typical command to run AlphaFold2 mode is shown below:
 
   ```console
   nextflow run nf-core/proteinfold \
@@ -71,7 +71,7 @@ The pipeline takes care of downloading the databases and parameters required by 
       -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
   ```
 
-- Typical command to run AlphaFold2 splitting the MSA from the prediction execution:
+- Here is the command to run AlphaFold2 splitting the MSA from the prediction execution:
 
   ```console
   nextflow run nf-core/proteinfold \
@@ -86,7 +86,7 @@ The pipeline takes care of downloading the databases and parameters required by 
       -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
   ```
 
-- Typical command to run colabfold_local mode:
+- Below, the command to run colabfold_local mode:
 
   ```console
   nextflow run nf-core/proteinfold \
@@ -103,7 +103,7 @@ The pipeline takes care of downloading the databases and parameters required by 
       -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
   ```
 
-- Typical command to run colabfold_webserver mode:
+- The typical command to run colabfold_webserver mode would be:
 
   ```console
   nextflow run nf-core/proteinfold \
@@ -120,10 +120,11 @@ The pipeline takes care of downloading the databases and parameters required by 
       -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
   ```
 
-  > **Warning**
+  [!WARNING]
+
   > If you aim to carry out a large amount of predictions using the colabfold_webserver mode, please setup and use your own custom MMSeqs2 API Server. You can find instructions [here](https://github.com/sokrypton/ColabFold/tree/main/MsaServer).
 
-- Typical command to run esmfold mode:
+- The esmfold mode can be run using the command below:
 
   ```console
   nextflow run nf-core/proteinfold \

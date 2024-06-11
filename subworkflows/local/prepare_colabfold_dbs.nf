@@ -14,7 +14,7 @@ workflow PREPARE_COLABFOLD_DBS {
 
     take:
     colabfold_db                     // directory: path/to/colabfold/DBs and params
-    colabfold_server                 // string: Specifies the server to use for colabfold
+    colabfold_server                 //    string: Specifies the server to use for colabfold
     colabfold_alphafold2_params_path // directory: /path/to/colabfold/alphafold2/params/
     colabfold_db_path                // directory: /path/to/colabfold/db/
     uniref30_colabfold_path          // directory: /path/to/uniref30/colabfold/
@@ -30,10 +30,10 @@ workflow PREPARE_COLABFOLD_DBS {
     ch_versions     = Channel.empty()
 
     if (colabfold_db) {
-        ch_params = file( colabfold_alphafold2_params_path, type: 'any' )
+        ch_params = Channel.value(file( colabfold_alphafold2_params_path, type: 'any' ))
         if (colabfold_server == 'local') {
-            ch_colabfold_db = file( colabfold_db_path, type: 'any' )
-            ch_uniref30     = file( uniref30_colabfold_path , type: 'any' )
+            ch_colabfold_db = Channel.value(file( colabfold_db_path, type: 'any' ))
+            ch_uniref30     = Channel.value(file( uniref30_colabfold_path , type: 'any' ))
         }
     }
     else {
