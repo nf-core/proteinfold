@@ -10,7 +10,7 @@ process RUN_ALPHAFOLD2_MSA {
         error("Local RUN_ALPHAFOLD2_MSA module does not support Conda. Please use Docker / Singularity / Podman instead.")
     }
 
-    container "nf-core/proteinfold_alphafold2_msa:dev"
+    container "nf-core/proteinfold_alphafold2_msa:1.1.0"
 
     input:
     tuple val(meta), path(fasta)
@@ -56,7 +56,7 @@ process RUN_ALPHAFOLD2_MSA {
         --output_dir=\$PWD \
         --data_dir=\$PWD \
         --uniref90_database_path=./uniref90/uniref90.fasta \
-        --mgnify_database_path=./mgnify/mgy_clusters_2018_12.fa \
+        --mgnify_database_path=./mgnify/mgy_clusters_2022_05.fa \
         --template_mmcif_dir=./pdb_mmcif/mmcif_files \
         --obsolete_pdbs_path=./pdb_mmcif/obsolete.dat  \
         $args

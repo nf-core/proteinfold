@@ -2,6 +2,7 @@
  * Download PDB MMCIF database
  */
 process DOWNLOAD_PDBMMCIF {
+    tag "${source_url_pdb_mmcif}--${source_url_pdb_obsolete}"
     label 'process_low'
     label 'error_retry'
 
