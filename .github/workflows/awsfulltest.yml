@@ -40,7 +40,7 @@ jobs:
               "hook_url": "${{ secrets.MEGATESTS_ALERTS_SLACK_HOOK_URL }}",
               "outdir": "s3://${{ secrets.AWS_S3_BUCKET }}/proteinfold/results-${{ github.sha }}/mode_${{ matrix.mode }}"
             }
-          profiles: test_full_${{ matrix.mode }},aws_tower
+          profiles: test_full_${{ matrix.mode }}
       - uses: actions/upload-artifact@v4
         with:
           name: Seqera Platform debug log file
