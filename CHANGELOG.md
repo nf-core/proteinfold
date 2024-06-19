@@ -36,7 +36,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[PR #154](https://github.com/nf-core/proteinfold/pull/154)] - Update pipeline template to [nf-core/tools 2.14.1](https://github.com/nf-core/tools/releases/tag/2.14.1).
 - [[#148](https://github.com/nf-core/proteinfold/issues/148)] - Update Colabfold DBs.
 - [[PR #159](https://github.com/nf-core/proteinfold/pull/159)] - Update `mgnify` paths to new available version.
-- [[PR #159](https://github.com/nf-core/proteinfold/pull/159)] - Update `mgnify` paths to new available version.
+- [[PR ##163](https://github.com/nf-core/proteinfold/pull/163)] - Fix full test CI.
 
 ### Parameters
 
