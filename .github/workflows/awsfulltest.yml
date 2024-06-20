@@ -17,14 +17,14 @@ jobs:
       matrix:
         mode:
           [
-            "_alphafold2_standard",
-            "_alphafold2_split",
-            "_alphafold2_multimer",
-            "_colabfold_local",
-            "_colabfold_webserver",
-            "_colabfold_multimer",
-            "_esmfold",
-            "_esmfold_multimer",
+            "alphafold2_standard",
+            "alphafold2_split",
+            "alphafold2_multimer",
+            "colabfold_local",
+            "colabfold_webserver",
+            "colabfold_multimer",
+            "esmfold",
+            "esmfold_multimer",
           ]
     steps:
       - name: Launch workflow via Seqera Platform
