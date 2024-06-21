@@ -37,6 +37,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[#148](https://github.com/nf-core/proteinfold/issues/148)] - Update Colabfold DBs.
 - [[PR #159](https://github.com/nf-core/proteinfold/pull/159)] - Update `mgnify` paths to new available version.
 - [[PR ##163](https://github.com/nf-core/proteinfold/pull/163)] - Fix full test CI.
+- [[#150]](https://github.com/nf-core/proteinfold/issues/150)] - Add thanks to the AWS Open Data Sponsorship program in `README.md`.
+- [[PR ##166](https://github.com/nf-core/proteinfold/pull/166)] - Create 2 different parameters for Colabfold and ESMfold number of recycles.
 
 ### Parameters
 
@@ -57,6 +59,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 | `--uniclust30_path`   | `--uniref30_alphafold2_path`             |
 | `--uniref30`          | `--uniref30_colabfold_link`              |
 | `--uniref30_path`     | `--uniref30_colabfold_path`              |
+| `--num_recycle`       | `--num_recycles_colabfold`               |
+|                       | `--num_recycles_esmfold`                 |
 |                       | `--uniref30_alphafold2_link`             |
 |                       | `--esmfold_db`                           |
 |                       | `--esmfold_model_preset`                 |
