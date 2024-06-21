@@ -234,7 +234,7 @@ nextflow run nf-core/proteinfold \
       --mode colabfold \
       --colabfold_server local \
       --colabfold_db <null (default) | DB_PATH> \
-      --num_recycle 3 \
+      --num_recycles_colabfold 3 \
       --use_amber <true/false> \
       --colabfold_model_preset "AlphaFold2-ptm" \
       --use_gpu <true/false> \
@@ -252,7 +252,7 @@ nextflow run nf-core/proteinfold \
       --colabfold_server webserver \
       --host_url <custom MMSeqs2 API Server URL> \
       --colabfold_db <null (default) | DB_PATH> \
-      --num_recycle 3 \
+      --num_recycles_colabfold 3 \
       --use_amber <true/false> \
       --colabfold_model_preset "AlphaFold2-ptm" \
       --use_gpu <true/false> \
@@ -407,7 +407,7 @@ nextflow run nf-core/proteinfold \
       --outdir <OUTDIR> \
       --mode esmfold
       --esmfold_db <null (default) | DB_PATH> \
-      --num_recycles 4 \
+      --num_recycles_esmfold 4 \
       --esmfold_model_preset <monomer/multimer> \
       --use_gpu <true/false> \
       -profile <docker>

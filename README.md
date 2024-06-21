@@ -95,7 +95,7 @@ The pipeline takes care of downloading the databases and parameters required by 
       --mode colabfold \
       --colabfold_server local \
       --colabfold_db <null (default) | PATH> \
-      --num_recycle 3 \
+      --num_recycles_colabfold 3 \
       --use_amber <true/false> \
       --colabfold_model_preset "AlphaFold2-ptm" \
       --use_gpu <true/false> \
@@ -113,7 +113,7 @@ The pipeline takes care of downloading the databases and parameters required by 
       --colabfold_server webserver \
       --host_url <custom MMSeqs2 API Server URL> \
       --colabfold_db <null (default) | PATH> \
-      --num_recycle 3 \
+      --num_recycles_colabfold 3 \
       --use_amber <true/false> \
       --colabfold_model_preset "AlphaFold2-ptm" \
       --use_gpu <true/false> \
@@ -133,7 +133,7 @@ The pipeline takes care of downloading the databases and parameters required by 
       --mode esmfold \
       --esmfold_model_preset <monomer/multimer> \
       --esmfold_db <null (default) | PATH> \
-      --num_recycles 4 \
+      --num_recycles_esmfold 4 \
       --use_gpu <true/false> \
       -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
   ```
@@ -154,9 +154,9 @@ For more details about the output files and reports, please refer to the
 
 nf-core/proteinfold was originally written by Athanasios Baltzis ([@athbaltzis](https://github.com/athbaltzis)), Jose Espinosa-Carrasco ([@JoseEspinosa](https://github.com/JoseEspinosa)), Luisa Santus ([@luisas](https://github.com/luisas)) and Leila Mansouri ([@l-mansouri](https://github.com/l-mansouri)) from [The Comparative Bioinformatics Group](https://www.crg.eu/en/cedric_notredame) at [The Centre for Genomic Regulation, Spain](https://www.crg.eu/) under the umbrella of the [BovReg project](https://www.bovreg.eu/) and Harshil Patel ([@drpatelh](https://github.com/drpatelh)) from [Seqera Labs, Spain](https://seqera.io/).
 
-We thank the following people for their extensive assistance in the development of this pipeline:
-
 Many thanks to others who have helped out and contributed along the way too, including (but not limited to): Norman Goodacre and Waleed Osman from Interline Therapeutics ([@interlinetx](https://github.com/interlinetx)), Martin Steinegger ([@martin-steinegger](https://github.com/martin-steinegger)) and Raoul J.P. Bonnal ([@rjpbonnal](https://github.com/rjpbonnal))
+
+We would also like to thanks to the AWS Open Data Sponsorship Program for generously providing the resources necessary to host the data utilized in the testing, development, and deployment of nf-core proteinfold.
 
 ## Contributions and Support
 
