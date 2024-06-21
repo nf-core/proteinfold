@@ -130,10 +130,10 @@
                     ],
                     "fa_icon": "fas fa-stream"
                 },
-                "num_recycle": {
+                "num_recycles_colabfold": {
                     "type": "integer",
                     "default": 3,
-                    "description": "Number of recycles",
+                    "description": "Number of recycles for Colabfold",
                     "fa_icon": "fas fa-recycle"
                 },
                 "use_amber": {
@@ -180,7 +180,7 @@
                     "description": "Specifies the PARAMS path used by 'esmfold' mode",
                     "fa_icon": "fas fa-folder-open"
                 },
-                "num_recycles": {
+                "num_recycles_esmfold": {
                     "type": "integer",
                     "default": 4,
                     "description": "Specifies the number of recycles used by Esmfold",

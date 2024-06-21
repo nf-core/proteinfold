@@ -41,7 +41,7 @@ workflow ESMFOLD {
     take:
     ch_versions       // channel: [ path(versions.yml) ]
     ch_esmfold_params // directory: /path/to/esmfold/params/
-    ch_num_recycle    // int: Number of recycles for esmfold
+    ch_num_recycles   // int: Number of recycles for esmfold
 
     main:
     ch_multiqc_files = Channel.empty()
@@ -64,14 +64,14 @@ workflow ESMFOLD {
         RUN_ESMFOLD(
             MULTIFASTA_TO_SINGLEFASTA.out.input_fasta,
             ch_esmfold_params,
-            ch_num_recycle
+            ch_num_recycles
         )
         ch_versions = ch_versions.mix(RUN_ESMFOLD.out.versions)
     } else {
         RUN_ESMFOLD(
             ch_fasta,
             ch_esmfold_params,
-            ch_num_recycle
+            ch_num_recycles
         )
         ch_versions = ch_versions.mix(RUN_ESMFOLD.out.versions)
     }
