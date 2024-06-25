@@ -46,7 +46,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install git+https://github.com/nf-core/tools.git@dev
+          pip install git+https://github.com/nf-core/tools.git
 
       - name: Get the repository name and current branch set as environment variable
         run: |
@@ -58,7 +58,7 @@ jobs:
         env:
           NXF_SINGULARITY_CACHEDIR: ./
         run: |
-          nf-core download ${{ env.REPO_LOWERCASE }} \
+          nf-core pipelines download ${{ env.REPO_LOWERCASE }} \
           --revision ${{ env.REPO_BRANCH }} \
           --outdir ./${{ env.REPOTITLE_LOWERCASE }} \
           --compress "none" \
