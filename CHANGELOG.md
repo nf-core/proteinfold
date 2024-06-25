@@ -13,6 +13,7 @@ Special thanks to the following for their contributions to the release:
 - [Athanasios Baltzis](https://github.com/athbaltzis)
 - [Björn Langer](https://github.com/bjlang)
 - [Igor Trujnara](https://github.com/itrujnara)
+- [Matthias Hörtenhuber](https://github.com/mashehu)
 - [Maxime Garcia](https://github.com/maxulysse)
 - [Júlia Mir Pedrol](https://github.com/mirpedrol)
 - [Ziad Al-Bkhetan](https://github.com/ziadbkh)
