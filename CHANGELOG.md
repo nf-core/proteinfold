@@ -14,7 +14,7 @@ Special thanks to the following for their contributions to the release:
 - [Björn Langer](https://github.com/bjlang)
 - [Igor Trujnara](https://github.com/itrujnara)
 - [Maxime Garcia](https://github.com/maxulysse)
-- [Mir Pedrol](https://github.com/mirpedrol)
+- [Júlia Mir Pedrol](https://github.com/mirpedrol)
 - [Ziad Al-Bkhetan](https://github.com/ziadbkh)
 
 Thank you to everyone else that has contributed by reporting bugs, enhancements or in any other way, shape or form.
