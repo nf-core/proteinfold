@@ -5,9 +5,12 @@ process RUN_ALPHAFOLD2_PRED {
     tag   "$meta.id"
     label 'process_medium'
 
-    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'docker://nfcore/proteinfold_alphafold2_split:1.0.0' :
-        'nfcore/proteinfold_alphafold2_split:1.0.0' }"
+    // Exit if running this module with -profile conda / -profile mamba
+    if (workflow.profile.tokenize(',').intersect(['conda', 'mamba']).size() >= 1) {
+        error("Local RUN_ALPHAFOLD2_PRED module does not support Conda. Please use Docker / Singularity / Podman instead.")
+    }
+
+    container "nf-core/proteinfold_alphafold2_split:1.1.0"
 
     input:
     tuple val(meta), path(fasta)
@@ -19,7 +22,7 @@ process RUN_ALPHAFOLD2_PRED {
     path ('mgnify/*')
     path ('pdb70/*')
     path ('pdb_mmcif/*')
-    path ('uniclust30/*')
+    path ('uniref30/*')
     path ('uniref90/*')
     path ('pdb_seqres/*')
     path ('uniprot/*')

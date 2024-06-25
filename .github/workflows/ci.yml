@@ -24,65 +24,29 @@ jobs:
     strategy:
       matrix:
         NXF_VER:
-          - "22.10.1"
+          - "23.04.0"
           - "latest-everything"
+        parameters:
+          - "test"
+          - "test_alphafold2_split"
+          - "test_alphafold2_download"
+          - "test_colabfold_local"
+          - "test_colabfold_webserver"
+          - "test_colabfold_download"
+          - "test_esmfold"
+
     steps:
       - name: Check out pipeline code
-        uses: actions/checkout@v3
+        uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b # v4
 
       - name: Install Nextflow
-        uses: nf-core/setup-nextflow@v1
+        uses: nf-core/setup-nextflow@v2
         with:
           version: "${{ matrix.NXF_VER }}"
 
-      - name: Run pipeline with test data
-        run: |
-          nextflow run ${GITHUB_WORKSPACE} -profile test,docker --outdir ./results
+      - name: Disk space cleanup
+        uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
 
-  test_alphafold2_split:
-    name: Test alphafold2 split workflow
-    if: ${{ github.event_name != 'push' || (github.event_name == 'push' && github.repository == 'nf-core/proteinfold') }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out pipeline code
-        uses: actions/checkout@v2
-
-      - name: Install Nextflow
+      - name: Run pipeline with test data ${{ matrix.parameters }} profile
         run: |
-          wget -qO- get.nextflow.io | bash
-          sudo mv nextflow /usr/local/bin/
-      - name: Run pipeline with stub-run in alphafold2 split mode
-        run: |
-          nextflow run ${GITHUB_WORKSPACE} -profile test_alphafold2_split,docker --outdir ./results
-
-  test_colabfold_local:
-    name: Test Colabfold local workflow
-    if: ${{ github.event_name != 'push' || (github.event_name == 'push' && github.repository == 'nf-core/proteinfold') }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out pipeline code
-        uses: actions/checkout@v2
-
-      - name: Install Nextflow
-        run: |
-          wget -qO- get.nextflow.io | bash
-          sudo mv nextflow /usr/local/bin/
-      - name: Run pipeline with stub-run in colabfold_local mode
-        run: |
-          nextflow run ${GITHUB_WORKSPACE} -profile test_colabfold_local,docker --outdir ./results
-
-  test_colabfold_webserver:
-    name: Test Colabfold webserver workflow
-    if: ${{ github.event_name != 'push' || (github.event_name == 'push' && github.repository == 'nf-core/proteinfold') }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out pipeline code
-        uses: actions/checkout@v2
-
-      - name: Install Nextflow
-        run: |
-          wget -qO- get.nextflow.io | bash
-          sudo mv nextflow /usr/local/bin/
-      - name: Run pipeline with stub-run in colabfold_webserver mode
-        run: |
-          nextflow run ${GITHUB_WORKSPACE} -profile test_colabfold_webserver,docker --outdir ./results
+          nextflow run ${GITHUB_WORKSPACE} -profile ${{ matrix.parameters }},docker --outdir ./results_${{ matrix.parameters }}

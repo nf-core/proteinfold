@@ -12,6 +12,7 @@ The pipeline is built using [Nextflow](https://www.nextflow.io/) and predicts pr
 
 - [AlphaFold2](https://github.com/deepmind/alphafold)
 - [ColabFold](https://github.com/sokrypton/ColabFold) - MMseqs2 (API server or local search) followed by ColabFold
+- [ESMFold](https://github.com/facebookresearch/esm)
 
 See main [README.md](https://github.com/nf-core/proteinfold/blob/master/README.md) for a condensed overview of the steps in the pipeline, and the bioinformatics tools used at each step.
 
@@ -109,6 +110,73 @@ Below you can find some indicative examples of the output images produced by Col
 
 ![Alt text](../docs/images/T1024_LmrP____408_residues__PAE_mqc.png?raw=true "T1024_coverage")
 
+### ESMFold
+
+<details markdown="1">
+<summary>Output files</summary>
+
+- `esmfold/`
+  - `<SEQUENCE NAME>.pdb` that is the structure with the highest pLDDT score (ranked first)
+  - `<SEQUENCE NAME>_plddt_mqc.tsv` that presents the pLDDT scores per residue for each of the 5 predicted models
+- `DBs/` that contains symbolic links to the downloaded database and parameter files
+
+</details>
+
+Below you can find an indicative example of the TSV file with the pLDDT scores per atom for predicted model produced by ESMFold, which is included in the MultiQC report:
+
+| Atom_serial_number | Atom_name | Residue_name | Residue_sequence_number | pLDDT |
+| ------------------ | --------- | ------------ | ----------------------- | ----- |
+| 1                  | N         | VAL          | 1                       | 44.77 |
+| 2                  | CA        | VAL          | 1                       | 47.23 |
+| 3                  | C         | VAL          | 1                       | 46.66 |
+| 4                  | CB        | VAL          | 1                       | 41.88 |
+| 5                  | O         | VAL          | 1                       | 45.75 |
+| 6                  | CG1       | VAL          | 1                       | 39.15 |
+| 7                  | CG2       | VAL          | 1                       | 39.59 |
+| 8                  | N         | THR          | 2                       | 49.89 |
+| 9                  | CA        | THR          | 2                       | 51.41 |
+| 10                 | C         | THR          | 2                       | 50.21 |
+| 11                 | CB        | THR          | 2                       | 43.84 |
+| 12                 | O         | THR          | 2                       | 47.36 |
+| 13                 | CG2       | THR          | 2                       | 35.32 |
+| 14                 | OG1       | THR          | 2                       | 40.12 |
+| 15                 | N         | VAL          | 3                       | 51.40 |
+| 16                 | CA        | VAL          | 3                       | 54.38 |
+| 17                 | C         | VAL          | 3                       | 52.10 |
+| 18                 | CB        | VAL          | 3                       | 48.50 |
+| 19                 | O         | VAL          | 3                       | 52.58 |
+| 20                 | CG1       | VAL          | 3                       | 38.75 |
+| 21                 | CG2       | VAL          | 3                       | 39.26 |
+| 22                 | N         | ASP          | 4                       | 52.00 |
+| 23                 | CA        | ASP          | 4                       | 53.92 |
+| 24                 | C         | ASP          | 4                       | 52.33 |
+| 25                 | CB        | ASP          | 4                       | 46.82 |
+| 26                 | O         | ASP          | 4                       | 51.28 |
+| 27                 | CG        | ASP          | 4                       | 42.89 |
+| 28                 | OD1       | ASP          | 4                       | 45.89 |
+| 29                 | OD2       | ASP          | 4                       | 53.61 |
+| 30                 | N         | ASP          | 5                       | 56.10 |
+| 31                 | CA        | ASP          | 5                       | 56.97 |
+| 32                 | C         | ASP          | 5                       | 55.75 |
+| 33                 | CB        | ASP          | 5                       | 50.34 |
+| 34                 | O         | ASP          | 5                       | 54.18 |
+| 35                 | CG        | ASP          | 5                       | 45.82 |
+| 36                 | OD1       | ASP          | 5                       | 50.03 |
+| 37                 | OD2       | ASP          | 5                       | 58.01 |
+| 38                 | N         | LEU          | 6                       | 56.50 |
+| 39                 | CA        | LEU          | 6                       | 58.34 |
+| 40                 | C         | LEU          | 6                       | 55.81 |
+| 41                 | CB        | LEU          | 6                       | 52.46 |
+| 42                 | O         | LEU          | 6                       | 54.42 |
+| 43                 | CG        | LEU          | 6                       | 49.17 |
+| 44                 | CD1       | LEU          | 6                       | 44.31 |
+| 45                 | CD2       | LEU          | 6                       | 47.07 |
+| 46                 | N         | VAL          | 7                       | 57.23 |
+| 47                 | CA        | VAL          | 7                       | 57.68 |
+| 48                 | C         | VAL          | 7                       | 57.39 |
+| 49                 | CB        | VAL          | 7                       | 52.74 |
+| 50                 | O         | VAL          | 7                       | 56.46 |
+
 ### MultiQC report
 
 <details markdown="1">
@@ -136,6 +204,7 @@ The pipeline has special steps which also allow the software versions to be repo
   - Reports generated by Nextflow: `execution_report.html`, `execution_timeline.html`, `execution_trace.txt` and `pipeline_dag.dot`/`pipeline_dag.svg`.
   - Reports generated by the pipeline: `pipeline_report.html`, `pipeline_report.txt` and `software_versions.yml`. The `pipeline_report*` files will only be present if the `--email` / `--email_on_fail` parameter's are used when running the pipeline.
   - Reformatted samplesheet files used as input to the pipeline: `samplesheet.valid.csv`.
+  - Parameters used by the pipeline run: `params.json`.
 
 </details>
 

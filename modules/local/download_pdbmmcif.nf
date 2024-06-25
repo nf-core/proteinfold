@@ -2,13 +2,14 @@
  * Download PDB MMCIF database
  */
 process DOWNLOAD_PDBMMCIF {
+    tag "${source_url_pdb_mmcif}--${source_url_pdb_obsolete}"
     label 'process_low'
     label 'error_retry'
 
     conda "bioconda::aria2=1.36.0 conda-forge::rsync=3.2.7"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'https://depot.galaxyproject.org/singularity/mulled-v2-4a7c46784ad871c48746744c6b8dbc5d0a97b9ca:33e61a87922824f8afcecf88a7717a2d4cb514e9-0' :
-        'quay.io/biocontainers/mulled-v2-4a7c46784ad871c48746744c6b8dbc5d0a97b9ca:33e61a87922824f8afcecf88a7717a2d4cb514e9-0' }"
+        'biocontainers/mulled-v2-4a7c46784ad871c48746744c6b8dbc5d0a97b9ca:33e61a87922824f8afcecf88a7717a2d4cb514e9-0' }"
 
     input:
     val source_url_pdb_mmcif
@@ -41,7 +42,7 @@ process DOWNLOAD_PDBMMCIF {
         raw
 
     echo "Unzipping all mmCIF files..."
-    find ./raw -type f -iname "*.gz" -exec gunzip {} +
+    find ./raw -type f -name '*.[gG][zZ]' -exec gunzip {} \\;
 
     echo "Flattening all mmCIF files..."
     mkdir mmcif_files
