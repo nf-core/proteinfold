@@ -58,7 +58,7 @@ jobs:
         env:
           NXF_SINGULARITY_CACHEDIR: ./
         run: |
-          nf-core pipelines download ${{ env.REPO_LOWERCASE }} \
+          nf-core download ${{ env.REPO_LOWERCASE }} \
           --revision ${{ env.REPO_BRANCH }} \
           --outdir ./${{ env.REPOTITLE_LOWERCASE }} \
           --compress "none" \
