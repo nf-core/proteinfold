@@ -1,0 +1,14 @@
+Changes in module 'nf-core/multiqc'
+--- modules/nf-core/multiqc/main.nf
++++ modules/nf-core/multiqc/main.nf
+@@ -7,7 +7,7 @@
+         'biocontainers/multiqc:1.21--pyhdfd78af_0' }"
+ 
+     input:
+-    path  multiqc_files, stageAs: "?/*"
++    path  multiqc_files
+     path(multiqc_config)
+     path(extra_multiqc_config)
+     path(multiqc_logo)
+
+************************************************************
