@@ -7,7 +7,7 @@ process MULTIQC {
         'biocontainers/multiqc:1.21--pyhdfd78af_0' }"
 
     input:
-    path  multiqc_files, stageAs: "?/*"
+    path  multiqc_files
     path(multiqc_config)
     path(extra_multiqc_config)
     path(multiqc_logo)

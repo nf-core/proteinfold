@@ -3,6 +3,12 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [[1.1.1](https://github.com/nf-core/proteinfold/releases/tag/1.1.1)] - 2025-07-30
+
+- Minor patch release to fix multiqc report.
+
+### Enhancements & fixes
+
 ## [[1.1.0](https://github.com/nf-core/proteinfold/releases/tag/1.1.0)] - 2025-06-25
 
 ### Credits
@@ -19,6 +25,8 @@ Special thanks to the following for their contributions to the release:
 - [Ziad Al-Bkhetan](https://github.com/ziadbkh)
 
 Thank you to everyone else that has contributed by reporting bugs, enhancements or in any other way, shape or form.
+
+## [[1.1.0](https://github.com/nf-core/proteinfold/releases/tag/1.1.0)] - 2025-06-21
 
 ### Enhancements & fixes
 
