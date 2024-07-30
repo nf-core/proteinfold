@@ -7,7 +7,7 @@ process MMSEQS_COLABFOLDSEARCH {
         error("Local MMSEQS_COLABFOLDSEARCH module does not support Conda. Please use Docker / Singularity / Podman instead.")
     }
 
-    container "nf-core/proteinfold_colabfold:1.1.1"
+    container "nf-core/proteinfold_colabfold:dev"
 
     input:
     tuple val(meta), path(fasta)
