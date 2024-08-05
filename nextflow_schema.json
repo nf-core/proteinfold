@@ -164,6 +164,13 @@
                     "type": "boolean",
                     "description": "Create databases indexes when running colabfold_local mode",
                     "fa_icon": "fas fa-bezier-curve"
+                },
+                "msa_folder_path": {
+                    "type": "string",
+                    "format": "path",
+                    "exists": true,
+                    "description": "Specifies the path to a folder with precalcualted MSA files for 'colabfold' mode",
+                    "fa_icon": "fas fa-folder-open"
                 }
             }
         },
