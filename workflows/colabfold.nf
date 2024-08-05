@@ -57,17 +57,18 @@ workflow COLABFOLD {
         .fromSamplesheet("input")
         .set { ch_fasta }
 
+    if (params.msa_folder_path) {
+        Channel.fromPath(params.msa_folder_path)
+        .map { filepath ->
+                return [ [id:"msa"], file(filepath) ]
+            }
+        .set { ch_msa }
+    }
+
     if (params.colabfold_server == 'webserver') {
-        //
-        // MODULE: Run colabfold
-        //
-        if (params.colabfold_model_preset != 'alphafold2_ptm' && params.colabfold_model_preset != 'alphafold2') {
-            MULTIFASTA_TO_CSV(
-                ch_fasta
-            )
-            ch_versions = ch_versions.mix(MULTIFASTA_TO_CSV.out.versions)
+        if (params.msa_folder_path) {
             COLABFOLD_BATCH(
-                MULTIFASTA_TO_CSV.out.input_csv,
+                ch_msa,
                 colabfold_model_preset,
                 ch_colabfold_params,
                 [],
@@ -76,55 +77,85 @@ workflow COLABFOLD {
             )
             ch_versions = ch_versions.mix(COLABFOLD_BATCH.out.versions)
         } else {
-            COLABFOLD_BATCH(
-                ch_fasta,
-                colabfold_model_preset,
-                ch_colabfold_params,
-                [],
-                [],
-                num_recycles
-            )
-            ch_versions = ch_versions.mix(COLABFOLD_BATCH.out.versions)
+            //
+            // MODULE: Run colabfold
+            //
+            if (params.colabfold_model_preset != 'alphafold2_ptm' && params.colabfold_model_preset != 'alphafold2') {
+                MULTIFASTA_TO_CSV(
+                    ch_fasta
+                )
+                ch_versions = ch_versions.mix(MULTIFASTA_TO_CSV.out.versions)
+                COLABFOLD_BATCH(
+                    MULTIFASTA_TO_CSV.out.input_csv,
+                    colabfold_model_preset,
+                    ch_colabfold_params,
+                    [],
+                    [],
+                    num_recycles
+                )
+                ch_versions = ch_versions.mix(COLABFOLD_BATCH.out.versions)
+            } else {
+                COLABFOLD_BATCH(
+                    ch_fasta,
+                    colabfold_model_preset,
+                    ch_colabfold_params,
+                    [],
+                    [],
+                    num_recycles
+                )
+                ch_versions = ch_versions.mix(COLABFOLD_BATCH.out.versions)
+            }
         }
-
     } else if (params.colabfold_server == 'local') {
-        //
-        // MODULE: Run mmseqs
-        //
-        if (params.colabfold_model_preset != 'AlphaFold2-ptm') {
-            MULTIFASTA_TO_CSV(
-                ch_fasta
-            )
-            ch_versions = ch_versions.mix(MULTIFASTA_TO_CSV.out.versions)
-            MMSEQS_COLABFOLDSEARCH (
-                MULTIFASTA_TO_CSV.out.input_csv,
+        if (params.msa_folder_path) {
+            COLABFOLD_BATCH(
+                ch_msa,
+                colabfold_model_preset,
                 ch_colabfold_params,
                 ch_colabfold_db,
-                ch_uniref30
+                ch_uniref30,
+                num_recycles
             )
-            ch_versions = ch_versions.mix(MMSEQS_COLABFOLDSEARCH.out.versions)
+            ch_versions = ch_versions.mix(COLABFOLD_BATCH.out.versions)
         } else {
-            MMSEQS_COLABFOLDSEARCH (
-                ch_fasta,
+            //
+            // MODULE: Run mmseqs
+            //
+            if (params.colabfold_model_preset != 'AlphaFold2-ptm') {
+                MULTIFASTA_TO_CSV(
+                    ch_fasta
+                )
+                ch_versions = ch_versions.mix(MULTIFASTA_TO_CSV.out.versions)
+                MMSEQS_COLABFOLDSEARCH (
+                    MULTIFASTA_TO_CSV.out.input_csv,
+                    ch_colabfold_params,
+                    ch_colabfold_db,
+                    ch_uniref30
+                )
+                ch_versions = ch_versions.mix(MMSEQS_COLABFOLDSEARCH.out.versions)
+            } else {
+                MMSEQS_COLABFOLDSEARCH (
+                    ch_fasta,
+                    ch_colabfold_params,
+                    ch_colabfold_db,
+                    ch_uniref30
+                )
+                ch_versions = ch_versions.mix(MMSEQS_COLABFOLDSEARCH.out.versions)
+            }
+
+            //
+            // MODULE: Run colabfold
+            //
+            COLABFOLD_BATCH(
+                MMSEQS_COLABFOLDSEARCH.out.a3m,
+                colabfold_model_preset,
                 ch_colabfold_params,
                 ch_colabfold_db,
-                ch_uniref30
+                ch_uniref30,
+                num_recycles
             )
-            ch_versions = ch_versions.mix(MMSEQS_COLABFOLDSEARCH.out.versions)
+            ch_versions = ch_versions.mix(COLABFOLD_BATCH.out.versions)
         }
-
-        //
-        // MODULE: Run colabfold
-        //
-        COLABFOLD_BATCH(
-            MMSEQS_COLABFOLDSEARCH.out.a3m,
-            colabfold_model_preset,
-            ch_colabfold_params,
-            ch_colabfold_db,
-            ch_uniref30,
-            num_recycles
-        )
-        ch_versions = ch_versions.mix(COLABFOLD_BATCH.out.versions)
     }
 
     //
