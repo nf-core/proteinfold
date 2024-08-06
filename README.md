@@ -97,7 +97,7 @@ The pipeline takes care of downloading the databases and parameters required by 
       --colabfold_db <null (default) | PATH> \
       --num_recycles_colabfold 3 \
       --use_amber <true/false> \
-      --colabfold_model_preset "alphaFold2-ptm" \
+      --colabfold_model_preset "alphafold2_ptm" \
       --use_gpu <true/false> \
       --db_load_mode 0
       -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
@@ -115,7 +115,7 @@ The pipeline takes care of downloading the databases and parameters required by 
       --colabfold_db <null (default) | PATH> \
       --num_recycles_colabfold 3 \
       --use_amber <true/false> \
-      --colabfold_model_preset "alphaFold2-ptm" \
+      --colabfold_model_preset "alphafold2_ptm" \
       --use_gpu <true/false> \
       -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
   ```
