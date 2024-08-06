@@ -236,7 +236,7 @@ nextflow run nf-core/proteinfold \
       --colabfold_db <null (default) | DB_PATH> \
       --num_recycles_colabfold 3 \
       --use_amber <true/false> \
-      --colabfold_model_preset "AlphaFold2-ptm" \
+      --colabfold_model_preset "alphaFold2-ptm" \
       --use_gpu <true/false> \
       --db_load_mode 0 \
       -profile <docker/singularity/.../institute>
@@ -254,7 +254,7 @@ nextflow run nf-core/proteinfold \
       --colabfold_db <null (default) | DB_PATH> \
       --num_recycles_colabfold 3 \
       --use_amber <true/false> \
-      --colabfold_model_preset "AlphaFold2-ptm" \
+      --colabfold_model_preset "alphaFold2-ptm" \
       --use_gpu <true/false> \
       -profile <docker/singularity/.../institute>
 ```
