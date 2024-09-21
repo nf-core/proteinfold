@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - [[PR #175](https://github.com/nf-core/proteinfold/pull/175)] - Fix typo in some instances of model preset `alphafold2_ptm`.
 
+- [[PR #178](https://github.com/nf-core/proteinfold/pull/178)] - Enable running multiple modes in parallel.
+
 ## [[1.1.1](https://github.com/nf-core/proteinfold/releases/tag/1.1.1)] - 2025-07-30
 
 ### Enhancements & fixes
