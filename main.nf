@@ -20,11 +20,11 @@ nextflow.enable.dsl = 2
 if (params.mode.toLowerCase().split(",").contains("alphafold2")) {
     include { PREPARE_ALPHAFOLD2_DBS } from './subworkflows/local/prepare_alphafold2_dbs'
     include { ALPHAFOLD2             } from './workflows/alphafold2'
-} 
+}
 if (params.mode.toLowerCase().split(",").contains("colabfold")) {
     include { PREPARE_COLABFOLD_DBS } from './subworkflows/local/prepare_colabfold_dbs'
     include { COLABFOLD             } from './workflows/colabfold'
-} 
+}
 if (params.mode.toLowerCase().split(",").contains("esmfold")) {
     include { PREPARE_ESMFOLD_DBS } from './subworkflows/local/prepare_esmfold_dbs'
     include { ESMFOLD             } from './workflows/esmfold'
