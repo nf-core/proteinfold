@@ -37,7 +37,9 @@ An [example samplesheet](../assets/samplesheet.csv) has been provided with the p
 
 ## Running the pipeline
 
-The typical commands for running the pipeline on AlphaFold2, Colabfold and ESMFold modes are shown below.
+The typical commands for running the pipeline on AlphaFold2, Colabfold and ESMFold modes are shown below. 
+
+> You can run any combination of the models by providing them to the `--mode` parameter separated by a comma. For example: `--mode alphafold2,esmfold,colabfold` will run the three models in parallel.
 
 AlphaFold2 regular can be run using this command:
 
