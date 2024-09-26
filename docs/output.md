@@ -183,9 +183,9 @@ Below you can find an indicative example of the TSV file with the pLDDT scores p
 <summary>Output files</summary>
 
 - `multiqc`
-  - multiqc_report.html: A standalone HTML file that can be viewed in your web browser.
-  - multiqc_data/: Directory containing parsed statistics from the different tools used in the pipeline.
-  - multiqc_plots/: Directory containing static images from the report in various formats.
+  - `<MODE>_multiqc_report.html`: A standalone HTML file that can be viewed in your web browser.
+  - `<MODE>_multiqc_data/`: Directory containing parsed statistics from the different tools used in the pipeline.
+  - `<MODE>_multiqc_plots/`: Directory containing static images from the report in various formats.
 
 </details>
 

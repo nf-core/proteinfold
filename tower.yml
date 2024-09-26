@@ -1,5 +1,9 @@
 reports:
-  multiqc_report.html:
-    display: "MultiQC HTML report"
+  esmfold_multiqc_report.html:
+    display: "ESMFOLD MultiQC HTML report"
+  alphafold2_multiqc_report.html:
+    display: "ALPHAFOLD2 MultiQC HTML report"
+  colabfold_multiqc_report.html:
+    display: "COLABFOLD MultiQC HTML report"
   samplesheet.csv:
     display: "Auto-created samplesheet with collated metadata and FASTQ paths"
