@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 import os
-from matplotlib import pyplot as plt
 import argparse
+from matplotlib import pyplot as plt
 from collections import OrderedDict
 import base64
 import os
@@ -293,8 +293,11 @@ def pdb_to_lddt(pdb_files, generate_tsv):
 
     return output_lddt, averages
 
+
+
 print("Starting...")
 
+version = '1.0.0'
 parser = argparse.ArgumentParser()
 parser.add_argument('--type',  dest='in_type')
 parser.add_argument('--generate_tsv', choices=['y', 'n'], default = 'n',  dest='generate_tsv')
@@ -303,6 +306,7 @@ parser.add_argument('--pdb',   dest='pdb',required=True, nargs="+")
 parser.add_argument('--name',  dest='name')
 parser.add_argument('--output_dir',dest='output_dir')
 parser.add_argument('--html_template',dest='html_template')
+parser.add_argument('--version', action='version', version=f'{version}')
 parser.set_defaults(output_dir='')
 parser.set_defaults(in_type='ESM-FOLD')
 parser.set_defaults(name='')
@@ -372,15 +376,13 @@ if True:
         lddt_html = in_file.read()
         alphafold_template = alphafold_template.replace("<div id=\"lddt_placeholder\"></div>", lddt_html)   
        
-"""
-with open(f"{args.output_dir}/{args.name + ('_' if args.name else '')}seq_coverage.html", "r") as in_file:
-    alphafold_template = alphafold_template.replace(f"seq_coverage.png", f"{in_file.read()}")
+if False:
+    with open(f"{args.output_dir}/{args.name + ('_' if args.name else '')}seq_coverage.html", "r") as in_file:
+        alphafold_template = alphafold_template.replace(f"seq_coverage.png", f"{in_file.read()}")
 
-for i in range(0, 5):
-    with open(f"{args.output_dir}/{args.name + ('_' if args.name else '')}coverage_LDDT_{i}.html", "r") as in_file:
-        alphafold_template = alphafold_template.replace(f"coverage_LDDT_{i}.png", f"{in_file.read()}")
-
-"""
+    for i in range(0, 5):
+        with open(f"{args.output_dir}/{args.name + ('_' if args.name else '')}coverage_LDDT_{i}.html", "r") as in_file:
+            alphafold_template = alphafold_template.replace(f"coverage_LDDT_{i}.png", f"{in_file.read()}")
 
 with open(f"{args.output_dir}/{args.name}_{args.in_type}_report.html", "w") as out_file:
     out_file.write(alphafold_template)

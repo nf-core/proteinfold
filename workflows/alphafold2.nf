@@ -171,10 +171,10 @@ workflow ALPHAFOLD2 {
         ch_multiqc_files = ch_multiqc_files.mix(ch_multiqc_rep)
 
         MULTIQC (
-            ch_multiqc_files.collect(sort: true),
-            ch_multiqc_config.toSortedList(),
-            ch_multiqc_custom_config.toSortedList(),
-            ch_multiqc_logo.toSortedList()
+            ch_multiqc_files.collect(),
+            ch_multiqc_config.toList(),
+            ch_multiqc_custom_config.toList(),
+            ch_multiqc_logo.toList()
         )
         ch_multiqc_report = MULTIQC.out.report.toList()
     }

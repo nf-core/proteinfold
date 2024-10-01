@@ -155,6 +155,9 @@ workflow NFCORE_PROTEINFOLD {
         )
         ch_multiqc  = COLABFOLD.out.multiqc_report
         ch_versions = ch_versions.mix(COLABFOLD.out.versions)
+        ch_report_input = ch_report_input.mix(
+            COLABFOLD.out.pdb.join(COLABFOLD.out.msa).map{it[0]["model"] = "COLABFOLD"; it}
+        )
     }
 
     //
@@ -198,9 +201,9 @@ workflow NFCORE_PROTEINFOLD {
             ch_report_input.map{it[0].model},
             Channel.fromPath("$projectDir/assets/proteinfold_template.html").first()
         )
+        ch_versions = ch_versions.mix(GENERATE_REPORT.out.versions)
     }
     
-
     emit:
     multiqc_report = ch_multiqc  // channel: /path/to/multiqc_report.html
     versions       = ch_versions // channel: [version1, version2, ...]

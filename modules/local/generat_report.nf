@@ -36,6 +36,7 @@ process GENERATE_REPORT {
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         python: \$(python3 --version | sed 's/Python //g')
+        generate_report.py: \$(python3 --version)
     END_VERSIONS
     """
 
@@ -46,6 +47,7 @@ process GENERATE_REPORT {
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         python: \$(python3 --version | sed 's/Python //g')
+        generate_report.py: \$(python3 --version)
     END_VERSIONS
     """
 }
