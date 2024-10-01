@@ -57,6 +57,8 @@ workflow ALPHAFOLD2 {
 
     main:
     ch_multiqc_files = Channel.empty()
+    ch_pdb           = Channel.empty()
+    ch_msa           = Channel.empty()
 
     //
     // Create input channel from input file provided through params.input
@@ -94,7 +96,9 @@ workflow ALPHAFOLD2 {
             ch_pdb_seqres,
             ch_uniprot
         )
-        ch_multiqc_rep = RUN_ALPHAFOLD2.out.multiqc.collect()
+        ch_pdb         = ch_pdb.mix(RUN_ALPHAFOLD2.out.pdb)
+        ch_msa         = ch_pdb.mix(RUN_ALPHAFOLD2.out.msa)
+        ch_multiqc_rep = RUN_ALPHAFOLD2.out.multiqc.map{it[1]}.collect()
         ch_versions    = ch_versions.mix(RUN_ALPHAFOLD2.out.versions)
 
     } else if (alphafold2_mode == 'split_msa_prediction') {
@@ -134,7 +138,9 @@ workflow ALPHAFOLD2 {
             ch_uniprot,
             RUN_ALPHAFOLD2_MSA.out.features
         )
-        ch_multiqc_rep = RUN_ALPHAFOLD2_PRED.out.multiqc.collect()
+        ch_pdb         = ch_pdb.mix(RUN_ALPHAFOLD2_PRED.out.pdb)
+        ch_msa         = ch_pdb.mix(RUN_ALPHAFOLD2_PRED.out.msa)
+        ch_multiqc_rep = RUN_ALPHAFOLD2_PRED.out.multiqc.map{it[1]}.collect()
         ch_versions = ch_versions.mix(RUN_ALPHAFOLD2_PRED.out.versions)
     }
 
@@ -144,7 +150,6 @@ workflow ALPHAFOLD2 {
     softwareVersionsToYAML(ch_versions)
         .collectFile(storeDir: "${params.outdir}/pipeline_info", name: 'nf_core_proteinfold_software_mqc_versions.yml', sort: true, newLine: true)
         .set { ch_collated_versions }
-
     //
     // MODULE: MultiQC
     //
@@ -166,15 +171,17 @@ workflow ALPHAFOLD2 {
         ch_multiqc_files = ch_multiqc_files.mix(ch_multiqc_rep)
 
         MULTIQC (
-            ch_multiqc_files.collect(),
-            ch_multiqc_config.toList(),
-            ch_multiqc_custom_config.toList(),
-            ch_multiqc_logo.toList()
+            ch_multiqc_files.collect(sort: true),
+            ch_multiqc_config.toSortedList(),
+            ch_multiqc_custom_config.toSortedList(),
+            ch_multiqc_logo.toSortedList()
         )
         ch_multiqc_report = MULTIQC.out.report.toList()
     }
 
     emit:
+    pdb = ch_pdb // channel: /path/to/*.pdb
+    msa = ch_msa // channel: /path/to/*msa.tsv
     multiqc_report = ch_multiqc_report // channel: /path/to/multiqc_report.html
     versions       = ch_versions       // channel: [ path(versions.yml) ]
 }

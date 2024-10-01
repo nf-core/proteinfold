@@ -18,9 +18,11 @@ process COLABFOLD_BATCH {
     val   numRec
 
     output:
-    path ("*")         , emit: pdb
-    path ("*_mqc.png") , emit: multiqc
-    path "versions.yml", emit: versions
+    tuple val(meta), path ("*_relaxed_rank_*.pdb")   , emit: pdb
+    tuple val(meta), path ("*_coverage.png")         , emit: msa
+    tuple val(meta), path ("*_scores_rank.json")     , emit: scores
+    path ("*_mqc.png")              , emit: multiqc
+    path "versions.yml"             , emit: versions
 
     when:
     task.ext.when == null || task.ext.when

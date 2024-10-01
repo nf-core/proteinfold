@@ -203,6 +203,11 @@
                     "type": "boolean",
                     "description": "Skip MultiQC.",
                     "fa_icon": "fas fa-fast-forward"
+                },
+                "skip_visualisation": {
+                    "type": "boolean",
+                    "description": "Skip Visualisation reports.",
+                    "fa_icon": "fas fa-fast-forward"
                 }
             }
         },

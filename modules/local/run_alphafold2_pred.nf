@@ -26,11 +26,13 @@ process RUN_ALPHAFOLD2_PRED {
     path ('uniref90/*')
     path ('pdb_seqres/*')
     path ('uniprot/*')
-    path  msa
+    tuple val(meta), path(msa)
 
     output:
     path ("${fasta.baseName}*")
-    path "*_mqc.tsv", emit: multiqc
+    tuple val(meta), path ("${fasta.baseName}/ranked*pdb"), emit: pdb
+    tuple val(meta), path ("*_msa.tsv"), emit: msa
+    tuple val(meta), path ("*_mqc.tsv"), emit: multiqc
     path "versions.yml", emit: versions
 
     when:
@@ -58,8 +60,10 @@ process RUN_ALPHAFOLD2_PRED {
     paste ranked_0_plddt.tsv ranked_1_plddt.tsv ranked_2_plddt.tsv ranked_3_plddt.tsv ranked_4_plddt.tsv > plddt.tsv
     echo -e Positions"\\t"rank_0"\\t"rank_1"\\t"rank_2"\\t"rank_3"\\t"rank_4 > header.tsv
     cat header.tsv plddt.tsv > ../"${fasta.baseName}"_plddt_mqc.tsv
+    
     cd ..
-
+    extract_output.py --name ${fasta.baseName} \\
+        --pkls ${msa}
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         python: \$(python3 --version | sed 's/Python //g')
@@ -70,10 +74,17 @@ process RUN_ALPHAFOLD2_PRED {
     """
     touch ./"${fasta.baseName}".alphafold.pdb
     touch ./"${fasta.baseName}"_mqc.tsv
-
+    mkdir "${fasta.baseName}"
+    touch "${fasta.baseName}/ranked_0.pdb"
+    touch "${fasta.baseName}/ranked_1.pdb"
+    touch "${fasta.baseName}/ranked_2.pdb"
+    touch "${fasta.baseName}/ranked_3.pdb"
+    touch "${fasta.baseName}/ranked_4.pdb"
+    touch ${fasta.baseName}_msa.tsv
+    
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        awk: \$(gawk --version| head -1 | sed 's/GNU Awk //; s/, API:.*//')
+        python: \$(python3 --version | sed 's/Python //g')
     END_VERSIONS
     """
 }

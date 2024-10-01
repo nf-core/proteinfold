@@ -14,8 +14,8 @@ process RUN_ESMFOLD {
     val numRec
 
     output:
-    path ("${fasta.baseName}*.pdb"), emit: pdb
-    path ("${fasta.baseName}_plddt_mqc.tsv"), emit: multiqc
+    tuple val(meta), path ("${fasta.baseName}*.pdb"), emit: pdb
+    tuple val(meta), path ("${fasta.baseName}_plddt_mqc.tsv"), emit: multiqc
     path "versions.yml", emit: versions
 
     when:
@@ -36,7 +36,7 @@ process RUN_ESMFOLD {
     awk '{print \$2"\\t"\$3"\\t"\$4"\\t"\$6"\\t"\$11}' "${fasta.baseName}"*.pdb | grep -v 'N/A' | uniq > plddt.tsv
     echo -e Atom_serial_number"\\t"Atom_name"\\t"Residue_name"\\t"Residue_sequence_number"\\t"pLDDT > header.tsv
     cat header.tsv plddt.tsv > "${fasta.baseName}"_plddt_mqc.tsv
-
+    #mv  "${fasta.baseName}"*.pdb  ${fasta.baseName}.pdb
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         esm-fold: $VERSION

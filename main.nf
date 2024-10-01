@@ -35,6 +35,7 @@ include { PIPELINE_COMPLETION              } from './subworkflows/local/utils_nf
 include { getColabfoldAlphafold2Params     } from './subworkflows/local/utils_nfcore_proteinfold_pipeline'
 include { getColabfoldAlphafold2ParamsPath } from './subworkflows/local/utils_nfcore_proteinfold_pipeline'
 
+include { GENERATE_REPORT } from './modules/local/generat_report'
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     COLABFOLD PARAMETER VALUES
@@ -58,7 +59,7 @@ workflow NFCORE_PROTEINFOLD {
     main:
     ch_multiqc  = Channel.empty()
     ch_versions = Channel.empty()
-
+    ch_report_input = Channel.empty()
     //
     // WORKFLOW: Run alphafold2
     //
@@ -115,6 +116,10 @@ workflow NFCORE_PROTEINFOLD {
         )
         ch_multiqc  = ALPHAFOLD2.out.multiqc_report
         ch_versions = ch_versions.mix(ALPHAFOLD2.out.versions)
+        ch_report_input = ch_report_input.mix(
+            ALPHAFOLD2.out.pdb.join(ALPHAFOLD2.out.msa).map{it[0]["model"] = "ALPHAFOLD2"; it}
+        )
+
     }
 
     //
@@ -178,7 +183,24 @@ workflow NFCORE_PROTEINFOLD {
         )
         ch_multiqc  = ESMFOLD.out.multiqc_report
         ch_versions = ch_versions.mix(ESMFOLD.out.versions)
+        ch_report_input = ch_report_input.mix(
+            ESMFOLD.out.pdb.combine(Channel.fromPath("$projectDir/assets/NO_FILE")).map{it[0]["model"] = "ESMFOLD"; it}
+        )
     }
+    
+    //
+    // POST PROCESSING: generate visulaisation reports
+    //
+    if (!params.skip_visualisation){
+        GENERATE_REPORT(
+            ch_report_input.map{[it[0], it[1]]},
+            ch_report_input.map{[it[0], it[2]]},
+            ch_report_input.map{it[0].model},
+            Channel.fromPath("$projectDir/assets/proteinfold_template.html").first()
+        )
+    }
+    
+
     emit:
     multiqc_report = ch_multiqc  // channel: /path/to/multiqc_report.html
     versions       = ch_versions // channel: [version1, version2, ...]
