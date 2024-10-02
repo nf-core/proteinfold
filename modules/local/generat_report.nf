@@ -12,7 +12,7 @@ process GENERATE_REPORT {
     tuple val(meta_msa), path(msa)
     val(output_type)
     path(template)
-    
+
     output:
     tuple val(meta), path ("*report.html"), emit: report
     path "versions.yml"        , emit: versions
@@ -22,7 +22,7 @@ process GENERATE_REPORT {
 
     script:
     def args = task.ext.args ?: ''
-    
+
     """
     generat_report.py --type ${output_type} \\
         --msa ${msa} \\

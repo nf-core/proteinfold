@@ -190,7 +190,6 @@ workflow NFCORE_PROTEINFOLD {
             ESMFOLD.out.pdb.combine(Channel.fromPath("$projectDir/assets/NO_FILE")).map{it[0]["model"] = "ESMFOLD"; it}
         )
     }
-    
     //
     // POST PROCESSING: generate visulaisation reports
     //
@@ -203,7 +202,6 @@ workflow NFCORE_PROTEINFOLD {
         )
         ch_versions = ch_versions.mix(GENERATE_REPORT.out.versions)
     }
-    
     emit:
     multiqc_report = ch_multiqc  // channel: /path/to/multiqc_report.html
     versions       = ch_versions // channel: [version1, version2, ...]

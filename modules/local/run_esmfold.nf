@@ -38,7 +38,7 @@ process RUN_ESMFOLD {
     cat header.tsv plddt.tsv > "${fasta.baseName}"_plddt_mqc.tsv
     mv  "${fasta.baseName}"*.pdb tmp.pdb
     mv  tmp.pdb ${fasta.baseName}.pdb
-    
+
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         esm-fold: $VERSION

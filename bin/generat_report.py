@@ -184,7 +184,7 @@ def generate_plots(msa_path, plddt_paths, name, out_dir):
     )
     # Save as interactive HTML instead of an image
     fig.savefig(f"{out_dir}/{name+('_' if name else '')}seq_coverage.png")
-    
+
     # Plotting Predicted LDDT per position using Plotly
     plddt_per_model = OrderedDict()
     plddt_paths.sort()
@@ -259,7 +259,7 @@ def pdb_to_lddt(pdb_files, generate_tsv):
                     last = columns[5]
             if len(current_resd) > 0:
                 plddt_values.append(sum(current_resd) / len(current_resd))
-                    
+
         # Calculate the average PLDDT value for the current file
         if plddt_values:
             avg_plddt = sum(plddt_values) / len(plddt_values)

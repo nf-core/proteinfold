@@ -74,7 +74,7 @@ process RUN_ALPHAFOLD2 {
     paste ranked_0_plddt.tsv ranked_1_plddt.tsv ranked_2_plddt.tsv ranked_3_plddt.tsv ranked_4_plddt.tsv > plddt.tsv
     echo -e Positions"\\t"rank_0"\\t"rank_1"\\t"rank_2"\\t"rank_3"\\t"rank_4 > header.tsv
     cat header.tsv plddt.tsv > ../"${fasta.baseName}"_plddt_mqc.tsv
-    
+
     extract_output.py --name ${fasta.baseName} \\
         --pkls features.pkl
     cd ..
@@ -96,7 +96,7 @@ process RUN_ALPHAFOLD2 {
     touch "${fasta.baseName}/ranked_3.pdb"
     touch "${fasta.baseName}/ranked_4.pdb"
     touch "${fasta.baseName}/${fasta.baseName}_msa.tsv
-    
+
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         python: \$(python3 --version | sed 's/Python //g')
