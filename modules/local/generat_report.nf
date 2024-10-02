@@ -31,7 +31,6 @@ process GENERATE_REPORT {
         --output_dir ./ \\
         --name ${meta.id} \\
         $args \\
-        
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
