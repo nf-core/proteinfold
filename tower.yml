@@ -8,8 +8,8 @@ reports:
   samplesheet.csv:
     display: "Auto-created samplesheet with collated metadata and FASTQ paths"
   "*_ALPHAFOLD2_report.html":
-    display: "ALPHAFOLD2 - Predected structures"
+    display: "ALPHAFOLD2 - Predicted structures"
   "*_ESMFOLD_report.html":
-    display: "ESMFOLD - Predected structures"
+    display: "ESMFOLD - Predicted structures"
   "*_COLABFOLD_report.html":
-    display: "COLABFOLD - Predected structures"
+    display: "COLABFOLD - Predicted structures"
