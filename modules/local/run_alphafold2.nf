@@ -95,7 +95,7 @@ process RUN_ALPHAFOLD2 {
     touch "${fasta.baseName}/ranked_2.pdb"
     touch "${fasta.baseName}/ranked_3.pdb"
     touch "${fasta.baseName}/ranked_4.pdb"
-    touch "${fasta.baseName}/${fasta.baseName}_msa.tsv
+    touch "${fasta.baseName}/${fasta.baseName}_msa.tsv"
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
