@@ -12,7 +12,7 @@ from Bio import PDB
 
 def generate_output_images(msa_path, plddt_data, name, out_dir, in_type, generate_tsv):
     msa = []
-    if not msa_path.endswith("NO_FILE"):
+    if in_type.lower() != "colabfold" and not msa_path.endswith("NO_FILE"):
         with open(msa_path, "r") as in_file:
             for line in in_file:
                 msa.append([int(x) for x in line.strip().split()])
@@ -137,7 +137,7 @@ def generate_output_images(msa_path, plddt_data, name, out_dir, in_type, generat
     ) as out_file:
         out_file.write(html_content)
 
-    
+
 def generate_plots(msa_path, plddt_paths, name, out_dir):
     msa = []
     with open(msa_path, "r") as in_file:
@@ -184,11 +184,7 @@ def generate_plots(msa_path, plddt_paths, name, out_dir):
     )
     # Save as interactive HTML instead of an image
     fig.savefig(f"{out_dir}/{name+('_' if name else '')}seq_coverage.png")
-    """
-    #fig.to_html(full_html=False).write_html(f"{out_dir}/{name+('_' if name else '')}seq_coverage.html")
-    with open (f"{out_dir}/{name+('_' if name else '')}seq_coverage.html", "w") as out_plt:
-        out_plt.write(fig.to_html(full_html=False))
-    """
+    
     # Plotting Predicted LDDT per position using Plotly
     plddt_per_model = OrderedDict()
     plddt_paths.sort()
@@ -211,11 +207,8 @@ def generate_plots(msa_path, plddt_paths, name, out_dir):
         )
         fig.update_layout(title="Predicted LDDT per Position")
         fig.savefig(f"{out_dir}/{name+('_' if name else '')}coverage_LDDT_{i}.png")
-        """
-        with open (f"{out_dir}/{name+('_' if name else '')}coverage_LDDT_{i}.html", "w") as out_plt:
-            out_plt.write(fig.to_html(full_html=False).replace("\"", "\\\""))
-        """
         i += 1
+
 
 def align_structures(structures):
     parser = PDB.PDBParser(QUIET=True)
@@ -243,6 +236,7 @@ def align_structures(structures):
 
     return aligned_structures
 
+
 def pdb_to_lddt(pdb_files, generate_tsv):
     pdb_files_sorted = pdb_files
     pdb_files_sorted.sort()
@@ -252,21 +246,24 @@ def pdb_to_lddt(pdb_files, generate_tsv):
 
     for pdb_file in pdb_files_sorted:
         plddt_values = []
-        seen_lines = set()
-
+        current_resd = []
+        last = None
         with open(pdb_file, "r") as infile:
             for line in infile:
                 columns = line.split()
                 if len(columns) >= 11:
-                    key = f"{columns[5]}\t{columns[10]}"
-                    if key not in seen_lines:
-                        seen_lines.add(key)
-                        plddt_values.append(float(columns[10]))
-
+                    if last and last != columns[5]:
+                        plddt_values.append(sum(current_resd) / len(current_resd))
+                        current_resd = []
+                    current_resd.append(float(columns[10]))
+                    last = columns[5]
+            if len(current_resd) > 0:
+                plddt_values.append(sum(current_resd) / len(current_resd))
+                    
         # Calculate the average PLDDT value for the current file
         if plddt_values:
             avg_plddt = sum(plddt_values) / len(plddt_values)
-            averages.append(avg_plddt)
+            averages.append(round(avg_plddt, 3))
         else:
             averages.append(0.0)
 
@@ -283,8 +280,8 @@ def pdb_to_lddt(pdb_files, generate_tsv):
 
 
 print("Starting...")
-version = "1.0.0"
 
+version = "1.0.0"
 parser = argparse.ArgumentParser()
 parser.add_argument("--type", dest="in_type")
 parser.add_argument(
@@ -297,7 +294,7 @@ parser.add_argument("--output_dir", dest="output_dir")
 parser.add_argument("--html_template", dest="html_template")
 parser.add_argument("--version", action="version", version=f"{version}")
 parser.set_defaults(output_dir="")
-parser.set_defaults(in_type="ESMFOLD")
+parser.set_defaults(in_type="ESM-FOLD")
 parser.set_defaults(name="")
 args = parser.parse_args()
 
@@ -306,7 +303,6 @@ lddt_data, lddt_averages = pdb_to_lddt(args.pdb, args.generate_tsv)
 generate_output_images(
     args.msa, lddt_data, args.name, args.output_dir, args.in_type, args.generate_tsv
 )
-
 # generate_plots(args.msa, args.plddt, args.name, args.output_dir)
 
 print("generating html report...")
@@ -345,18 +341,18 @@ for structure in aligned_structures:
     i += 1
 
 if not args.msa.endswith("NO_FILE"):
-    with open(
-        f"{args.output_dir}/{args.name + ('_' if args.name else '')}seq_coverage.png",
-        "rb",
-    ) as in_file:
+    image_path = (
+        f"{args.output_dir}/{args.msa}"
+        if args.in_type.lower() == "colabfold"
+        else f"{args.output_dir}/{args.name + ('_' if args.name else '')}seq_coverage.png"
+    )
+    with open(image_path, "rb") as in_file:
         alphafold_template = alphafold_template.replace(
             "seq_coverage.png",
             f"data:image/png;base64,{base64.b64encode(in_file.read()).decode('utf-8')}",
         )
 else:
-    pattern = (
-        r'<div id="seq_coverage_container".*?>.*?(<!--.*?-->.*?)*?</div>\s*</div>'
-    )
+    pattern = r'<div id="seq_coverage_container".*?>.*?(<!--.*?-->.*?)*?</div>\s*</div>'
     alphafold_template = re.sub(pattern, "", alphafold_template, flags=re.DOTALL)
 
 with open(
