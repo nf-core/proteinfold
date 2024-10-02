@@ -14,7 +14,7 @@ from Bio import PDB
 
 def generate_output_images(msa_path, plddt_data, name, out_dir, in_type, generate_tsv):
     msa = []
-    if not msa_path.endswith("NO_FILE"):
+    if in_type.lower() != "colabfold" and not msa_path.endswith("NO_FILE"):
         with open(msa_path, 'r') as in_file:
             for line in in_file:
                 msa.append([int(x) for x in line.strip().split()])
@@ -278,7 +278,7 @@ def pdb_to_lddt(pdb_files, generate_tsv):
         # Calculate the average PLDDT value for the current file
         if plddt_values:
             avg_plddt = sum(plddt_values) / len(plddt_values)
-            averages.append(avg_plddt)
+            averages.append(round(avg_plddt, 3))
         else:
             averages.append(0.0)
 
@@ -308,7 +308,7 @@ parser.add_argument('--output_dir',dest='output_dir')
 parser.add_argument('--html_template',dest='html_template')
 parser.add_argument('--version', action='version', version=f'{version}')
 parser.set_defaults(output_dir='')
-parser.set_defaults(in_type='ESMFOLD')
+parser.set_defaults(in_type='ESM-FOLD')
 parser.set_defaults(name='')
 args = parser.parse_args()
 
@@ -350,7 +350,8 @@ for structure in aligned_structures:
 
 if True:
     if not args.msa.endswith("NO_FILE"):
-        with open(f"{args.output_dir}/{args.name + ('_' if args.name else '')}seq_coverage.png", "rb") as in_file:
+        image_path = f"{args.output_dir}/{args.msa}" if args.in_type.lower() == "colabfold" else f"{args.output_dir}/{args.name + ('_' if args.name else '')}seq_coverage.png"
+        with open(image_path, "rb") as in_file:
             alphafold_template = alphafold_template.replace("seq_coverage.png", f"data:image/png;base64,{base64.b64encode(in_file.read()).decode('utf-8')}")
         
         # with open(f"{args.output_dir}/{args.name + ('_' if args.name else '')}seq_coverage.html", "r") as in_file:
