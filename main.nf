@@ -35,7 +35,7 @@ include { PIPELINE_COMPLETION              } from './subworkflows/local/utils_nf
 include { getColabfoldAlphafold2Params     } from './subworkflows/local/utils_nfcore_proteinfold_pipeline'
 include { getColabfoldAlphafold2ParamsPath } from './subworkflows/local/utils_nfcore_proteinfold_pipeline'
 
-include { GENERATE_REPORT } from './modules/local/generat_report'
+include { GENERATE_REPORT } from './modules/local/generate_report'
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     COLABFOLD PARAMETER VALUES
