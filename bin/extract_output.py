@@ -7,7 +7,6 @@ import argparse
 def read_pkl(id, pkl_files):
     for pkl_file in pkl_files:
         dict_data = pickle.load(open(pkl_file, "rb"))
-        # print(dict_data.keys())
         if pkl_file.endswith("features.pkl"):
             with open(f"{id}_msa.tsv", "w") as out_f:
                 for val in dict_data["msa"]:
