@@ -14,7 +14,7 @@ process RUN_ESMFOLD {
     val numRec
 
     output:
-    tuple val(meta), path ("${fasta.baseName}*.pdb"), emit: pdb
+    tuple val(meta), path ("${fasta.baseName}*.pdb")         , emit: pdb
     tuple val(meta), path ("${fasta.baseName}_plddt_mqc.tsv"), emit: multiqc
     path "versions.yml", emit: versions
 
