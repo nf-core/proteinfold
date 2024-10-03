@@ -294,7 +294,7 @@ parser.add_argument("--output_dir", dest="output_dir")
 parser.add_argument("--html_template", dest="html_template")
 parser.add_argument("--version", action="version", version=f"{version}")
 parser.set_defaults(output_dir="")
-parser.set_defaults(in_type="ESM-FOLD")
+parser.set_defaults(in_type="ESMFOLD")
 parser.set_defaults(name="")
 args = parser.parse_args()
 
@@ -364,5 +364,5 @@ with open(
         '<div id="lddt_placeholder"></div>', lddt_html
     )
 
-with open(f"{args.output_dir}/{args.name}_{args.in_type}_report.html", "w") as out_file:
+with open(f"{args.output_dir}/{args.name}_{args.in_type.lower()}_report.html", "w") as out_file:
     out_file.write(alphafold_template)
