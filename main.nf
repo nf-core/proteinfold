@@ -193,7 +193,6 @@ workflow NFCORE_PROTEINFOLD {
     //
     // POST PROCESSING: generate visulaisation reports
     //
-    ch_report_input.view()
     if (!params.skip_visualisation){
         GENERATE_REPORT(
             ch_report_input.map{[it[0], it[1]]},
