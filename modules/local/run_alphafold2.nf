@@ -30,8 +30,8 @@ process RUN_ALPHAFOLD2 {
     output:
     path ("${fasta.baseName}*")
     tuple val(meta), path ("${fasta.baseName}/ranked*pdb"), emit: pdb
-    tuple val(meta), path ("${fasta.baseName}/*_msa.tsv"), emit: msa
-    tuple val(meta), path ("*_mqc.tsv"), emit: multiqc
+    tuple val(meta), path ("${fasta.baseName}/*_msa.tsv") , emit: msa
+    tuple val(meta), path ("*_mqc.tsv").                  , emit: multiqc
     path "versions.yml", emit: versions
 
     when:
