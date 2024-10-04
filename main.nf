@@ -36,6 +36,7 @@ include { getColabfoldAlphafold2Params     } from './subworkflows/local/utils_nf
 include { getColabfoldAlphafold2ParamsPath } from './subworkflows/local/utils_nfcore_proteinfold_pipeline'
 
 include { GENERATE_REPORT } from './modules/local/generate_report'
+include { FOLDSEEK_EASYSEARCH } from './modules/nf-core/foldseek/easysearch/main'
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     COLABFOLD PARAMETER VALUES
@@ -160,7 +161,7 @@ workflow NFCORE_PROTEINFOLD {
                 .out
                 .pdb
                 .join(COLABFOLD.out.msa)
-                .map { it[0]["model"] = "colabfold"; it }
+                .map { it[0]["model"] = "COLABFOLD"; it }
         )
     }
 
@@ -206,6 +207,24 @@ workflow NFCORE_PROTEINFOLD {
         )
         ch_versions = ch_versions.mix(GENERATE_REPORT.out.versions)
     }
+
+    if (params.foldseek_search == "easysearch"){
+        ch_foldseek_db = channel.value([["id": params.foldseek_db], 
+                                        file(params.foldseek_db_path, 
+                                            checkIfExists: true)])
+
+        FOLDSEEK_EASYSEARCH(
+            ch_report_input
+            .map{
+                if (it[0].model == "ESMFOLD") 
+                    [it[0], it[1]]
+                else
+                    [it[0], it[1][0]]
+                },
+            ch_foldseek_db
+        )
+    }
+
     emit:
     multiqc_report = ch_multiqc  // channel: /path/to/multiqc_report.html
     versions       = ch_versions // channel: [version1, version2, ...]

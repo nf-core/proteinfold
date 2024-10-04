@@ -193,6 +193,38 @@
                 }
             }
         },
+        "foldseek_options": {
+            "title": "Foldseek options",
+            "type": "object",
+            "fa_icon": "fas fa-coins",
+            "description": "Foldseek options.",
+            "properties": {
+                "foldseek_search": {
+                    "type": "string",
+                    "enum": ["easysearch"],
+                    "default": "easysearch",
+                    "description": "Specifies the mode of foldseek search.",
+                    "fa_icon": "fas fa-search"
+                },
+                "foldseek_db": {
+                    "type": "string",
+                    "description": "The ID of Foldseek databases",
+                    "fa_icon": "fas fa-server"
+                },
+                "foldseek_db_path": {
+                    "type": "string",
+                    "format": "path",
+                    "exists": true,
+                    "description": "Specifies the path to foldseek databases used by 'foldseek'.",
+                    "fa_icon": "fas fa-folder-open"
+                },
+                "foldseek_easysearch_arg": {
+                    "type": "string",
+                    "description": "Specifies the arguments to be passed to foldseek easysearch command",
+                    "fa_icon": "fas fa-server"
+                }
+            }
+        },
         "process_skipping_options": {
             "title": "Process skipping options",
             "type": "object",
