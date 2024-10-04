@@ -7,3 +7,9 @@ reports:
     display: "COLABFOLD MultiQC HTML report"
   samplesheet.csv:
     display: "Auto-created samplesheet with collated metadata and FASTQ paths"
+  "*_alphafold2_report.html":
+    display: "ALPHAFOLD2 - Predicted structures"
+  "*_esmfold_report.html":
+    display: "ESMFOLD - Predicted structures"
+  "*_colabfold_report.html":
+    display: "COLABFOLD - Predicted structures"
