@@ -13,7 +13,7 @@ process FOLDSEEK_EASYSEARCH {
 
     output:
     tuple val(meta), path("${meta.id}.m8"), emit: aln, optional: true
-    tuple val(meta), path("${meta.id}_foldseek.html"), emit: report, optional: true
+    tuple val(meta), path("${meta.id}_${meta.model.toLowerCase()}_foldseek.html"), emit: report, optional: true
     path "versions.yml"                   , emit: versions
 
     when:
