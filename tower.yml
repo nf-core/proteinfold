@@ -14,8 +14,8 @@ reports:
   "*_colabfold_report.html":
     display: "COLABFOLD - Predicted structures"
   "*_colabfold_foldseek.html":
-    display: "Foldseek on COLABFOLD output"
+    display: "COLABFOLD - Foldseek output"
   "*_alphafold2_foldseek.html":
-    display: "Foldseek on ALPHAFOLD2 output"
+    display: "ALPHAFOLD2 - Foldseek output"
   "*_esmfold_foldseek.html":
-    display: "Foldseek on ESMFOLD output"
+    display: "ESMFOLD - Foldseek output"
