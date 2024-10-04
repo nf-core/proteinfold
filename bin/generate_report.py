@@ -282,6 +282,12 @@ def pdb_to_lddt(pdb_files, generate_tsv):
 print("Starting...")
 
 version = "1.0.0"
+model_name = {
+    "esmfold": "ESMFold",
+    "alphafold2": "AlphaFold2",
+    "colabfold": "ColabFold",
+}
+
 parser = argparse.ArgumentParser()
 parser.add_argument("--type", dest="in_type")
 parser.add_argument(
@@ -318,7 +324,9 @@ aligned_structures[0] = ref_structure_path
 
 proteinfold_template = open(args.html_template, "r").read()
 proteinfold_template = proteinfold_template.replace("*sample_name*", args.name)
-proteinfold_template = proteinfold_template.replace("*prog_name*", args.in_type)
+proteinfold_template = proteinfold_template.replace(
+    "*prog_name*", model_name[args.in_type.lower()]
+)
 
 args_pdb_array_js = ",\n".join([f'"{model}"' for model in structures])
 proteinfold_template = re.sub(
@@ -364,5 +372,7 @@ with open(
         '<div id="lddt_placeholder"></div>', lddt_html
     )
 
-with open(f"{args.output_dir}/{args.name}_{args.in_type.lower()}_report.html", "w") as out_file:
+with open(
+    f"{args.output_dir}/{args.name}_{args.in_type.lower()}_report.html", "w"
+) as out_file:
     out_file.write(proteinfold_template)
