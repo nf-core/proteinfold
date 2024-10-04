@@ -294,7 +294,7 @@ parser.add_argument("--output_dir", dest="output_dir")
 parser.add_argument("--html_template", dest="html_template")
 parser.add_argument("--version", action="version", version=f"{version}")
 parser.set_defaults(output_dir="")
-parser.set_defaults(in_type="ESMFOLD")
+parser.set_defaults(in_type="esmfold")
 parser.set_defaults(name="")
 args = parser.parse_args()
 
@@ -316,26 +316,26 @@ io.set_structure(aligned_structures[0])
 io.save(ref_structure_path)
 aligned_structures[0] = ref_structure_path
 
-alphafold_template = open(args.html_template, "r").read()
-alphafold_template = alphafold_template.replace("*sample_name*", args.name)
-alphafold_template = alphafold_template.replace("*prog_name*", args.in_type)
+proteinfold_template = open(args.html_template, "r").read()
+proteinfold_template = proteinfold_template.replace("*sample_name*", args.name)
+proteinfold_template = proteinfold_template.replace("*prog_name*", args.in_type)
 
 args_pdb_array_js = ",\n".join([f'"{model}"' for model in structures])
-alphafold_template = re.sub(
+proteinfold_template = re.sub(
     r"const MODELS = \[.*?\];",  # Match the existing MODELS array in HTML template
     f"const MODELS = [\n  {args_pdb_array_js}\n];",  # Replace with the new array
-    alphafold_template,
+    proteinfold_template,
     flags=re.DOTALL,
 )
 
 averages_js_array = f"const LDDT_AVERAGES = {lddt_averages};"
-alphafold_template = alphafold_template.replace(
+proteinfold_template = proteinfold_template.replace(
     "const LDDT_AVERAGES = [];", averages_js_array
 )
 
 i = 0
 for structure in aligned_structures:
-    alphafold_template = alphafold_template.replace(
+    proteinfold_template = proteinfold_template.replace(
         f"*_data_ranked_{i}.pdb*", open(structure, "r").read().replace("\n", "\\n")
     )
     i += 1
@@ -347,22 +347,22 @@ if not args.msa.endswith("NO_FILE"):
         else f"{args.output_dir}/{args.name + ('_' if args.name else '')}seq_coverage.png"
     )
     with open(image_path, "rb") as in_file:
-        alphafold_template = alphafold_template.replace(
+        proteinfold_template = proteinfold_template.replace(
             "seq_coverage.png",
             f"data:image/png;base64,{base64.b64encode(in_file.read()).decode('utf-8')}",
         )
 else:
     pattern = r'<div id="seq_coverage_container".*?>.*?(<!--.*?-->.*?)*?</div>\s*</div>'
-    alphafold_template = re.sub(pattern, "", alphafold_template, flags=re.DOTALL)
+    proteinfold_template = re.sub(pattern, "", proteinfold_template, flags=re.DOTALL)
 
 with open(
     f"{args.output_dir}/{args.name + ('_' if args.name else '')}coverage_LDDT.html",
     "r",
 ) as in_file:
     lddt_html = in_file.read()
-    alphafold_template = alphafold_template.replace(
+    proteinfold_template = proteinfold_template.replace(
         '<div id="lddt_placeholder"></div>', lddt_html
     )
 
 with open(f"{args.output_dir}/{args.name}_{args.in_type.lower()}_report.html", "w") as out_file:
-    out_file.write(alphafold_template)
+    out_file.write(proteinfold_template)
