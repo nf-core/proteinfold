@@ -118,7 +118,7 @@ workflow NFCORE_PROTEINFOLD {
         ch_multiqc  = ALPHAFOLD2.out.multiqc_report
         ch_versions = ch_versions.mix(ALPHAFOLD2.out.versions)
         ch_report_input = ch_report_input.mix(
-            ALPHAFOLD2.out.pdb.join(ALPHAFOLD2.out.msa).map{it[0]["model"] = "ALPHAFOLD2"; it}
+            ALPHAFOLD2.out.pdb.join(ALPHAFOLD2.out.msa).map{it[0]["model"] = "alphafold2"; it}
         )
 
     }
@@ -192,7 +192,7 @@ workflow NFCORE_PROTEINFOLD {
         ch_multiqc  = ESMFOLD.out.multiqc_report
         ch_versions = ch_versions.mix(ESMFOLD.out.versions)
         ch_report_input = ch_report_input.mix(
-            ESMFOLD.out.pdb.combine(Channel.fromPath("$projectDir/assets/NO_FILE")).map{it[0]["model"] = "ESMFOLD"; it}
+            ESMFOLD.out.pdb.combine(Channel.fromPath("$projectDir/assets/NO_FILE")).map{it[0]["model"] = "esmfold"; it}
         )
     }
     //
