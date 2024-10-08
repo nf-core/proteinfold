@@ -9,8 +9,6 @@
 ----------------------------------------------------------------------------------------
 */
 
-nextflow.enable.dsl = 2
-
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     IMPORT FUNCTIONS / MODULES / SUBWORKFLOWS / WORKFLOWS
@@ -36,6 +34,7 @@ include { getColabfoldAlphafold2Params     } from './subworkflows/local/utils_nf
 include { getColabfoldAlphafold2ParamsPath } from './subworkflows/local/utils_nfcore_proteinfold_pipeline'
 
 include { GENERATE_REPORT } from './modules/local/generate_report'
+
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     COLABFOLD PARAMETER VALUES
@@ -208,7 +207,6 @@ workflow NFCORE_PROTEINFOLD {
     }
     emit:
     multiqc_report = ch_multiqc  // channel: /path/to/multiqc_report.html
-    versions       = ch_versions // channel: [version1, version2, ...]
 }
 
 /*
@@ -225,7 +223,6 @@ workflow {
     //
     PIPELINE_INITIALISATION (
         params.version,
-        params.help,
         params.validate_params,
         params.monochrome_logs,
         args,
