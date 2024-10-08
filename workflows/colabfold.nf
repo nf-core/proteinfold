@@ -131,7 +131,7 @@ workflow COLABFOLD {
     // Collate and save software versions
     //
     softwareVersionsToYAML(ch_versions)
-        .collectFile(storeDir: "${params.outdir}/pipeline_info", name: 'nf_core_proteinfold_software_mqc_versions.yml', sort: true, newLine: true)
+        .collectFile(storeDir: "${params.outdir}/pipeline_info", name: 'nf_core_proteinfold_software_mqc_colabfold_versions.yml', sort: true, newLine: true)
         .set { ch_collated_versions }
 
     //
@@ -152,7 +152,7 @@ workflow COLABFOLD {
         ch_multiqc_files = ch_multiqc_files.mix(ch_workflow_summary.collectFile(name: 'workflow_summary_mqc.yaml'))
         ch_multiqc_files = ch_multiqc_files.mix(ch_methods_description.collectFile(name: 'methods_description_mqc.yaml'))
         ch_multiqc_files = ch_multiqc_files.mix(ch_collated_versions)
-        ch_multiqc_files = ch_multiqc_files.mix(COLABFOLD_BATCH.out.multiqc.collect())
+        ch_multiqc_files = ch_multiqc_files.mix(COLABFOLD_BATCH.out.multiqc.map{it[1]}.collect())
 
         MULTIQC (
             ch_multiqc_files.collect(),
@@ -164,6 +164,8 @@ workflow COLABFOLD {
     }
 
     emit:
+    pdb = COLABFOLD_BATCH.out.pdb // channel: /path/to/*.pdb
+    msa = COLABFOLD_BATCH.out.msa // channel: /path/to/*_coverage.png
     multiqc_report = ch_multiqc_report // channel: /path/to/multiqc_report.html
     versions       = ch_versions       // channel: [ path(versions.yml) ]
 }

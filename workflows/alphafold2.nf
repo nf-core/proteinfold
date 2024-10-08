@@ -57,6 +57,8 @@ workflow ALPHAFOLD2 {
 
     main:
     ch_multiqc_files = Channel.empty()
+    ch_pdb           = Channel.empty()
+    ch_msa           = Channel.empty()
 
     //
     // Create input channel from input file provided through params.input
@@ -94,7 +96,9 @@ workflow ALPHAFOLD2 {
             ch_pdb_seqres,
             ch_uniprot
         )
-        ch_multiqc_rep = RUN_ALPHAFOLD2.out.multiqc.collect()
+        ch_pdb         = ch_pdb.mix(RUN_ALPHAFOLD2.out.pdb)
+        ch_msa         = ch_msa.mix(RUN_ALPHAFOLD2.out.msa)
+        ch_multiqc_rep = RUN_ALPHAFOLD2.out.multiqc.map{it[1]}.collect()
         ch_versions    = ch_versions.mix(RUN_ALPHAFOLD2.out.versions)
 
     } else if (alphafold2_mode == 'split_msa_prediction') {
@@ -134,7 +138,9 @@ workflow ALPHAFOLD2 {
             ch_uniprot,
             RUN_ALPHAFOLD2_MSA.out.features
         )
-        ch_multiqc_rep = RUN_ALPHAFOLD2_PRED.out.multiqc.collect()
+        ch_pdb         = ch_pdb.mix(RUN_ALPHAFOLD2_PRED.out.pdb)
+        ch_msa         = ch_msa.mix(RUN_ALPHAFOLD2_PRED.out.msa)
+        ch_multiqc_rep = RUN_ALPHAFOLD2_PRED.out.multiqc.map{it[1]}.collect()
         ch_versions = ch_versions.mix(RUN_ALPHAFOLD2_PRED.out.versions)
     }
 
@@ -142,9 +148,8 @@ workflow ALPHAFOLD2 {
     // Collate and save software versions
     //
     softwareVersionsToYAML(ch_versions)
-        .collectFile(storeDir: "${params.outdir}/pipeline_info", name: 'nf_core_proteinfold_software_mqc_versions.yml', sort: true, newLine: true)
+        .collectFile(storeDir: "${params.outdir}/pipeline_info", name: 'nf_core_proteinfold_software_mqc_alphafold2_versions.yml', sort: true, newLine: true)
         .set { ch_collated_versions }
-
     //
     // MODULE: MultiQC
     //
@@ -175,6 +180,8 @@ workflow ALPHAFOLD2 {
     }
 
     emit:
+    pdb = ch_pdb // channel: /path/to/*.pdb
+    msa = ch_msa // channel: /path/to/*msa.tsv
     multiqc_report = ch_multiqc_report // channel: /path/to/multiqc_report.html
     versions       = ch_versions       // channel: [ path(versions.yml) ]
 }
