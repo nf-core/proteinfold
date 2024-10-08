@@ -209,14 +209,14 @@ workflow NFCORE_PROTEINFOLD {
     }
 
     if (params.foldseek_search == "easysearch"){
-        ch_foldseek_db = channel.value([["id": params.foldseek_db], 
-                                        file(params.foldseek_db_path, 
+        ch_foldseek_db = channel.value([["id": params.foldseek_db],
+                                        file(params.foldseek_db_path,
                                             checkIfExists: true)])
 
         FOLDSEEK_EASYSEARCH(
             ch_report_input
             .map{
-                if (it[0].model == "esmfold") 
+                if (it[0].model == "esmfold")
                     [it[0], it[1]]
                 else
                     [it[0], it[1][0]]
