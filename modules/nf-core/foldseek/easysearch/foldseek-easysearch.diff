@@ -1,0 +1,42 @@
+Changes in module 'nf-core/foldseek/easysearch'
+--- modules/nf-core/foldseek/easysearch/main.nf
++++ modules/nf-core/foldseek/easysearch/main.nf
+@@ -12,7 +12,8 @@
+     tuple val(meta_db), path(db)
+ 
+     output:
+-    tuple val(meta), path("${meta.id}.m8"), emit: aln
++    tuple val(meta), path("${meta.id}.m8"), emit: aln, optional: true
++    tuple val(meta), path("${meta.id}_${meta.model.toLowerCase()}_foldseek.html"), emit: report, optional: true
+     path "versions.yml"                   , emit: versions
+ 
+     when:
+@@ -21,12 +22,17 @@
+     script:
+     def args = task.ext.args ?: ''
+     def prefix = task.ext.prefix ?: "${meta.id}"
++    def output_file = "${prefix}.m8"
++    if (args.contains("--format-mode 3")){
++        output_file = "${meta.id}_${meta.model.toLowerCase()}_foldseek.html"
++    }
++
+     """
+     foldseek \\
+         easy-search \\
+         ${pdb} \\
+         ${db}/${meta_db.id} \\
+-        ${prefix}.m8 \\
++        ${output_file} \\
+         tmpFolder \\
+         ${args}
+ 
+@@ -42,6 +48,7 @@
+ 
+     """
+     touch ${prefix}.m8
++    touch ${prefix}.html
+ 
+     cat <<-END_VERSIONS > versions.yml
+     "${task.process}":
+
+************************************************************
