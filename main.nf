@@ -161,7 +161,7 @@ workflow NFCORE_PROTEINFOLD {
                 .out
                 .pdb
                 .join(COLABFOLD.out.msa)
-                .map { it[0]["model"] = "COLABFOLD"; it }
+                .map { it[0]["model"] = "colabfold"; it }
         )
     }
 
@@ -216,7 +216,7 @@ workflow NFCORE_PROTEINFOLD {
         FOLDSEEK_EASYSEARCH(
             ch_report_input
             .map{
-                if (it[0].model == "ESMFOLD") 
+                if (it[0].model == "esmfold") 
                     [it[0], it[1]]
                 else
                     [it[0], it[1][0]]
