@@ -201,8 +201,8 @@
             "properties": {
                 "foldseek_search": {
                     "type": "string",
-                    "enum": ["easysearch"],
-                    "default": "easysearch",
+                    "enum": [null, "easysearch"],
+                    "default": null,
                     "description": "Specifies the mode of foldseek search.",
                     "fa_icon": "fas fa-search"
                 },
