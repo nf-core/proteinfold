@@ -1,90 +1,70 @@
 {
-    "name": "nf-core/proteinfold",
-    "homePage": "https://github.com/nf-core/proteinfold",
-    "repos": {
-        "https://github.com/nf-core/modules.git": {
-            "modules": {
-                "nf-core": {
-                    "aria2": {
-                        "branch": "master",
-                        "git_sha": "7d0ccc097c60d23a195099b326a5882e135c7949",
-                        "installed_by": [
-                            "modules"
-                        ],
-                        "patch": "modules/nf-core/aria2/aria2.diff"
-                    },
-                    "foldseek/easysearch": {
-                        "branch": "master",
-                        "git_sha": "666652151335353eef2fcd58880bcef5bc2928e1",
-                        "installed_by": [
-                            "modules"
-                        ],
-                        "patch": "modules/nf-core/foldseek/easysearch/foldseek-easysearch.diff"
-                    },
-                    "gunzip": {
-                        "branch": "master",
-                        "git_sha": "5c460c5a4736974abde2843294f35307ee2b0e5e",
-                        "installed_by": [
-                            "modules"
-                        ]
-                    },
-                    "mmseqs/createindex": {
-                        "branch": "master",
-                        "git_sha": "151460db852d636979d9ff3ee631e2268060d4c3",
-                        "installed_by": [
-                            "modules"
-                        ]
-                    },
-                    "mmseqs/tsv2exprofiledb": {
-                        "branch": "master",
-                        "git_sha": "151460db852d636979d9ff3ee631e2268060d4c3",
-                        "installed_by": [
-                            "modules"
-                        ]
-                    },
-                    "multiqc": {
-                        "branch": "master",
-                        "git_sha": "b7ebe95761cd389603f9cc0e0dc384c0f663815a",
-                        "installed_by": [
-                            "modules"
-                        ],
-                        "patch": "modules/nf-core/multiqc/multiqc.diff"
-                    },
-                    "untar": {
-                        "branch": "master",
-                        "git_sha": "5caf7640a9ef1d18d765d55339be751bb0969dfa",
-                        "installed_by": [
-                            "modules"
-                        ],
-                        "patch": "modules/nf-core/untar/untar.diff"
-                    }
-                }
-            },
-            "subworkflows": {
-                "nf-core": {
-                    "utils_nextflow_pipeline": {
-                        "branch": "master",
-                        "git_sha": "5caf7640a9ef1d18d765d55339be751bb0969dfa",
-                        "installed_by": [
-                            "subworkflows"
-                        ]
-                    },
-                    "utils_nfcore_pipeline": {
-                        "branch": "master",
-                        "git_sha": "92de218a329bfc9a9033116eb5f65fd270e72ba3",
-                        "installed_by": [
-                            "subworkflows"
-                        ]
-                    },
-                    "utils_nfvalidation_plugin": {
-                        "branch": "master",
-                        "git_sha": "5caf7640a9ef1d18d765d55339be751bb0969dfa",
-                        "installed_by": [
-                            "subworkflows"
-                        ]
-                    }
-                }
-            }
+  "name": "nf-core/proteinfold",
+  "homePage": "https://github.com/nf-core/proteinfold",
+  "repos": {
+    "https://github.com/nf-core/modules.git": {
+      "modules": {
+        "nf-core": {
+          "aria2": {
+            "branch": "master",
+            "git_sha": "7d0ccc097c60d23a195099b326a5882e135c7949",
+            "installed_by": ["modules"],
+            "patch": "modules/nf-core/aria2/aria2.diff"
+          },
+          "foldseek/easysearch": {
+            "branch": "master",
+            "git_sha": "666652151335353eef2fcd58880bcef5bc2928e1",
+            "installed_by": ["modules"],
+            "patch": "modules/nf-core/foldseek/easysearch/foldseek-easysearch.diff"
+          },
+          "gunzip": {
+            "branch": "master",
+            "git_sha": "5c460c5a4736974abde2843294f35307ee2b0e5e",
+            "installed_by": ["modules"]
+          },
+          "mmseqs/createindex": {
+            "branch": "master",
+            "git_sha": "151460db852d636979d9ff3ee631e2268060d4c3",
+            "installed_by": ["modules"]
+          },
+          "mmseqs/tsv2exprofiledb": {
+            "branch": "master",
+            "git_sha": "151460db852d636979d9ff3ee631e2268060d4c3",
+            "installed_by": ["modules"]
+          },
+          "multiqc": {
+            "branch": "master",
+            "git_sha": "b7ebe95761cd389603f9cc0e0dc384c0f663815a",
+            "installed_by": ["modules"],
+            "patch": "modules/nf-core/multiqc/multiqc.diff"
+          },
+          "untar": {
+            "branch": "master",
+            "git_sha": "5caf7640a9ef1d18d765d55339be751bb0969dfa",
+            "installed_by": ["modules"],
+            "patch": "modules/nf-core/untar/untar.diff"
+          }
         }
+      },
+      "subworkflows": {
+        "nf-core": {
+          "utils_nextflow_pipeline": {
+            "branch": "master",
+            "git_sha": "5caf7640a9ef1d18d765d55339be751bb0969dfa",
+            "installed_by": ["subworkflows"]
+          },
+          "utils_nfcore_pipeline": {
+            "branch": "master",
+            "git_sha": "92de218a329bfc9a9033116eb5f65fd270e72ba3",
+            "installed_by": ["subworkflows"]
+          },
+          "utils_nfvalidation_plugin": {
+            "branch": "master",
+            "git_sha": "5caf7640a9ef1d18d765d55339be751bb0969dfa",
+            "installed_by": ["subworkflows"]
+          }
+        }
+      }
     }
+  }
 }
