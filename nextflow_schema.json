@@ -697,6 +697,9 @@
             "$ref": "#/definitions/esmfold_options"
         },
         {
+            "$ref": "#/definitions/foldseek_options"
+        },
+        {
             "$ref": "#/definitions/process_skipping_options"
         },
         {
