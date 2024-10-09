@@ -9,6 +9,7 @@
 //
 include { RUN_ESMFOLD               } from '../modules/local/run_esmfold'
 include { MULTIFASTA_TO_SINGLEFASTA } from '../modules/local/multifasta_to_singlefasta'
+include { samplesheetToList         } from 'plugin/nf-schema' // TODO use initialize in main and pass samplesheet to the workflows
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -49,9 +50,7 @@ workflow ESMFOLD {
     //
     // Create input channel from input file provided through params.input
     //
-    Channel
-        .fromSamplesheet("input")
-        .set { ch_fasta }
+    ch_fasta = Channel.fromList(samplesheetToList(params.input, "assets/schema_input.json"))
 
     //
     // MODULE: Run esmfold
@@ -107,7 +106,9 @@ workflow ESMFOLD {
             ch_multiqc_files.collect(),
             ch_multiqc_config.toList(),
             ch_multiqc_custom_config.toList(),
-            ch_multiqc_logo.toList()
+            ch_multiqc_logo.toList(),
+            [],
+            []
         )
         ch_multiqc_report = MULTIQC.out.report.toList()
     }
