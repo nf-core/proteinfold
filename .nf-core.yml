@@ -14,6 +14,8 @@ template:
   name: proteinfold
   org: nf-core
   outdir: .
-  skip_features: null
-  version: 1.1.1
+  skip_features:
+    - fastqc
+    - igenomes
+  version: 1.2.0dev
 update: null
