@@ -125,7 +125,6 @@ workflow NFCORE_PROTEINFOLD {
         ch_report_input = ch_report_input.mix(
             ALPHAFOLD2.out.pdb.join(ALPHAFOLD2.out.msa).map{it[0]["model"] = "alphafold2"; it}
         )
-
     }
 
     //
@@ -233,7 +232,7 @@ workflow NFCORE_PROTEINFOLD {
     }
 
     emit:
-    multiqc_report = ch_multiqc.out.multiqc_report // channel: /path/to/multiqc_report.html
+    multiqc_report = ch_multiqc
 }
 
 /*

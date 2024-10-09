@@ -10,7 +10,6 @@
 include { RUN_ALPHAFOLD2      } from '../modules/local/run_alphafold2'
 include { RUN_ALPHAFOLD2_MSA  } from '../modules/local/run_alphafold2_msa'
 include { RUN_ALPHAFOLD2_PRED } from '../modules/local/run_alphafold2_pred'
-include { samplesheetToList   } from 'plugin/nf-schema' // TODO use initialize in main and pass samplesheet to the workflows
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -62,11 +61,6 @@ workflow ALPHAFOLD2 {
     ch_pdb           = Channel.empty()
     ch_msa           = Channel.empty()
 
-    // //
-    // // Create input channel from input file provided through params.input
-    // //
-    // ch_fasta = Channel.fromList(samplesheetToList(params.input, "assets/schema_input.json"))
-
     if (alphafold2_model_preset != 'multimer') {
         ch_samplesheet
             .map {
@@ -82,7 +76,7 @@ workflow ALPHAFOLD2 {
         // SUBWORKFLOW: Run Alphafold2 standard mode
         //
         RUN_ALPHAFOLD2 (
-            ch_fasta,
+            ch_samplesheet,
             full_dbs,
             alphafold2_model_preset,
             ch_alphafold2_params,

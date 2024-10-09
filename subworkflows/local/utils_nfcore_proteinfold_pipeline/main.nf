@@ -31,8 +31,11 @@ workflow PIPELINE_INITIALISATION {
     monochrome_logs   // boolean: Do not use coloured log outputs
     nextflow_cli_args //   array: List of positional nextflow CLI args
     outdir            //  string: The output directory where the results will be saved
+    input             //  string: Path to input samplesheet
 
     main:
+    ch_versions = Channel.empty()
+
     //
     // Print version and exit if required and dump pipeline parameters to JSON file
     //
@@ -58,6 +61,15 @@ workflow PIPELINE_INITIALISATION {
     UTILS_NFCORE_PIPELINE (
         nextflow_cli_args
     )
+
+    //
+    // Create channel from input file provided through params.input
+    //
+    ch_samplesheet = Channel.fromList(samplesheetToList(params.input, "assets/schema_input.json"))
+
+    emit:
+    samplesheet = ch_samplesheet
+    versions    = ch_versions
 }
 
 /*

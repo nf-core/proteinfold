@@ -10,7 +10,6 @@
 include { COLABFOLD_BATCH        } from '../modules/local/colabfold_batch'
 include { MMSEQS_COLABFOLDSEARCH } from '../modules/local/mmseqs_colabfoldsearch'
 include { MULTIFASTA_TO_CSV      } from '../modules/local/multifasta_to_csv'
-include { samplesheetToList      } from 'plugin/nf-schema' // TODO use initialize in main and pass samplesheet to the workflows
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -51,11 +50,6 @@ workflow COLABFOLD {
 
     main:
     ch_multiqc_files = Channel.empty()
-
-    //
-    // Create input channel from input file provided through params.input
-    //
-    // ch_samplesheet = Channel.fromList(samplesheetToList(params.input, "assets/schema_input.json"))
 
     if (params.colabfold_server == 'webserver') {
         //
