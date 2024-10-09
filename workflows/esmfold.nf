@@ -40,6 +40,7 @@ include { methodsDescriptionText } from '../subworkflows/local/utils_nfcore_prot
 workflow ESMFOLD {
 
     take:
+    ch_samplesheet    // channel: samplesheet read in from --input
     ch_versions       // channel: [ path(versions.yml) ]
     ch_esmfold_params // directory: /path/to/esmfold/params/
     ch_num_recycles   // int: Number of recycles for esmfold
@@ -47,17 +48,17 @@ workflow ESMFOLD {
     main:
     ch_multiqc_files = Channel.empty()
 
-    //
-    // Create input channel from input file provided through params.input
-    //
-    ch_fasta = Channel.fromList(samplesheetToList(params.input, "assets/schema_input.json"))
+    // // TODO
+    // // Create input channel from input file provided through params.input
+    // //
+    // ch_fasta = Channel.fromList(samplesheetToList(params.input, "assets/schema_input.json"))
 
     //
     // MODULE: Run esmfold
     //
     if (params.esmfold_model_preset != 'monomer') {
         MULTIFASTA_TO_SINGLEFASTA(
-            ch_fasta
+            ch_samplesheet
         )
         ch_versions = ch_versions.mix(MULTIFASTA_TO_SINGLEFASTA.out.versions)
         RUN_ESMFOLD(
@@ -68,7 +69,7 @@ workflow ESMFOLD {
         ch_versions = ch_versions.mix(RUN_ESMFOLD.out.versions)
     } else {
         RUN_ESMFOLD(
-            ch_fasta,
+            ch_samplesheet,
             ch_esmfold_params,
             ch_num_recycles
         )

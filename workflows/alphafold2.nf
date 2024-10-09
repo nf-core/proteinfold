@@ -41,6 +41,7 @@ include { methodsDescriptionText } from '../subworkflows/local/utils_nfcore_prot
 workflow ALPHAFOLD2 {
 
     take:
+    ch_samplesheet          // channel: samplesheet read in from --input
     ch_versions             // channel: [ path(versions.yml) ]
     full_dbs                // boolean: Use full databases (otherwise reduced version)
     alphafold2_mode         //  string: Mode to run Alphafold2 in
@@ -61,19 +62,19 @@ workflow ALPHAFOLD2 {
     ch_pdb           = Channel.empty()
     ch_msa           = Channel.empty()
 
-    //
-    // Create input channel from input file provided through params.input
-    //
-    ch_fasta = Channel.fromList(samplesheetToList(params.input, "assets/schema_input.json"))
+    // //
+    // // Create input channel from input file provided through params.input
+    // //
+    // ch_fasta = Channel.fromList(samplesheetToList(params.input, "assets/schema_input.json"))
 
     if (alphafold2_model_preset != 'multimer') {
-        ch_fasta
+        ch_samplesheet
             .map {
                 meta, fasta ->
                 [ meta, fasta.splitFasta(file:true) ]
             }
             .transpose()
-            .set { ch_fasta }
+            .set { ch_samplesheet }
     }
 
     if (alphafold2_mode == 'standard') {
@@ -105,7 +106,7 @@ workflow ALPHAFOLD2 {
         // SUBWORKFLOW: Run Alphafold2 split mode, MSA and predicition
         //
         RUN_ALPHAFOLD2_MSA (
-            ch_fasta,
+            ch_samplesheet,
             full_dbs,
             alphafold2_model_preset,
             ch_alphafold2_params,
@@ -122,7 +123,7 @@ workflow ALPHAFOLD2 {
         ch_versions    = ch_versions.mix(RUN_ALPHAFOLD2_MSA.out.versions)
 
         RUN_ALPHAFOLD2_PRED (
-            ch_fasta,
+            ch_samplesheet,
             full_dbs,
             alphafold2_model_preset,
             ch_alphafold2_params,

@@ -56,10 +56,15 @@ params.colabfold_alphafold2_params_path = getColabfoldAlphafold2ParamsPath()
 //
 workflow NFCORE_PROTEINFOLD {
 
+    take:
+    samplesheet // channel: samplesheet read in from --input
+
     main:
-    ch_multiqc  = Channel.empty()
-    ch_versions = Channel.empty()
+    ch_samplesheet  = samplesheet
+    ch_multiqc      = Channel.empty()
+    ch_versions     = Channel.empty()
     ch_report_input = Channel.empty()
+
     //
     // WORKFLOW: Run alphafold2
     //
@@ -99,6 +104,7 @@ workflow NFCORE_PROTEINFOLD {
         // WORKFLOW: Run nf-core/alphafold2 workflow
         //
         ALPHAFOLD2 (
+            ch_samplesheet,
             ch_versions,
             params.full_dbs,
             params.alphafold2_mode,
@@ -146,6 +152,7 @@ workflow NFCORE_PROTEINFOLD {
         // WORKFLOW: Run nf-core/colabfold workflow
         //
         COLABFOLD (
+            ch_samplesheet,
             ch_versions,
             params.colabfold_model_preset,
             PREPARE_COLABFOLD_DBS.out.params,
@@ -184,6 +191,7 @@ workflow NFCORE_PROTEINFOLD {
         // WORKFLOW: Run nf-core/esmfold workflow
         //
         ESMFOLD (
+            ch_samplesheet,
             ch_versions,
             PREPARE_ESMFOLD_DBS.out.params,
             params.num_recycles_esmfold
@@ -225,7 +233,7 @@ workflow NFCORE_PROTEINFOLD {
     }
 
     emit:
-    multiqc_report = ch_multiqc  // channel: /path/to/multiqc_report.html
+    multiqc_report = ch_multiqc.out.multiqc_report // channel: /path/to/multiqc_report.html
 }
 
 /*
@@ -245,13 +253,16 @@ workflow {
         params.validate_params,
         params.monochrome_logs,
         args,
-        params.outdir
+        params.outdir,
+        params.input
     )
 
     //
     // WORKFLOW: Run main workflow
     //
-    NFCORE_PROTEINFOLD ()
+    NFCORE_PROTEINFOLD (
+        PIPELINE_INITIALISATION.out.samplesheet
+    )
 
     //
     // SUBWORKFLOW: Run completion tasks
