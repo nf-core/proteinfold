@@ -476,7 +476,7 @@
                     "fa_icon": "fas fa-folder-open"
                 },
                 "colabfold_alphafold2_params_tags": {
-                    "type": "string",
+                    "type": "object",
                     "description": "Dictionary with Alphafold2 parameters tags",
                     "fa_icon": "fas fa-stream"
                 }
@@ -639,9 +639,6 @@
         },
         {
             "$ref": "#/$defs/process_skipping_options"
-        },
-        {
-            "$ref": "#/$defs/reference_genome_options"
         },
         {
             "$ref": "#/$defs/institutional_config_options"
