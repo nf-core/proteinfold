@@ -25,8 +25,7 @@ include { MULTIQC } from '../modules/nf-core/multiqc/main'
 //
 // SUBWORKFLOW: Consisting entirely of nf-core/modules
 //
-include { paramsSummaryMap       } from 'plugin/nf-validation'
-include { fromSamplesheet        } from 'plugin/nf-validation'
+include { paramsSummaryMap       } from 'plugin/nf-schema'
 include { paramsSummaryMultiqc   } from '../subworkflows/nf-core/utils_nfcore_pipeline'
 include { softwareVersionsToYAML } from '../subworkflows/nf-core/utils_nfcore_pipeline'
 include { methodsDescriptionText } from '../subworkflows/local/utils_nfcore_proteinfold_pipeline'
@@ -40,6 +39,7 @@ include { methodsDescriptionText } from '../subworkflows/local/utils_nfcore_prot
 workflow COLABFOLD {
 
     take:
+    ch_samplesheet          // channel: samplesheet read in from --input
     ch_versions            // channel: [ path(versions.yml) ]
     colabfold_model_preset // string: Specifies the model preset to use for colabfold
     ch_colabfold_params    // channel: path(colabfold_params)
@@ -50,20 +50,13 @@ workflow COLABFOLD {
     main:
     ch_multiqc_files = Channel.empty()
 
-    //
-    // Create input channel from input file provided through params.input
-    //
-    Channel
-        .fromSamplesheet("input")
-        .set { ch_fasta }
-
     if (params.colabfold_server == 'webserver') {
         //
         // MODULE: Run colabfold
         //
         if (params.colabfold_model_preset != 'alphafold2_ptm' && params.colabfold_model_preset != 'alphafold2') {
             MULTIFASTA_TO_CSV(
-                ch_fasta
+                ch_samplesheet
             )
             ch_versions = ch_versions.mix(MULTIFASTA_TO_CSV.out.versions)
             COLABFOLD_BATCH(
@@ -77,7 +70,7 @@ workflow COLABFOLD {
             ch_versions = ch_versions.mix(COLABFOLD_BATCH.out.versions)
         } else {
             COLABFOLD_BATCH(
-                ch_fasta,
+                ch_samplesheet,
                 colabfold_model_preset,
                 ch_colabfold_params,
                 [],
@@ -93,7 +86,7 @@ workflow COLABFOLD {
         //
         if (params.colabfold_model_preset != 'alphafold2_ptm' && params.colabfold_model_preset != 'alphafold2') {
             MULTIFASTA_TO_CSV(
-                ch_fasta
+                ch_samplesheet
             )
             ch_versions = ch_versions.mix(MULTIFASTA_TO_CSV.out.versions)
             MMSEQS_COLABFOLDSEARCH (
@@ -105,7 +98,7 @@ workflow COLABFOLD {
             ch_versions = ch_versions.mix(MMSEQS_COLABFOLDSEARCH.out.versions)
         } else {
             MMSEQS_COLABFOLDSEARCH (
-                ch_fasta,
+                ch_samplesheet,
                 ch_colabfold_params,
                 ch_colabfold_db,
                 ch_uniref30
@@ -158,7 +151,9 @@ workflow COLABFOLD {
             ch_multiqc_files.collect(),
             ch_multiqc_config.toList(),
             ch_multiqc_custom_config.toList(),
-            ch_multiqc_logo.toList()
+            ch_multiqc_logo.toList(),
+            [],
+            []
         )
         ch_multiqc_report = MULTIQC.out.report.toList()
     }
