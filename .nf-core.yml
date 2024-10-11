@@ -1,9 +1,11 @@
 bump_version: null
 lint:
+  actions_ci: false
   files_unchanged:
+    - .github/workflows/linting.yml
     - .github/CONTRIBUTING.md
   multiqc_config: false
-nf_core_version: 3.0.1
+nf_core_version: 3.0.2
 org_path: null
 repository_type: pipeline
 template:
@@ -14,6 +16,8 @@ template:
   name: proteinfold
   org: nf-core
   outdir: .
-  skip_features: null
-  version: 1.1.1
+  skip_features:
+    - fastqc
+    - igenomes
+  version: 1.2.0dev
 update: null
