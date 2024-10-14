@@ -20,16 +20,22 @@ concurrency:
 
 jobs:
   test:
-    name: "Run pipeline with test data (${{ matrix.NXF_VER }} | ${{ matrix.test_name }} | ${{ matrix.profile }})"
+    name: "Run pipeline with test data (${{ matrix.NXF_VER }} | ${{ matrix.test_name }} | ${{ matrix.profile }} | ${{ matrix.test_profile }})"
     # Only run on push if this is the nf-core dev branch (merged PRs)
-    if: "${{ github.event_name != 'push' || (github.event_name == 'push' && github.repository == 'nf-core/proteinfold') }}"
+    if: "${{ github.event_name != 'push' || (github.event_name == 'push' && github.repository == 'nf-core/atacseq') }}"
     runs-on: ubuntu-latest
     strategy:
       matrix:
         NXF_VER:
           - "24.04.2"
           - "latest-everything"
-        parameters:
+        profile:
+          - "conda"
+          - "docker"
+          - "singularity"
+        test_name:
+          - "test"
+        test_profile:
           - "test"
           - "test_alphafold2_split"
           - "test_alphafold2_download"
@@ -37,7 +43,14 @@ jobs:
           - "test_colabfold_webserver"
           - "test_colabfold_download"
           - "test_esmfold"
-
+        isMaster:
+          - ${{ github.base_ref == 'master' }}
+        # Exclude conda and singularity on dev
+        exclude:
+          - isMaster: false
+            profile: "conda"
+          - isMaster: false
+            profile: "singularity"
     steps:
       - name: Check out pipeline code
         uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b # v4
@@ -51,17 +64,41 @@ jobs:
         if: matrix.profile == 'singularity'
         uses: eWaterCycle/setup-apptainer@main
 
-      - name: Run pipeline with test data ${{ matrix.parameters }} (docker)
+      - name: Set up Singularity
+        if: matrix.profile == 'singularity'
         run: |
-          nextflow run ${GITHUB_WORKSPACE} -profile ${{ matrix.parameters }},docker --outdir ./results
+          mkdir -p $NXF_SINGULARITY_CACHEDIR
+          mkdir -p $NXF_SINGULARITY_LIBRARYDIR
 
-      - name: Run pipeline with test data ${{ matrix.parameters }} (singularity)
+      - name: Set up Miniconda
+        if: matrix.profile == 'conda'
+        uses: conda-incubator/setup-miniconda@a4260408e20b96e80095f42ff7f1a15b27dd94ca # v3
+        with:
+          miniconda-version: "latest"
+          auto-update-conda: true
+          conda-solver: libmamba
+          channels: conda-forge,bioconda
+
+      - name: Set up Conda
+        if: matrix.profile == 'conda'
         run: |
-          nextflow run ${GITHUB_WORKSPACE} -profile ${{ matrix.parameters }},singularity --outdir ./results
+          echo $(realpath $CONDA)/condabin >> $GITHUB_PATH
+          echo $(realpath python) >> $GITHUB_PATH
+
+      - name: Clean up Disk space
+        uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
+
+      - name: Run pipeline with test data (docker)
+        run: |
+          nextflow run ${GITHUB_WORKSPACE} -profile ${{ matrix.test_profile }},docker --outdir ./results
+
+      - name: Run pipeline with test data (singularity)
+        run: |
+          nextflow run ${GITHUB_WORKSPACE} -profile ${{ matrix.test_profile }},singularity --outdir ./results
         if: "${{ github.base_ref == 'master' }}"
 
-      ## Warning: Pipeline can not be run with conda
-      # - name: Run pipeline with test data ${{ matrix.parameters }} (conda)
+      # ## Warning: Pipeline can not be run with conda
+      # - name: Run pipeline with test data (conda)
       #   run: |
-      #     nextflow run ${GITHUB_WORKSPACE} -profile ${{ matrix.parameters }},conda --outdir ./results
+      #     nextflow run ${GITHUB_WORKSPACE} -profile test,conda --outdir ./results
       #   if: "${{ github.base_ref == 'master' }}"
