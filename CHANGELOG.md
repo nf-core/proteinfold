@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[PR #178](https://github.com/nf-core/proteinfold/pull/178)] - Enable running multiple modes in parallel.
 - [[#179](https://github.com/nf-core/proteinfold/issues/179)]- Produce an interactive html report for the predicted structures.
 - [[#180](https://github.com/nf-core/proteinfold/issues/180)]- Implement Fooldseek.
+- [[#188](https://github.com/nf-core/proteinfold/issues/188)]- Fix colabfold image to run in gpus.
 
 ## [[1.1.1](https://github.com/nf-core/proteinfold/releases/tag/1.1.1)] - 2025-07-30
 
