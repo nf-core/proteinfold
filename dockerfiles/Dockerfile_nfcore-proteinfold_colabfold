@@ -1,8 +1,8 @@
-FROM nvidia/cuda:11.4.3-cudnn8-runtime-ubuntu18.04
+FROM nvidia/cuda:12.6.2-cudnn-runtime-ubuntu24.04
 
 LABEL authors="Athanasios Baltzis, Jose Espinosa-Carrasco, Leila Mansouri" \
     title="nfcore/proteinfold_colabfold" \
-    Version="1.1.0" \
+    Version="1.2.0dev" \
     description="Docker image containing all software requirements to run the COLABFOLD_BATCH module using the nf-core/proteinfold pipeline"
 
 ENV PATH="/localcolabfold/colabfold-conda/bin:$PATH"
@@ -14,7 +14,7 @@ ENV PATH="/MMseqs2/build/bin:$PATH"
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys A4B469963BF863CC
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     build-essential \
-    cuda-command-line-tools-11-4 \
+    cuda-command-line-tools-12-6 \
     git \
     hmmer \
     kalign \
@@ -25,13 +25,13 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 RUN cd / \
-    && wget https://raw.githubusercontent.com/YoshitakaMo/localcolabfold/82a3635/install_colabbatch_linux.sh \
+    && wget https://raw.githubusercontent.com/YoshitakaMo/localcolabfold/07e87ed/install_colabbatch_linux.sh \
     && sed -i "/colabfold.download/d" install_colabbatch_linux.sh \
-    && sed -i "s|cudatoolkit==.*\sopenmm|cudatoolkit==11.1.1 openmm|g" install_colabbatch_linux.sh \
     && bash install_colabbatch_linux.sh
 
-RUN /localcolabfold/colabfold-conda/bin/python3.10 -m pip install tensorflow-cpu==2.11.0
+## Updated
+RUN /localcolabfold/colabfold-conda/bin/python3.10 -m pip install tensorflow-cpu==2.17.0
 
-#Silence download of the AlphaFold2 params
+# #Silence download of the AlphaFold2 params
 RUN  sed -i "s|download_alphafold_params(|#download_alphafold_params(|g" /localcolabfold/colabfold-conda/lib/python3.10/site-packages/colabfold/batch.py
 RUN  sed -i "s|if args\.num_models|#if args\.num_models|g" /localcolabfold/colabfold-conda/lib/python3.10/site-packages/colabfold/batch.py
