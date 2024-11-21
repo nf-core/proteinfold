@@ -62,6 +62,7 @@ Thank you to everyone else that has contributed by reporting bugs, enhancements 
 - [[PR ##163](https://github.com/nf-core/proteinfold/pull/163)] - Fix full test CI.
 - [[#150]](https://github.com/nf-core/proteinfold/issues/150)] - Add thanks to the AWS Open Data Sponsorship program in `README.md`.
 - [[PR ##166](https://github.com/nf-core/proteinfold/pull/166)] - Create 2 different parameters for Colabfold and ESMfold number of recycles.
+- [[PR #222](https://github.com/nf-core/proteinfold/pull/222)] - Fix issue where ESMFold will crash if sample name does not match it's file name
 
 ### Parameters
 
