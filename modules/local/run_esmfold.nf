@@ -14,7 +14,7 @@ process RUN_ESMFOLD {
     val numRec
 
     output:
-    path ("${fasta.baseName}*.pdb"), emit: pdb
+    path ("*.pdb"), emit: pdb
     path ("${fasta.baseName}_plddt_mqc.tsv"), emit: multiqc
     path "versions.yml", emit: versions
 
@@ -33,7 +33,8 @@ process RUN_ESMFOLD {
         --num-recycles ${numRec} \
         $args
 
-    awk '{print \$2"\\t"\$3"\\t"\$4"\\t"\$6"\\t"\$11}' "${fasta.baseName}"*.pdb | grep -v 'N/A' | uniq > plddt.tsv
+    SAMPLE_NAME=\$(head -n 1 ${fasta} | cut -d ' ' -f 1 | sed 's/>//')
+    awk '{print \$2"\\t"\$3"\\t"\$4"\\t"\$6"\\t"\$11}' "\$SAMPLE_NAME"*.pdb | grep -v 'N/A' | uniq > plddt.tsv
     echo -e Atom_serial_number"\\t"Atom_name"\\t"Residue_name"\\t"Residue_sequence_number"\\t"pLDDT > header.tsv
     cat header.tsv plddt.tsv > "${fasta.baseName}"_plddt_mqc.tsv
 
