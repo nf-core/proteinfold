@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[PR ##205](https://github.com/nf-core/proteinfold/pull/205)] - Change input schema from `sequence,fasta` to `id,fasta`.
 - [[PR #210](https://github.com/nf-core/proteinfold/pull/210)]- Moving post-processing logic to a subworkflow, change wave images pointing to oras to point to https and refactor module to match nf-core folder structure.
 - [[#214](https://github.com/nf-core/proteinfold/issues/214)]- Fix colabfold image to run in cpus after [#188](https://github.com/nf-core/proteinfold/issues/188) fix.
+- [[PR #228](https://github.com/nf-core/proteinfold/pull/228)]- Add samplesheet-utils container for Boltz
 
 ## [[1.1.1](https://github.com/nf-core/proteinfold/releases/tag/1.1.1)] - 2025-07-30
 
