@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[#214](https://github.com/nf-core/proteinfold/issues/214)] - Fix colabfold image to run in cpus after [#188](https://github.com/nf-core/proteinfold/issues/188) fix.
 - [[#235](https://github.com/nf-core/proteinfold/issues/235)] - Update samplesheet to new version (switch from `sequence` column to `id`).
 - [[#240](https://github.com/nf-core/proteinfold/issues/240)] - Separate download and input of pdb `mmcif` files and `obsolete` database.
+- [PR ##YOUR_PR_NUMBER] - Add RosettaFold2NA module.
 
 ### Parameters
 
@@ -117,6 +118,7 @@ Thank you to everyone else that has contributed by reporting bugs, enhancements 
 |                       | `--esm2_t36_3B_UR50D_contact_regression` |
 |                       | `--esmfold_params_path`                  |
 |                       | `--skip_multiqc`                         |
+|                       | `--rosettafold2na_db`                    |
 
 > **NB:** Parameter has been **updated** if both old and new parameter information is present.
 > **NB:** Parameter has been **added** if just the new parameter information is present.

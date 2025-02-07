@@ -28,6 +28,11 @@ if (params.mode.toLowerCase().split(",").contains("esmfold")) {
     include { ESMFOLD             } from './workflows/esmfold'
 }
 
+if (params.mode.toLowerCase().split(",").contains("rosettafold2na")) {
+    include { PREPARE_ROSETTAFOLD2NA_DBS } from './subworkflows/local/prepare_rosettafold2na_dbs'
+    include { ROSETTAFOLD2NA             } from './workflows/rosettafold2na'
+}
+
 include { PIPELINE_INITIALISATION          } from './subworkflows/local/utils_nfcore_proteinfold_pipeline'
 include { PIPELINE_COMPLETION              } from './subworkflows/local/utils_nfcore_proteinfold_pipeline'
 include { getColabfoldAlphafold2Params     } from './subworkflows/local/utils_nfcore_proteinfold_pipeline'
@@ -65,6 +70,7 @@ workflow NFCORE_PROTEINFOLD {
     ch_alphafold_top_ranked_pdb = Channel.empty()
     ch_colabfold_top_ranked_pdb = Channel.empty()
     ch_esmfold_top_ranked_pdb   = Channel.empty()
+    ch_rosettafold2na_top_ranked_pdb = Channel.empty()
     ch_multiqc                  = Channel.empty()
     ch_versions                 = Channel.empty()
     ch_report_input             = Channel.empty()
@@ -208,6 +214,43 @@ workflow NFCORE_PROTEINFOLD {
     }
 
     //
+    // WORKFLOW: Run rosettafold2na
+    //
+    if(requested_modes.contains("rosettafold2na")) {
+        //
+        // SUBWORKFLOW: Prepare RosettaFold2NA DBs
+        //
+        PREPARE_ROSETTAFOLD2NA_DBS (
+            params.rosettafold2na_db,
+            params.uniref30_rosettafold2na_path,
+            params.bfd_rosettafold2na_path,
+            params.pdb100_rosettafold2na_path,
+            params.rna_rosettafold2na_path,
+            params.uniref30_rosettafold2na_link,
+            params.bfd_rosettafold2na_link,
+            params.pdb100_rosettafold2na_link,
+            params.rna_rosettafold2na_link
+        )
+        ch_versions = ch_versions.mix(PREPARE_ROSETTAFOLD2NA_DBS.out.versions)
+
+        //
+        // WORKFLOW: Run nf-core/rosettafold2na workflow
+        //
+        ROSETTAFOLD2NA (
+            ch_samplesheet,
+            ch_versions,
+            PREPARE_ROSETTAFOLD2NA_DBS.out.uniref30,
+            PREPARE_ROSETTAFOLD2NA_DBS.out.bfd,
+            PREPARE_ROSETTAFOLD2NA_DBS.out.pdb100,
+            PREPARE_ROSETTAFOLD2NA_DBS.out.rna,
+            ch_dummy_file
+        )
+        ch_rosettafold2na_top_ranked_pdb = ROSETTAFOLD2NA.out.top_ranked_pdb
+        ch_multiqc                       = ch_multiqc.mix(ROSETTAFOLD2NA.out.multiqc_report.collect())
+        ch_versions                      = ch_versions.mix(ROSETTAFOLD2NA.out.versions)
+        ch_report_input                  = ch_report_input.mix(ROSETTAFOLD2NA.out.pdb_msa)
+    }
+    //
     // POST PROCESSING: generate visualisation reports
     //
     // TODO: we need to validate the rest of foldseek parameters if foldseek is set to run
@@ -249,7 +292,8 @@ workflow NFCORE_PROTEINFOLD {
         ch_multiqc_methods_description,
         ch_alphafold_top_ranked_pdb,
         ch_colabfold_top_ranked_pdb,
-        ch_esmfold_top_ranked_pdb
+        ch_esmfold_top_ranked_pdb,
+        ch_rosettafold2na_top_ranked_pdb
     )
 
     emit:

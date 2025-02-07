@@ -39,6 +39,8 @@ On release, automated continuous integration tests run the pipeline on a full-si
 
    v. [ESMFold](https://github.com/facebookresearch/esm) - Regular ESM
 
+   vi. [RosettaFold2NA](https://github.com/uw-ipd/RoseTTAFold2NA) - RoseTTAFold2NA
+
 ## Usage
 
 > [!NOTE]
@@ -53,7 +55,7 @@ nextflow run nf-core/proteinfold \
    --outdir <OUTDIR>
 ```
 
-The pipeline takes care of downloading the databases and parameters required by AlphaFold2, Colabfold or ESMFold. In case you have already downloaded the required files, you can skip this step by providing the path to the databases using the corresponding parameter [`--alphafold2_db`], [`--colabfold_db`] or [`--esmfold_db`]. Please refer to the [usage documentation](https://nf-co.re/proteinfold/usage) to check the directory structure you need to provide for each of the databases.
+The pipeline takes care of downloading the databases and parameters required by AlphaFold2, Colabfold, ESMFold, or RosettaFold2NA. In case you have already downloaded the required files, you can skip this step by providing the path to the databases using the corresponding parameter [`--alphafold2_db`], [`--colabfold_db`], [`--esmfold_db`], or [`--rosettafold2na_db`]. Please refer to the [usage documentation](https://nf-co.re/proteinfold/usage) to check the directory structure you need to provide for each of the databases.
 
 - The typical command to run AlphaFold2 mode is shown below:
 
@@ -135,6 +137,17 @@ The pipeline takes care of downloading the databases and parameters required by 
       --use_gpu <true/false> \
       -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
   ```
+
+- The RosettaFold2NA mode can be run using the command below:
+
+  ```console
+  nextflow run nf-core/proteinfold \
+      --input samplesheet.csv \
+      --outdir <OUTDIR> \
+      --mode rosettafold2na \
+      --rosettafold2na_db <null (default) | DB_PATH> \
+      --use_gpu <true/false> \
+      -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
 
 > [!WARNING]
 > Please provide pipeline parameters via the CLI or Nextflow `-params-file` option. Custom config files including those provided by the `-c` Nextflow option can be used to provide any configuration _**except for parameters**_; see [docs](https://nf-co.re/docs/usage/getting_started/configuration#custom-configuration-files).

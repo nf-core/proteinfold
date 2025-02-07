@@ -13,6 +13,7 @@ The pipeline is built using [Nextflow](https://www.nextflow.io/) and predicts pr
 - [AlphaFold2](https://github.com/deepmind/alphafold)
 - [ColabFold](https://github.com/sokrypton/ColabFold) - MMseqs2 (API server or local search) followed by ColabFold
 - [ESMFold](https://github.com/facebookresearch/esm)
+- [RosettaFold2NA](https://github.com/uw-ipd/RoseTTAFold2NA)
 
 See main [README.md](https://github.com/nf-core/proteinfold/blob/master/README.md) for a condensed overview of the steps in the pipeline, and the bioinformatics tools used at each step.
 
@@ -175,6 +176,30 @@ Below you can find an indicative example of the TSV file with the pLDDT scores p
 | 48                 | C         | VAL          | 7                       | 57.39 |
 | 49                 | CB        | VAL          | 7                       | 52.74 |
 | 50                 | O         | VAL          | 7                       | 56.46 |
+
+### RosettaFold2NA
+
+<details markdown="1">
+<summary>Output files</summary>
+
+- `rosettafold2na/`
+  - `models/`: Directory containing the model outputs
+    - `model_00.pdb`: The predicted structure with estimated per-residue LDDT in the B-factor column
+    - `model_00.npz`: A numpy file containing predicted distogram, per-residue LDDT, and predicted aligned error
+  - Computed MSAs, prediction metadata, and other output files
+
+</details>
+
+RosettaFold2NA produces the following key outputs:
+
+1. A PDB file (`model_00.pdb`) with the predicted structure. The B-factor column contains the estimated per-residue LDDT (Local Distance Difference Test) scores, indicating the confidence of the model for each residue.
+
+2. A numpy file (`model_00.npz`) containing three tables:
+   - `dist` (L x L x 37): The predicted distogram
+   - `lddt` (L): The per-residue predicted LDDT
+   - `pae` (L x L): The predicted aligned error for each residue pair
+
+   Where L is the length of the complex.
 
 ### MultiQC report
 
