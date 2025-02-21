@@ -39,7 +39,11 @@ On release, automated continuous integration tests run the pipeline on a full-si
 
    v. [ESMFold](https://github.com/facebookresearch/esm) - Regular ESM
 
-   vi. [RosettaFold2NA](https://github.com/uw-ipd/RoseTTAFold2NA) - RoseTTAFold2NA
+   vi. [RoseTTAFold-All-Atom](https://github.com/baker-laboratory/RoseTTAFold-All-Atom/) - Regular RFAA
+
+   vii. [HelixFold3](https://github.com/PaddlePaddle/PaddleHelix/tree/dev/apps/protein_folding/helixfold3) - Regular HF3
+   
+   viii. [RosettaFold2NA](https://github.com/uw-ipd/RoseTTAFold2NA) - RoseTTAFold2NA
 
 ## Usage
 
@@ -55,7 +59,7 @@ nextflow run nf-core/proteinfold \
    --outdir <OUTDIR>
 ```
 
-The pipeline takes care of downloading the databases and parameters required by AlphaFold2, Colabfold, ESMFold, or RosettaFold2NA. In case you have already downloaded the required files, you can skip this step by providing the path to the databases using the corresponding parameter [`--alphafold2_db`], [`--colabfold_db`], [`--esmfold_db`], or [`--rosettafold2na_db`]. Please refer to the [usage documentation](https://nf-co.re/proteinfold/usage) to check the directory structure you need to provide for each of the databases.
+The pipeline takes care of downloading the databases and parameters required by AlphaFold2, Colabfold, ESMFold RoseTTAFold-All-Atom or RosettaFold2NA. In case you have already downloaded the required files, you can skip this step by providing the path to the databases using the corresponding parameter [`--alphafold2_db`], [`--colabfold_db`], [`--esmfold_db`] or ['--rosettafold_all_atom_db']. Please refer to the [usage documentation](https://nf-co.re/proteinfold/usage) to check the directory structure you must provide for each database.
 
 - The typical command to run AlphaFold2 mode is shown below:
 
@@ -138,8 +142,33 @@ The pipeline takes care of downloading the databases and parameters required by 
       -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
   ```
 
-- The RosettaFold2NA mode can be run using the command below:
+- The rosettafold_all_atom mode can be run using the command below:
 
+
+  ```console
+  nextflow run nf-core/proteinfold \
+      --input samplesheet.csv \
+      --outdir <OUTDIR> \
+      --mode rosettafold_all_atom \
+      --rosettafold_all_atom_db <null (default) | PATH> \
+      --use_gpu <true/false> \
+      -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
+  ```
+
+- The helixfold3 mode can be run using the command below:
+
+  ```console
+  nextflow run nf-core/proteinfold \
+      --input samplesheet.csv \
+      --outdir <OUTDIR> \
+      --mode helixfold3 \
+      --helixfold3_db <null (default) | PATH> \
+      --use_gpu <true/false> \
+      -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
+  ```
+  
+  - The RosettaFold2NA mode can be run using the command below:
+  
   ```console
   nextflow run nf-core/proteinfold \
       --input samplesheet.csv \
