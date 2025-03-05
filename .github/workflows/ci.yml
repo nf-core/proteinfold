@@ -44,6 +44,8 @@ jobs:
           - "test_colabfold_download"
           - "test_esmfold"
           - "test_split_fasta"
+          - "test_rosettafold_all_atom"
+          - "test_helixfold3"
           - "test_rosettafold2na"
         isMaster:
           - ${{ github.base_ref == 'master' }}
