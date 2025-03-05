@@ -548,44 +548,68 @@
             }
         },
 
-        "rosettafold2na_dbs_and_parameters_link_options": {
-            "title": "RosettaFold2NA DBs and parameters links options",
-            "type": "object",
-            "fa_icon": "fas fa-database",
-            "description": "Parameters used to provide the links to the DBs and parameters public resources to RosettaFold2NA.",
-            "properties": {
-                "uniref30_rosettafold2na_link": {
-                    "type": "string",
-                    "default": "http://wwwuser.gwdg.de/~compbiol/uniclust/2020_06/UniRef30_2020_06_hhsuite.tar.gz",
-                    "description": "Link to UniRef30 database for RosettaFold2NA",
-                    "fa_icon": "fas fa-link"
-                },
-                "bfd_rosettafold2na_link": {
-                    "type": "string",
-                    "default": "https://bfd.mmseqs.com/bfd_metaclust_clu_complete_id30_c90_final_seq.sorted_opt.tar.gz",
-                    "description": "Link to BFD database for RosettaFold2NA",
-                    "fa_icon": "fas fa-link"
-                },
-                "pdb100_rosettafold2na_link": {
-                    "type": "string",
-                    "default": "https://files.ipd.uw.edu/pub/RoseTTAFold/pdb100_2021Mar03.tar.gz",
-                    "description": "Link to PDB100 database for RosettaFold2NA",
-                    "fa_icon": "fas fa-link"
-                },
-                "rna_rosettafold2na_link": {
-                    "type": "string",
-                    "default": "https://files.ipd.uw.edu/pub/RoseTTAFold2NA/RNA.tar.gz",
-                    "description": "Link to RNA database for RosettaFold2NA",
-                    "fa_icon": "fas fa-link"
-                },
-                "rf2na_weights_link": {
-                    "type": "string",
-                    "default": "https://files.ipd.uw.edu/dimaio/RF2NA_apr23.tgz",
-                    "description": "Link to RosettaFold2NA weights",
-                    "fa_icon": "fas fa-link"
-                }
-            }
+"rosettafold2na_dbs_and_parameters_link_options": {
+    "title": "RosettaFold2NA DBs and parameters links options",
+    "type": "object",
+    "fa_icon": "fas fa-database",
+    "description": "Parameters used to provide the links to the DBs and parameters public resources to RosettaFold2NA.",
+    "properties": {
+        "uniref30_rosettafold2na_link": {
+            "type": "string",
+            "default": "http://wwwuser.gwdg.de/~compbiol/uniclust/2020_06/UniRef30_2020_06_hhsuite.tar.gz",
+            "description": "Link to UniRef30 database for RosettaFold2NA",
+            "fa_icon": "fas fa-link"
         },
+        "bfd_rosettafold2na_link": {
+            "type": "string",
+            "default": "https://bfd.mmseqs.com/bfd_metaclust_clu_complete_id30_c90_final_seq.sorted_opt.tar.gz",
+            "description": "Link to BFD database for RosettaFold2NA",
+            "fa_icon": "fas fa-link"
+        },
+        "pdb100_rosettafold2na_link": {
+            "type": "string",
+            "default": "https://files.ipd.uw.edu/pub/RoseTTAFold/pdb100_2021Mar03.tar.gz",
+            "description": "Link to PDB100 database for RosettaFold2NA",
+            "fa_icon": "fas fa-link"
+        },
+        "rf2na_weights_link": {
+            "type": "string",
+            "default": "https://files.ipd.uw.edu/dimaio/RF2NA_apr23.tgz",
+            "description": "Link to RosettaFold2NA weights",
+            "fa_icon": "fas fa-link"
+        },
+        "rfam_full_region_link": {
+            "type": "string",
+            "default": "ftp://ftp.ebi.ac.uk/pub/databases/Rfam/CURRENT/Rfam.full_region.gz",
+            "description": "Link to Rfam full region database for RosettaFold2NA",
+            "fa_icon": "fas fa-link"
+        },
+        "rfam_cm_link": {
+            "type": "string",
+            "default": "ftp://ftp.ebi.ac.uk/pub/databases/Rfam/CURRENT/Rfam.cm.gz",
+            "description": "Link to Rfam CM database for RosettaFold2NA",
+            "fa_icon": "fas fa-link"
+        },
+        "rnacentral_rfam_annotations_link": {
+            "type": "string",
+            "default": "ftp://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/rfam/rfam_annotations.tsv.gz",
+            "description": "Link to RNAcentral Rfam annotations for RosettaFold2NA",
+            "fa_icon": "fas fa-link"
+        },
+        "rnacentral_id_mapping_link": {
+            "type": "string",
+            "default": "ftp://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/id_mapping/id_mapping.tsv.gz",
+            "description": "Link to RNAcentral ID mapping for RosettaFold2NA",
+            "fa_icon": "fas fa-link"
+        },
+        "rnacentral_sequences_link": {
+            "type": "string",
+            "default": "ftp://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/sequences/rnacentral_species_specific_ids.fasta.gz",
+            "description": "Link to RNAcentral sequences for RosettaFold2NA",
+            "fa_icon": "fas fa-link"
+        }
+    }
+},
         "rosettafold2na_dbs_and_parameters_path_options": {
             "title": "RosettaFold2NA DBs and parameters path options",
             "type": "object",
@@ -607,14 +631,39 @@
                     "description": "Path to PDB100 database for RosettaFold2NA",
                     "fa_icon": "fas fa-folder-open"
                 },
-                "rna_rosettafold2na_path": {
-                    "type": "string",
-                    "description": "Path to RNA database for RosettaFold2NA",
-                    "fa_icon": "fas fa-folder-open"
-                },
                 "rf2na_weights_path": {
                     "type": "string",
                     "description": "Path to RosettaFold2NA weights",
+                    "fa_icon": "fas fa-folder-open"
+                },
+                "rfam_full_region_path": {
+                    "type": "string",
+                    "description": "Path to Rfam full region database for RosettaFold2NA",
+                    "fa_icon": "fas fa-folder-open"
+                },
+                "rfam_cm_path": {
+                    "type": "string",
+                    "description": "Path to Rfam CM database for RosettaFold2NA",
+                    "fa_icon": "fas fa-folder-open"
+                },
+                "rnacentral_rfam_annotations_path": {
+                    "type": "string",
+                    "description": "Path to RNAcentral Rfam annotations for RosettaFold2NA",
+                    "fa_icon": "fas fa-folder-open"
+                },
+                "rnacentral_id_mapping_path": {
+                    "type": "string",
+                    "description": "Path to RNAcentral ID mapping for RosettaFold2NA",
+                    "fa_icon": "fas fa-folder-open"
+                },
+                "rnacentral_sequences_path": {
+                    "type": "string",
+                    "description": "Path to RNAcentral sequences for RosettaFold2NA",
+                    "fa_icon": "fas fa-folder-open"
+                },
+                "nt_database_path": {
+                    "type": "string",
+                    "description": "Path to NT database for RosettaFold2NA",
                     "fa_icon": "fas fa-folder-open"
                 }
             }

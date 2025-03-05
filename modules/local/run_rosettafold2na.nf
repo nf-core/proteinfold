@@ -15,7 +15,12 @@ process RUN_ROSETTAFOLD2NA {
     path ('UniRef30_2020_06/*')
     path ('bfd/*')
     path ('pdb100_2021Mar03/*')
-    path ('RNA/*')
+    path ('RF2NA_apr23.tgz')
+    path ('Rfam.cm')
+    path ('rfam_annotations.tsv')
+    path ('id_mapping.tsv')
+    path ('rnacentral.fasta')
+    path ('nt')
 
     output:
     tuple val(meta), path("${meta.id}_rosettafold2na.pdb"), emit: pdb
@@ -29,12 +34,25 @@ process RUN_ROSETTAFOLD2NA {
     def args = task.ext.args ?: ''
     """
     ln -s /app/RoseTTAFold2NA/* .
+    
+    # Prepare RNA databases
+    mkdir -p RNA
+    mv Rfam.cm RNA/
+    mv rfam_annotations.tsv RNA/
+    mv id_mapping.tsv RNA/
+    mv rnacentral.fasta RNA/
+    mv nt RNA/
+    
+    # Extract RF2NA weights
+    tar -xzf RF2NA_apr23.tgz
+
     python -m rf2na.run_inference ${args} \\
         --fasta ${fasta} \\
         --uniref30 UniRef30_2020_06 \\
         --bfd bfd \\
         --pdb100 pdb100_2021Mar03 \\
         --rna_dir RNA \\
+        --weights RF2NA_apr23 \\
         --output ${meta.id}_rosettafold2na
 
     awk '{printf "%s\\t%.0f\\n", \$6, \$11 * 100}' ${meta.id}_rosettafold2na.pdb | uniq > plddt.tsv

@@ -20,7 +20,11 @@ workflow ROSETTAFOLD2NA {
         ch_uniref30             // channel: files from UniRef30 (e.g., UniRef30_2020_06/*)
         ch_bfd                  // channel: files from BFD (e.g., bfd/*)
         ch_pdb100               // channel: files from pdb100 (e.g., pdb100_2021Mar03/*)
-        ch_rna                  // channel: files from RNA (e.g., RNA/*)
+        ch_weights              // channel: RF2NA weights file
+        ch_rfam_cm              // channel: Rfam CM files
+        ch_rnac                 // channel: RNAcentral processed files
+        ch_rnacentral_blast     // channel: RNAcentral BLAST database
+        ch_nt                   // channel: NT database
         ch_dummy_file
 
     main:
@@ -35,17 +39,23 @@ workflow ROSETTAFOLD2NA {
         log.info "UniRef30: ${ch_uniref30}"
         log.info "BFD: ${ch_bfd}"
         log.info "PDB100: ${ch_pdb100}"
-        log.info "RNA: ${ch_rna}"
+        log.info "Weights: ${ch_weights}"
+        log.info "Rfam CM: ${ch_rfam_cm}"
+        log.info "RNAcentral: ${ch_rnac}"
+        log.info "RNAcentral BLAST: ${ch_rnacentral_blast}"
+        log.info "NT: ${ch_nt}"
 
-        // Invoke the RF2NA process with channels in the order defined by its input block:
-        // 1. Tuple (meta, fasta)
-        // 2. UniRef30 files, 3. BFD files, 4. pdb100 files, 5. RNA files.
+        // Invoke the RF2NA process with channels in the order defined by its input block
         RUN_ROSETTAFOLD2NA (
             ch_samplesheet,
             ch_uniref30,
             ch_bfd,
             ch_pdb100,
-            ch_rna
+            ch_weights,
+            ch_rfam_cm,
+            ch_rnac,
+            ch_rnacentral_blast,
+            ch_nt
         )
 
         // Process the PDB output: combine with a dummy file and set the model tag to "rosettafold2na"

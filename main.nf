@@ -225,11 +225,16 @@ workflow NFCORE_PROTEINFOLD {
             params.uniref30_rosettafold2na_path,
             params.bfd_rosettafold2na_path,
             params.pdb100_rosettafold2na_path,
-            params.rna_rosettafold2na_path,
+            params.rf2na_weights_path,
             params.uniref30_rosettafold2na_link,
             params.bfd_rosettafold2na_link,
             params.pdb100_rosettafold2na_link,
-            params.rna_rosettafold2na_link
+            params.rf2na_weights_link,
+            params.rfam_full_region_link,
+            params.rfam_cm_link,
+            params.rnacentral_rfam_annotations_link,
+            params.rnacentral_id_mapping_link,
+            params.rnacentral_sequences_link
         )
         ch_versions = ch_versions.mix(PREPARE_ROSETTAFOLD2NA_DBS.out.versions)
 
@@ -242,7 +247,11 @@ workflow NFCORE_PROTEINFOLD {
             PREPARE_ROSETTAFOLD2NA_DBS.out.uniref30,
             PREPARE_ROSETTAFOLD2NA_DBS.out.bfd,
             PREPARE_ROSETTAFOLD2NA_DBS.out.pdb100,
-            PREPARE_ROSETTAFOLD2NA_DBS.out.rna,
+            PREPARE_ROSETTAFOLD2NA_DBS.out.weights,
+            PREPARE_ROSETTAFOLD2NA_DBS.out.rfam_cm,
+            PREPARE_ROSETTAFOLD2NA_DBS.out.rnac,
+            PREPARE_ROSETTAFOLD2NA_DBS.out.rnacentral_blast,
+            PREPARE_ROSETTAFOLD2NA_DBS.out.nt,
             ch_dummy_file
         )
         ch_rosettafold2na_top_ranked_pdb = ROSETTAFOLD2NA.out.top_ranked_pdb
