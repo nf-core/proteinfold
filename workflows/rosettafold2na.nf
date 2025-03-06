@@ -20,7 +20,7 @@ workflow ROSETTAFOLD2NA {
         ch_uniref30             // channel: files from UniRef30 (e.g., UniRef30_2020_06/*)
         ch_bfd                  // channel: files from BFD (e.g., bfd/*)
         ch_pdb100               // channel: files from pdb100 (e.g., pdb100_2021Mar03/*)
-        ch_weights              // channel: RF2NA weights file
+        ch_rf2na_weights        // channel: RF2NA weights file
         ch_rfam_cm              // channel: Rfam CM files
         ch_rnac                 // channel: RNAcentral processed files
         ch_rnacentral_blast     // channel: RNAcentral BLAST database

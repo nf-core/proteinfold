@@ -40,7 +40,7 @@ workflow PREPARE_ROSETTAFOLD2NA_DBS {
         ch_uniref30 = Channel.value(file(uniref30_rosettafold2na_path))
         ch_bfd      = Channel.value(file(bfd_rosettafold2na_path))
         ch_pdb100   = Channel.value(file(pdb100_rosettafold2na_path))
-        ch_weights  = Channel.value(file(rf2na_weights_path))
+        ch_rf2na_weights = Channel.value(file(rf2na_weights_path))
     }
     else {
         ARIA2_UNIREF30(uniref30_rosettafold2na_link)
@@ -56,7 +56,7 @@ workflow PREPARE_ROSETTAFOLD2NA_DBS {
         ch_versions = ch_versions.mix(ARIA2_PDB100.out.versions)
 
         ARIA2_WEIGHTS(rf2na_weights_link)
-        ch_weights = ARIA2_WEIGHTS.out.db
+        ch_rf2na_weights = ARIA2_WEIGHTS.out.db
         ch_versions = ch_versions.mix(ARIA2_WEIGHTS.out.versions)
 
         // RNA databases processing
@@ -81,7 +81,7 @@ workflow PREPARE_ROSETTAFOLD2NA_DBS {
     uniref30 = ch_uniref30
     bfd      = ch_bfd
     pdb100   = ch_pdb100
-    weights  = ch_weights
+    rf2na_weights = ch_rf2na_weights
     rfam_cm  = CMPRESS.out.cmpress
     rnac     = REPROCESS_RNAC.out.reprocessed
     rnacentral_blast = MAKEBLASTDB.out.db

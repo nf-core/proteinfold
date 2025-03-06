@@ -358,7 +358,7 @@ workflow NFCORE_PROTEINFOLD {
             PREPARE_ROSETTAFOLD2NA_DBS.out.uniref30,
             PREPARE_ROSETTAFOLD2NA_DBS.out.bfd,
             PREPARE_ROSETTAFOLD2NA_DBS.out.pdb100,
-            PREPARE_ROSETTAFOLD2NA_DBS.out.weights,
+            PREPARE_ROSETTAFOLD2NA_DBS.out.rf2na_weights,
             PREPARE_ROSETTAFOLD2NA_DBS.out.rfam_cm,
             PREPARE_ROSETTAFOLD2NA_DBS.out.rnac,
             PREPARE_ROSETTAFOLD2NA_DBS.out.rnacentral_blast,
