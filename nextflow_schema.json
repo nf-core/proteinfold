@@ -755,7 +755,7 @@
                 },
                 "rfam_full_region_path": {
                     "type": "string",
-                    "default": "null/RNA/Rfam.full_region"
+                    "default": "null/RNA/Rfam.full_region.gz"
                 },
                 "rfam_cm_path": {
                     "type": "string",
@@ -763,15 +763,15 @@
                 },
                 "rnacentral_rfam_annotations_path": {
                     "type": "string",
-                    "default": "null/RNA/rfam_annotations.tsv"
+                    "default": "null/RNA/rfam_annotations.tsv.gz"
                 },
                 "rnacentral_id_mapping_path": {
                     "type": "string",
-                    "default": "null/RNA/id_mapping.tsv"
+                    "default": "null/RNA/id_mapping.tsv.gz"
                 },
                 "rnacentral_sequences_path": {
                     "type": "string",
-                    "default": "null/RNA/rnacentral_species_specific_ids.fasta"
+                    "default": "null/RNA/rnacentral_species_specific_ids.fasta.gz"
                 },
                 "nt_database_path": {
                     "type": "string",
