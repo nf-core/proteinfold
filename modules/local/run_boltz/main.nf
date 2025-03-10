@@ -13,10 +13,10 @@ process RUN_BOLTZ {
     path ('ccd.pkl')
     
     output:
-    path ("boltz_results_${fasta.baseName}/processed/msa/*.npz"), emit: msa
-    path ("boltz_results_${fasta.baseName}/processed/structures/*.npz"), emit: structures
-    path ("boltz_results_${fasta.baseName}/predictions/${fasta.baseName}/confidence*.json"), emit: confidence
-    path ("boltz_results_${fasta.baseName}/predictions/${fasta.baseName}/plddt_*.npz"), emit: plddt
+    path ("boltz_results_*/processed/msa/*.npz"), emit: msa
+    path ("boltz_results_*/processed/structures/*.npz"), emit: structures
+    path ("boltz_results_*/predictions/*/confidence*.json"), emit: confidence
+    path ("boltz_results_*/predictions/*/plddt_*.npz"), emit: plddt
     
     script:
     """
