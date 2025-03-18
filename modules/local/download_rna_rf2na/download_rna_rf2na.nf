@@ -1,8 +1,10 @@
 process DOWNLOAD_RNA_DATABASES {
     tag "Download and process RNA databases"
     
-    conda "bioconda::infernal=1.1.4 bioconda::blast=2.12.0 conda-forge::perl"
-    container "quay.io/patribota/proteinfold_rosettafold2na:dev"
+    conda "${moduleDir}/environment.yml"
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
+        'https://depot.galaxyproject.org/singularity/mulled-v2-5799ab18b5fc681e75923b2450abaa969907ec98:87fc08d7e38c490726a20f4d9b027c0b1d9b8248-0' :
+        'quay.io/biocontainers/mulled-v2-5799ab18b5fc681e75923b2450abaa969907ec98:87fc08d7e38c490726a20f4d9b027c0b1d9b8248-0' }"
 
     input:
     val rfam_full_region_link
@@ -12,10 +14,14 @@ process DOWNLOAD_RNA_DATABASES {
     val rnacentral_sequences_link
 
     output:
-    path "RNA", emit: rna_db
+    path "*", emit: ch_db
     path "versions.yml", emit: versions
 
+    when:
+    task.ext.when == null || task.ext.when
+
     script:
+    def args = task.ext.args ?: ''
     """
     mkdir -p RNA
     cd RNA
@@ -48,6 +54,20 @@ process DOWNLOAD_RNA_DATABASES {
         makeblastdb: \$(makeblastdb -version | grep -oP 'makeblastdb: \\K\\d+\\.\\d+\\.\\d+')
         update_blastdb: \$(update_blastdb.pl --version | grep -oP 'Update BLAST databases \\K\\d+\\.\\d+\\.\\d+')
         perl: \$(perl --version | grep -oP 'This is perl.*\\K\\d+\\.\\d+\\.\\d+')
+    END_VERSIONS
+    """
+
+    stub:
+    """
+    mkdir -p RNA
+    touch RNA/Rfam.full_region RNA/Rfam.cm RNA/id_mapping.tsv RNA/rfam_annotations.tsv RNA/rnacentral.fasta
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        cmpress: 1.1.4
+        makeblastdb: 2.12.0
+        update_blastdb: 2.12.0
+        perl: 5.32.1
     END_VERSIONS
     """
 }

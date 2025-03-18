@@ -1,0 +1,11 @@
+name: download_rna_rf2na
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - wget
+  - gzip
+  - infernal
+  - blast
+  - perl
