@@ -52,6 +52,8 @@ process RUN_ALPHAFOLD2_PRED {
         --msa_path=${msa} \
         $args
 
+
+
     cp "${fasta.baseName}"/ranked_0.pdb ./"${meta.id}"_alphafold2.pdb
     cd "${fasta.baseName}"
     awk '{print \$6"\\t"\$11}' ranked_0.pdb | uniq > ranked_0_plddt.tsv

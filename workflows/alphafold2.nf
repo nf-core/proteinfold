@@ -129,7 +129,7 @@ workflow ALPHAFOLD2 {
             ch_uniprot,
             RUN_ALPHAFOLD2_MSA.out.features
         )
-
+   
         RUN_ALPHAFOLD2_PRED
             .out
             .multiqc
