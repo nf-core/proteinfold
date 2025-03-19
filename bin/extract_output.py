@@ -8,7 +8,7 @@ import csv
 def extract_struct_pLDDT_to_tsv(id, struct_files): 
     """
     Uses the BioPython PDB package to extract residue pLDDT values from the b-factor column. Iterates over PDB objects rather than processes raw file
-    Write out a tsv file for reading by MultiQC
+    Write out a tsv file for reading by MultiQC in nf-core/proteinfold
     """
     
     # Set up headers
