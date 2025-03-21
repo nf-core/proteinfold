@@ -751,32 +751,14 @@
                 },
                 "rf2na_weights_path": {
                     "type": "string",
-                    "default": "null/RF2NA_apr23.tgz"
+                    "default": "null/network/weights/RF2NA_apr23.pt"
                 },
-                "rfam_full_region_path": {
+                "rna_rosettafold2na_path": {
                     "type": "string",
-                    "default": "null/RNA/Rfam.full_region.gz"
-                },
-                "rfam_cm_path": {
-                    "type": "string",
-                    "default": "null/RNA/Rfam.cm"
-                },
-                "rnacentral_rfam_annotations_path": {
-                    "type": "string",
-                    "default": "null/RNA/rfam_annotations.tsv.gz"
-                },
-                "rnacentral_id_mapping_path": {
-                    "type": "string",
-                    "default": "null/RNA/id_mapping.tsv.gz"
-                },
-                "rnacentral_sequences_path": {
-                    "type": "string",
-                    "default": "null/RNA/rnacentral_species_specific_ids.fasta.gz"
-                },
-                "nt_database_path": {
-                    "type": "string",
-                    "default": "null/RNA/nt"
+                    "description": "Path to the RNA folder containing all necessary RNA databases for RF2NA",
+                    "default": "null/RNA/*"
                 }
+                            
             }
         },
 
