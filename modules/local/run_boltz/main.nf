@@ -1,5 +1,5 @@
 /*
- * Run Alphafold2
+ * Run Boltz
  */
 process RUN_BOLTZ {
     tag "$meta.id"
@@ -16,10 +16,11 @@ process RUN_BOLTZ {
     path ("boltz_results_*/processed/msa/*.npz"), emit: msa
     path ("boltz_results_*/processed/structures/*.npz"), emit: structures
     path ("boltz_results_*/predictions/*/confidence*.json"), emit: confidence
-    path ("boltz_results_*/predictions/*/plddt_*.npz"), emit: plddt
+    path ("*"), emit: plddt
+    path ("boltz_results_*/predictions/*/*.pdb"), emit: pdb
     
     script:
     """
-    boltz predict --use_msa_server "./${fasta.name}" --cache ./
+    boltz predict --output_format pdb --use_msa_server "./${fasta.name}" --cache ./
     """
 }

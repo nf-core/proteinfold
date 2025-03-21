@@ -63,8 +63,16 @@ workflow BOLTZ {
     RUN_BOLTZ(
         CREATE_SAMPLESHEET_YAML.out.samplesheet,
         ch_boltz_model,
-        ch_boltz_ccd,
+        ch_boltz_ccd
     )
+
+    RUN_BOLTZ
+        .out
+        .pdb
+        .map { it[0] }
+        .toSortedList()
+        .map { it[0]["model"] = "boltz" }
+        .set { ch_pdb }
     
     emit:
     versions   = ch_versions
@@ -72,9 +80,5 @@ workflow BOLTZ {
     structures = RUN_BOLTZ.out.structures
     confidence = RUN_BOLTZ.out.confidence
     plddt      = RUN_BOLTZ.out.plddt
+    pdb        = ch_pdb
 } 
-/*
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    THE END
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-*/

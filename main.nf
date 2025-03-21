@@ -245,9 +245,10 @@ workflow NFCORE_PROTEINFOLD {
             params.num_recycles_colabfold
 
         )
-        //ch_multiqc                  = ch_multiqc.mix(BOLTZ.out.plddt.collect())
+        ch_multiqc                  = ch_multiqc.mix(BOLTZ.out.pdb.collect())
+        ch_multiqc.view()
         ch_versions                 = ch_versions.mix(BOLTZ.out.versions)
-        //ch_report_input             = ch_report_input.mix(BOLTZ.out.msa)
+        ch_report_input             = ch_report_input.mix(BOLTZ.out.msa)
     }
 
     //
