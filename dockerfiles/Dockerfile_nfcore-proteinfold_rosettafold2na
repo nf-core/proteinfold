@@ -59,14 +59,6 @@ RUN git clone --depth 1 https://github.com/uw-ipd/RoseTTAFold2NA.git /app/RoseTT
  && /conda/bin/mamba clean --all --force-pkgs-dirs -y
 
 ########################################################################
-# 3. Download pre-trained weights
-########################################################################
-RUN cd /app/RoseTTAFold2NA/network \
- && wget https://files.ipd.uw.edu/dimaio/RF2NA_apr23.tgz \
- && tar xvfz RF2NA_apr23.tgz \
- && rm RF2NA_apr23.tgz
-
-########################################################################
 # 4. Add database directories (placeholders for binding at runtime)
 ########################################################################
 RUN mkdir -p /app/RoseTTAFold2NA/UniRef30_2020_06 \

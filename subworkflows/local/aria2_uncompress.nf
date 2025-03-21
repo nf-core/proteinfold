@@ -20,7 +20,7 @@ workflow ARIA2_UNCOMPRESS {
     )
     ch_db = Channel.empty()
 
-    if (source_url.toString().endsWith('.tar') || source_url.toString().endsWith('.tar.gz')) {
+    if (source_url.toString().endsWith('.tar') || source_url.toString().endsWith('.tar.gz') || source_url.toString().endsWith('.tgz')) {
         ch_db = UNTAR ( ARIA2.out.downloaded_file ).untar.map{ it[1] }
     } else if (source_url.toString().endsWith('.gz')) {
         ch_db = GUNZIP ( ARIA2.out.downloaded_file ).gunzip.map { it[1] }
