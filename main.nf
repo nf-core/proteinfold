@@ -337,6 +337,7 @@ workflow NFCORE_PROTEINFOLD {
             params.bfd_rosettafold2na_path,
             params.pdb100_rosettafold2na_path,
             params.rf2na_weights_path,
+            params.rna_rosettafold2na_path,
             params.uniref30_rosettafold2na_link,
             params.bfd_rosettafold2na_link,
             params.pdb100_rosettafold2na_link,
