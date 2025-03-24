@@ -360,10 +360,7 @@ workflow NFCORE_PROTEINFOLD {
             PREPARE_ROSETTAFOLD2NA_DBS.out.bfd,
             PREPARE_ROSETTAFOLD2NA_DBS.out.pdb100,
             PREPARE_ROSETTAFOLD2NA_DBS.out.rf2na_weights,
-            PREPARE_ROSETTAFOLD2NA_DBS.out.rfam_cm,
-            PREPARE_ROSETTAFOLD2NA_DBS.out.rnac,
-            PREPARE_ROSETTAFOLD2NA_DBS.out.rnacentral_blast,
-            PREPARE_ROSETTAFOLD2NA_DBS.out.nt,
+            PREPARE_ROSETTAFOLD2NA_DBS.out.rna,
             ch_dummy_file
         )
         ch_rosettafold2na_top_ranked_pdb = ROSETTAFOLD2NA.out.top_ranked_pdb
