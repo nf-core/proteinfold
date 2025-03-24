@@ -25,6 +25,8 @@ workflow ROSETTAFOLD2NA {
     ch_pdb100               // channel: path(pdb100)
     ch_rf2na_weights        // channel: path(rf2na_weights)
     ch_rna
+    ch_dummy_file           // Channel: dummy file channel (if required downstream)
+
 
     main:
     ch_multiqc_files  = Channel.empty()
