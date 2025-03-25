@@ -5,7 +5,7 @@ process RUN_BOLTZ {
     tag "$meta.id"
     label 'process_medium'
 
-    container "/srv/scratch/sbf-pipelines/proteinfold/singularity/boltz.sif"
+    container "docker://docker.io/nbtmsh/boltz:0.1.3"
     
     input:
     tuple val(meta), path(fasta)
@@ -13,14 +13,19 @@ process RUN_BOLTZ {
     path ('ccd.pkl')
     
     output:
-    path ("boltz_results_*/processed/msa/*.npz"), emit: msa
-    path ("boltz_results_*/processed/structures/*.npz"), emit: structures
-    path ("boltz_results_*/predictions/*/confidence*.json"), emit: confidence
-    path ("*"), emit: plddt
-    path ("boltz_results_*/predictions/*/*.pdb"), emit: pdb
+    tuple val(meta), path ("boltz_results_*/processed/msa/*.npz"), emit: msa
+    tuple val(meta), path ("boltz_results_*/processed/structures/*.npz"), emit: structures
+    tuple val(meta), path ("boltz_results_*/predictions/*/confidence*.json"), emit: confidence
+    tuple val(meta), path ("*"), emit: plddt
+    tuple val(meta), path ("boltz_results_*/predictions/*/*.pdb"), emit: pdb
+
+    when:
+    task.ext.when == null || task.ext.when
     
     script:
+    def args = task.ext.args ?: ''
+
     """
-    boltz predict --output_format pdb --use_msa_server "./${fasta.name}" --cache ./
+    boltz predict --output_format pdb ${args} "${fasta}" --cache ./
     """
 }

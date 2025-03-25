@@ -50,6 +50,7 @@ workflow BOLTZ {
     ch_colabfold_params // channel: [ path(colabfold_params) ]
     ch_colabfold_db // channel: [ path(colabfold_db) ]
     ch_uniref30     // channel: [ path(uniref30) ]
+    ch_dummy_file   // channel: [ path(NO_FILE) ]
 
     main:
     ch_multiqc_files = Channel.empty()
@@ -69,14 +70,22 @@ workflow BOLTZ {
     RUN_BOLTZ
         .out
         .pdb
-        .map { it[0] }
-        .toSortedList()
-        .map { it[0]["model"] = "boltz" }
+        .combine(ch_dummy_file)
+        .map {
+            it[0]["model"] = "boltz"
+            it
+        }
         .set { ch_pdb }
-    
+
+        //.map {
+        //    it[0]["model"] = "boltz"
+        //    it
+        //}
+        //.set { ch_pdb }
+
     emit:
     versions   = ch_versions
-    msa        = RUN_BOLTZ.out.msa
+    msa        = ch_pdb
     structures = RUN_BOLTZ.out.structures
     confidence = RUN_BOLTZ.out.confidence
     plddt      = RUN_BOLTZ.out.plddt
