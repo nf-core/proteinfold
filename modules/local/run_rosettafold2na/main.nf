@@ -32,7 +32,7 @@ process RUN_ROSETTAFOLD2NA {
 
     script:
     def args = task.ext.args ?: ''
-    def VERSION = 'dev' // WARN: Version information not provided by tool on CLI. Please update this string when bumping container versions.
+    //def VERSION = 'dev' // WARN: Version information not provided by tool on CLI. Please update this string when bumping container versions.
     def fasta_args = fasta_files.collect { fasta ->
         def prefix = fasta.name.tokenize(':')[0]
         if (prefix == 'P') return "P:${fasta}"
