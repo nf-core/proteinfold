@@ -14,6 +14,11 @@ process RUN_ROSETTAFOLD2NA {
 
     input:
     tuple val(meta), path(fasta_files)
+    path ('bfd/*')
+    path ('UniRef30_2020_06/*')
+    path ('pdb100_2021Mar03/*')
+    path ('RNA/*')
+    path ('*')
 
     output:
     tuple val(meta), path("${meta.id}_rf2na_output"), emit: output_dir
