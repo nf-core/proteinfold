@@ -1,7 +1,7 @@
 /*
  * Run RF2NA (RoseTTAFold 2 for Nucleic Acids)
  */
-process RUN_RF2NA {
+process RUN_ROSETTAFOLD2NA {
     tag "$meta.id"
     label 'process_medium'
 
