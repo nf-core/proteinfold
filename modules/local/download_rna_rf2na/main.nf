@@ -1,10 +1,13 @@
 process DOWNLOAD_RNA_DATABASES {
     tag "Download and process RNA databases"
-    
-    conda "${moduleDir}/environment.yml"
-    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/mulled-v2-5799ab18b5fc681e75923b2450abaa969907ec98:87fc08d7e38c490726a20f4d9b027c0b1d9b8248-0' :
-        'quay.io/biocontainers/mulled-v2-5799ab18b5fc681e75923b2450abaa969907ec98:87fc08d7e38c490726a20f4d9b027c0b1d9b8248-0' }"
+    label 'process_medium'
+
+    // Exit if running this module with -profile conda / -profile mamba
+    if (workflow.profile.tokenize(',').intersect(['conda', 'mamba']).size() >= 1) {
+        error("DOWNLOAD_RNA_DATABASES module does not support Conda. Please use Docker / Singularity / Podman instead.")
+    }
+
+    container "quay.io/patribota/proteinfold_rosettafold2na:dev"
 
     input:
     val rfam_full_region_link
@@ -14,7 +17,7 @@ process DOWNLOAD_RNA_DATABASES {
     val rnacentral_sequences_link
 
     output:
-    path "*", emit: ch_db
+    path "RNA", emit: ch_db
     path "versions.yml", emit: versions
 
     when:
@@ -54,6 +57,7 @@ process DOWNLOAD_RNA_DATABASES {
         makeblastdb: \$(makeblastdb -version | grep -oP 'makeblastdb: \\K\\d+\\.\\d+\\.\\d+')
         update_blastdb: \$(update_blastdb.pl --version | grep -oP 'Update BLAST databases \\K\\d+\\.\\d+\\.\\d+')
         perl: \$(perl --version | grep -oP 'This is perl.*\\K\\d+\\.\\d+\\.\\d+')
+        rf2na: \$(grep "version" /app/RoseTTAFold2NA/README.md | awk '{print \$2}')
     END_VERSIONS
     """
 
@@ -68,6 +72,7 @@ process DOWNLOAD_RNA_DATABASES {
         makeblastdb: 2.12.0
         update_blastdb: 2.12.0
         perl: 5.32.1
+        rf2na: 1.0.0
     END_VERSIONS
     """
 }
