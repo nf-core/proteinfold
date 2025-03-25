@@ -68,7 +68,6 @@ process RUN_ROSETTAFOLD2NA {
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        rf2na: $VERSION
         python: \$(python3 --version | sed 's/Python //g')
     END_VERSIONS
     """
