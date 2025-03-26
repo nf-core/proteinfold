@@ -21,10 +21,8 @@ process RUN_ROSETTAFOLD2NA {
     path ('*')
 
     output:
-    tuple val(meta), path("${meta.id}_rf2na_output"), emit: output_dir
     tuple val(meta), path("${meta.id}_rf2na.pdb"), emit: pdb
-    tuple val(meta), path("${meta.id}_rf2na_output/models/model_00.npz"), emit: npz
-    tuple val(meta), path("*_mqc.tsv"), emit: multiqc
+    tuple val(meta), path("${meta.id}_plddt_mqc.tsv"), emit: multiqc
     path "versions.yml", emit: versions
 
     when:
@@ -50,7 +48,7 @@ process RUN_ROSETTAFOLD2NA {
 
     awk '{printf "%s\\t%.0f\\n", \$6, \$11 * 100}' "${meta.id}_rf2na.pdb" | uniq > plddt.tsv
     echo -e Positions"\\t""${meta.id}"_rf2na.pdb > header.tsv
-    cat header.tsv plddt.tsv > "${meta.id}"_plddt_mqc.tsv
+    cat header.tsv plddt.tsv > "${meta.id}_plddt_mqc.tsv"
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
@@ -60,11 +58,8 @@ process RUN_ROSETTAFOLD2NA {
 
     stub:
     """
-    mkdir -p ${meta.id}_rf2na_output/models
-    touch ${meta.id}_rf2na_output/models/model_00.pdb
-    touch ${meta.id}_rf2na_output/models/model_00.npz
     touch ${meta.id}_rf2na.pdb
-    touch "${meta.id}"_plddt_mqc.tsv
+    touch "${meta.id}_plddt_mqc.tsv"
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

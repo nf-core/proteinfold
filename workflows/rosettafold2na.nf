@@ -20,13 +20,12 @@ workflow ROSETTAFOLD2NA {
     take:
     ch_samplesheet          // channel: samplesheet read in from --input
     ch_versions             // channel: [ path(versions.yml) ]
-    ch_uniref30             // channel: path(uniref30)
     ch_bfd                  // channel: path(bfd)
+    ch_uniref30             // channel: path(uniref30)
     ch_pdb100               // channel: path(pdb100)
+    ch_rna                  // channel: path(rna)
     ch_rf2na_weights        // channel: path(rf2na_weights)
-    ch_rna
-    ch_dummy_file           // Channel: dummy file channel (if required downstream)
-
+    ch_dummy_file           // channel: path(NO_FILE)
 
     main:
     ch_multiqc_files  = Channel.empty()
@@ -36,11 +35,11 @@ workflow ROSETTAFOLD2NA {
 
     RUN_ROSETTAFOLD2NA (
         ch_samplesheet,
-        ch_uniref30,
         ch_bfd,
+        ch_uniref30,
         ch_pdb100,
-        ch_rf2na_weights,
-        ch_rna
+        ch_rna,
+        ch_rf2na_weights
     )
     ch_versions = ch_versions.mix(RUN_ROSETTAFOLD2NA.out.versions)
 
@@ -72,10 +71,14 @@ workflow ROSETTAFOLD2NA {
         }
         .set { ch_pdb_msa }
 
+    ch_pdb_msa
+        .map { [ it[0]["id"], it[0], it[1], it[2] ] }
+        .set { ch_top_ranked_pdb }
+
     emit:
     pdb_msa        = ch_pdb_msa        // channel: [ meta, /path/to/*.pdb, dummy_file ]
     top_ranked_pdb = ch_top_ranked_pdb // channel: [ id, meta, /path/to/*.pdb, dummy_file ]
-    multiqc_report = ch_multiqc_report // channel: [ [ model: "rosettafold2na" ], [ /path/to/multiqc_report.html ] ]
+    multiqc_report = ch_multiqc_report // channel: [ [ model: "rosettafold2na" ], [ /path/to/*_plddt_mqc.tsv ] ]
     versions       = ch_versions       // channel: [ path(versions.yml) ]
 }
 

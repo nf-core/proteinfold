@@ -1,0 +1,4 @@
+sample,output_dir,fasta_files
+test_sample1,rna_pred,"rna_binding_protein.fa,R:RNA.fa"
+test_sample2,dna_pred,"dna_binding_protein.fa,D:DNA.fa"
+test_sample3,complex_pred,"P:protein.fa,R:RNA.fa,D:DNA.fa,S:ssDNA.fa,PR:protein_rna.fa"
