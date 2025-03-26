@@ -25,6 +25,9 @@ process RUN_BOLTZ {
     
     script:
     def args = task.ext.args ?: ''
+    if (use_msa_server) {
+        args += '--use_msa_server'
+    }
 
     """
     boltz predict --output_format pdb ${args} "${fasta}" --cache ./
