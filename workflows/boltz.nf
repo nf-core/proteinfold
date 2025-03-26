@@ -51,6 +51,7 @@ workflow BOLTZ {
     ch_colabfold_db // channel: [ path(colabfold_db) ]
     ch_uniref30     // channel: [ path(uniref30) ]
     ch_dummy_file   // channel: [ path(NO_FILE) ]
+    use_msa_server
 
     main:
     ch_multiqc_files = Channel.empty()
@@ -64,7 +65,8 @@ workflow BOLTZ {
     RUN_BOLTZ(
         CREATE_SAMPLESHEET_YAML.out.samplesheet,
         ch_boltz_model,
-        ch_boltz_ccd
+        ch_boltz_ccd,
+        use_msa_server
     )
 
     RUN_BOLTZ
