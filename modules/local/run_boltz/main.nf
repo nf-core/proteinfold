@@ -17,7 +17,7 @@ process RUN_BOLTZ {
     tuple val(meta), path ("boltz_results_*/processed/msa/*.npz"), emit: msa
     tuple val(meta), path ("boltz_results_*/processed/structures/*.npz"), emit: structures
     tuple val(meta), path ("boltz_results_*/predictions/*/confidence*.json"), emit: confidence
-    tuple val(meta), path ("*"), emit: plddt
+    tuple val(meta), path ("${meta.id}_plddt_mqc.tsv"), emit: multiqc
     tuple val(meta), path ("boltz_results_*/predictions/*/*.pdb"), emit: pdb
     path "versions.yml", emit: versions
     
@@ -25,17 +25,22 @@ process RUN_BOLTZ {
     task.ext.when == null || task.ext.when
     
     script:
+    def version = "0.4.1"
     def args = task.ext.args ?: ''
 
     """
     boltz predict --output_format pdb ${args} "${fasta}" --cache ./
+    echo -e Atom_serial_number"\\t"Atom_name"\\t"Residue_name"\\t"Residue_sequence_number"\\t"pLDDT > ${meta.id}_plddt_mqc.tsv
+    awk '{print \$2"\\t"\$3"\\t"\$4"\\t"\$6"\\t"\$11}' boltz_results_*/predictions/*/*.pdb | grep -v 'N/A' | uniq >> ${meta.id}_plddt_mqc.tsv
     
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        python: \$(python3 --version | sed 's/Python //g')
+        boltz: $version
     END_VERSIONS
     """
+    
     stub:
+    def version = "0.4.1"
     """
     mkdir -p boltz_results_${meta.id}/processed/msa/
     mkdir -p boltz_results_${meta.id}/processed/structures/
@@ -45,11 +50,11 @@ process RUN_BOLTZ {
     touch boltz_results_${meta.id}/processed/structures/${meta.id}.npz
     touch boltz_results_${meta.id}/predictions/${meta.id}/confidence_${meta.id}.json
     touch boltz_results_${meta.id}/predictions/${meta.id}/${meta.id}.pdb
-    
+    touch ${meta.id}_plddt_mqc.tsv
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        python: \$(python3 --version | sed 's/Python //g')
+        boltz: $version
     END_VERSIONS
     """
 }
