@@ -72,7 +72,7 @@ workflow PIPELINE_INITIALISATION {
             // This mapping supports legacy samplesheets that use 'sequence' as metadata.
             // If meta.id is missing or empty, meta.sequence is used as the identifier.
             def identifier = meta.id ? meta.id : meta.sequence
-            return [[id: identifier], fasta]
+            return [["id": identifier], fasta]
         }
 
     if (params.split_fasta) {

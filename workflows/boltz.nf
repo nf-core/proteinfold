@@ -18,7 +18,7 @@
 // MODULE: Installed directly from nf-core/modules
 //
 include { MULTIQC } from '../modules/nf-core/multiqc/main'
-include { CREATE_SAMPLESHEET_YAML } from '../modules/local/create_samplesheet'
+include { BOLTZ_FASTA } from '../modules/local/data_convertor/boltz_fasta'
 include { MMSEQS_COLABFOLDSEARCH } from '../modules/local/mmseqs_colabfoldsearch'
 
 //
@@ -51,14 +51,24 @@ workflow BOLTZ {
     ch_colabfold_db // channel: [ path(colabfold_db) ]
     ch_uniref30     // channel: [ path(uniref30) ]
     ch_dummy_file   // channel: [ path(NO_FILE) ]
-    use_msa_server
 
     main:
     ch_multiqc_files = Channel.empty()
+    
+    BOLTZ_FASTA(
+        ch_samplesheet
+        .map{[it[0].id, it[1]]}
+        .collect(flat: false)
+        .map{
+            [["id": "all-run"], 
+             it.collect{item -> item[0]}, 
+             it.collect{item -> item[1]}]
+        }
+    )
 
     // RUN_BOLTZ 
     RUN_BOLTZ(
-        ch_samplesheet,
+        BOLTZ_FASTA.out.fasta.map{[["id": it[1].baseName], it[1]]},
         [],
         ch_boltz_model,
         ch_boltz_ccd

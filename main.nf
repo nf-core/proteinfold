@@ -255,10 +255,9 @@ workflow NFCORE_PROTEINFOLD {
             PREPARE_COLABFOLD_DBS.out.colabfold_db,
             PREPARE_COLABFOLD_DBS.out.uniref30,
             params.num_recycles_colabfold,
-            ch_dummy_file,
-            true
+            ch_dummy_file
         )
-        ch_multiqc                  = ch_multiqc.mix(BOLTZ.out.plddt)
+        ch_multiqc                  = ch_multiqc.mix(BOLTZ.out.multiqc_report)
         ch_versions                 = ch_versions.mix(BOLTZ.out.versions)
         ch_report_input             = ch_report_input.mix(BOLTZ.out.pdb.collect())
     }
