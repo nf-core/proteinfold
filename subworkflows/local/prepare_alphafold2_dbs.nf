@@ -8,6 +8,7 @@ include {
     ARIA2_UNCOMPRESS as ARIA2_SMALL_BFD
     ARIA2_UNCOMPRESS as ARIA2_MGNIFY
     ARIA2_UNCOMPRESS as ARIA2_PDB70
+    ARIA2_UNCOMPRESS as ARIA2_OBSOLETE
     ARIA2_UNCOMPRESS as ARIA2_UNIREF30
     ARIA2_UNCOMPRESS as ARIA2_UNIREF90
     ARIA2_UNCOMPRESS as ARIA2_UNIPROT_SPROT
@@ -28,7 +29,8 @@ workflow PREPARE_ALPHAFOLD2_DBS {
     alphafold2_params_path   // directory: /path/to/alphafold2/params/
     mgnify_path              // directory: /path/to/mgnify/
     pdb70_path               // directory: /path/to/pdb70/
-    pdb_mmcif_path           // directory: /path/to/pdb_mmcif/
+    pdb_mmcif_path           // directory: /path/to/pdb_mmcif/mmcif_files/
+    pdb_obsolete_path        // directory: /path/to/pdb_mmcif/obsolete.dat
     uniref30_alphafold2_path // directory: /path/to/uniref30/alphafold2/
     uniref90_path            // directory: /path/to/uniref90/
     pdb_seqres_path          // directory: /path/to/pdb_seqres/
@@ -65,9 +67,8 @@ workflow PREPARE_ALPHAFOLD2_DBS {
         ch_params         = Channel.value(file(alphafold2_params_path))
         ch_mgnify         = Channel.value(file(mgnify_path))
         ch_pdb70          = Channel.value(file(pdb70_path, type: 'dir' ))
-        ch_mmcif_files    = file(pdb_mmcif_path, type: 'dir')
-        ch_mmcif_obsolete = file(pdb_mmcif_path, type: 'file')
-        ch_mmcif          = Channel.value(ch_mmcif_files + ch_mmcif_obsolete)
+        ch_mmcif_files    = Channel.value(file(pdb_mmcif_path))
+        ch_obsolete       = Channel.value(file(pdb_obsolete_path, type: 'file'))
         ch_uniref30       = Channel.value(file(uniref30_alphafold2_path, type: 'any'))
         ch_uniref90       = Channel.value(file(uniref90_path))
         ch_pdb_seqres     = Channel.value(file(pdb_seqres_path))
@@ -108,10 +109,15 @@ workflow PREPARE_ALPHAFOLD2_DBS {
 
         DOWNLOAD_PDBMMCIF(
             pdb_mmcif_link,
+        )
+        ch_mmcif_files = DOWNLOAD_PDBMMCIF.out.ch_db
+        ch_versions    = ch_versions.mix(DOWNLOAD_PDBMMCIF.out.versions)
+
+        ARIA2_OBSOLETE(
             pdb_obsolete_link
         )
-        ch_mmcif = DOWNLOAD_PDBMMCIF.out.ch_db
-        ch_versions = ch_versions.mix(DOWNLOAD_PDBMMCIF.out.versions)
+        ch_obsolete = ARIA2_OBSOLETE.out.db
+        ch_versions = ch_versions.mix(ARIA2_OBSOLETE.out.versions)
 
         ARIA2_UNIREF30(
             uniref30_alphafold2_link
@@ -146,20 +152,21 @@ workflow PREPARE_ALPHAFOLD2_DBS {
             ARIA2_UNIPROT_SPROT.out.db,
             ARIA2_UNIPROT_TREMBL.out.db
         )
-        ch_uniprot = COMBINE_UNIPROT.out.ch_db
-        ch_version =  ch_versions.mix(COMBINE_UNIPROT.out.versions)
+        ch_uniprot  = COMBINE_UNIPROT.out.ch_db
+        ch_versions = ch_versions.mix(COMBINE_UNIPROT.out.versions)
     }
 
     emit:
-    bfd        = ch_bfd
-    small_bfd  = ch_small_bfd
-    params     = ch_params
-    mgnify     = ch_mgnify
-    pdb70      = ch_pdb70
-    pdb_mmcif  = ch_mmcif
-    uniref30   = ch_uniref30
-    uniref90   = ch_uniref90
-    pdb_seqres = ch_pdb_seqres
-    uniprot    = ch_uniprot
-    versions   = ch_versions
+    bfd          = ch_bfd
+    small_bfd    = ch_small_bfd
+    params       = ch_params
+    mgnify       = ch_mgnify
+    pdb70        = ch_pdb70
+    pdb_mmcif    = ch_mmcif_files
+    pdb_obsolete = ch_obsolete
+    uniref30     = ch_uniref30
+    uniref90     = ch_uniref90
+    pdb_seqres   = ch_pdb_seqres
+    uniprot      = ch_uniprot
+    versions     = ch_versions
 }

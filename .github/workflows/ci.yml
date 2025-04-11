@@ -44,6 +44,8 @@ jobs:
           - "test_colabfold_download"
           - "test_esmfold"
           - "test_split_fasta"
+          - "test_rosettafold_all_atom"
+          - "test_helixfold3"
         isMaster:
           - ${{ github.base_ref == 'master' }}
         # Exclude conda and singularity on dev
@@ -54,7 +56,9 @@ jobs:
             profile: "singularity"
     steps:
       - name: Check out pipeline code
-        uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b # v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Nextflow
         uses: nf-core/setup-nextflow@v2

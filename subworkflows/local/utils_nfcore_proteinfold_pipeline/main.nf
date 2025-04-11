@@ -66,6 +66,15 @@ workflow PIPELINE_INITIALISATION {
     // Create channel from input file provided through params.input
     //
     ch_samplesheet = Channel.fromList(samplesheetToList(params.input, "assets/schema_input.json"))
+
+    ch_samplesheet
+        .map { meta, fasta ->
+            // This mapping supports legacy samplesheets that use 'sequence' as metadata.
+            // If meta.id is missing or empty, meta.sequence is used as the identifier.
+            def identifier = meta.id ? meta.id : meta.sequence
+            return [[id: identifier], fasta]
+        }
+
     if (params.split_fasta) {
         // TODO: here we have to validate that the ids are unique and valid as an extra step
         // since it is not done with the samplesheet schema (they are all in the same file)
@@ -110,6 +119,7 @@ workflow PIPELINE_COMPLETION {
 
     main:
     summary_params = paramsSummaryMap(workflow, parameters_schema: "nextflow_schema.json")
+    def multiqc_reports = multiqc_report.toList()
 
     //
     // Completion email and summary
@@ -123,7 +133,7 @@ workflow PIPELINE_COMPLETION {
                 plaintext_email,
                 outdir,
                 monochrome_logs,
-                multiqc_report.toList()
+                multiqc_reports.getVal(),
             )
         }
 
@@ -199,7 +209,7 @@ def toolBibliographyText() {
 }
 
 def methodsDescriptionText(mqc_methods_yaml) {
-    // Convert  to a named map so can be used as with familar NXF ${workflow} variable syntax in the MultiQC YML file
+    // Convert  to a named map so can be used as with familiar NXF ${workflow} variable syntax in the MultiQC YML file
     def meta = [:]
     meta.workflow = workflow.toMap()
     meta["manifest_map"] = workflow.manifest.toMap()

@@ -2,10 +2,6 @@ process RUN_ESMFOLD {
     tag "$meta.id"
     label 'process_medium'
 
-    if (workflow.profile.tokenize(',').intersect(['conda', 'mamba']).size() >= 1) {
-        error("Local RUN_ESMFOLD module does not support Conda. Please use Docker / Singularity / Podman instead.")
-    }
-
     container "nf-core/proteinfold_esmfold:dev"
 
     input:
@@ -22,6 +18,9 @@ process RUN_ESMFOLD {
     task.ext.when == null || task.ext.when
 
     script:
+    if (workflow.profile.tokenize(',').intersect(['conda', 'mamba']).size() >= 1) {
+        error("Local RUN_ESMFOLD module does not support Conda. Please use Docker / Singularity / Podman instead.")
+    }
     def args = task.ext.args ?: ''
     def VERSION = '1.0.3' // WARN: Version information not provided by tool on CLI. Please update this string when bumping container versions.
 

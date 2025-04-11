@@ -2,7 +2,7 @@
  * Download PDB MMCIF database
  */
 process DOWNLOAD_PDBMMCIF {
-    tag "${source_url_pdb_mmcif}--${source_url_pdb_obsolete}"
+    tag "${source_url_pdb_mmcif}"
     label 'process_low'
     label 'error_retry'
 
@@ -13,7 +13,6 @@ process DOWNLOAD_PDBMMCIF {
 
     input:
     val source_url_pdb_mmcif
-    val source_url_pdb_obsolete
 
     output:
     path ('*')         , emit: ch_db
@@ -24,6 +23,7 @@ process DOWNLOAD_PDBMMCIF {
 
     script:
     def args = task.ext.args ?: ''
+
     """
     set -euo pipefail
 
@@ -54,14 +54,10 @@ process DOWNLOAD_PDBMMCIF {
     # Delete empty download directory structure.
     find ./raw -type d -empty -delete
 
-    aria2c \\
-        $source_url_pdb_obsolete
-
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         sed: \$(echo \$(sed --version 2>&1) | head -1 | sed 's/^.*GNU sed) //; s/ .*\$//')
         rsync: \$(rsync --version | head -1 | sed 's/^rsync  version //; s/  protocol version [[:digit:]]*//')
-        aria2c: \$( aria2c -v | head -1 | sed 's/aria2 version //' )
     END_VERSIONS
     """
 

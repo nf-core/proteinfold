@@ -7,6 +7,12 @@
     "items": {
         "type": "object",
         "properties": {
+            "sequence": {
+                "type": "string",
+                "pattern": "^\\S+$",
+                "errorMessage": "Sequence name must be provided and cannot contain spaces",
+                "meta": ["sequence"]
+            },
             "id": {
                 "type": "string",
                 "pattern": "^\\S+$",
@@ -17,10 +23,11 @@
                 "type": "string",
                 "format": "file-path",
                 "exists": true,
-                "pattern": "^\\S+\\.fa(sta)?$",
-                "errorMessage": "Fasta file must be provided, cannot contain spaces and must have extension '.fa' or '.fasta'"
+                "pattern": "^\\S+\\.(fa(sta)?|yaml|yml|json)$",
+                "errorMessage": "Fasta, yaml or json file must be provided, cannot contain spaces and must have extension '.fa', '.fasta', '.yaml', '.yml', or '.json'"
             }
         },
-        "required": ["id", "fasta"]
+        "required": ["fasta"],
+        "anyOf": [{ "required": ["sequence"] }, { "required": ["id"] }]
     }
 }

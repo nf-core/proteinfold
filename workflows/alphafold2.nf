@@ -37,6 +37,7 @@ workflow ALPHAFOLD2 {
     ch_mgnify               // channel: path(mgnify)
     ch_pdb70                // channel: path(pdb70)
     ch_pdb_mmcif            // channel: path(pdb_mmcif)
+    ch_pdb_obsolete         // channel: path(pdb_obsolete)
     ch_uniref30             // channel: path(uniref30)
     ch_uniref90             // channel: path(uniref90)
     ch_pdb_seqres           // channel: path(pdb_seqres)
@@ -73,6 +74,7 @@ workflow ALPHAFOLD2 {
             ch_mgnify,
             ch_pdb70,
             ch_pdb_mmcif,
+            ch_pdb_obsolete,
             ch_uniref30,
             ch_uniref90,
             ch_pdb_seqres,
@@ -106,6 +108,7 @@ workflow ALPHAFOLD2 {
             ch_mgnify,
             ch_pdb70,
             ch_pdb_mmcif,
+            ch_pdb_obsolete,
             ch_uniref30,
             ch_uniref90,
             ch_pdb_seqres,
@@ -116,13 +119,13 @@ workflow ALPHAFOLD2 {
         RUN_ALPHAFOLD2_PRED (
             ch_samplesheet,
             full_dbs,
-            alphafold2_model_preset,
             ch_alphafold2_params,
             ch_bfd,
             ch_small_bfd,
             ch_mgnify,
             ch_pdb70,
             ch_pdb_mmcif,
+            ch_pdb_obsolete,
             ch_uniref30,
             ch_uniref90,
             ch_pdb_seqres,
