@@ -307,7 +307,7 @@ model_name = {
     "esmfold": "ESMFold",
     "alphafold2": "AlphaFold2",
     "colabfold": "ColabFold",
-    "boltz": "Boltz1"
+    "boltz": "Boltz1",
     "rosettafold_all_atom": "Rosettafold_All_Atom",
     "helixfold3": "HelixFold3"
 }
