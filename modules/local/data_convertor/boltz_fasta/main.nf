@@ -10,7 +10,7 @@ process BOLTZ_FASTA {
     input:
     tuple val(meta), val(ids), path(fasta)
     output:
-    tuple val(meta), path ("output_fasta/*.fasta"), emit: fasta
+    path ("output_fasta/*.fasta"), emit: fasta
     path "versions.yml"        , emit: versions
 
     when:

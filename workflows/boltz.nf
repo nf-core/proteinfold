@@ -65,10 +65,10 @@ workflow BOLTZ {
              it.collect{item -> item[1]}]
         }
     )
-
+    //BOLTZ_FASTA.out.fasta.flatten().map{[["id": it.baseName], it]}.view()
     // RUN_BOLTZ 
     RUN_BOLTZ(
-        BOLTZ_FASTA.out.fasta.map{[["id": it[1].baseName], it[1]]},
+        BOLTZ_FASTA.out.fasta.flatten().map{[["id": it.baseName], it]},
         [],
         ch_boltz_model,
         ch_boltz_ccd
