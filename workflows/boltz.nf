@@ -56,17 +56,12 @@ workflow BOLTZ {
     main:
     ch_multiqc_files = Channel.empty()
 
-    // CREATE_SAMPLESHEET_YAML
-    CREATE_SAMPLESHEET_YAML(
-        ch_samplesheet
-    )
-
     // RUN_BOLTZ 
     RUN_BOLTZ(
-        CREATE_SAMPLESHEET_YAML.out.samplesheet,
+        ch_samplesheet,
+        [],
         ch_boltz_model,
-        ch_boltz_ccd,
-        use_msa_server
+        ch_boltz_ccd
     )
 
     RUN_BOLTZ
@@ -79,17 +74,19 @@ workflow BOLTZ {
         }
         .set { ch_pdb }
 
-        //.map {
-        //    it[0]["model"] = "boltz"
-        //    it
-        //}
-        //.set { ch_pdb }
+    RUN_BOLTZ
+        .out
+        .multiqc
+        .map { it[1] }
+        .toSortedList()
+        .map { [ [ "model":"boltz"], it.flatten() ] }
+        .set { ch_multiqc_report  }
 
     emit:
     versions   = ch_versions
     msa        = ch_pdb
     structures = RUN_BOLTZ.out.structures
     confidence = RUN_BOLTZ.out.confidence
-    plddt      = RUN_BOLTZ.out.plddt
+    multiqc_report = ch_multiqc_report
     pdb        = ch_pdb
 } 

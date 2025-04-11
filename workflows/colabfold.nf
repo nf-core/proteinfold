@@ -138,15 +138,6 @@ workflow COLABFOLD {
         .map { [ [ "model":"colabfold"], it.flatten() ] }
         .set { ch_multiqc_report  }
 
-    COLABFOLD_BATCH
-        .out
-        .multiqc
-
-    COLABFOLD_BATCH
-        .out
-        .multiqc
-        .collect()
-
     emit:
     top_ranked_pdb = ch_top_ranked_pdb // channel: [ id, /path/to/*.pdb ]
     pdb_msa        = ch_pdb_msa        // channel: [ meta, /path/to/*.pdb, /path/to/*_coverage.png ]

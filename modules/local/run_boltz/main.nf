@@ -4,8 +4,10 @@
 process RUN_BOLTZ {
     tag "$meta.id"
     label 'process_medium'
-
-    container "fastfold/boltz-1:latest"
+    if (workflow.profile.tokenize(',').intersect(['conda', 'mamba']).size() >= 1) {
+        error("Local RUN_BOLTZ module does not support Conda. Please use Docker / Singularity / Podman instead.")
+    }
+    container "quay.io/nf-core/proteinfold_boltz:dev"
     
     input:
     tuple val(meta), path(fasta)
