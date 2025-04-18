@@ -252,10 +252,11 @@ workflow NFCORE_PROTEINFOLD {
             ch_versions,
             PREPARE_BOLTZ_DBS.out.boltz_ccd,
             PREPARE_BOLTZ_DBS.out.boltz_model,
+            PREPARE_COLABFOLD_DBS.out.params,
             PREPARE_COLABFOLD_DBS.out.colabfold_db,
             PREPARE_COLABFOLD_DBS.out.uniref30,
-            params.num_recycles_colabfold,
-            ch_dummy_file
+            ch_dummy_file,
+            params.boltz_msa_server
         )
         ch_multiqc                  = ch_multiqc.mix(BOLTZ.out.multiqc_report)
         ch_versions                 = ch_versions.mix(BOLTZ.out.versions)

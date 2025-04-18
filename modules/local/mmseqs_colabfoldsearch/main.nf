@@ -16,7 +16,7 @@ process MMSEQS_COLABFOLDSEARCH {
 
     when:
     task.ext.when == null || task.ext.when
-h za
+
     script:
     // Exit if running this module with -profile conda / -profile mamba
     if (workflow.profile.tokenize(',').intersect(['conda', 'mamba']).size() >= 1) {

@@ -8,9 +8,9 @@ process BOLTZ_FASTA {
         'quay.io/biocontainers/python:3.8.3' }"
 
     input:
-    tuple val(meta), val(ids), path(fasta)
+    tuple val(meta), path(fasta), path(msa)
     output:
-    path ("output_fasta/*.fasta"), emit: fasta
+    tuple val(meta), path ("output_fasta/*.fasta"), path(msa), emit: formatted_fasta
     path "versions.yml"        , emit: versions
 
     when:
@@ -23,31 +23,36 @@ process BOLTZ_FASTA {
     #!/usr/bin/env python3
     import os, sys
     import string
-    
+    #def safe_filename(file: str) -> str:
+    #    return "".join([c if c.isalnum() or c in ["_", ".", "-"] else "_" for c in file]) + ".a3m"
+
     all_combinations = list(string.ascii_uppercase) + list(string.ascii_lowercase) + [str(x) for x in range(0, 10)]
-    fasta_files = ["${fasta.join('", "')}"]
-    ids = ["${ids.join('", "')}"]
+    msa_files = ["${msa.join('", "')}"]
     seq_type = "protein"
     os.makedirs("output_fasta", exist_ok=True)
-    for seq_itr in range(len(fasta_files)):
-        counter = 0
-        fasta_data = ""
-        fasta = fasta_files[seq_itr]
-        with open(fasta, "r") as f:
-            lines = f.readlines()
+    counter = 0
+    with open("${fasta}", "r") as f:
+        lines = f.readlines()
+    msa = ""
+    fasta_data = "key,sequence\\n"
+    for line in lines:
+        line = line.strip()
+        if line.startswith(">"):
+            if len(msa_files) > 0:
+                msa = f"|{os.path.basename(msa_files[counter])}"
+                if msa[1:] not in msa_files:
+                    print(f"Can not find msa file {os.path.basename(msa_files[counter])}")
+                    exit(1)
+            
+            fasta_data += f">{all_combinations[counter]}|{seq_type}{msa}\\n"
+            counter += 1
+        else:
+            fasta_data += f"{line}\\n"
+    
+    if len(fasta_data) > 0:
+        with open(f"output_fasta/${meta.id}.fasta", "w") as outfile:
+            outfile.write(fasta_data)
 
-        for line in lines:
-            if line.startswith(">"):
-                fasta_data += f">{all_combinations[counter]}|{seq_type}\\n"
-                counter += 1
-            else:
-                fasta_data += f"{line}\\n"
-        
-        if len(fasta_data) > 0:
-            with open(f"output_fasta/{ids[seq_itr]}.fasta", "w") as outfile:
-                outfile.write(fasta_data)
-    
-    
     with open ("versions.yml", "w") as version_file:
 	    version_file.write("\\"${task.process}\\":\\n    python: {}\\n".format(sys.version.split()[0].strip()))
     """
@@ -55,7 +60,7 @@ process BOLTZ_FASTA {
     stub:
     """
     mkdir output_fasta
-    touch "output_fasta/${ids[0]}.fasta"
+    touch "output_fasta/${meta.id}.fasta"
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

@@ -19,8 +19,9 @@
 //
 include { MULTIQC } from '../modules/nf-core/multiqc/main'
 include { BOLTZ_FASTA } from '../modules/local/data_convertor/boltz_fasta'
+include { SPLIT_MSA } from '../modules/local/msa_manager/split_msa'
 include { MMSEQS_COLABFOLDSEARCH } from '../modules/local/mmseqs_colabfoldsearch'
-
+include { MULTIFASTA_TO_CSV      } from '../modules/local/multifasta_to_csv'
 //
 // SUBWORKFLOW: Consisting entirely of nf-core/modules
 //
@@ -51,25 +52,73 @@ workflow BOLTZ {
     ch_colabfold_db // channel: [ path(colabfold_db) ]
     ch_uniref30     // channel: [ path(uniref30) ]
     ch_dummy_file   // channel: [ path(NO_FILE) ]
+    msa_server
 
     main:
     ch_multiqc_files = Channel.empty()
+    ch_boltz_in = Channel.empty()
+    ch_samplesheet.view()
     
-    BOLTZ_FASTA(
-        ch_samplesheet
-        .map{[it[0].id, it[1]]}
-        .collect(flat: false)
-        .map{
-            [["id": "all-run"], 
-             it.collect{item -> item[0]}, 
-             it.collect{item -> item[1]}]
-        }
+    ch_samplesheet.join(
+        ch_samplesheet.map{[it[0], it[1].text.findAll {letter -> letter == ">" }.size()]}
     )
-    //BOLTZ_FASTA.out.fasta.flatten().map{[["id": it.baseName], it]}.view()
-    // RUN_BOLTZ 
+    .map{it[0].cnt = it[2]; [it[0], it[1]]}
+    .branch{
+        multimer: it[0].cnt > 1
+        monomer: it[0].cnt == 1
+    }.set{ch_input}
+    
+    if (msa_server == "local"){
+        MULTIFASTA_TO_CSV(
+            ch_input.multimer
+        )
+        ch_versions = ch_versions.mix(MULTIFASTA_TO_CSV.out.versions)
+        
+        MMSEQS_COLABFOLDSEARCH (
+                ch_input.monomer.mix(MULTIFASTA_TO_CSV.out.input_csv),
+                ch_colabfold_params,
+                ch_colabfold_db,
+                ch_uniref30
+        )
+        ch_versions = ch_versions.mix(MMSEQS_COLABFOLDSEARCH.out.versions)
+        
+        ch_input.multimer
+        .join(MMSEQS_COLABFOLDSEARCH.out.a3m)
+        .view()
+        
+        SPLIT_MSA(
+            MMSEQS_COLABFOLDSEARCH.out.a3m.filter{it[0].cnt > 1}
+        )
+        ch_versions = ch_versions.mix(SPLIT_MSA.out.versions)
+
+        ch_input.monomer
+        .join(MMSEQS_COLABFOLDSEARCH.out.a3m.filter{it[0].cnt == 1})
+        .mix(
+            ch_input.multimer.join(SPLIT_MSA.out.msa_csv)
+        ).view()
+   
+
+        BOLTZ_FASTA(
+            ch_input.monomer
+            .join(MMSEQS_COLABFOLDSEARCH.out.a3m.filter{it[0].cnt == 1})
+            .mix(
+                ch_input.multimer.join(SPLIT_MSA.out.msa_csv)
+            )
+        )
+
+        ch_boltz_in
+            .mix(BOLTZ_FASTA.out.formatted_fasta)
+            .set{ch_boltz_in}
+    }else{
+        ch_boltz_in
+            ch_samplesheet
+            .map{[it[0], it[1], []]}
+            .set{ch_boltz_in}
+    }
+    
     RUN_BOLTZ(
-        BOLTZ_FASTA.out.fasta.flatten().map{[["id": it.baseName], it]},
-        [],
+        ch_boltz_in.map{[it[0], it[1]]},
+        ch_boltz_in.map{it[2]},
         ch_boltz_model,
         ch_boltz_ccd
     )
@@ -91,6 +140,9 @@ workflow BOLTZ {
         .toSortedList()
         .map { [ [ "model":"boltz"], it.flatten() ] }
         .set { ch_multiqc_report  }
+    
+    ch_multiqc_report = Channel.empty()
+    ch_pdb = Channel.empty()
 
     emit:
     versions   = ch_versions
