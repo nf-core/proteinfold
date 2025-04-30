@@ -19,6 +19,7 @@ workflow ROSETTAFOLD2NA {
 
     take:
     ch_samplesheet          // channel: samplesheet read in from --input
+    ch_interactions         // channel: interactions read in from --interactions
     ch_versions             // channel: [ path(versions.yml) ]
     ch_bfd                  // channel: path(bfd)
     ch_uniref30             // channel: path(uniref30)
@@ -33,8 +34,24 @@ workflow ROSETTAFOLD2NA {
     ch_pdb_msa        = Channel.empty()
     ch_multiqc_report = Channel.empty()
 
+    ch_samplesheet_reshaped = ch_samplesheet.map { 
+        meta, file -> [ meta.id, file ] }
+ 
+    ch_protein_interaction = ch_interactions
+                                .map { 
+                                    [ it.protein_id, it.interaction_id, it.interaction_type ]     
+                                }
+                                .join(ch_samplesheet_reshaped, by: 0)
+                                .map {
+                                    [ it[1], it[0], it[2], it[3] ] // [ protein_id, interaction_id, interaction_type, file ]
+                                }
+                                .join(ch_samplesheet_reshaped, by: 0)
+                                .map {
+                                    [ [ id: it[1], interaction_id: it[0], interaction_type: it[2] ], it[3], it[4] ] // [ protein_id, interaction_id, interaction_type, file ]
+                                }
+
     RUN_ROSETTAFOLD2NA (
-        ch_samplesheet,
+        ch_protein_interaction,
         ch_bfd,
         ch_uniref30,
         ch_pdb100,

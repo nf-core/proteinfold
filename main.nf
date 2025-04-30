@@ -71,10 +71,12 @@ ch_dummy_file = Channel.fromPath("$projectDir/assets/NO_FILE")
 workflow NFCORE_PROTEINFOLD {
 
     take:
-    samplesheet // channel: samplesheet read in from --input
+    samplesheet  // channel: samplesheet read in from --input
+    interactions // channel: interactions read in from --interactions
 
     main:
     ch_samplesheet                          = samplesheet
+    ch_interactions                         = interactions
     ch_alphafold_top_ranked_pdb             = Channel.empty()
     ch_colabfold_top_ranked_pdb             = Channel.empty()
     ch_esmfold_top_ranked_pdb               = Channel.empty()
@@ -355,6 +357,7 @@ workflow NFCORE_PROTEINFOLD {
         //
         ROSETTAFOLD2NA (
             ch_samplesheet,
+            ch_interactions,
             ch_versions,
             PREPARE_ROSETTAFOLD2NA_DBS.out.uniref30,
             PREPARE_ROSETTAFOLD2NA_DBS.out.bfd,
@@ -440,14 +443,16 @@ workflow {
         params.monochrome_logs,
         args,
         params.outdir,
-        params.input
+        params.input,
+        params.interactions
     )
 
     //
     // WORKFLOW: Run main workflow
     //
     NFCORE_PROTEINFOLD (
-        PIPELINE_INITIALISATION.out.samplesheet
+        PIPELINE_INITIALISATION.out.samplesheet,
+        PIPELINE_INITIALISATION.out.interactions
     )
 
     //

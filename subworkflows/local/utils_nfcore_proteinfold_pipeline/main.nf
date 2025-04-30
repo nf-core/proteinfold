@@ -32,6 +32,7 @@ workflow PIPELINE_INITIALISATION {
     nextflow_cli_args //   array: List of positional nextflow CLI args
     outdir            //  string: The output directory where the results will be saved
     input             //  string: Path to input samplesheet
+    interactions      //  string: Path to input interactions
 
     main:
     ch_versions = Channel.empty()
@@ -63,9 +64,43 @@ workflow PIPELINE_INITIALISATION {
     )
 
     //
-    // Create channel from input file provided through params.input
+    // Create channel from input file provided through params.input and params.interactions
     //
     ch_samplesheet = Channel.fromList(samplesheetToList(params.input, "assets/schema_input.json"))
+    // // TODO: Implement if params.interactions is provided
+    ch_interactions = Channel.fromList(samplesheetToList(params.interactions, "assets/schema_interactions.json"))
+
+    sample_ids = ch_samplesheet
+                    .map { meta, file -> 
+                        meta.id 
+                    }
+                    .collect()
+                    .toList()
+
+    ch_interactions
+        .combine(sample_ids)
+        .branch {
+            meta, sample_ids ->
+                // println "Debug: protein_id=${meta.protein_id}, interaction_id=${meta.interaction_id}, interaction_type=${meta.interaction_type}, sample_ids=${sample_ids}"
+                // "Debug: protein_id=
+                valid: sample_ids.contains(meta.protein_id) && sample_ids.contains(meta.interaction_id) ? meta.protein_id : null
+                invalid: !(sample_ids.contains(meta.protein_id) && sample_ids.contains(meta.interaction_id)) ? meta.protein_id : null
+        }
+        .set { ch_interactions_validated }
+
+    ch_interactions_validated.invalid
+        .subscribe { meta, samples_ids ->
+            log.info "WARNING: Row \"${meta.protein_id},${meta.interaction_id},${meta.interaction_type}\", in interactions is not valid (check the IDs correspond to those in samplesheet)."
+        }
+    
+    ch_interactions_validated.valid
+        .ifEmpty { log.error "No valid interactions found in the interactions file. Please check the IDs correspond to those in samplesheet." }
+        .map {
+            meta, samples_ids ->
+                meta   
+        }
+        .set { interactions }
+
     if (params.split_fasta) {
         // TODO: here we have to validate that the ids are unique and valid as an extra step
         // since it is not done with the samplesheet schema (they are all in the same file)
@@ -87,8 +122,9 @@ workflow PIPELINE_INITIALISATION {
     }
 
     emit:
-    samplesheet = ch_samplesheet
-    versions    = ch_versions
+    samplesheet  = ch_samplesheet
+    interactions = interactions
+    versions     = ch_versions
 }
 
 /*
