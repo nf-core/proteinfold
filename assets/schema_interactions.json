@@ -1,0 +1,31 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://raw.githubusercontent.com/nf-core/proteinfold/master/assets/schema_interactions.json",
+    "title": "nf-core/proteinfold pipeline - params.interactions schema",
+    "description": "Schema for the file provided with params.interactions",
+    "type": "array",
+    "items": {
+        "type": "object",
+        "properties": {
+            "protein_id": {
+                "type": "string",
+                "pattern": "^\\S+$",
+                "errorMessage": "Protein sequence name must be provided and cannot contain spaces",
+                "meta": ["protein_id"]
+            },
+            "interaction_id": {
+                "type": "string",
+                "pattern": "^\\S+$",
+                "errorMessage": "Molecule interancting sequence name must be provided and cannot contain spaces",
+                "meta": ["interaction_id"]
+            },
+            "interaction_type": {
+                "type": "string",
+                "pattern": "^(P|D|R|S|PR)$",
+                "errorMessage": "Molecule interancting sequence name must be provided and cannot contain spaces",
+                "meta": ["interaction_type"]
+            }
+        },
+        "required": ["protein_id", "interaction_id", "interaction_type"]    
+    }
+}
