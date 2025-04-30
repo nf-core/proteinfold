@@ -67,39 +67,46 @@ workflow PIPELINE_INITIALISATION {
     // Create channel from input file provided through params.input and params.interactions
     //
     ch_samplesheet = Channel.fromList(samplesheetToList(params.input, "assets/schema_input.json"))
-    // // TODO: Implement if params.interactions is provided
-    ch_interactions = Channel.fromList(samplesheetToList(params.interactions, "assets/schema_interactions.json"))
 
-    sample_ids = ch_samplesheet
-                    .map { meta, file -> 
-                        meta.id 
-                    }
-                    .collect()
-                    .toList()
+    if (params.interactions) {
+        if (!params.mode.toLowerCase().split(",").contains("rosettafold2na")) {
+            log.info "WARNING: The --interactions parameter is only supported in the ROSETTAFOLD2NA mode."
+        }
+        
+        //
+        // Create channel from input file provided through params.interactions
+        //
+        ch_interactions = Channel.fromList(samplesheetToList(params.interactions, "assets/schema_interactions.json"))
 
-    ch_interactions
-        .combine(sample_ids)
-        .branch {
-            meta, sample_ids ->
-                // println "Debug: protein_id=${meta.protein_id}, interaction_id=${meta.interaction_id}, interaction_type=${meta.interaction_type}, sample_ids=${sample_ids}"
-                // "Debug: protein_id=
-                valid: sample_ids.contains(meta.protein_id) && sample_ids.contains(meta.interaction_id) ? meta.protein_id : null
-                invalid: !(sample_ids.contains(meta.protein_id) && sample_ids.contains(meta.interaction_id)) ? meta.protein_id : null
-        }
-        .set { ch_interactions_validated }
+        sample_ids = ch_samplesheet
+                        .map { meta, file -> 
+                            meta.id 
+                        }
+                        .collect()
+                        .toList()
 
-    ch_interactions_validated.invalid
-        .subscribe { meta, samples_ids ->
-            log.info "WARNING: Row \"${meta.protein_id},${meta.interaction_id},${meta.interaction_type}\", in interactions is not valid (check the IDs correspond to those in samplesheet)."
-        }
-    
-    ch_interactions_validated.valid
-        .ifEmpty { log.error "No valid interactions found in the interactions file. Please check the IDs correspond to those in samplesheet." }
-        .map {
-            meta, samples_ids ->
-                meta   
-        }
-        .set { interactions }
+        ch_interactions
+            .combine(sample_ids)
+            .branch {
+                meta, ids ->
+                    valid: ids.contains(meta.protein_id) && ids.contains(meta.interaction_id) ? meta.protein_id : null
+                    invalid: !(ids.contains(meta.protein_id) && ids.contains(meta.interaction_id)) ? meta.protein_id : null
+            }
+            .set { ch_interactions_validated }
+
+        ch_interactions_validated.invalid
+            .subscribe { meta, samples_ids ->
+                log.info "WARNING: Row \"${meta.protein_id},${meta.interaction_id},${meta.interaction_type}\", in interactions is not valid (check the IDs correspond to those in samplesheet)."
+            }
+        
+        ch_interactions_validated.valid
+            .ifEmpty { log.error "No valid interactions found in the interactions file. Please check the IDs correspond to those in samplesheet." }
+            .map {
+                meta, samples_ids ->
+                    meta   
+            }
+            .set { interactions }
+    }
 
     if (params.split_fasta) {
         // TODO: here we have to validate that the ids are unique and valid as an extra step
