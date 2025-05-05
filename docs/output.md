@@ -222,6 +222,7 @@ RosettaFold2NA produces the following key outputs:
 1. A PDB file (`model_00.pdb`) with the predicted structure. The B-factor column contains the estimated per-residue LDDT (Local Distance Difference Test) scores, indicating the confidence of the model for each residue.
 
 2. A numpy file (`model_00.npz`) containing three tables:
+
    - `dist` (L x L x 37): The predicted distogram
    - `lddt` (L): The per-residue predicted LDDT
    - `pae` (L x L): The predicted aligned error for each residue pair

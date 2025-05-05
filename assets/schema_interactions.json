@@ -26,6 +26,6 @@
                 "meta": ["interaction_type"]
             }
         },
-        "required": ["protein_id", "interaction_id", "interaction_type"]    
+        "required": ["protein_id", "interaction_id", "interaction_type"]
     }
 }

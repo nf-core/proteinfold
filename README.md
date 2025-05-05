@@ -44,7 +44,7 @@ On release, automated continuous integration tests run the pipeline on a full-si
    vi. [RoseTTAFold-All-Atom](https://github.com/baker-laboratory/RoseTTAFold-All-Atom/) - Regular RFAA
 
    vii. [HelixFold3](https://github.com/PaddlePaddle/PaddleHelix/tree/dev/apps/protein_folding/helixfold3) - Regular HF3
-   
+
    viii. [RosettaFold2NA](https://github.com/uw-ipd/RoseTTAFold2NA) - RoseTTAFold2NA
 
 ## Usage
@@ -146,7 +146,6 @@ The pipeline takes care of downloading the databases and parameters required by 
 
 - The rosettafold_all_atom mode can be run using the command below:
 
-
   ```console
   nextflow run nf-core/proteinfold \
       --input samplesheet.csv \
@@ -168,9 +167,9 @@ The pipeline takes care of downloading the databases and parameters required by 
       --use_gpu <true/false> \
       -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
   ```
-  
+
   - The RosettaFold2NA mode can be run using the command below:
-  
+
   ```console
   nextflow run nf-core/proteinfold \
       --input samplesheet.csv \
@@ -179,6 +178,7 @@ The pipeline takes care of downloading the databases and parameters required by 
       --rosettafold2na_db <null (default) | DB_PATH> \
       --use_gpu <true/false> \
       -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
+  ```
 
 > [!WARNING]
 > Please provide pipeline parameters via the CLI or Nextflow `-params-file` option. Custom config files including those provided by the `-c` Nextflow option can be used to provide any configuration _**except for parameters**_; see [docs](https://nf-co.re/docs/usage/getting_started/configuration#custom-configuration-files).

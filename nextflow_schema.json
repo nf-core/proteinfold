@@ -708,7 +708,7 @@
                 }
             }
         },
-        
+
         "esmfold_parameters_path_options": {
             "title": "Esmfold parameters links options",
             "type": "object",
@@ -794,10 +794,8 @@
                     "description": "Path to the RNA folder containing all necessary RNA databases for RF2NA",
                     "default": "null/RNA/*"
                 }
-                            
             }
         },
-
 
         "generic_options": {
             "title": "Generic options",
