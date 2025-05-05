@@ -39,24 +39,24 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --no-instal
 # 2. Clone RoseTTAFold2NA repo, create conda environment, and pin DGL
 ########################################################################
 RUN git clone --depth 1 https://github.com/uw-ipd/RoseTTAFold2NA.git /app/RoseTTAFold2NA \
- && cd /app/RoseTTAFold2NA \
- && /conda/bin/mamba env create -f RF2na-linux.yml \
- \
- # Force install a compatible DGL version to avoid GraphBolt error
- && /conda/bin/mamba run -n RF2NA bash -c "\
-    conda install -y -c dglteam/label/cu117 dgl=1.1.2 && \
-    conda clean --all --force-pkgs-dirs -y \
- " \
- \
- # Install SE(3)-Transformer dependencies
- && /conda/bin/mamba run -n RF2NA bash -c "\
-    cd SE3Transformer && \
-    pip install --no-cache-dir -r requirements.txt && \
-    python setup.py install \
- " \
- \
- # Clean up conda caches
- && /conda/bin/mamba clean --all --force-pkgs-dirs -y
+    && cd /app/RoseTTAFold2NA \
+    && /conda/bin/mamba env create -f RF2na-linux.yml \
+    \
+    # Force install a compatible DGL version to avoid GraphBolt error
+    && /conda/bin/mamba run -n RF2NA bash -c "\
+        conda install -y -c dglteam/label/cu117 dgl=1.1.2 && \
+        conda clean --all --force-pkgs-dirs -y \
+    " \
+    \
+    # Install SE(3)-Transformer dependencies
+    && /conda/bin/mamba run -n RF2NA bash -c "\
+        cd SE3Transformer && \
+        pip install --no-cache-dir -r requirements.txt && \
+        python setup.py install \
+    " \
+    \
+    # Clean up conda caches
+    && /conda/bin/mamba clean --all --force-pkgs-dirs -y
 
 ########################################################################
 # 4. Add database directories (placeholders for binding at runtime)
