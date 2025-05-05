@@ -5,11 +5,6 @@ process RUN_ROSETTAFOLD_ALL_ATOM {
     tag "$meta.id"
     label 'process_medium'
 
-    // Exit if running this module with -profile conda / -profile mamba
-    if (workflow.profile.tokenize(',').intersect(['conda', 'mamba']).size() >= 1) {
-        error("Local RUN_ROSETTAFOLD_ALL_ATOM module does not support Conda. Please use Docker / Singularity / Podman instead.")
-    }
-
     container "nf-core/proteinfold_rosettafold_all_atom:dev"
 
     input:
@@ -28,6 +23,10 @@ process RUN_ROSETTAFOLD_ALL_ATOM {
     task.ext.when == null || task.ext.when
 
     script:
+    // Exit if running this module with -profile conda / -profile mamba
+    if (workflow.profile.tokenize(',').intersect(['conda', 'mamba']).size() >= 1) {
+        error("Local RUN_ROSETTAFOLD_ALL_ATOM module does not support Conda. Please use Docker / Singularity / Podman instead.")
+    }
     def args = task.ext.args ?: ''
     def VERSION = '1.2.0dev' // WARN: Version information not provided by tool on CLI. Please update this string when bumping container versions.
 

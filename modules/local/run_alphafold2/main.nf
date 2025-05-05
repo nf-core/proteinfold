@@ -5,11 +5,6 @@ process RUN_ALPHAFOLD2 {
     tag "$meta.id"
     label 'process_medium'
 
-    // Exit if running this module with -profile conda / -profile mamba
-    if (workflow.profile.tokenize(',').intersect(['conda', 'mamba']).size() >= 1) {
-        error("Local RUN_ALPHAFOLD2 module does not support Conda. Please use Docker / Singularity / Podman instead.")
-    }
-
     container "nf-core/proteinfold_alphafold2_standard:dev"
 
     input:
@@ -21,7 +16,7 @@ process RUN_ALPHAFOLD2 {
     path ('small_bfd/*')
     path ('mgnify/*')
     path ('pdb70/*')
-    path ('mmcif_files/*')
+    path ('mmcif_files')
     path ('obsolete_pdb/*')
     path ('uniref30/*')
     path ('uniref90/*')
@@ -40,8 +35,12 @@ process RUN_ALPHAFOLD2 {
     task.ext.when == null || task.ext.when
 
     script:
+    // Exit if running this module with -profile conda / -profile mamba
+    if (workflow.profile.tokenize(',').intersect(['conda', 'mamba']).size() >= 1) {
+        error("Local RUN_ALPHAFOLD2 module does not support Conda. Please use Docker / Singularity / Podman instead.")
+    }
     def args = task.ext.args ?: ''
-    def db_preset = db_preset ? "full_dbs --bfd_database_path=./bfd/bfd_metaclust_clu_complete_id30_c90_final_seq.sorted_opt --uniref30_database_path=./uniref30/UniRef30_2021_03" :
+    def db_preset_cmd = db_preset ? "full_dbs --bfd_database_path=./bfd/bfd_metaclust_clu_complete_id30_c90_final_seq.sorted_opt --uniref30_database_path=./uniref30/UniRef30_2021_03" :
         "reduced_dbs --small_bfd_database_path=./small_bfd/bfd-first_non_consensus_sequences.fasta"
     if (alphafold2_model_preset == 'multimer') {
         alphafold2_model_preset += " --pdb_seqres_database_path=./pdb_seqres/pdb_seqres.txt --uniprot_database_path=./uniprot/uniprot.fasta "
@@ -57,14 +56,13 @@ process RUN_ALPHAFOLD2 {
     python3 /app/alphafold/run_alphafold.py \
         --fasta_paths=${fasta} \
         --model_preset=${alphafold2_model_preset} \
-        --db_preset=${db_preset} \
+        --db_preset=${db_preset_cmd} \
         --output_dir=\$PWD \
         --data_dir=\$PWD \
         --uniref90_database_path=./uniref90/uniref90.fasta \
         --mgnify_database_path=./mgnify/mgy_clusters_2022_05.fa \
         --template_mmcif_dir=./mmcif_files \
         --obsolete_pdbs_path=./obsolete_pdb/obsolete.dat \
-        --random_seed=53343 \
         $args
 
     cp "${fasta.baseName}"/ranked_0.pdb ./"${meta.id}"_alphafold2.pdb

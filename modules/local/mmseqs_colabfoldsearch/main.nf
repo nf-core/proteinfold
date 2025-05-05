@@ -2,11 +2,6 @@ process MMSEQS_COLABFOLDSEARCH {
     tag "$meta.id"
     label 'process_high_memory'
 
-    // Exit if running this module with -profile conda / -profile mamba
-    if (workflow.profile.tokenize(',').intersect(['conda', 'mamba']).size() >= 1) {
-        error("Local MMSEQS_COLABFOLDSEARCH module does not support Conda. Please use Docker / Singularity / Podman instead.")
-    }
-
     container "nf-core/proteinfold_colabfold:dev"
 
     input:
@@ -23,6 +18,10 @@ process MMSEQS_COLABFOLDSEARCH {
     task.ext.when == null || task.ext.when
 
     script:
+    // Exit if running this module with -profile conda / -profile mamba
+    if (workflow.profile.tokenize(',').intersect(['conda', 'mamba']).size() >= 1) {
+        error("Local MMSEQS_COLABFOLDSEARCH module does not support Conda. Please use Docker / Singularity / Podman instead.")
+    }
     def args = task.ext.args ?: ''
     def VERSION = '1.5.2' // WARN: Version information not provided by tool on CLI. Please update this string when bumping container versions.
 

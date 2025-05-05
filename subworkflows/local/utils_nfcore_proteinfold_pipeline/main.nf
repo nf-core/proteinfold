@@ -68,6 +68,14 @@ workflow PIPELINE_INITIALISATION {
     //
     ch_samplesheet = Channel.fromList(samplesheetToList(params.input, "assets/schema_input.json"))
 
+    ch_samplesheet
+        .map { meta, fasta ->
+            // This mapping supports legacy samplesheets that use 'sequence' as metadata.
+            // If meta.id is missing or empty, meta.sequence is used as the identifier.
+            def identifier = meta.id ? meta.id : meta.sequence
+            return [[id: identifier], fasta]
+        }
+
     if (params.interactions) {
         if (!params.mode.toLowerCase().split(",").contains("rosettafold2na")) {
             log.info "WARNING: The --interactions parameter is only supported in the ROSETTAFOLD2NA mode."

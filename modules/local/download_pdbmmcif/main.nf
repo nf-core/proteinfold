@@ -2,7 +2,7 @@
  * Download PDB MMCIF database
  */
 process DOWNLOAD_PDBMMCIF {
-    tag "${source_url_pdb_mmcif}--${source_url_pdb_obsolete}"
+    tag "${source_url_pdb_mmcif}"
     label 'process_low'
     label 'error_retry'
 
@@ -23,6 +23,7 @@ process DOWNLOAD_PDBMMCIF {
 
     script:
     def args = task.ext.args ?: ''
+
     """
     set -euo pipefail
 

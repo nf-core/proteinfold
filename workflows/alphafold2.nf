@@ -118,7 +118,6 @@ workflow ALPHAFOLD2 {
 
         RUN_ALPHAFOLD2_PRED (
             ch_samplesheet,
-            full_dbs,
             alphafold2_model_preset,
             ch_alphafold2_params,
             ch_bfd,

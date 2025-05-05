@@ -75,9 +75,7 @@ workflow HELIXFOLD3 {
 
     ch_pdb            = ch_pdb.mix(RUN_HELIXFOLD3.out.pdb)
     ch_top_ranked_pdb = ch_top_ranked_pdb.mix(RUN_HELIXFOLD3.out.top_ranked_pdb)
-    ch_msa            = ch_msa.mix(RUN_HELIXFOLD3.out.msa)
     ch_versions       = ch_versions.mix(RUN_HELIXFOLD3.out.versions)
-
 
     ch_top_ranked_pdb
         .map { [ it[0]["id"], it[0], it[1] ] }
@@ -90,6 +88,10 @@ workflow HELIXFOLD3 {
             it
         }
         .set { ch_pdb_msa }
+
+    ch_pdb_msa
+        .map { [ it[0]["id"], it[0], it[1], it[2] ] }
+        .set { ch_top_ranked_pdb }
 
     emit:
     top_ranked_pdb = ch_top_ranked_pdb // channel: [ id, /path/to/*.pdb ]

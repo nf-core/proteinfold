@@ -7,6 +7,44 @@ import base64
 import plotly.graph_objects as go
 from Bio import PDB
 
+def reset_residue_numbers(input_pdb, output_pdb):
+    """
+    Resets residue numbers (column 23-26) in a PDB file so the position starts from 1 for each chain
+    and increment only when encountering a new residue.
+    """
+    with open(input_pdb, 'r') as infile, open(output_pdb, 'w') as outfile:
+        current_residue_number = 1
+        previous_residue_id = None
+        previous_chain = None
+
+        for line in infile:
+            if line.startswith("ATOM") or line.startswith("HETATM"):
+                chain = line[21]  # Extract the chain identifier (column 22)
+                residue_id = line[22:26].strip()  # Extract the residue ID (column 23-26)
+
+                # Reset residue numbering if the chain changes
+                if chain != previous_chain:
+                    current_residue_number = 1
+                    previous_chain = chain
+                    previous_residue_id = None
+
+                # Increment residue number if it's a new residue
+                if residue_id != previous_residue_id:
+                    if previous_residue_id is not None:  # Only increment after the first residue
+                        current_residue_number += 1
+                    previous_residue_id = residue_id
+
+                # Update the line with the new residue number
+                updated_line = (
+                    line[:22] +
+                    f"{current_residue_number:4}" +
+                    line[26:]
+                )
+                outfile.write(updated_line)
+
+            else:
+                # Write non-ATOM/HETATM lines (e.g., TER, PARENT) without changes
+                outfile.write(line)
 
 def generate_output(plddt_data, name, out_dir, generate_tsv, pdb):
     plddt_per_model = OrderedDict()
@@ -141,29 +179,36 @@ def align_structures(structures):
 
     return aligned_structures
 
-
-def pdb_to_lddt(pdb_files, generate_tsv):
-    pdb_files_sorted = pdb_files
-    pdb_files_sorted.sort()
+def pdb_to_lddt(struct_files, generate_tsv):
+    struct_files_sorted = struct_files
+    struct_files_sorted.sort()
 
     output_lddt = []
     averages = []
 
-    for pdb_file in pdb_files_sorted:
+    for struct_file in struct_files_sorted:
         plddt_values = []
-        current_resd = []
-        last = None
-        with open(pdb_file, "r") as infile:
-            for line in infile:
-                columns = line.split()
-                if len(columns) >= 11:
-                    if last and last != columns[5]:
-                        plddt_values.append(sum(current_resd) / len(current_resd))
-                        current_resd = []
-                    current_resd.append(float(columns[10]))
-                    last = columns[5]
-            if len(current_resd) > 0:
-                plddt_values.append(sum(current_resd) / len(current_resd))
+
+        if struct_file.endswith('.pdb'):
+            parser = PDB.PDBParser(QUIET=True)
+            suffix = ".pdb"
+        elif struct_file.endswith('.cif'):
+            parser = PDB.MMCIFParser(QUIET=True)
+            suffix = ".cif"
+        else:
+            raise NotImplementedError("Reporting only supported for .pdb and .cif filetypes")
+
+        structure = parser.get_structure("", struct_file)
+
+        for residue in structure.get_residues():
+            res_pLDDT_tot = 0
+            res_atom_count = 0
+
+            for atom in residue.get_atoms():
+                res_atom_count +=1
+                res_pLDDT_tot += atom.get_bfactor()
+
+            plddt_values.append(res_pLDDT_tot/res_atom_count) #residue-level mean for ESMfold atom-level pLDDT
 
         # Calculate the average PLDDT value for the current file
         if plddt_values:
@@ -209,8 +254,21 @@ generate_output(lddt_data, args.name, args.output_dir, args.generate_tsv, args.p
 
 print("generating html report...")
 
-structures = args.pdb
-# structures.sort()
+# structures = args.pdb
+# # structures.sort()
+# aligned_structures = align_structures(structures)
+
+# Preprocess "esmfold" PDB files, to reset residues on additional chains
+processed_pdbs = [
+    (pdb_file.replace(".pdb", "_align_residues.pdb") if "esmfold" in pdb_file else pdb_file)
+    for pdb_file in args.pdb
+]
+
+for pdb_file, output_pdb in zip(args.pdb, processed_pdbs):
+    if "esmfold" in pdb_file:
+        reset_residue_numbers(pdb_file, output_pdb)
+
+structures = processed_pdbs  # Use the final processed list
 aligned_structures = align_structures(structures)
 
 io = PDB.PDBIO()

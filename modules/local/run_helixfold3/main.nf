@@ -5,11 +5,6 @@ process RUN_HELIXFOLD3 {
     tag "$meta.id"
     label 'process_medium'
 
-    // Exit if running this module with -profile conda / -profile mamba
-    if (workflow.profile.tokenize(',').intersect(['conda', 'mamba']).size() >= 1) {
-        error("Local RUN_HELIXFOLD3 module does not support Conda. Please use Docker / Singularity / Podman / Apptainer instead.")
-    }
-
     container "nf-core/proteinfold_helixfold3:dev"
 
     input:
@@ -31,7 +26,6 @@ process RUN_HELIXFOLD3 {
     path ("${meta.id}*")
     tuple val(meta), path ("${meta.id}_helixfold3.pdb") , emit: top_ranked_pdb
     tuple val(meta), path ("${meta.id}/ranked*pdb")     , emit: pdb
-    tuple val(meta), path ("${meta.id}/*_msa.tsv")      , emit: msa
     tuple val(meta), path ("*_mqc.tsv")                 , emit: multiqc
     tuple val(meta), path ("${meta.id}_helixfold3.cif") , emit: main_cif
     path ("versions.yml")                               , emit: versions
@@ -40,24 +34,22 @@ process RUN_HELIXFOLD3 {
     task.ext.when == null || task.ext.when
 
     script:
+    // Exit if running this module with -profile conda / -profile mamba
+    if (workflow.profile.tokenize(',').intersect(['conda', 'mamba']).size() >= 1) {
+        error("Local RUN_HELIXFOLD3 module does not support Conda. Please use Docker / Singularity / Podman / Apptainer instead.")
+    }
     def args = task.ext.args ?: ''
     """
-    export MAXIT_SRC="./maxit_src"
-    export RCSBROOT="\$MAXIT_SRC"
-    export PATH="\$MAXIT_SRC/bin:\$ENV_BIN:$PATH"
-    export OBABEL_BIN="\$ENV_BIN"
-
     ln -s /app/helixfold3/* .
 
-    \$ENV_BIN/python3.9 inference.py \
-        --maxit_binary "\$MAXIT_SRC/bin/maxit" \
-        --jackhmmer_binary_path "\$ENV_BIN/jackhmmer" \
-        --hhblits_binary_path "\$ENV_BIN/hhblits" \
-        --hhsearch_binary_path "\$ENV_BIN/hhsearch" \
-        --kalign_binary_path "\$ENV_BIN/kalign" \
-        --hmmsearch_binary_path "\$ENV_BIN/hmmsearch" \
-        --hmmbuild_binary_path "\$ENV_BIN/hmmbuild" \
-        --preset='reduced_dbs' \
+    mamba run --name helixfold python3.9 inference.py \
+        --maxit_binary "./maxit_src/bin/maxit" \
+        --jackhmmer_binary_path "jackhmmer" \
+        --hhblits_binary_path "hhblits" \
+        --hhsearch_binary_path "hhsearch" \
+        --kalign_binary_path "kalign" \
+        --hmmsearch_binary_path "hmmsearch" \
+        --hmmbuild_binary_path "hmmbuild" \
         --bfd_database_path="./bfd/bfd_metaclust_clu_complete_id30_c90_final_seq.sorted_opt" \
         --small_bfd_database_path="./small_bfd/bfd-first_non_consensus_sequences.fasta" \
         --uniclust30_database_path="./uniclust30/uniclust30_2018_08" \
@@ -69,14 +61,8 @@ process RUN_HELIXFOLD3 {
         --ccd_preprocessed_path="./ccd_preprocessed_etkdg.pkl.gz" \
         --uniref90_database_path "./uniref90/uniref90.fasta" \
         --mgnify_database_path "./mgnify/mgy_clusters_2018_12.fa" \
-        --max_template_date=2024-08-14 \
         --input_json="${fasta}" \
         --output_dir="\$PWD" \
-        --model_name allatom_demo \
-        --init_model "./init_models/HelixFold3-240814.pdparams" \
-        --infer_times 4 \
-        --logging_level "ERROR" \
-        --precision "bf16" \
         $args
 
     cp "${meta.id}"/"${meta.id}"-rank1/predicted_structure.pdb ./"${meta.id}"_helixfold3.pdb
@@ -92,8 +78,6 @@ process RUN_HELIXFOLD3 {
     for i in 1 2 3 4
         do cp ""${meta.id}"-rank\$i/predicted_structure.pdb" ./ranked_\$i.pdb
     done
-    extract_output.py --name ${meta.id} \\
-        --pkls final_features.pkl
     cd ..
 
     cat <<-END_VERSIONS > versions.yml
@@ -112,7 +96,6 @@ process RUN_HELIXFOLD3 {
     touch "${meta.id}/ranked_2.pdb"
     touch "${meta.id}/ranked_3.pdb"
     touch "${meta.id}/ranked_4.pdb"
-    touch "${meta.id}/${meta.id}_msa.tsv"
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

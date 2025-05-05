@@ -39,15 +39,20 @@
         --tw-bg-opacity: 1;
         color: rgb(99 102 241 / var(--tw-bg-opacity));
       }
-      .color {
-        justify-content: space-between;
-        background: linear-gradient(
-          90deg,
-          rgba(255, 55, 0, 1) 0%,
-          rgba(216, 224, 6, 1) 33%,
-          rgba(34, 213, 238, 1) 66%,
-          rgba(3, 30, 148, 1) 100%
-        );
+      .color_orange {
+        background-color: rgba(255, 165, 0, 1);
+      }
+      .color_yellow {
+        background-color: rgba(255, 255, 0, 1);
+      }
+      .color_cyan {
+        background-color: rgba(0, 255, 255, 1);
+      }
+      .color_blue {
+        background-color: rgba(0, 0, 255, 1);
+      }
+      .column {
+        float: left;
       }
     </style>
   </head>
@@ -172,19 +177,37 @@
         >
           <div class="flex justify-center">
             <div class="w-44">
-              <div class="color h-6"></div>
-              <div class="flex justify-between mt-2 text-white">
-                <div>&lt;50</div>
-                <div>70</div>
-                <div>90+</div>
+              <div class="w-44 h-7">
+                <div class="color_blue w-16 h-6 column"></div>
+                <div class="column text-white span ml-2">
+                  <div>Very High</div>
+                </div>
+              </div>
+              <div class="w-44 h-7">
+                <div class="color_cyan w-16 h-6 column"></div>
+                <div class="column text-white span ml-2">
+                  <div>High</div>
+                </div>
+              </div>
+              <div class="w-44 h-7">
+                <div class="color_yellow w-16 h-6 column"></div>
+                <div class="column text-white span ml-2">
+                  <div>Low</div>
+                </div>
+              </div>
+              <div class="w-44 h-7">
+                <div class="color_orange w-16 h-6 column"></div>
+                <div class="column text-white span ml-2">
+                  <div>Very Low</div>
+                </div>
               </div>
             </div>
           </div>
-          <div class="mt-8">
+          <div class="mt-2">
             <p class="text-sm text-white">
               Alphafold produces a
               <a
-                class="text-indigo-500 hover:text-indigo-400 hover:underline hover:decoration-dotted"
+                class="text-indigo-400 hover:text-indigo-300 hover:underline hover:decoration-dotted"
                 href="https://alphafold.ebi.ac.uk/faq#faq-5"
                 target="_blank"
               >
@@ -200,7 +223,7 @@
           class="hidden absolute top-0 right-0 m-6 py-6 px-10 shadow-md bg-gray-700 bg-opacity-40 text-white text-sm rounded leading-loose"
         ></div>
         <!-- Canvas buttons -->
-        <div id="canvas_button_container" class="flex-1 p-6 flex justify-center items-end bg-black gap-6 z-30"></div>
+        <div id="canvas_button_container" class="flex-1 p-6 flex justify-center items-end bg-white gap-6 z-30"></div>
         <!-- <div class="text-white mx-auto font-semibold pb-4">The top-ranked structures predicted by Alphafold</div> -->
       </div>
       <!-- Right panel -->
@@ -235,7 +258,7 @@
           <div class="text-2xl font-bold tracking-tight text-gray-900">Display</div>
           <div class="mt-2 flex flex-wrap gap-3">
             <button
-              class="btn selected w-28 rounded-md bg-white border border-gray-300 py-3 text-sm font-semibold text-gray-800 shadow-md hover:border-gray-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-800"
+              class="btn w-28 rounded-md bg-white border border-gray-300 py-3 text-sm font-semibold text-gray-800 shadow-md hover:border-gray-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-800"
               id="btn-toggle-spin"
               onclick="toggleSpin()"
             >
@@ -243,7 +266,7 @@
               Spin
             </button>
             <button
-              class="btn w-28 rounded-md bg-white border border-gray-300 py-3 text-sm font-semibold text-gray-800 shadow-md hover:border-gray-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-800"
+              class="btn selected w-28 rounded-md bg-white border border-gray-300 py-3 text-sm font-semibold text-gray-800 shadow-md hover:border-gray-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-800"
               id="btn-toggle-dark"
               onclick="toggleDark()"
             >
@@ -397,14 +420,19 @@
       this.atomColor = function (atom) {
         // Actually model confidence (pLDDT)
         const c = atom.bfactor;
-        const BREAK_RED = 40; // Below this is just plain red
-        let range, r, g, b;
+        const BREAK_ORANGE = 50; // Below this is orange
+        const BREAK_YELLOW = 70; // Below this is yellow
+        const BREAK_CYAN = 90; // Below this is cyan
 
-        if (c < BREAK_RED) {
-          return 0xff0000;
+        if (c < BREAK_ORANGE) {
+          return 0xffa500;
+        } else if (c < BREAK_YELLOW) {
+          return 0xffff00;
+        } else if (c < BREAK_CYAN) {
+          return 0x00ffff;
+        } else {
+          return 0x0000ff;
         }
-        const p = (c - BREAK_RED) / (100 - BREAK_RED);
-        return eval(colorScale(p).hex().replace("#", "0x"));
       };
     });
 
@@ -441,8 +469,8 @@
     let state = {
       models: [],
       colorScheme: "bfactor",
-      darkMode: true,
-      spin: true,
+      darkMode: false,
+      spin: false,
       loading: 1,
       selectedTab: 0,
     };
@@ -456,7 +484,7 @@
       // NGL.setDebug(true)
 
       // Create NGL Stage object
-      stage = new NGL.Stage("ngl-root", { backgroundColor: "black" });
+      stage = new NGL.Stage("ngl-root", { backgroundColor: "white" });
 
       // Handle window resizing
       window.addEventListener("resize", () => stage.handleResize());

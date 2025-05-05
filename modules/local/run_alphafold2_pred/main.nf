@@ -5,29 +5,23 @@ process RUN_ALPHAFOLD2_PRED {
     tag   "$meta.id"
     label 'process_medium'
 
-    // Exit if running this module with -profile conda / -profile mamba
-    if (workflow.profile.tokenize(',').intersect(['conda', 'mamba']).size() >= 1) {
-        error("Local RUN_ALPHAFOLD2_PRED module does not support Conda. Please use Docker / Singularity / Podman instead.")
-    }
-
     container "nf-core/proteinfold_alphafold2_split:dev"
 
     input:
     tuple val(meta), path(fasta)
-    val   db_preset
     val   alphafold2_model_preset
     path ('params/*')
     path ('bfd/*')
     path ('small_bfd/*')
     path ('mgnify/*')
     path ('pdb70/*')
-    path ('pdb_mmcif/mmcif_files/*')
+    path ('pdb_mmcif/mmcif_files')
     path ('pdb_mmcif/*')
     path ('uniref30/*')
     path ('uniref90/*')
     path ('pdb_seqres/*')
     path ('uniprot/*')
-    tuple val(meta), path(msa)
+    tuple val(meta2), path(msa)
 
     output:
     path ("${fasta.baseName}*")
@@ -41,6 +35,10 @@ process RUN_ALPHAFOLD2_PRED {
     task.ext.when == null || task.ext.when
 
     script:
+    // Exit if running this module with -profile conda / -profile mamba
+    if (workflow.profile.tokenize(',').intersect(['conda', 'mamba']).size() >= 1) {
+        error("Local RUN_ALPHAFOLD2_PRED module does not support Conda. Please use Docker / Singularity / Podman instead.")
+    }
     def args = task.ext.args ?: ''
     """
     if [ -d params/alphafold_params_* ]; then ln -r -s params/alphafold_params_*/* params/; fi
@@ -49,7 +47,6 @@ process RUN_ALPHAFOLD2_PRED {
         --model_preset=${alphafold2_model_preset} \
         --output_dir=\$PWD \
         --data_dir=\$PWD \
-        --random_seed=53343 \
         --msa_path=${msa} \
         $args
 

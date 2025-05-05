@@ -13,6 +13,28 @@
             "properties": {
                 "helixfold3_db": {
                     "type": "string"
+                },
+                "model_name": {
+                    "type": "string"
+                },
+                "preset": {
+                    "type": "string"
+                },
+                "init_model": {
+                    "type": "string"
+                },
+                "logging_level": {
+                    "type": "string"
+                },
+                "precision": {
+                    "type": "string"
+                },
+                "infer_times": {
+                    "type": "string"
+                },
+                "helixfold3_max_template_date": {
+                    "type": "string",
+                    "default": "2024-08-14"
                 }
             }
         },
@@ -234,6 +256,9 @@
                     "description": "Model preset for 'AlphaFold2' mode",
                     "enum": ["monomer", "monomer_casp14", "monomer_ptm", "multimer"],
                     "fa_icon": "fas fa-stream"
+                },
+                "random_seed": {
+                    "type": "string"
                 }
             }
         },
@@ -568,7 +593,7 @@
                     "type": "string",
                     "description": "Path to the PDB mmCIF database",
                     "fa_icon": "fas fa-folder-open",
-                    "default": "null/pdb_mmcif/*"
+                    "default": "null/pdb_mmcif/mmcif_files"
                 },
                 "pdb_obsolete_path": {
                     "type": "string",
@@ -941,13 +966,19 @@
     },
     "allOf": [
         {
+            "$ref": "#/$defs/helixfold3_options"
+        },
+        {
+            "$ref": "#/$defs/helixfold3_dbs_and_parameters_paths_options"
+        },
+        {
+            "$ref": "#/$defs/helixfold3_dbs_and_parameters_link_options"
+        },
+        {
             "$ref": "#/$defs/input_output_options"
         },
         {
             "$ref": "#/$defs/alphafold2_options"
-        },
-        {
-            "$ref": "#/$defs/helixfold3_options"
         },
         {
             "$ref": "#/$defs/colabfold_options"
@@ -981,12 +1012,6 @@
         },
         {
             "$ref": "#/$defs/esmfold_parameters_path_options"
-        },
-        {
-            "$ref": "#/$defs/helixfold3_dbs_and_parameters_link_options"
-        },
-        {
-            "$ref": "#/$defs/helixfold3_dbs_and_parameters_paths_options"
         },
         {
             "$ref": "#/$defs/generic_options"
