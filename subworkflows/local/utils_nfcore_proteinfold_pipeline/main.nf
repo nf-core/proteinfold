@@ -80,7 +80,7 @@ workflow PIPELINE_INITIALISATION {
         if (!params.mode.toLowerCase().split(",").contains("rosettafold2na")) {
             log.info "WARNING: The --interactions parameter is only supported in the ROSETTAFOLD2NA mode."
         }
- 
+
         //
         // Create channel from input file provided through params.interactions
         //
