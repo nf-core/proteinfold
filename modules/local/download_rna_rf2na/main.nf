@@ -2,11 +2,6 @@ process DOWNLOAD_RNA_DATABASES {
     tag "Download and process RNA databases"
     label 'process_medium'
 
-    // Exit if running this module with -profile conda / -profile mamba
-    if (workflow.profile.tokenize(',').intersect(['conda', 'mamba']).size() >= 1) {
-        error("DOWNLOAD_RNA_DATABASES module does not support Conda. Please use Docker / Singularity / Podman instead.")
-    }
-
     container "quay.io/patribota/proteinfold_rosettafold2na:dev"
 
     input:
@@ -24,6 +19,11 @@ process DOWNLOAD_RNA_DATABASES {
     task.ext.when == null || task.ext.when
 
     script:
+    // Exit if running this module with -profile conda / -profile mamba
+    if (workflow.profile.tokenize(',').intersect(['conda', 'mamba']).size() >= 1) {
+        error("DOWNLOAD_RNA_DATABASES module does not support Conda. Please use Docker / Singularity / Podman instead.")
+    }
+
     def args = task.ext.args ?: ''
     """
     mkdir -p RNA
