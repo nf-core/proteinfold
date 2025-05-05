@@ -325,7 +325,7 @@ workflow NFCORE_PROTEINFOLD {
         ch_versions                  = ch_versions.mix(HELIXFOLD3.out.versions)
         ch_report_input              = ch_report_input.mix(HELIXFOLD3.out.pdb_msa)
     }
-    
+
     //
     // WORKFLOW: Run rosettafold2na
     //

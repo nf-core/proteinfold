@@ -62,7 +62,7 @@ workflow PREPARE_ROSETTAFOLD2NA_DBS {
         )
         ch_rna = DOWNLOAD_RNA_DATABASES.out.ch_db
         ch_versions = ch_versions.mix(DOWNLOAD_RNA_DATABASES.out.versions)
-        
+
         ARIA2_WEIGHTS(rf2na_weights_link)
         ch_rf2na_weights = ARIA2_WEIGHTS.out.db
         ch_versions = ch_versions.mix(ARIA2_WEIGHTS.out.versions)

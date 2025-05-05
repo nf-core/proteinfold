@@ -80,15 +80,15 @@ workflow PIPELINE_INITIALISATION {
         if (!params.mode.toLowerCase().split(",").contains("rosettafold2na")) {
             log.info "WARNING: The --interactions parameter is only supported in the ROSETTAFOLD2NA mode."
         }
-        
+ 
         //
         // Create channel from input file provided through params.interactions
         //
         ch_interactions = Channel.fromList(samplesheetToList(params.interactions, "assets/schema_interactions.json"))
 
         sample_ids = ch_samplesheet
-                        .map { meta, file -> 
-                            meta.id 
+                        .map { meta, file ->
+                            meta.id
                         }
                         .collect()
                         .toList()
@@ -106,12 +106,12 @@ workflow PIPELINE_INITIALISATION {
             .subscribe { meta, samples_ids ->
                 log.info "WARNING: Row \"${meta.protein_id},${meta.interaction_id},${meta.interaction_type}\", in interactions is not valid (check the IDs correspond to those in samplesheet)."
             }
-        
+
         ch_interactions_validated.valid
             .ifEmpty { log.error "No valid interactions found in the interactions file. Please check the IDs correspond to those in samplesheet." }
             .map {
                 meta, samples_ids ->
-                    meta   
+                    meta
             }
             .set { interactions }
     }

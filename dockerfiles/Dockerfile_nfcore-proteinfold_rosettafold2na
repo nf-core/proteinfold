@@ -4,8 +4,8 @@
 FROM nvidia/cuda:11.7.1-cudnn8-devel-ubuntu22.04
 
 LABEL Author="petrislp@gmail.com" \
-      description="Docker image containing all software requirements to run RoseTTAFold2NA" \
-      version="1.0"
+    description="Docker image containing all software requirements to run RoseTTAFold2NA" \
+    version="1.0"
 
 # Switch default shell to bash for subsequent RUN commands
 SHELL ["/bin/bash", "-c"]
@@ -22,18 +22,18 @@ ENV PYTHONPATH="/app/RoseTTAFold2NA" \
 # 1. Install system dependencies, locales, and Miniforge (conda/mamba)
 ########################################################################
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y \
-      wget \
-      git \
-      cmake \
-      ncbi-blast+ \
-      locales \
-  && sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen \
-  && locale-gen en_US.UTF-8 \
-  && wget -q -P /tmp \
-      "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-$(uname)-$(uname -m).sh" \
-  && bash /tmp/Miniforge3-$(uname)-$(uname -m).sh -b -p /conda \
-  && rm -rf /tmp/Miniforge3-$(uname)-$(uname -m).sh /var/lib/apt/lists/* \
-  && apt-get autoremove -y && apt-get clean -y
+    wget \
+    git \
+    cmake \
+    ncbi-blast+ \
+    locales \
+    && sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen \
+    && locale-gen en_US.UTF-8 \
+    && wget -q -P /tmp \
+        "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-$(uname)-$(uname -m).sh" \
+    && bash /tmp/Miniforge3-$(uname)-$(uname -m).sh -b -p /conda \
+    && rm -rf /tmp/Miniforge3-$(uname)-$(uname -m).sh /var/lib/apt/lists/* \
+    && apt-get autoremove -y && apt-get clean -y
 
 ########################################################################
 # 2. Clone RoseTTAFold2NA repo, create conda environment, and pin DGL

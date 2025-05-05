@@ -40,10 +40,10 @@ process DOWNLOAD_RNA_DATABASES {
     wget -O id_mapping.tsv.gz ${rnacentral_id_mapping_link}
     wget -O rfam_annotations.tsv.gz ${rnacentral_rfam_annotations_link}
     wget -O rnacentral_sequences.fasta.gz ${rnacentral_sequences_link}
-    
+
     # Use the reprocess_rnac.pl script from the RoseTTAFold2NA repository
     /app/RoseTTAFold2NA/input_prep/reprocess_rnac.pl id_mapping.tsv.gz rfam_annotations.tsv.gz
-    
+
     gunzip -c rnacentral_sequences.fasta.gz | makeblastdb -in - -dbtype nucl -parse_seqids -out rnacentral.fasta -title "RNACentral"
 
     # Download nt database
