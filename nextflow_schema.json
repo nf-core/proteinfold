@@ -390,16 +390,16 @@
                     "description": "Path to Model path",
                     "icon": "fas folder-open"
                 },
-				"boltz_use_msa_server": {
-					"type": "boolean",
-					"description": "Use the cloud MSA server",
-					"icon": "fas folder-open"
-				},
-				"boltz_precomputed_msa_path": {
-					"type": "string",
-					"description": "Path containing pre-computed MSAs",
-					"icon": "fas folder-open"
-				}
+                "boltz_use_msa_server": {
+                    "type": "boolean",
+                    "description": "Use the cloud MSA server",
+                    "icon": "fas folder-open"
+                },
+                "boltz_precomputed_msa_path": {
+                    "type": "string",
+                    "description": "Path containing pre-computed MSAs",
+                    "icon": "fas folder-open"
+                }
             }
         },
         "alphafold2_dbs_and_parameters_link_options": {
