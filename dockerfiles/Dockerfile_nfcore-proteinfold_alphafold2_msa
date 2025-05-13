@@ -1,22 +1,26 @@
-FROM nvidia/cuda:11.4.3-cudnn8-runtime-ubuntu18.04
+ARG CUDA=12.2.2
+FROM nvidia/cuda:${CUDA}-cudnn8-runtime-ubuntu20.04
+# FROM directive resets ARGS, so we specify again (the value is retained if
+# previously set).
+ARG CUDA
 
 LABEL authors="Luisa Santus, Athanasios Baltzis, Jose Espinosa-Carrasco, Leila Mansouri" \
     title="nfcore/proteinfold_alphafold2_msa" \
-    Version="1.1.0" \
+    Version="1.2.0dev" \
     description="Docker image containing all software requirements to run the RUN_ALPHAFOLD2_MSA module using the nf-core/proteinfold pipeline"
 
 # Use bash to support string substitution.
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 # Add env variables
-ENV LD_LIBRARY_PATH="/conda/lib:/usr/local/cuda-11.4/lib64:$LD_LIBRARY_PATH"
-ENV PATH="/conda/bin:$PATH"
+ENV LD_LIBRARY_PATH="/usr/local/cuda-$(cut -f1,2 -d. <<< ${CUDA})/lib64:$LD_LIBRARY_PATH"
+ENV PATH="/opt/conda/bin:$PATH"
 
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys A4B469963BF863CC
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y \
     build-essential \
     cmake \
-    cuda-command-line-tools-11-1 \
+    cuda-command-line-tools-$(cut -f1,2 -d- <<< ${CUDA//./-}) \
     git \
     hmmer \
     kalign \
@@ -33,26 +37,44 @@ RUN git clone https://github.com/cbcrg/alphafold.git /app/alphafold && \
     cd -
 
 # Compile HHsuite from source
-RUN git clone --branch v3.3.0 https://github.com/soedinglab/hh-suite.git /tmp/hh-suite \
+RUN git clone --branch v3.3.0 --single-branch https://github.com/soedinglab/hh-suite.git /tmp/hh-suite \
     && mkdir /tmp/hh-suite/build \
-    &&  cd /tmp/hh-suite/build \
-    &&  cmake -DCMAKE_INSTALL_PREFIX=/opt/hhsuite -DHAVE_AVX2=1 .. \
+    && cd /tmp/hh-suite/build \
+    && cmake -DCMAKE_INSTALL_PREFIX=/opt/hhsuite .. \
     && make -j 4 && make install \
     && ln -s /opt/hhsuite/bin/* /usr/bin \
     && cd - && rm -rf /tmp/hh-suite
 
-# Install Miniconda package manager
+# Install Miniforge package manager
 RUN wget -q -P /tmp \
-    https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh \
-    && bash /tmp/Miniconda3-latest-Linux-x86_64.sh -b -p /conda \
-    && rm /tmp/Miniconda3-latest-Linux-x86_64.sh
+    "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-$(uname)-$(uname -m).sh" \
+    && bash /tmp/Miniforge3-$(uname)-$(uname -m).sh -b -p /opt/conda \
+    && rm /tmp/Miniforge3-$(uname)-$(uname -m).sh
 
 # Install conda packages
-RUN /conda/bin/conda install -y -c conda-forge \
+RUN conda install --quiet --yes --channel conda-forge \
     pip \
-    python=3.10 \
+    python=3.11 \
     && conda clean --all --force-pkgs-dirs --yes
 
 # Install pip packages
 RUN pip3 install --upgrade pip --no-cache-dir \
-    && pip3 install -r /app/alphafold/requirements_msa.txt --no-cache-dir
+    # && pip3 install -r /app/alphafold/requirements_msa.txt --no-cache-dir \
+    && pip3 install --no-cache-dir \
+        absl-py==1.0.0 \
+        biopython==1.79 \
+        dm-tree==0.1.8 \
+        numpy==1.24.3 \
+        pandas==2.0.3 \
+        scipy==1.11.1
+
+# We need to run `ldconfig` first to ensure GPUs are visible, due to some quirk
+# with Debian. See https://github.com/NVIDIA/nvidia-docker/issues/1399 for
+# details.
+# ENTRYPOINT does not support easily running multiple commands, so instead we
+# write a shell script to wrap them up.
+WORKDIR /app/alphafold
+RUN echo $'#!/bin/bash\n\
+python /app/alphafold/run_alphafold.py "$@"' > /app/run_alphafold.sh \
+    && chmod +x /app/run_alphafold.sh
+ENTRYPOINT ["/app/run_alphafold.sh"]

@@ -5,7 +5,7 @@ process RUN_ALPHAFOLD2_PRED {
     tag   "$meta.id"
     label 'process_medium'
 
-    container "nf-core/proteinfold_alphafold2_split:dev"
+    container "nf-core/proteinfold_alphafold2_pred:dev"
 
     input:
     tuple val(meta), path(fasta)

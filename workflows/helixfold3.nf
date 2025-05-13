@@ -35,7 +35,8 @@ workflow HELIXFOLD3 {
     ch_helixfold3_pdb_seqres
     ch_helixfold3_uniref90
     ch_helixfold3_mgnify
-    ch_helixfold3_pdb_mmcif
+    ch_helixfold3_mmcif_files
+    ch_helixfold3_obsolete
     ch_helixfold3_init_models
     ch_helixfold3_maxit_src
 
@@ -60,7 +61,8 @@ workflow HELIXFOLD3 {
         ch_helixfold3_pdb_seqres,
         ch_helixfold3_uniref90,
         ch_helixfold3_mgnify,
-        ch_helixfold3_pdb_mmcif,
+        ch_helixfold3_mmcif_files,
+        ch_helixfold3_obsolete,
         ch_helixfold3_init_models,
         ch_helixfold3_maxit_src
     )

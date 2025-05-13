@@ -441,7 +441,7 @@ nextflow run nf-core/proteinfold \
 
 ```console
 ## Optional parameters with default values:
-    --helixfold3_max_template_date=2024-08-14
+    --helixfold3_max_template_date=2038-01-19
     --model_name allatom_demo
     --preset 'reduced_dbs'
     --init_model './init_models/HelixFold3-240814.pdparams'

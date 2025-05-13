@@ -18,7 +18,8 @@ process RUN_HELIXFOLD3 {
     path ('pdb_seqres/*')
     path ('uniref90/*')
     path ('mgnify/*')
-    path ('pdb_mmcif/*')
+    path ('*')
+    path ('*')
     path ('init_models/*')
     path ('maxit_src')
 
@@ -40,9 +41,7 @@ process RUN_HELIXFOLD3 {
     }
     def args = task.ext.args ?: ''
     """
-    ln -s /app/helixfold3/* .
-
-    mamba run --name helixfold python3.9 inference.py \
+    mamba run --name helixfold python3.9 /app/helixfold3/inference.py \
         --maxit_binary "./maxit_src/bin/maxit" \
         --jackhmmer_binary_path "jackhmmer" \
         --hhblits_binary_path "hhblits" \
@@ -56,8 +55,8 @@ process RUN_HELIXFOLD3 {
         --uniprot_database_path="./uniprot/uniprot.fasta" \
         --pdb_seqres_database_path="./pdb_seqres/pdb_seqres.txt" \
         --rfam_database_path="./Rfam-14.9_rep_seq.fasta" \
-        --template_mmcif_dir="./pdb_mmcif/mmcif_files" \
-        --obsolete_pdbs_path="./pdb_mmcif/obsolete.dat" \
+        --template_mmcif_dir="./mmcif_files" \
+        --obsolete_pdbs_path="./obsolete.dat" \
         --ccd_preprocessed_path="./ccd_preprocessed_etkdg.pkl.gz" \
         --uniref90_database_path "./uniref90/uniref90.fasta" \
         --mgnify_database_path "./mgnify/mgy_clusters_2018_12.fa" \

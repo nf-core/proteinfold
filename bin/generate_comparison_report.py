@@ -157,7 +157,6 @@ def align_structures(structures):
         for atom in ref_structure.get_atoms()
         if f"{atom.get_parent().get_id()[1]}-{atom.name}" in common_atoms
     ]
-    # print(ref_atoms)
     super_imposer = PDB.Superimposer()
     aligned_structures = [structures[0]]  # Include the reference structure in the list
 
@@ -179,29 +178,33 @@ def align_structures(structures):
 
     return aligned_structures
 
-
-def pdb_to_lddt(pdb_files, generate_tsv):
-    pdb_files_sorted = pdb_files
-    pdb_files_sorted.sort()
-
+def pdb_to_lddt(struct_files, generate_tsv):
     output_lddt = []
     averages = []
 
-    for pdb_file in pdb_files_sorted:
+    for struct_file in struct_files:
         plddt_values = []
-        current_resd = []
-        last = None
-        with open(pdb_file, "r") as infile:
-            for line in infile:
-                columns = line.split()
-                if len(columns) >= 11:
-                    if last and last != columns[5]:
-                        plddt_values.append(sum(current_resd) / len(current_resd))
-                        current_resd = []
-                    current_resd.append(float(columns[10]))
-                    last = columns[5]
-            if len(current_resd) > 0:
-                plddt_values.append(sum(current_resd) / len(current_resd))
+
+        if struct_file.endswith('.pdb'):
+            parser = PDB.PDBParser(QUIET=True)
+            suffix = ".pdb"
+        elif struct_file.endswith('.cif'):
+            parser = PDB.MMCIFParser(QUIET=True)
+            suffix = ".cif"
+        else:
+            raise NotImplementedError("Reporting only supported for .pdb and .cif filetypes")
+
+        structure = parser.get_structure("", struct_file)
+
+        for residue in structure.get_residues():
+            res_pLDDT_tot = 0
+            res_atom_count = 0
+
+            for atom in residue.get_atoms():
+                res_atom_count +=1
+                res_pLDDT_tot += atom.get_bfactor()
+
+            plddt_values.append(res_pLDDT_tot/res_atom_count) #residue-level mean for ESMfold atom-level pLDDT
 
         # Calculate the average PLDDT value for the current file
         if plddt_values:
@@ -247,10 +250,6 @@ generate_output(lddt_data, args.name, args.output_dir, args.generate_tsv, args.p
 
 print("generating html report...")
 
-# structures = args.pdb
-# # structures.sort()
-# aligned_structures = align_structures(structures)
-
 # Preprocess "esmfold" PDB files, to reset residues on additional chains
 processed_pdbs = [
     (pdb_file.replace(".pdb", "_align_residues.pdb") if "esmfold" in pdb_file else pdb_file)
@@ -280,18 +279,29 @@ args_pdb_array_js = (
 alphafold_template = alphafold_template.replace("const MODELS = [];", args_pdb_array_js)
 
 seq_cov_imgs = []
-for item in args.msa:
-    if item != "NO_FILE":
-        image_path = item
+seq_cov_methods = []
+for msa, pdb in zip(args.msa, args.pdb):
+    if msa != "NO_FILE":
+        image_path = msa
+        method = pdb.split(".pdb")[0]
+        seq_cov_methods.append(method)
         with open(image_path, "rb") as in_file:
             encoded_image = base64.b64encode(in_file.read()).decode("utf-8")
             seq_cov_imgs.append(f"data:image/png;base64,{encoded_image}")
 
+#MSA IMAGES
 args_msa_array_js = (
     f"""const SEQ_COV_IMGS = [{", ".join([f'"{img}"' for img in seq_cov_imgs])}];"""
 )
 alphafold_template = alphafold_template.replace(
     "const SEQ_COV_IMGS = [];", args_msa_array_js
+)
+#MSA IMAGE LABELS
+args_msa_method_array_js = (
+    f"""const SEQ_COV_METHODS = [{", ".join([f'"{method}"' for method in seq_cov_methods])}];"""
+)
+alphafold_template = alphafold_template.replace(
+    "const SEQ_COV_METHODS = [];", args_msa_method_array_js
 )
 
 averages_js_array = f"const LDDT_AVERAGES = {lddt_averages};"

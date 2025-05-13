@@ -31,9 +31,7 @@ process RUN_ROSETTAFOLD_ALL_ATOM {
     def VERSION = '1.2.0dev' // WARN: Version information not provided by tool on CLI. Please update this string when bumping container versions.
 
     """
-    ln -s /app/RoseTTAFold-All-Atom/* .
-
-    mamba run --name RFAA python -m rf2aa.run_inference \
+    mamba run --name RFAA python /app/RoseTTAFold-All-Atom/rf2aa/run_inference.py \
     --config-dir /app/RoseTTAFold-All-Atom/rf2aa/config/inference \
     --config-name "${fasta}" \
     $args
