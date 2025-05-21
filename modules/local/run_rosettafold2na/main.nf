@@ -33,7 +33,12 @@ process RUN_ROSETTAFOLD2NA {
     def VERSION = 'dev' // WARN: Version information not provided by tool on CLI. Please update this string when bumping container versions.
 
     """
-    run_RF2NA.sh ${meta.id}_rf2na_output $protein_fasta ${meta.interaction_type}:${interaction_fasta}
+    # Otherwise will through error when running .command.{sh,run} for debugging
+    if [ ! -e "\$PWD/run_RF2NA.sh" ]; then
+    	ln -s /app/RoseTTAFold2NA/* .    
+    fi
+
+    ./run_RF2NA.sh ${meta.id}_rf2na_output $protein_fasta ${meta.interaction_type}:${interaction_fasta}
 
     cp ${meta.id}_rf2na_output/models/model_00.pdb ./${meta.id}_rf2na.pdb
 
