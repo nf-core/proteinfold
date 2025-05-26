@@ -4,6 +4,7 @@
 process RUN_ROSETTAFOLD_ALL_ATOM {
     tag "$meta.id"
     label 'process_medium'
+    label 'process_gpu'
 
     container "nf-core/proteinfold_rosettafold_all_atom:dev"
 

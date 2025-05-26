@@ -1,6 +1,7 @@
 process RUN_ESMFOLD {
     tag "$meta.id"
     label 'process_medium'
+    label 'process_gpu'
 
     container "nf-core/proteinfold_esmfold:dev"
 

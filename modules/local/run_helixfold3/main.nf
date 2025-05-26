@@ -4,6 +4,7 @@
 process RUN_HELIXFOLD3 {
     tag "$meta.id"
     label 'process_medium'
+    label 'process_gpu'
 
     container "nf-core/proteinfold_helixfold3:dev"
 
