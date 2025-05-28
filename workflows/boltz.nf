@@ -53,45 +53,33 @@ workflow BOLTZ {
     ch_colabfold_db // channel: [ path(colabfold_db) ]
     ch_uniref30     // channel: [ path(uniref30) ]
     msa_server
+    mmseq_batch_size
 
     main:
     ch_multiqc_files = Channel.empty()
     ch_boltz_in = Channel.empty()
 
-    ch_samplesheet.join(
-        ch_samplesheet.map{[it[0], it[1].text.findAll {letter -> letter == ">" }.size()]}
-    )
-    .map{
-        meta = it[0].clone();
-        meta.cnt = it[2];
-        [meta, it[1]]
-    }
-    .branch{
-        multimer: it[0].cnt > 1
-        monomer: it[0].cnt == 1
-    }
-    .set{ch_input}
-
     if (!msa_server){
-        MULTIFASTA_TO_CSV(
-            ch_input.multimer
+        MSA(
+            ch_samplesheet,
+            ch_colabfold_db,
+            ch_uniref30,
+            mmseq_batch_size
         )
-        ch_versions = ch_versions.mix(MULTIFASTA_TO_CSV.out.versions)
 
-        MMSEQS_COLABFOLDSEARCH (
-                ch_input.monomer.mix(MULTIFASTA_TO_CSV.out.input_csv),
-                ch_colabfold_params,
-                ch_colabfold_db,
-                ch_uniref30
-        )
-        ch_versions = ch_versions.mix(MMSEQS_COLABFOLDSEARCH.out.versions)
-
+        ch_versions = ch_versions.mix(MSA.out.versions)
+        MSA.out.input
+        .branch{
+            multimer: it[0].cnt > 1
+            monomer: it[0].cnt == 1
+        }
+        .set{ch_input}
         SPLIT_MSA(
-            MMSEQS_COLABFOLDSEARCH.out.a3m.filter{it[0].cnt > 1}
+            MSA.out.a3m.filter{it[0].cnt > 1}
         )
         ch_versions = ch_versions.mix(SPLIT_MSA.out.versions)
         ch_input.monomer
-            .join(MMSEQS_COLABFOLDSEARCH.out.a3m.filter{it[0].cnt == 1})
+            .join(MSA.out.a3m.filter{it[0].cnt == 1})
             .mix(
                 ch_input.multimer.join(SPLIT_MSA.out.msa_csv)
             ).set{ch_prepare_fasta}

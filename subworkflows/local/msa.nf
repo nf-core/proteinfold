@@ -11,7 +11,6 @@ workflow MSA {
 
     take:
     ch_samplesheet
-    ch_colabfold_params    // channel: path(colabfold_params)
     ch_colabfold_db        // channel: path(colabfold_db)
     ch_uniref30            // channel: path(uniref30)   
     mmseq_batch_size
@@ -29,34 +28,20 @@ workflow MSA {
     .set{ch_input}
 
     ch_input.fasta
-    .join(
-        ch_input.fasta
-        .map{[it[0], it[1].text.findAll {letter -> letter == ">" }.size()]}
-    )
     .map{
         meta = it[0].clone();
-        meta.cnt = it[2];
+        meta.cnt = getFastaSequences(it[1].text).size();
         [meta, it[1]]
     }
-    .branch{
-        multimer: it[0].cnt > 1
-        monomer: it[0].cnt == 1
-    }
-    .set{ch_input_fasta}
+    .set{ch_input_full}
 
     if (true){
         def batch_itr = 0
-        ch_input_fasta.multimer
-        .mix(
-            ch_input_fasta.monomer
-        )
+        ch_input_full
         .map{it[1]}
         .unique()
-        .map{"${it.baseName},${it
-                .readLines()
-                .withIndex()
-                .findAll { line, index -> index % 2 == 1}
-                .collect { it[0] }
+        .map{"${it.baseName},${getFastaSequences(it.text)
+                .collect { it.sequence }
                 .join(':')}"
         }
         .buffer( size: mmseq_batch_size, remainder: true )
@@ -71,15 +56,14 @@ workflow MSA {
 
         MMSEQS_COLABFOLDSEARCH (
             ch_input_seqs,
-            ch_colabfold_params,
+            ch_input_seqs.map{it[1]},
             ch_colabfold_db,
             ch_uniref30
         )
         ch_versions = ch_versions.mix(MMSEQS_COLABFOLDSEARCH.out.versions)
         
         ch_a3m = ch_a3m.mix(
-            ch_input_fasta.multimer
-            .mix(ch_input_fasta.monomer)
+            ch_input_full
             .map{[it[1].baseName, it[0]]}
             .combine(
                 MMSEQS_COLABFOLDSEARCH.out.a3m
@@ -94,10 +78,11 @@ workflow MSA {
     }
 
     emit:
+    input          = ch_input_full
     a3m            = ch_a3m
     versions       = ch_versions
 }
-
+/*
 def getYamlSequences(yamlData) {
     @Grab('org.yaml:snakeyaml:2.0')
     import org.yaml.snakeyaml.Yaml
@@ -119,13 +104,13 @@ def getYamlSequences(yamlData) {
     }
     return enrichedEntries
 }
-
+*/
 def getFastaSequences(fastaData) {
     List<Map> fastaEntries = []
     String currentId = null
     StringBuilder currentSeq = new StringBuilder()
 
-    fasta_data.split("\n").each { line ->
+    fastaData.split("\n").each { line ->
         if (line.startsWith(">")) {
             if (currentId) {
                 fastaEntries << [id: currentId, sequence: currentSeq.toString()]
