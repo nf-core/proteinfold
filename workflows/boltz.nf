@@ -29,6 +29,7 @@ include { paramsSummaryMap       } from 'plugin/nf-schema'
 include { paramsSummaryMultiqc   } from '../subworkflows/nf-core/utils_nfcore_pipeline'
 include { softwareVersionsToYAML } from '../subworkflows/nf-core/utils_nfcore_pipeline'
 include { methodsDescriptionText } from '../subworkflows/local/utils_nfcore_proteinfold_pipeline'
+include { MSA                    } from '../subworkflows/local/msa'
 
 //
 // MODULE: Boltz
@@ -105,8 +106,8 @@ workflow BOLTZ {
     }
 
     BOLTZ_FASTA(
-            ch_prepare_fasta
-        )
+        ch_prepare_fasta
+    )
 
     RUN_BOLTZ(
         BOLTZ_FASTA.out.formatted_fasta.map{[it[0], it[1]]},
