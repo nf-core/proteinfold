@@ -21,7 +21,6 @@ include { MULTIQC } from '../modules/nf-core/multiqc/main'
 include { BOLTZ_FASTA } from '../modules/local/data_convertor/boltz_fasta'
 include { SPLIT_MSA } from '../modules/local/msa_manager/split_msa'
 include { MMSEQS_COLABFOLDSEARCH } from '../modules/local/mmseqs_colabfoldsearch'
-include { MULTIFASTA_TO_CSV      } from '../modules/local/multifasta_to_csv'
 //
 // SUBWORKFLOW: Consisting entirely of nf-core/modules
 //
@@ -49,7 +48,6 @@ workflow BOLTZ {
     ch_versions     // channel: [ path(versions.yml) ]
     ch_boltz_ccd    // channel: [ path(boltz_ccd) ]
     ch_boltz_model  // channel: [ path(model) ]
-    ch_colabfold_params // channel: [ path(colabfold_params) ]
     ch_colabfold_db // channel: [ path(colabfold_db) ]
     ch_uniref30     // channel: [ path(uniref30) ]
     msa_server
@@ -57,7 +55,6 @@ workflow BOLTZ {
 
     main:
     ch_multiqc_files = Channel.empty()
-    ch_boltz_in = Channel.empty()
 
     if (!msa_server){
         MSA(
@@ -68,12 +65,14 @@ workflow BOLTZ {
         )
 
         ch_versions = ch_versions.mix(MSA.out.versions)
-        MSA.out.input
+        MSA.out.formated_input
         .branch{
             multimer: it[0].cnt > 1
             monomer: it[0].cnt == 1
         }
         .set{ch_input}
+        MSA.out.formated_input.view()
+        MSA.out.a3m.view()
         SPLIT_MSA(
             MSA.out.a3m.filter{it[0].cnt > 1}
         )

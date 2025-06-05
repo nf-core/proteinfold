@@ -6,7 +6,6 @@ process MMSEQS_COLABFOLDSEARCH {
 
     input:
     tuple val(meta), path(fasta)
-    path ('db/params')
     path colabfold_db
     path uniref30
 
@@ -26,6 +25,7 @@ process MMSEQS_COLABFOLDSEARCH {
     def VERSION = '1.5.2' // WARN: Version information not provided by tool on CLI. Please update this string when bumping container versions.
 
     """
+    mkdir ./db
     ln -r -s $uniref30/uniref30_* ./db
     ln -r -s $colabfold_db/colabfold_envdb* ./db
 
@@ -45,7 +45,20 @@ process MMSEQS_COLABFOLDSEARCH {
     def VERSION = '1.5.2' // WARN: Version information not provided by tool on CLI. Please update this string when bumping container versions.
     """
     mkdir results
-    touch results/${meta.id}.a3m
+    input_file="${fasta}"
+    if [[ "\${input_file##*.}" == "csv" ]]; then
+        skip_first=true
+        while IFS=',' read -r filename _; do
+            if \$skip_first; then
+                skip_first=false
+                continue
+            fi
+            [[ -z "\$filename" ]] && continue
+            touch "results/\${filename}.a3m"
+        done < "\$input_file"
+    else
+        touch results/${meta.id}.a3m
+    fi
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

@@ -56,7 +56,6 @@ workflow MSA {
 
         MMSEQS_COLABFOLDSEARCH (
             ch_input_seqs,
-            ch_input_seqs.map{it[1]},
             ch_colabfold_db,
             ch_uniref30
         )
@@ -74,37 +73,53 @@ workflow MSA {
             )
             .map{[it[1], it[2]]}
         )
+        MMSEQS_COLABFOLDSEARCH.out.a3m.view()
         ch_a3m.view()    
     }
 
     emit:
-    input          = ch_input_full
+    formated_input          = ch_input_full
     a3m            = ch_a3m
     versions       = ch_versions
 }
-/*
+
 def getYamlSequences(yamlData) {
-    @Grab('org.yaml:snakeyaml:2.0')
-    import org.yaml.snakeyaml.Yaml
-    def data = yaml.load(yaml_data)
     List<Map> enrichedEntries = []
-    if (data?.sequences instanceof List) {
-        enrichedEntries = data.sequences.collect { entry ->
-            if (entry instanceof Map && entry.size() == 1) {
-                def type = entry.keySet().first()
-                def value = entry[type]
-                if (value instanceof Map) {
-                    def enriched = new LinkedHashMap(value)
-                    enriched.type = type
-                    return enriched
-                }
+    Map currentEntry = [:]
+    inSequences = false
+    yamlData.split("\n").each { line ->
+        def trimmed = line.trim()
+
+        // Detect start of sequences section
+        if (trimmed == 'sequences:') {
+            inSequences = true
+            return
+        }
+        if (inSequences && !line.startsWith('  ') && !trimmed.isEmpty()) {
+            inSequences = false
+            return
+        }
+        if (!inSequences){
+            return
+        }
+
+
+        if (trimmed.startsWith('-') && trimmed.endsWith(':')) {
+            if (!currentEntry.isEmpty()) {
+                sequences << currentEntry
             }
-            return null
-        }.findAll { it != null }
+            currentEntry = ['type': trimmed[1..-2]]
+        }else{
+            def (key, value) = trimmed.split(':', 2)*.trim()
+            currentEntry[key] = value
+        }
+    }
+    if (!currentEntry.isEmpty()) {
+        sequences << currentEntry
     }
     return enrichedEntries
 }
-*/
+
 def getFastaSequences(fastaData) {
     List<Map> fastaEntries = []
     String currentId = null
