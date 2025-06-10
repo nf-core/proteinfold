@@ -12,11 +12,4 @@ report_section_order:
 
 export_plots: true
 
-# Run only these modules
-run_modules:
-  - custom_content
-  - run_alphafold2
-  - run_alphafold2_pred
-  - colabfold_batch
-
 disable_version_detection: true

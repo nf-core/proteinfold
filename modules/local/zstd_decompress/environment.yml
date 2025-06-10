@@ -1,5 +1,0 @@
-name: zstd_decompress
-channels:
-  - conda-forge
-dependencies:
-  - conda-forge::zstd=1.5.6

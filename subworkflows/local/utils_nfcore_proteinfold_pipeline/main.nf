@@ -34,6 +34,7 @@ workflow PIPELINE_INITIALISATION {
     input             //  string: Path to input samplesheet
 
     main:
+
     ch_versions = Channel.empty()
 
     //
@@ -63,42 +64,28 @@ workflow PIPELINE_INITIALISATION {
     )
 
     //
-    // Custom validation for pipeline parameters
-    //
-    validateInputParameters()
-
-    //
     // Create channel from input file provided through params.input
     //
-    ch_samplesheet = Channel.fromList(samplesheetToList(params.input, "assets/schema_input.json"))
 
-    ch_samplesheet
-        .map { meta, fasta ->
-            // This mapping supports legacy samplesheets that use 'sequence' as metadata.
-            // If meta.id is missing or empty, meta.sequence is used as the identifier.
-            def identifier = meta.id ? meta.id : meta.sequence
-            return [[id: identifier], fasta]
+    Channel
+        .fromList(samplesheetToList(params.input, "${projectDir}/assets/schema_input.json"))
+        .map {
+            meta, fastq_1, fastq_2 ->
+                if (!fastq_2) {
+                    return [ meta.id, meta + [ single_end:true ], [ fastq_1 ] ]
+                } else {
+                    return [ meta.id, meta + [ single_end:false ], [ fastq_1, fastq_2 ] ]
+                }
         }
-
-    if (params.split_fasta) {
-        // TODO: here we have to validate that the ids are unique and valid as an extra step
-        // since it is not done with the samplesheet schema (they are all in the same file)
-        ch_samplesheet.map { meta, fasta ->
-            validateFasta(fasta)
+        .groupTuple()
+        .map { samplesheet ->
+            validateInputSamplesheet(samplesheet)
         }
-
-        // Split the fasta file into individual files for each sequence
-        ch_samplesheet
-            .map { meta,fasta -> fasta }
-            .splitFasta( record: [header: true, sequence: true] )
-            .collectFile { item ->
-                [ "${cleanHeader(item["header"])}.fa", ">" + cleanHeader(item["header"]) + '\n' +item["sequence"] ]
-            }
-            .map {
-                file -> [[id: file.baseName], file]
-            }
-            .set { ch_samplesheet }
-    }
+        .map {
+            meta, fastqs ->
+                return [ meta, fastqs.flatten() ]
+        }
+        .set { ch_samplesheet }
 
     emit:
     samplesheet = ch_samplesheet
@@ -160,41 +147,19 @@ workflow PIPELINE_COMPLETION {
 */
 
 //
-// Check and validate pipeline parameters
+// Validate channels from input samplesheet
 //
-def validateInputParameters() {
-    if (params.mode.toLowerCase().split(",").contains("alphafold3")) {
-        alphafold3Warn(log)
-    }
-}
+def validateInputSamplesheet(input) {
+    def (metas, fastqs) = input[1..2]
 
-//
-// Get link to Colabfold Alphafold2 parameters
-//
-def getColabfoldAlphafold2Params() {
-    def link = null
-    if (params.colabfold_alphafold2_params_tags) {
-        if (params.colabfold_alphafold2_params_tags.containsKey(params.colabfold_model_preset.toString())) {
-            link = "https://storage.googleapis.com/alphafold/" + params.colabfold_alphafold2_params_tags[ params.colabfold_model_preset.toString() ] + '.tar'
-        }
+    // Check that multiple runs of the same sample are of the same datatype i.e. single-end / paired-end
+    def endedness_ok = metas.collect{ meta -> meta.single_end }.unique().size == 1
+    if (!endedness_ok) {
+        error("Please check input samplesheet -> Multiple runs of a sample must be of the same datatype i.e. single-end or paired-end: ${metas[0].id}")
     }
-    return link
-}
 
-//
-// Get path to Colabfold Alphafold2 parameters
-//
-def getColabfoldAlphafold2ParamsPath() {
-    def path = null
-    params.colabfold_model_preset.toString()
-    if (params.colabfold_alphafold2_params_tags) {
-        if (params.colabfold_alphafold2_params_tags.containsKey(params.colabfold_model_preset.toString())) {
-            path = "${params.colabfold_db}/params/" + params.colabfold_alphafold2_params_tags[ params.colabfold_model_preset.toString() ]
-        }
-    }
-    return path
+    return [ metas[0], fastqs ]
 }
-
 //
 // Generate methods description for MultiQC
 //
@@ -249,41 +214,12 @@ def methodsDescriptionText(mqc_methods_yaml) {
     // TODO nf-core: Only uncomment below if logic in toolCitationText/toolBibliographyText has been filled!
     // meta["tool_citations"] = toolCitationText().replaceAll(", \\.", ".").replaceAll("\\. \\.", ".").replaceAll(", \\.", ".")
     // meta["tool_bibliography"] = toolBibliographyText()
+
+
     def methods_text = mqc_methods_yaml.text
 
     def engine =  new groovy.text.SimpleTemplateEngine()
     def description_html = engine.createTemplate(methods_text).make(meta)
 
     return description_html.toString()
-}
-
-def cleanHeader(header) {
-    return header.replaceAll(" ", "_").replaceAll(",", "").replaceAll(";","")
-}
-
-def validateFasta(fasta) {
-    // extract headers
-    def headers = fasta.findAll { it.startsWith('>') }
-    // if headers are not unique, throw an error
-    if (headers.size() != headers.unique().size()) {
-        throw new Exception("Invalid FASTA file. The headers are not unique.")
-    }
-    // check headers that are malformed
-    headers.each { header ->
-        if (header =~ /[ \t;,]/) {
-            // warn user that the header contains special characters
-            log.warn "The header ${header} contains special characters. They have been automatically removed."
-        }
-    }
-}
-
-//
-// Print a warning when using Alphafold3
-//
-def alphafold3Warn(log) {
-    log.warn "=============================================================================\n" +
-        "  You are using AlphaFold3 mode.\n" +
-        "  Be aware that the predicted structures can not be used for commercial purposes.\n" +
-        "  More information here: \"https://github.com/google-deepmind/alphafold3/blob/main/README.md#alphafold-3-source-code-and-model-parameters.\"\n" +
-        "==================================================================================="
 }

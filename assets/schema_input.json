@@ -7,27 +7,27 @@
     "items": {
         "type": "object",
         "properties": {
-            "sequence": {
+            "sample": {
                 "type": "string",
                 "pattern": "^\\S+$",
-                "errorMessage": "Sequence name must be provided and cannot contain spaces",
-                "meta": ["sequence"]
-            },
-            "id": {
-                "type": "string",
-                "pattern": "^\\S+$",
-                "errorMessage": "Sequence name must be provided and cannot contain spaces",
+                "errorMessage": "Sample name must be provided and cannot contain spaces",
                 "meta": ["id"]
             },
-            "fasta": {
+            "fastq_1": {
                 "type": "string",
                 "format": "file-path",
                 "exists": true,
-                "pattern": "^\\S+\\.(fa(sta)?|yaml|yml|json)$",
-                "errorMessage": "Fasta, yaml or json file must be provided, cannot contain spaces and must have extension '.fa', '.fasta', '.yaml', '.yml', or '.json'"
+                "pattern": "^\\S+\\.f(ast)?q\\.gz$",
+                "errorMessage": "FastQ file for reads 1 must be provided, cannot contain spaces and must have extension '.fq.gz' or '.fastq.gz'"
+            },
+            "fastq_2": {
+                "type": "string",
+                "format": "file-path",
+                "exists": true,
+                "pattern": "^\\S+\\.f(ast)?q\\.gz$",
+                "errorMessage": "FastQ file for reads 2 cannot contain spaces and must have extension '.fq.gz' or '.fastq.gz'"
             }
         },
-        "required": ["fasta"],
-        "anyOf": [{ "required": ["sequence"] }, { "required": ["id"] }]
+        "required": ["sample", "fastq_1"]
     }
 }
