@@ -1,0 +1,5 @@
+name: mmcif2pdb
+channels:
+  - conda-forge
+dependencies:
+  - conda-forge::biopython=1.84
