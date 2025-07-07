@@ -25,8 +25,7 @@ process SEARCH_MMSEQS_GPU {
     container "/srv/scratch/sbf/containers/mmseqs-gpu.sif"
 
     input:
-    tuple val(meta), path(fasta)
-    path ("querydb")
+    tuple val(meta), path(fasta), path(querydb)
     path ("mmseqs-gpu")
 
     output:
@@ -37,7 +36,7 @@ process SEARCH_MMSEQS_GPU {
     mkdir "msas"
     /app/mmseqs/bin/mmseqs search \
         --gpu 1 \
-        ./querydb/${meta.id} \
+        ./${querydb}/${meta.id} \
         ./mmseqs-gpu/colabfold_envdb_202108_db \
         ./msas/colabfold_${meta.id} \
         ./tmp
