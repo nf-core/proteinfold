@@ -24,6 +24,7 @@ include { MMSEQS_COLABFOLDSEARCH } from '../modules/local/mmseqs_colabfoldsearch
 include { MULTIFASTA_TO_CSV      } from '../modules/local/multifasta_to_csv'
 include { PREPARE_MMSEQS_DB      } from '../modules/local/mmseqs_gpu'
 include { SEARCH_MMSEQS_GPU      } from '../modules/local/mmseqs_gpu'
+include { SAMPLESHEET_BOLTZ_MSA  } from '../modules/local/samplesheetutils/'
 //
 // SUBWORKFLOW: Consisting entirely of nf-core/modules
 //
@@ -116,15 +117,17 @@ workflow BOLTZ {
         )
     } else {
         PREPARE_MMSEQS_DB(
-            ch_prepare_fasta
+            ch_samplesheet
         )
+        PREPARE_MMSEQS_DB.out.view()
+        ch_samplesheet.join(PREPARE_MMSEQS_DB.out).view()
         SEARCH_MMSEQS_GPU(
-            ch_prepared_fasta
-            PREPARE_MMSEQS_GPU.out.formatted_yaml,
-            mmseqs_gpu_msa
+            ch_samplesheet.join(PREPARE_MMSEQS_DB.out),
+            ch_colabfold_db_gpu,
         )
+        SEARCH_MMSEQS_GPU.out.view()
         SAMPLESHEET_BOLTZ_MSA(
-            SEARCH_MMSEQS_GPU.out.join(ch_prepared_fasta).map{it[0], it[2], it[1]}
+            ch_samplesheet.join(SEARCH_MMSEQS_GPU.out)
         )
         RUN_BOLTZ(
             SAMPLESHEET_BOLTZ_MSA.out,
