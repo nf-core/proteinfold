@@ -2,7 +2,7 @@ process DOWNLOAD_RNA_DATABASES {
     tag "Download and process RNA databases"
     label 'process_medium'
 
-    container "quay.io/patribota/proteinfold_rosettafold2na:dev"
+    container "quay.io/nf-core/proteinfold_rosettafold2na:dev"
 
     input:
     val rfam_full_region_link
