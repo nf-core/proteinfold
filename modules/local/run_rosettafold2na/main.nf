@@ -4,6 +4,7 @@
 process RUN_ROSETTAFOLD2NA {
     tag "$meta.id"
     label 'process_medium'
+    label 'process_gpu'
 
     container "quay.io/patribota/proteinfold_rosettafold2na:dev"
 
@@ -13,7 +14,7 @@ process RUN_ROSETTAFOLD2NA {
     path ('UniRef30_2020_06/*')
     path ('pdb100_2021Mar03/*')
     path ('RNA/*')
-    path ('*')
+    path ('network/weights/*')
 
     output:
     tuple val(meta), path("${meta.id}_rf2na.pdb"), emit: pdb
@@ -35,7 +36,10 @@ process RUN_ROSETTAFOLD2NA {
     """
     # Otherwise will through error when running .command.{sh,run} for debugging
     if [ ! -e "\$PWD/run_RF2NA.sh" ]; then
-    	ln -s /app/RoseTTAFold2NA/* .    
+	ln -s /app/RoseTTAFold2NA/run_RF2NA.sh ./
+	mkdir ./input_prep
+	ln -s /app/RoseTTAFold2NA/input_prep/* ./input_prep
+	ln -s /app/RoseTTAFold2NA/network/* ./network
     fi
 
     ./run_RF2NA.sh ${meta.id}_rf2na_output $protein_fasta ${meta.interaction_type}:${interaction_fasta}
