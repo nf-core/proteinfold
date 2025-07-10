@@ -36,10 +36,10 @@ process RUN_ROSETTAFOLD2NA {
     """
     # Otherwise will through error when running .command.{sh,run} for debugging
     if [ ! -e "\$PWD/run_RF2NA.sh" ]; then
-	ln -s /app/RoseTTAFold2NA/run_RF2NA.sh ./
-	mkdir ./input_prep
-	ln -s /app/RoseTTAFold2NA/input_prep/* ./input_prep
-	ln -s /app/RoseTTAFold2NA/network/* ./network
+        ln -s /app/RoseTTAFold2NA/run_RF2NA.sh ./
+        mkdir ./input_prep
+        ln -s /app/RoseTTAFold2NA/input_prep/* ./input_prep
+        ln -s /app/RoseTTAFold2NA/network/* ./network
     fi
 
     ./run_RF2NA.sh ${meta.id}_rf2na_output $protein_fasta ${meta.interaction_type}:${interaction_fasta}
