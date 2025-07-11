@@ -6,7 +6,7 @@ process RUN_ROSETTAFOLD2NA {
     label 'process_medium'
     label 'process_gpu'
 
-    container "quay.io/patribota/proteinfold_rosettafold2na:dev"
+    container "nf-core/proteinfold_rosettafold2na:dev"
 
     input:
     tuple val(meta), path(protein_fasta), path(interaction_fasta)
