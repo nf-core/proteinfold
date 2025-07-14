@@ -91,11 +91,34 @@ workflow BOLTZ {
             ).set{ch_prepare_fasta}
 
     }else{
+        ch_input_by_ext.fasta
+            .join(
+                ch_input_by_ext.fasta
+                    .map { meta, file ->
+                        [
+                            meta,
+                            file.text.findAll { letter -> letter == ">" }.size()
+                        ]
+                    }
+            )
+
+        .map{
+            def meta = it[0].clone()
+            meta.cnt = it[2]
+            [meta, it[1]]
+        }
+        .branch{
+            multimer: it[0].cnt > 1
+            monomer: it[0].cnt == 1
+        }
+        .set{ch_input}
+
+        ch_input_by_ext.yaml.mix(
         ch_input
         .multimer
         .mix(ch_input
         .monomer
-        ).map{[it[0], it[1], []]}
+        )).map{[it[0], it[1], []]}
         .set{ch_prepare_fasta}
     }
 
@@ -103,35 +126,31 @@ workflow BOLTZ {
         ch_prepare_fasta
     )
 
-    // Prepare YAML input with a placeholder for MSA
-    def ch_boltz_input_yaml = ch_input_by_ext.yaml
+    // Index YAML by ID for joining with a placeholder MSA
+    def ch_yaml_indexed = ch_input_by_ext.yaml
         .map { meta, file ->
-            meta.original_file = file
-            [meta, file, []]  // we leave msa as empty array here
+            [meta.id, [meta, file, []]]  // we leave msa as empty array here
         }
-        .combine(BOLTZ_FASTA.out.formatted_fasta.first(), by: 0) // block until FASTA done
-        .map { yaml_entry, _ -> yaml_entry } // drop the dummy FASTA
 
-    // Now inject MSA back in
-    def ch_boltz_input_yaml_with_msa = ch_boltz_input_yaml
-        .map { meta, file, _ ->
-            def fasta_match = BOLTZ_FASTA.out.formatted_fasta
-                .filter { it[0].id == meta.id } // match by ID
-                .first()
-            fasta_match.map { unused_meta, unused_file, msa -> [meta, meta.original_file ?: file, msa] }
 
+    // Index FASTA by ID
+    def ch_fasta_indexed = BOLTZ_FASTA.out.formatted_fasta.map { meta, file, msa ->
+        [meta.id, [meta, file, msa]]
+    }
+
+    // Join YAML and FASTA on ID
+    def ch_boltz_input_yaml_with_msa = ch_yaml_indexed
+        .join(ch_fasta_indexed, remainder: true)
+        .map { id, yamlEntry, fastaEntry ->
+            def (yamlMeta, yamlFile, unusedMsa) = yamlEntry ?: fastaEntry
+            def (unusedMeta, unusedFile, msa) = fastaEntry
+            [yamlMeta, yamlFile, msa]
         }
-        .flatten()
+    .set { ch_boltz_input }
 
-    // Final input: YAMLs with MSA + converted FASTAs
-    ch_boltz_input_yaml_with_msa
-        .concat(BOLTZ_FASTA.out.formatted_fasta)
-        .set { ch_boltz_input }
-
-    ch_boltz_input_yaml_with_msa.view { "YAML w/ MSA: $it" }
-    
+    ch_input_by_ext.yaml.view { "Raw YAML input: $it" }
+    ch_boltz_input.view { "YAML w/ MSA: $it" }
     BOLTZ_FASTA.out.formatted_fasta.view { "FASTA: $it" }
-
 
     RUN_BOLTZ(
         ch_boltz_input.map{[it[0], it[1]]},
