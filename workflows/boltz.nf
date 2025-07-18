@@ -78,8 +78,7 @@ workflow BOLTZ {
             monomer: it[0].cnt == 1
         }
         .set{ch_input}
-        MSA.out.formated_input.view()
-        MSA.out.a3m.view()
+
         SPLIT_MSA(
             MSA.out.a3m.filter{it[0].cnt > 1}
         )
@@ -126,19 +125,16 @@ workflow BOLTZ {
         ch_prepare_fasta
     )
 
-    // Index YAML by ID for joining with a placeholder MSA
     def ch_yaml_indexed = ch_input_by_ext.yaml
         .map { meta, file ->
-            [meta.id, [meta, file, []]]  // we leave msa as empty array here
+            [meta.id, [meta, file, []]]
         }
 
 
-    // Index FASTA by ID
     def ch_fasta_indexed = BOLTZ_FASTA.out.formatted_fasta.map { meta, file, msa ->
         [meta.id, [meta, file, msa]]
     }
 
-    // Join YAML and FASTA on ID
     def ch_boltz_input_yaml_with_msa = ch_yaml_indexed
         .join(ch_fasta_indexed, remainder: true)
         .map { id, yamlEntry, fastaEntry ->
@@ -147,10 +143,6 @@ workflow BOLTZ {
             [yamlMeta, yamlFile, msa]
         }
     .set { ch_boltz_input }
-
-    ch_input_by_ext.yaml.view { "Raw YAML input: $it" }
-    ch_boltz_input.view { "YAML w/ MSA: $it" }
-    BOLTZ_FASTA.out.formatted_fasta.view { "FASTA: $it" }
 
     RUN_BOLTZ(
         ch_boltz_input.map{[it[0], it[1]]},
