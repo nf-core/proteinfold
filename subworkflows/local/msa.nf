@@ -22,7 +22,7 @@ workflow MSA {
     ch_samplesheet
     .branch {
         fasta: it[1].extension == "fasta" || it[1].extension == "fa"
-        yaml: it[1].extension == "yaml"
+        yaml: it[1].extension == "yaml" || it[1].extension == ".yml"
         json: it[1].extension == "json"
     }
     .set{ch_input}
@@ -33,16 +33,29 @@ workflow MSA {
         meta.cnt = getFastaSequences(it[1].text).size();
         [meta, it[1]]
     }
-    .set{ch_input_full}
+    .set{ch_input_fasta}
+
+    ch_input.yaml
+    .map {
+        meta = it[0].clone();
+        meta.cnt = getYamlSequences(it[1].text).size();
+        [meta, it[1]]
+    }
+    .set { ch_input_yaml }
+
+    ch_input_full = ch_input_fasta.mix(ch_input_yaml)
 
     if (true){
         def batch_itr = 0
         ch_input_full
         .map{it[1]}
         .unique()
-        .map{"${it.baseName},${getFastaSequences(it.text)
-                .collect { it.sequence }
-                .join(':')}"
+        .map {
+            def sequences = it.name.endsWith(".yaml") || it.name.endsWith(".yml")
+                ? getYamlSequences(it.text)
+                : getFastaSequences(it.text)
+
+            "${it.baseName},${sequences.collect { it.sequence }.join(':')}"
         }
         .buffer( size: mmseq_batch_size, remainder: true )
         .collectFile {
@@ -106,7 +119,7 @@ def getYamlSequences(yamlData) {
 
         if (trimmed.startsWith('-') && trimmed.endsWith(':')) {
             if (!currentEntry.isEmpty()) {
-                sequences << currentEntry
+                enrichedEntries << currentEntry
             }
             currentEntry = ['type': trimmed[1..-2]]
         }else{
@@ -115,7 +128,7 @@ def getYamlSequences(yamlData) {
         }
     }
     if (!currentEntry.isEmpty()) {
-        sequences << currentEntry
+        enrichedEntries << currentEntry
     }
     return enrichedEntries
 }

@@ -56,6 +56,13 @@ workflow BOLTZ {
     main:
     ch_multiqc_files = Channel.empty()
 
+    ch_samplesheet
+        .branch {
+            fasta: it[1].extension == "fasta" || it[1].extension == "fa"
+            yaml: it[1].extension == "yaml" || it[1].extension == "yml"
+        }
+        .set { ch_input_by_ext }
+
     if (!msa_server){
         MSA(
             ch_samplesheet,
@@ -71,8 +78,7 @@ workflow BOLTZ {
             monomer: it[0].cnt == 1
         }
         .set{ch_input}
-        MSA.out.formated_input.view()
-        MSA.out.a3m.view()
+
         SPLIT_MSA(
             MSA.out.a3m.filter{it[0].cnt > 1}
         )
@@ -84,11 +90,34 @@ workflow BOLTZ {
             ).set{ch_prepare_fasta}
 
     }else{
+        ch_input_by_ext.fasta
+            .join(
+                ch_input_by_ext.fasta
+                    .map { meta, file ->
+                        [
+                            meta,
+                            file.text.findAll { letter -> letter == ">" }.size()
+                        ]
+                    }
+            )
+
+        .map{
+            def meta = it[0].clone()
+            meta.cnt = it[2]
+            [meta, it[1]]
+        }
+        .branch{
+            multimer: it[0].cnt > 1
+            monomer: it[0].cnt == 1
+        }
+        .set{ch_input}
+
+        ch_input_by_ext.yaml.mix(
         ch_input
         .multimer
         .mix(ch_input
         .monomer
-        ).map{[it[0], it[1], []]}
+        )).map{[it[0], it[1], []]}
         .set{ch_prepare_fasta}
     }
 
@@ -96,9 +125,28 @@ workflow BOLTZ {
         ch_prepare_fasta
     )
 
+    def ch_yaml_indexed = ch_input_by_ext.yaml
+        .map { meta, file ->
+            [meta.id, [meta, file, []]]
+        }
+
+
+    def ch_fasta_indexed = BOLTZ_FASTA.out.formatted_fasta.map { meta, file, msa ->
+        [meta.id, [meta, file, msa]]
+    }
+
+    def ch_boltz_input_yaml_with_msa = ch_yaml_indexed
+        .join(ch_fasta_indexed, remainder: true)
+        .map { id, yamlEntry, fastaEntry ->
+            def (yamlMeta, yamlFile, unusedMsa) = yamlEntry ?: fastaEntry
+            def (unusedMeta, unusedFile, msa) = fastaEntry
+            [yamlMeta, yamlFile, msa]
+        }
+    .set { ch_boltz_input }
+
     RUN_BOLTZ(
-        BOLTZ_FASTA.out.formatted_fasta.map{[it[0], it[1]]},
-        BOLTZ_FASTA.out.formatted_fasta.map{it[2]},
+        ch_boltz_input.map{[it[0], it[1]]},
+        ch_boltz_input.map{it[2]},
         ch_boltz_model,
         ch_boltz_ccd
     )
