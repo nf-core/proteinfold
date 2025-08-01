@@ -9,6 +9,8 @@ import plotly.graph_objects as go
 import re
 from Bio import PDB
 
+#TODO: add PAE (model 0) to the HTML report. 
+# KR - I have a local refactor that compacts and de-duplicates plotting functions but I'll leave until v2.1
 
 def generate_output_images(msa_path, plddt_data, name, out_dir, in_type, generate_tsv, pdb):
     msa = []
