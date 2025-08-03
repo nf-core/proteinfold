@@ -594,11 +594,9 @@ nextflow run nf-core/proteinfold \
 | Parameter                | Default | Description                                         |
 | ------------------------ | ------- | --------------------------------------------------- |
 | `--boltz_model`          | `null`  | The model to use for prediction. Default is Boltz-2 |
-| `--boltz_out_dir`        | `null`  | Output directory for Boltz predictions              |
 | `--boltz_use_msa_server` | `null`  | Use MSA server to generate MSAs (flag)              |
 | `--boltz_msa_server_url` | `null`  | MSA server URL                                      |
 | `--boltz_use_potentials` | `null`  | Use inference time potentials (flag)                |
-| `--boltz_write_full_pae` | `true`  | Save the full PAE matrix as a file (flag)           |
 
 > You can override any of these parameters via the command line or a params file.
 
