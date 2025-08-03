@@ -28,10 +28,10 @@ T1026,https://raw.githubusercontent.com/nf-core/test-datasets/proteinfold/testda
 
 The samplesheet can have as many columns as you desire, however, there is a strict requirement for the first 2 columns to match those defined in the table below:
 
-| Column  | Description                                                                                         |
-| ------- | --------------------------------------------------------------------------------------------------- |
-| `id`    | Custom sequence name. Spaces in sequence names are automatically converted to underscores (`_`).    |
-| `fasta` | Full path to fasta file for the provided sequence. File has to have the extension ".fasta" or "fa". |
+| Column  | Description                                                                                          |
+| ------- | ---------------------------------------------------------------------------------------------------- |
+| `id`    | Custom sequence name. Spaces in sequence names are automatically converted to underscores (`_`).     |
+| `fasta` | Full path to fasta file for the provided sequence. File has to have the extension ".fasta" or ".fa". |
 
 An [example samplesheet](../assets/samplesheet.csv) has been provided with the pipeline.
 
@@ -39,66 +39,72 @@ Each FASTA file should contain a single protein sequence unless using multimer m
 
 ## Running the pipeline
 
-The typical commands for running the pipeline on AlphaFold2, Colabfold, ESMFold and RoseTTAFold-All-Atom modes are shown below.
+The typical command for running the pipeline is shown below.
 
+```bash
+nextflow run nf-core/proteinfold \
+   -profile <docker/singularity/.../institute> \
+   --input samplesheet.csv \
+   --outdir <OUTDIR> \
+   --mode <alphafold2/esmfold/colabfold/rosettafold2na/rosettafold-all-atom/alphafold3/boltz/helixfold3> \
+   --db <DBDIR>
+```
 > You can run any combination of the models by providing them to the `--mode` parameter separated by a comma. For example: `--mode alphafold2,esmfold,colabfold` will run the three models in parallel.
 
-AlphaFold2 regular can be run using this command:
-
-```bash
-nextflow run nf-core/proteinfold \
-      --input samplesheet.csv \
-      --outdir <OUTDIR> \
-      --mode alphafold2 \
-      --alphafold2_db <null (default) | DB_PATH> \
-      --alphafold2_full_dbs <true/false> \
-      --alphafold2_model_preset monomer \
-      --use_gpu <true/false> \
-      -profile <docker/singularity/.../institute>
-```
-
-To run the AlphaFold2 that splits the MSA calculation from the model inference, you can use the `--alphafold2_mode split_msa_prediction` parameter, as shown below:
-
-```bash
-nextflow run nf-core/proteinfold \
-      --input samplesheet.csv \
-      --outdir <OUTDIR> \
-      --mode alphafold2 \
-      --alphafold2_mode split_msa_prediction \
-      --alphafold2_db <null (default) | DB_PATH> \
-      --alphafold2_full_dbs <true/false> \
-      --alphafold2_model_preset monomer \
-      --use_gpu <true/false> \
-      --random_seed 53343 \
-      -profile <docker/singularity/.../institute>
-```
-
-To provide the predownloaded AlphaFold2 databases and parameters you can specify the `--alphafold2_db <PATH>` parameter and the directory structure of your path should be like this:
+Each mode has specific reference data requirements. To support all modes the `--db` directory should conform to the following file structure:
 
 <details markdown="1">
 <summary>Directory structure</summary>
-
-```console
-├── params
-│   └── alphafold_params_2022-12-06
-│       ├── LICENSE
-│       ├── params_model_1_multimer_v3.npz
-│       ├── params_model_1.npz
-│       ├── params_model_1_ptm.npz
-│       ├── params_model_2_multimer_v3.npz
-│       ├── params_model_2.npz
-│       ├── params_model_2_ptm.npz
-│       ├── params_model_3_multimer_v3.npz
-│       ├── params_model_3.npz
-│       ├── params_model_3_ptm.npz
-│       ├── params_model_4_multimer_v3.npz
-│       ├── params_model_4.npz
-│       ├── params_model_4_ptm.npz
-│       ├── params_model_5_multimer_v3.npz
-│       ├── params_model_5.npz
-│       └── params_model_5_ptm.npz
+```
+<db>/
+├── bfd
+│   ├── bfd_metaclust_clu_complete_id30_c90_final_seq.sorted_opt_a3m.ffdata
+│   ├── bfd_metaclust_clu_complete_id30_c90_final_seq.sorted_opt_a3m.ffindex
+│   ├── bfd_metaclust_clu_complete_id30_c90_final_seq.sorted_opt_cs219.ffdata
+│   ├── bfd_metaclust_clu_complete_id30_c90_final_seq.sorted_opt_cs219.ffindex
+│   ├── bfd_metaclust_clu_complete_id30_c90_final_seq.sorted_opt_hhm.ffdata
+│   └── bfd_metaclust_clu_complete_id30_c90_final_seq.sorted_opt_hhm.ffindex
+├── colabfold_envdb
+│   ├── colabfold_envdb_202108_db
+│   ├── colabfold_envdb_202108_db_aln
+│   ├── colabfold_envdb_202108_db_aln.dbtype
+│   └── ...
+├── colabfold_uniref30
+│   ├── uniref30_2302_db
+│   ├── uniref30_2302_db_aln
+│   ├── uniref30_2302_db_aln.dbtype
+│   └── ...
+├── maxit-v11.200-prod-src
+│   ├── annotation-v1.0
+│   └── ...
 ├── mgnify
 │   └── mgy_clusters.fa
+├── params
+│   ├── af3.bin
+│   ├── alphafold_params_2021-07-14
+│   ├── alphafold_params_2022-12-06
+│   ├── alphafold_params_colab_2022-12-06
+│   ├── boltz1_conf.ckpt
+│   ├── boltz2_aff.ckpt
+│   ├── boltz2_conf.ckpt
+│   ├── ccd.pkl
+│   ├── ccd_preprocessed_etkdg.pkl.gz
+│   ├── esm2_t36_3B_UR50D-contact-regression.pt
+│   ├── esm2_t36_3B_UR50D.pt
+│   ├── esmfold_3B_v1.pt
+│   ├── HelixFold3-240814.pdparams
+│   ├── mols
+│   └── RFAA_paper_weights.pt
+├── pdb100
+│   ├── LICENSE
+│   ├── pdb100_2021Mar03_a3m.ffdata
+│   ├── pdb100_2021Mar03_a3m.ffindex
+│   ├── pdb100_2021Mar03_cs219.ffdata
+│   ├── pdb100_2021Mar03_cs219.ffindex
+│   ├── pdb100_2021Mar03_hhm.ffdata
+│   ├── pdb100_2021Mar03_hhm.ffindex
+│   ├── pdb100_2021Mar03_pdb.ffdata
+│   └── pdb100_2021Mar03_pdb.ffindex
 ├── pdb70
 │   ├── md5sum
 │   ├── pdb70_a3m.ffdata
@@ -111,309 +117,38 @@ To provide the predownloaded AlphaFold2 databases and parameters you can specify
 │   └── pdb_filter.dat
 ├── pdb_mmcif
 │   ├── mmcif_files
-│   │   ├── 1g6g.cif
-│   │   ├── 1go4.cif
-│   │   ├── 1isn.cif
-│   │   ├── 1qgd.cif
-│   │   ├── 1tp9.cif
-│   │   ├── 4o2w.cif
-│   │   ├── 6sg9.cif
-│   │   ├── 6vi4.cif
-│   │   ├── 7sp5.cif
-│   │   └── ...
 │   └── obsolete.dat
 ├── pdb_seqres
 │   └── pdb_seqres.txt
+├── rfam
+│   └── Rfam-14.9_rep_seq.fasta
 ├── small_bfd
 │   └── bfd-first_non_consensus_sequences.fasta
 ├── uniprot
 │   └── uniprot.fasta
 ├── uniref30
-│   ├── UniRef30_2023_02_a3m.ffdata
-│   ├── UniRef30_2023_02_a3m.ffindex
-│   ├── UniRef30_2023_02_cs219.ffdata
-│   ├── UniRef30_2023_02_cs219.ffindex
-|   ├── UniRef30_2023_02_hhm.ffdata
-│   ├── UniRef30_2023_02_hhm.ffindex
-│   └── UniRef30_2023_02.md5sums
+│   ├── UniRef30_2023_02_a3m.ffdata
+│   ├── UniRef30_2023_02_a3m.ffindex
+│   ├── UniRef30_2023_02_cs219.ffdata
+│   ├── UniRef30_2023_02_cs219.ffindex
+│   ├── UniRef30_2023_02_hhm.ffdata
+│   ├── UniRef30_2023_02_hhm.ffindex
+│   └── UniRef30_2023_02.md5sums
 └── uniref90
-    └── uniref90.fasta
+    └── uniref90.fasta
 ```
 
-</details>
+Alternatively, the required data layout for each of the individual modes is described in the mode-specific usage documentation:
+- [AlphaFold2](./usage/alphafold2.md)
+- [ESMFold](./usage/esmfold.md)
+- [ColabFold](./usage/colabfold.md)
+- [RoseTTAFold2NA](./usage/rosettafold2na.md)
+- [RoseTTAFold-All-Atom](./usage/rosettafold_all_atom.md)
+- [AlphaFold3](./usage/alphafold3.md)
+- [Boltz](./usage/boltz.md)
+- [HelixFold3](./usage/helixfold3.md)
 
-AlphaFold3 can be run using this command:
-
-```bash
-nextflow run nf-core/proteinfold \
-      --input samplesheet.csv \
-      --outdir <OUTDIR> \
-      --mode alphafold3 \
-      --alphafold3_db <null (default) | DB_PATH> \
-      --use_gpu <true/false> \
-      -profile <docker/singularity/.../institute>
-```
-
-> [!WARNING]
-> The AlphaFold3 model weights are not provided by the pipeline. You need to obtain them from DeepMind as described in the [AlphaFold3 repository](https://github.com/google-deepmind/alphafold3). Please follow their terms of use and licensing requirements.
-
-To provide the predownloaded AlphaFold3 databases and parameters you can specify the `--alphafold3_db <PATH>` parameter and the directory structure of your path should be like this:
-
-<details markdown="1">
-<summary>Directory structure</summary>
-
-```console
-├── mgnify
-│   └── mgy_clusters_2022_05.fa
-├── mmcif_files
-│   ├── 1g6g.cif
-│   ├── 1go4.cif
-│   └── ...
-├── params
-│   └── af3.bin
-├── pdb_seqres
-│   └── pdb_seqres_2022_09_28.fasta
-├── small_bfd
-│   └── bfd-first_non_consensus_sequences.fasta
-├── uniprot
-│   └── uniprot_all_2021_04.fa
-└── uniref90
-    └── uniref90_2022_05.fa
-```
-
-</details>
-
-Colabfold mode can be used with local database search using the following command:
-
-```bash
-nextflow run nf-core/proteinfold \
-      --input samplesheet.csv \
-      --outdir <OUTDIR> \
-      --mode colabfold \
-      --colabfold_db <null (default) | DB_PATH> \
-      --num_recycles_colabfold 3 \
-      --use_amber <true/false> \
-      --colabfold_model_preset "alphafold2_ptm" \
-      --use_gpu <true/false> \
-      --db_load_mode 0 \
-      -profile <docker/singularity/.../institute>
-```
-
-The command to run run Colabfold, using the Colabfold webserver is shown below:
-
-```bash
-nextflow run nf-core/proteinfold \
-      --input samplesheet.csv \
-      --outdir <OUTDIR> \
-      --mode colabfold
-      --use_msa_server \
-      --msa_server_url <custom MMSeqs2 API Server URL> \
-      --colabfold_db <null (default) | DB_PATH> \
-      --num_recycles_colabfold 3 \
-      --use_amber <true/false> \
-      --colabfold_model_preset "alphafold2_ptm" \
-      --use_gpu <true/false> \
-      -profile <docker/singularity/.../institute>
-```
-
-If you specify the `--colabfold_db <PATH>` parameter, the directory structure of your path should be like this:
-
-<details markdown="1">
-<summary>Directory structure</summary>
-
-```console
-├── colabfold_envdb
-│   ├── colabfold_envdb_202108_db.0
-│   ├── colabfold_envdb_202108_db.1
-│   ├── colabfold_envdb_202108_db.10
-│   ├── colabfold_envdb_202108_db.11
-│   ├── colabfold_envdb_202108_db.12
-│   ├── colabfold_envdb_202108_db.13
-│   ├── colabfold_envdb_202108_db.14
-│   ├── colabfold_envdb_202108_db.15
-│   ├── colabfold_envdb_202108_db.2
-│   ├── colabfold_envdb_202108_db.3
-│   ├── colabfold_envdb_202108_db.4
-│   ├── colabfold_envdb_202108_db.5
-│   ├── colabfold_envdb_202108_db.6
-│   ├── colabfold_envdb_202108_db.7
-│   ├── colabfold_envdb_202108_db.8
-│   ├── colabfold_envdb_202108_db.9
-│   ├── colabfold_envdb_202108_db_aln.0
-│   ├── colabfold_envdb_202108_db_aln.1
-│   ├── colabfold_envdb_202108_db_aln.10
-│   ├── colabfold_envdb_202108_db_aln.11
-│   ├── colabfold_envdb_202108_db_aln.12
-│   ├── colabfold_envdb_202108_db_aln.13
-│   ├── colabfold_envdb_202108_db_aln.14
-│   ├── colabfold_envdb_202108_db_aln.15
-│   ├── colabfold_envdb_202108_db_aln.2
-│   ├── colabfold_envdb_202108_db_aln.3
-│   ├── colabfold_envdb_202108_db_aln.4
-│   ├── colabfold_envdb_202108_db_aln.5
-│   ├── colabfold_envdb_202108_db_aln.6
-│   ├── colabfold_envdb_202108_db_aln.7
-│   ├── colabfold_envdb_202108_db_aln.8
-│   ├── colabfold_envdb_202108_db_aln.9
-│   ├── colabfold_envdb_202108_db_aln.dbtype
-│   ├── colabfold_envdb_202108_db_aln.index
-│   ├── colabfold_envdb_202108_db.dbtype
-│   ├── colabfold_envdb_202108_db_h
-│   ├── colabfold_envdb_202108_db_h.dbtype
-│   ├── colabfold_envdb_202108_db_h.index
-│   ├── colabfold_envdb_202108_db.idx
-│   ├── colabfold_envdb_202108_db.idx.dbtype
-│   ├── colabfold_envdb_202108_db.idx.index
-│   ├── colabfold_envdb_202108_db.index
-│   ├── colabfold_envdb_202108_db_seq.0
-│   ├── colabfold_envdb_202108_db_seq.1
-│   ├── colabfold_envdb_202108_db_seq.10
-│   ├── colabfold_envdb_202108_db_seq.11
-│   ├── colabfold_envdb_202108_db_seq.12
-│   ├── colabfold_envdb_202108_db_seq.13
-│   ├── colabfold_envdb_202108_db_seq.14
-│   ├── colabfold_envdb_202108_db_seq.15
-│   ├── colabfold_envdb_202108_db_seq.2
-│   ├── colabfold_envdb_202108_db_seq.3
-│   ├── colabfold_envdb_202108_db_seq.4
-│   ├── colabfold_envdb_202108_db_seq.5
-│   ├── colabfold_envdb_202108_db_seq.6
-│   ├── colabfold_envdb_202108_db_seq.7
-│   ├── colabfold_envdb_202108_db_seq.8
-│   ├── colabfold_envdb_202108_db_seq.9
-│   ├── colabfold_envdb_202108_db_seq.dbtype
-│   ├── colabfold_envdb_202108_db_seq_h -> colabfold_envdb_202108_db_h
-│   ├── colabfold_envdb_202108_db_seq_h.dbtype -> colabfold_envdb_202108_db_h.dbtype
-│   ├── colabfold_envdb_202108_db_seq_h.index -> colabfold_envdb_202108_db_h.index
-│   ├── colabfold_envdb_202108_db_seq.index
-├── params
-│   ├── alphafold_params_2021-07-14
-│   │   ├── LICENSE
-│   │   ├── params_model_1.npz
-│   │   ├── params_model_1_ptm.npz
-│   │   ├── params_model_2.npz
-│   │   ├── params_model_2_ptm.npz
-│   │   ├── params_model_3.npz
-│   │   ├── params_model_3_ptm.npz
-│   │   ├── params_model_4.npz
-│   │   ├── params_model_4_ptm.npz
-│   │   ├── params_model_5.npz
-│   │   └── params_model_5_ptm.npz
-│   └── alphafold_params_colab_2022-12-06
-│       ├── LICENSE
-│       ├── params_model_1_multimer_v3.npz
-│       ├── params_model_1.npz
-│       ├── params_model_2_multimer_v3.npz
-│       ├── params_model_2.npz
-│       ├── params_model_2_ptm.npz
-│       ├── params_model_3_multimer_v3.npz
-│       ├── params_model_3.npz
-│       ├── params_model_4_multimer_v3.npz
-│       ├── params_model_4.npz
-│       ├── params_model_5_multimer_v3.npz
-│       └── params_model_5.npz
-└── uniref30
-    ├── uniref30_2302_aln.tsv
-    ├── uniref30_2302_db.0
-    ├── uniref30_2302_db.1
-    ├── uniref30_2302_db.2
-    ├── uniref30_2302_db.3
-    ├── uniref30_2302_db.4
-    ├── uniref30_2302_db.5
-    ├── uniref30_2302_db.6
-    ├── uniref30_2302_db.7
-    ├── uniref30_2302_db_aln.0
-    ├── uniref30_2302_db_aln.1
-    ├── uniref30_2302_db_aln.2
-    ├── uniref30_2302_db_aln.3
-    ...
-    ├── uniref30_2302_db_aln.97
-    ├── uniref30_2302_db_aln.98
-    ├── uniref30_2302_db_aln.99
-    ├── uniref30_2302_db_aln.dbtype
-    ├── uniref30_2302_db_aln.index
-    ├── uniref30_2302_db.dbtype
-    ├── uniref30_2302_db_h
-    ├── uniref30_2302_db_h.dbtype
-    ├── uniref30_2302_db_h.index
-    ├── uniref30_2302_db.idx
-    ├── uniref30_2302_db.idx.dbtype
-    ├── uniref30_2302_db.idx.index
-    ├── uniref30_2302_db.idx_mapping
-    ├── uniref30_2302_db.idx_taxonomy
-    ├── uniref30_2302_db.index
-    ├── uniref30_2302_db_mapping
-    ├── uniref30_2302_db_seq.0
-    ├── uniref30_2302_db_seq.1
-    ├── uniref30_2302_db_seq.2
-    ├── uniref30_2302_db_seq.3
-    ...
-    ├── uniref30_2302_db_seq.97
-    ├── uniref30_2302_db_seq.98
-    ├── uniref30_2302_db_seq.99
-    ├── uniref30_2302_db_seq.dbtype
-    ├── uniref30_2302_db_seq_h -> uniref30_2302_db_h
-    ├── uniref30_2302_db_seq_h.dbtype -> uniref30_2302_db_h.dbtype
-    ├── uniref30_2302_db_seq_h.index -> uniref30_2302_db_h.index
-    └── uniref30_2302_db_seq.index
-```
-
-</details>
-
-```console
-nextflow run nf-core/proteinfold \
-      --input samplesheet.csv \
-      --outdir <OUTDIR> \
-      --mode esmfold
-      --esmfold_db <null (default) | DB_PATH> \
-      --num_recycles_esmfold 4 \
-      --esmfold_model_preset <monomer/multimer> \
-      --use_gpu <true/false> \
-      -profile <docker>
-```
-
-If you specify the `--esmfold_db <PATH>` parameter, the directory structure of your path should be like this:
-
-```console
-└── params
-    ├── esm2_t36_3B_UR50D-contact-regression.pt
-    ├── esm2_t36_3B_UR50D.pt
-    └── esmfold_3B_v1.pt
-```
-
-HelixFold3 can be run using this command (note that HF3 requires `.json` files not `.fasta`):
-
-```bash
-nextflow run nf-core/proteinfold \
-      --input samplesheet.csv \
-      --outdir <OUTDIR> \
-      --mode helixfold3 \
-      --helixfold3_db <null (default) | DB_PATH> \
-      --use_gpu <true/false> \
-      -profile <docker>
-```
-
-```console
-## Optional parameters with default values:
-    --helixfold3_max_template_date=2038-01-19
-    --preset 'reduced_dbs'
-    --precision 'bf16'
-    --infer_times 4
-```
-
-This will launch the pipeline with the `docker` configuration profile. See below for more information about profiles.
-
-RoseTTAFold All-Atom can be run using this command:
-
-```bash
-nextflow run nf-core/proteinfold \
-      --input samplesheet.csv \
-      --outdir <OUTDIR> \
-      --mode rosettafold_all_atom \
-      --rosettafold_all_atom_db <null (default) | DB_PATH> \
-      --use_gpu <true/false> \
-      -profile <docker/singularity/.../institute>
-```
+> Omitting the `--db` flag will allow the pipeline to download the reference data required to execute the selected modes.
 
 RosettaFold2NA can be run using this command:
 
@@ -591,30 +326,3 @@ We recommend adding the following line to your environment to limit this (typica
 ```bash
 NXF_OPTS='-Xms1g -Xmx4g'
 ```
-
-## Boltz mode
-
-To run the pipeline in Boltz mode, use the following command:
-
-```bash
-nextflow run nf-core/proteinfold \
-      --input samplesheet.csv \
-      --outdir <OUTDIR> \
-      --mode boltz \
-      --use_msa_server \
-      --use_gpu <true/false> \
-      -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
-```
-
-### Boltz parameter descriptions
-
-| Parameter                | Default | Description                                         |
-| ------------------------ | ------- | --------------------------------------------------- |
-| `--boltz_model`          | `null`  | The model to use for prediction. Default is Boltz-2 |
-| `--use_msa_server`       | `null`  | Use MSA server to generate MSAs (flag)              |
-| `--msa_server_url`       | `null`  | MSA server URL                                      |
-| `--boltz_use_potentials` | `null`  | Use inference time potentials (flag)                |
-
-> You can override any of these parameters via the command line or a params file.
-
----
