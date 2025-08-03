@@ -1,8 +1,8 @@
 # ESMFold
 
-| Mode                                                                              | Protein | MSA server | Split MSA | RNA | Small-molecule | PTM  | Constraints | pLM |
-| :-------------------------------------------------------------------------------- | :----: | :---------: | :------: | :--: | :------------: | :--: | :--------: | :--: |
-| [ESMFold](https://github.com/facebookresearch/esm)                                |   ✅   |     ❌     |    ❌    | ❌  |       ❌       |  ❌ |     ❌     |  ✅ |
+| Mode                                                                              | Protein | RNA | Small-molecule | PTM  | Constraints | pLM | MSA server | Split MSA |
+| :-------------------------------------------------------------------------------- | :----: | :--: | :------------: | :--: | :--------: | :--: | :---------: | :------: |
+| [ESMFold](https://github.com/facebookresearch/esm)                                |   ✅   | ❌  |       ❌       |  ❌ |     ❌     |  ✅ |     ❌     |    ❌    |
 
 ## General Usage
 

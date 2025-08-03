@@ -1,8 +1,8 @@
 # HelixFold3
 
-| Mode                                                                              | Protein | MSA server | Split MSA | RNA | Small-molecule | PTM  | Constraints | pLM |
-| :-------------------------------------------------------------------------------- | :----: | :---------: | :------: | :--: | :------------: | :--: | :--------: | :--: |
-| [HelixFold3](https://github.com/PaddlePaddle/PaddleHelix/tree/dev/apps/protein_folding/helixfold3) | ✅ | ❌ | ❌  | ✅  |       ✅       |  ❌ |     ❌     |  ❌ |
+| Mode                                                                              | Protein | RNA | Small-molecule | PTM  | Constraints | pLM | MSA server | Split MSA |
+| :-------------------------------------------------------------------------------- | :----: | :--: | :------------: | :--: | :--------: | :--: | :---------: | :------: |
+| [HelixFold3](https://github.com/PaddlePaddle/PaddleHelix/tree/dev/apps/protein_folding/helixfold3) | ✅ | ✅ | ✅ |  ❌ |     ❌     |  ❌ |     ❌     |    ❌    |
 
 ## General Usage
 

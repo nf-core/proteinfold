@@ -1,8 +1,8 @@
 # RoseTTAFold-All-Atom
 
-| Mode                                                                              | Protein | MSA server | Split MSA | RNA | Small-molecule | PTM  | Constraints | pLM |
-| :-------------------------------------------------------------------------------- | :----: | :---------: | :------: | :--: | :------------: | :--: | :--------: | :--: |
-| [RoseTTAFold-All-Atom](https://github.com/baker-laboratory/RoseTTAFold-All-Atom/) |   ✅   |     ❌     |    ❌    | ✅  |       ✅       |  ✅ |     ❌     |  ❌ |
+| Mode                                                                              | Protein | RNA | Small-molecule | PTM  | Constraints | pLM | MSA server | Split MSA |
+| :-------------------------------------------------------------------------------- | :----: | :--: | :------------: | :--: | :--------: | :--: | :---------: | :------: |
+| [RoseTTAFold-All-Atom](https://github.com/baker-laboratory/RoseTTAFold-All-Atom/) |   ✅   | ✅  |       ✅       |  ✅ |     ❌     |  ❌ |     ❌     |    ❌    |
 
 RoseTTAFold All-Atom can be run using the command below:
 

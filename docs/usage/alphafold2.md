@@ -1,8 +1,8 @@
 # AlphaFold2
 
-| Mode                                                                              | Protein | MSA server | Split MSA | RNA | Small-molecule | PTM  | Constraints | pLM |
-| :-------------------------------------------------------------------------------- | :----: | :---------: | :------: | :--: | :------------: | :--: | :--------: | :--: |
-| [AlphaFold2](https://github.com/deepmind/alphafold)                               |   ✅   |     ❌     |    ✅    | ❌  |       ❌       |  ❌ |     ❌     |  ❌ |
+| Mode                                                                              | Protein | RNA | Small-molecule | PTM  | Constraints | pLM | MSA server | Split MSA |
+| :-------------------------------------------------------------------------------- | :----: | :--: | :------------: | :--: | :--------: | :--: | :---------: | :------: |
+| [AlphaFold2](https://github.com/deepmind/alphafold)                               |   ✅   | ❌  |       ❌       |  ❌ |     ❌     |  ❌ |     ❌     |    ✅    |
 
 AlphaFold2 can be run using the command below:
 

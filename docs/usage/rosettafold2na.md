@@ -1,8 +1,8 @@
 # RoseTTAFold2NA
 
-| Mode                                                                              | Protein | MSA server | Split MSA | RNA | Small-molecule | PTM  | Constraints | pLM |
-| :-------------------------------------------------------------------------------- | :----: | :---------: | :------: | :--: | :------------: | :--: | :--------: | :--: |
-| [RoseTTAFold2NA](https://github.com/uw-ipd/RoseTTAFold2NA)                        |   ✅   |     ❌     |    ❌    | ✅  |       ❌       |  ❌ |     ❌     |  ❌ |
+| Mode                                                                              | Split MSA | RNA | Small-molecule | PTM  | Constraints | pLM | Protein | MSA server |
+| :-------------------------------------------------------------------------------- | :------: | :--: | :------------: | :--: | :--------: | :--: | :----: | :---------: |
+| [RoseTTAFold2NA](https://github.com/uw-ipd/RoseTTAFold2NA)                        |    ❌    | ✅  |       ❌       |  ❌ |     ❌     |  ❌ |   ✅   |     ❌     |
 
 RoseTTAFold2NA can be run using the command below:
 

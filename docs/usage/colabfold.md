@@ -1,8 +1,8 @@
 # ColabFold
 
-| Mode                                                                              | Protein | MSA server | Split MSA | RNA | Small-molecule | PTM  | Constraints | pLM |
-| :-------------------------------------------------------------------------------- | :----: | :---------: | :------: | :--: | :------------: | :--: | :--------: | :--: |
-| [ColabFold](https://github.com/sokrypton/ColabFold)                               |   ✅   |     ✅     |    ✅    | ❌  |       ❌       |  ❌ |     ❌     |  ❌ |
+| Mode                                                                              | Protein | RNA | Small-molecule | PTM  | Constraints | pLM | MSA server | Split MSA |
+| :-------------------------------------------------------------------------------- | :----: | :--: | :------------: | :--: | :--------: | :--: | :---------: | :------: |
+| [ColabFold](https://github.com/sokrypton/ColabFold)                               |   ✅   | ❌  |       ❌       |  ❌ |     ❌     |  ❌ |     ✅     |    ✅    |
 
 ## General Usage
 

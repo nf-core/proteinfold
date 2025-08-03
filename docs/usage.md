@@ -145,8 +145,8 @@ Alternatively, the required data layout for each of the individual modes is desc
 - [RoseTTAFold2NA](./usage/rosettafold2na.md)
 - [RoseTTAFold-All-Atom](./usage/rosettafold_all_atom.md)
 - [AlphaFold3](./usage/alphafold3.md)
-- [Boltz](./usage/boltz.md)
 - [HelixFold3](./usage/helixfold3.md)
+- [Boltz](./usage/boltz.md)
 
 > Omitting the `--db` flag will allow the pipeline to download the reference data required to execute the selected modes.
 

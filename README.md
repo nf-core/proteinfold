@@ -30,16 +30,16 @@ On release, automated continuous integration tests run the pipeline on a full-si
 
 ![Alt text](docs/images/nf-core-proteinfold_metro_map_1.1.0.png?raw=true "nf-core-proteinfold 1.1.0 metro map")
 
-| Mode                                                                              | Protein | MSA server | Split MSA | RNA | Small-molecule | PTM  | Constraints | pLM |
-| :-------------------------------------------------------------------------------- | :----: | :---------: | :------: | :--: | :------------: | :--: | :--------: | :--: |
-| [AlphaFold2](https://github.com/deepmind/alphafold)                               |   ✅   |     ❌     |    ✅    | ❌  |       ❌       |  ❌ |     ❌     |  ❌ |
-| [ESMFold](https://github.com/facebookresearch/esm)                                |   ✅   |     ❌     |    ❌    | ❌  |       ❌       |  ❌ |     ❌     |  ✅ |
-| [ColabFold](https://github.com/sokrypton/ColabFold)                               |   ✅   |     ✅     |    ✅    | ❌  |       ❌       |  ❌ |     ❌     |  ❌ |
-| [RoseTTAFold2NA](https://github.com/uw-ipd/RoseTTAFold2NA)                        |   ✅   |     ❌     |    ❌    | ✅  |       ❌       |  ❌ |     ❌     |  ❌ |
-| [RoseTTAFold-All-Atom](https://github.com/baker-laboratory/RoseTTAFold-All-Atom/) |   ✅   |     ❌     |    ❌    | ✅  |       ✅       |  ✅ |     ❌     |  ❌ |
-| [AlphaFold3](https://github.com/deepmind/alphafold)                               |   ✅   |     ❌     |    ❌    | ✅  |       ✅       |  ✅ |     ❌     |  ❌ |
-| [Boltz](https://github.com/jwohlwend/boltz/)                                      |   ✅   |     ✅     |    ✅    | ✅  |       ✅       |  ✅ |     ✅     |  ❌ |
-| [HelixFold3](https://github.com/PaddlePaddle/PaddleHelix/tree/dev/apps/protein_folding/helixfold3) | ✅ | ❌ | ❌  | ✅  |       ✅       |  ✅ |     ❌     |  ❌ |
+| Mode                                                                              | Protein | RNA | Small-molecule | PTM  | Constraints | pLM | MSA server | Split MSA |
+| :-------------------------------------------------------------------------------- | :----: | :--: | :------------: | :--: | :--------: | :--: | :---------: | :------: |
+| [AlphaFold2](https://github.com/deepmind/alphafold)                               |   ✅   | ❌  |       ❌       |  ❌ |     ❌     |  ❌ |     ❌     |    ✅    |
+| [ESMFold](https://github.com/facebookresearch/esm)                                |   ✅   | ❌  |       ❌       |  ❌ |     ❌     |  ✅ |     ❌     |    ❌    |
+| [ColabFold](https://github.com/sokrypton/ColabFold)                               |   ✅   | ❌  |       ❌       |  ❌ |     ❌     |  ❌ |     ✅     |    ✅    |
+| [RoseTTAFold2NA](https://github.com/uw-ipd/RoseTTAFold2NA)                        |   ✅   | ✅  |       ❌       |  ❌ |     ❌     |  ❌ |     ❌     |    ❌    |
+| [RoseTTAFold-All-Atom](https://github.com/baker-laboratory/RoseTTAFold-All-Atom/) |   ✅   | ✅  |       ✅       |  ✅ |     ❌     |  ❌ |     ❌     |    ❌    |
+| [AlphaFold3](https://github.com/deepmind/alphafold)                               |   ✅   | ✅  |       ✅       |  ✅ |     ❌     |  ❌ |     ❌     |    ❌    |
+| [HelixFold3](https://github.com/PaddlePaddle/PaddleHelix/tree/dev/apps/protein_folding/helixfold3) | ✅ | ✅ | ✅ |  ✅ |     ❌     |  ❌ |     ❌     |    ❌    |
+| [Boltz](https://github.com/jwohlwend/boltz/)                                      |   ✅   | ✅  |       ✅       |  ✅ |     ✅     |  ❌ |     ✅     |    ✅    |
 
 **nf-core/proteinfold** supports multiple tools for general molecular structure prediction. Each of the methods have overlapping functionality which can be utilized within the pipeline. All tools support predicting protein structure from an input amino acid sequence. The pipeline is composed of the following steps:
 
