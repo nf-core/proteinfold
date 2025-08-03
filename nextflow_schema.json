@@ -295,16 +295,10 @@
             "description": "HelixFold3 options",
             "default": "",
             "properties": {
-                "model_name": {
-                    "type": "string"
-                },
                 "preset": {
                     "type": "string"
                 },
                 "init_model": {
-                    "type": "string"
-                },
-                "logging_level": {
                     "type": "string"
                 },
                 "precision": {
