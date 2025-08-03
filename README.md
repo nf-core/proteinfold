@@ -31,7 +31,7 @@ On release, automated continuous integration tests run the pipeline on a full-si
 ![Alt text](docs/images/nf-core-proteinfold_metro_map_1.1.0.png?raw=true "nf-core-proteinfold 1.1.0 metro map")
 
 | Mode                                                                              | Protein | MSA server | Split MSA | RNA | Small-molecule | PTM  | Constraints | pLM |
-|-----------------------------------------------------------------------------------|---------|------------|-----------|-----|----------------|------|-------------|-----|
+| :-------------------------------------------------------------------------------- | :----: | :---------: | :------: | :--: | :------------: | :--: | :--------: | :--: |
 | [AlphaFold2](https://github.com/deepmind/alphafold)                               |   ✅   |     ❌     |    ✅    | ❌  |       ❌       |  ❌ |     ❌     |  ❌ |
 | [ESMFold](https://github.com/facebookresearch/esm)                                |   ✅   |     ❌     |    ❌    | ❌  |       ❌       |  ❌ |     ❌     |  ✅ |
 | [ColabFold](https://github.com/sokrypton/ColabFold)                               |   ✅   |     ✅     |    ✅    | ❌  |       ❌       |  ❌ |     ❌     |  ❌ |

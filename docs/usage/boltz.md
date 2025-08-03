@@ -1,8 +1,8 @@
 # Boltz
 
-| Mode                                                          | Protein | MSA server | Split MSA | RNA | Small-molecule | PTM  | Constraints |
-|---------------------------------------------------------------|--------|-------------|----------|------|----------------|------|-------------|
-| [Boltz](https://github.com/jwohlwend/boltz/)                  |   ✅   |     ✅     |    ✅    | ✅  |       ✅       |  ✅ |     ✅     |
+| Mode                                                                              | Protein | MSA server | Split MSA | RNA | Small-molecule | PTM  | Constraints | pLM |
+| :-------------------------------------------------------------------------------- | :----: | :---------: | :------: | :--: | :------------: | :--: | :--------: | :--: |
+| [Boltz](https://github.com/jwohlwend/boltz/)                                      |   ✅   |     ✅     |    ✅    | ✅  |       ✅       |  ✅ |     ✅     | ❌  |
 
 ## General Use
 
