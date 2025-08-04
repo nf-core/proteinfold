@@ -1,8 +1,8 @@
 # ColabFold
 
-| Mode                                                                              | Protein | RNA | Small-molecule | PTM  | Constraints | pLM | MSA server | Split MSA |
-| :-------------------------------------------------------------------------------- | :----: | :--: | :------------: | :--: | :--------: | :--: | :---------: | :------: |
-| [ColabFold](https://github.com/sokrypton/ColabFold)                               |   ✅   | ❌  |       ❌       |  ❌ |     ❌     |  ❌ |     ✅     |    ✅    |
+| Mode                                                | Protein | RNA | Small-molecule | PTM | Constraints | pLM | MSA server | Split MSA |
+| :-------------------------------------------------- | :-----: | :-: | :------------: | :-: | :---------: | :-: | :--------: | :-------: |
+| [ColabFold](https://github.com/sokrypton/ColabFold) |   ✅    | ❌  |       ❌       | ❌  |     ❌      | ❌  |     ✅     |    ✅     |
 
 ## General Usage
 
@@ -100,9 +100,9 @@ nextflow run nf-core/proteinfold \
 
 See the [ColabFold](https://github.com/sokrypton/ColabFold) documentation for a full description of additional arguments. The arguments supported by the proteinfold workflow are described briefly below:
 
-| Parameter                  | Default | Description                                         |
-| -------------------------- | ------- | --------------------------------------------------- |
-| `--num_recycles_colabfold` |   `3`   | The AlphaFold2 model used by ColabFold provides initial structure predictions as a recycled model input in an iterative refinement process. This parameter controls the number of times model outputs are recycled. Increasing the number of recycles has been found to improve performance for some challening cases.  |
-| `--use_amber`              | `null`  | ColabFold outputs will sometimes contain phsyical violations such as steric clashes. These clashes can be resolved by post-processing the outputs with a short relaxation using the Amber Force Field. Non-clashing atoms are pinned to starting coordinates such that the relaxation has a minimal impact on final structures.   |
+| Parameter                  | Default | Description                                                                                                                                                                                                                                                                                                                     |
+| -------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--num_recycles_colabfold` | `3`     | The AlphaFold2 model used by ColabFold provides initial structure predictions as a recycled model input in an iterative refinement process. This parameter controls the number of times model outputs are recycled. Increasing the number of recycles has been found to improve performance for some challening cases.          |
+| `--use_amber`              | `null`  | ColabFold outputs will sometimes contain phsyical violations such as steric clashes. These clashes can be resolved by post-processing the outputs with a short relaxation using the Amber Force Field. Non-clashing atoms are pinned to starting coordinates such that the relaxation has a minimal impact on final structures. |
 
 > You can override any of these parameters via the command line or a params file.

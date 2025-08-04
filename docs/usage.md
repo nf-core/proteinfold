@@ -49,6 +49,7 @@ nextflow run nf-core/proteinfold \
    --mode <alphafold2/esmfold/colabfold/rosettafold2na/rosettafold-all-atom/alphafold3/boltz/helixfold3> \
    --db <DBDIR>
 ```
+
 > You can run any combination of the models by providing them to the `--mode` parameter separated by a comma. For example: `--mode alphafold2,esmfold,colabfold` will run the three models in parallel.
 
 Each mode has specific reference data requirements. To support all modes the `--db` directory should conform to the following file structure:
@@ -139,6 +140,7 @@ Each mode has specific reference data requirements. To support all modes the `--
 ```
 
 Alternatively, the required data layout for each of the individual modes is described in the mode-specific usage documentation:
+
 - [AlphaFold2](./usage/alphafold2.md)
 - [ESMFold](./usage/esmfold.md)
 - [ColabFold](./usage/colabfold.md)

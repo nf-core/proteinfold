@@ -1,23 +1,23 @@
 # Boltz
 
-| Mode                                                                              | Protein | RNA | Small-molecule | PTM  | Constraints | pLM | MSA server | Split MSA |
-| :-------------------------------------------------------------------------------- | :----: | :--: | :------------: | :--: | :--------: | :--: | :---------: | :------: |
-| [Boltz](https://github.com/jwohlwend/boltz/)                                      |   ✅   | ✅  |       ✅       |  ✅ |     ✅     | ❌  |     ✅     |    ✅    |
+| Mode                                         | Protein | RNA | Small-molecule | PTM | Constraints | pLM | MSA server | Split MSA |
+| :------------------------------------------- | :-----: | :-: | :------------: | :-: | :---------: | :-: | :--------: | :-------: |
+| [Boltz](https://github.com/jwohlwend/boltz/) |   ✅    | ✅  |       ✅       | ✅  |     ✅      | ❌  |     ✅     |    ✅     |
 
 ## General Use
 
 Boltz mode can be run using the command below:
 
-  ```console
-  nextflow run nf-core/proteinfold \
-      --input samplesheet.csv \
-      --outdir <OUTDIR> \
-      --mode boltz \
-      --boltz_db <PATH> \
-      --colabfold_db <PATH> \
-      --use_gpu \
-      -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
-  ```
+```console
+nextflow run nf-core/proteinfold \
+    --input samplesheet.csv \
+    --outdir <OUTDIR> \
+    --mode boltz \
+    --boltz_db <PATH> \
+    --colabfold_db <PATH> \
+    --use_gpu \
+    -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
+```
 
 By default, `--mode boltz` will generate MSA files required for structure prediction using a local execution of the [ColabFold](https://github.com/sokrypton/ColabFold) search protocol. This protocol uses [MMseqs2](https://github.com/soedinglab/MMseqs2) to search a uniref30 expandable profile database and construct paired alignments using taxonomic labels. MSAs are enriched with additional unpaired sequences by searching an expandable profile databased of environmental sequences.
 
@@ -45,8 +45,8 @@ If individual components are available at different locations in the filesystem,
 
 ```console
 # Boltz-1
---boltz_ccd_path <PATH/TO/ccd.pkl> 
---boltz_model_path </PATH/TO/boltz1_conf.ckpt> 
+--boltz_ccd_path <PATH/TO/ccd.pkl>
+--boltz_model_path </PATH/TO/boltz1_conf.ckpt>
 
 # Boltz-2
 --boltz2_aff_path </PATH/TO/boltz2_aff.ckpt>
@@ -131,9 +131,9 @@ T1024,T1024.yaml
 
 See the [Boltz](https://github.com/jwohlwend/boltz) documentation for a full description of additional arguments. The arguments supported by the proteinfold workflow are described briefly below:
 
-| Parameter                | Default  | Description                                         |
-| ------------------------ | -------- | --------------------------------------------------- |
-| `--boltz_model`          | `boltz2` | The model to use for prediction (boltz1 or boltz2)  |
-| `--boltz_use_potentials` | `false`  | Steering potentials are used by Boltz to improve the physical validity of output predictions (ie steric clashes, incorrect chirality etc). However, these potentials dramatically increase execution time and memory requirements.)   |
+| Parameter                | Default  | Description                                                                                                                                                                                                                         |
+| ------------------------ | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--boltz_model`          | `boltz2` | The model to use for prediction (boltz1 or boltz2)                                                                                                                                                                                  |
+| `--boltz_use_potentials` | `false`  | Steering potentials are used by Boltz to improve the physical validity of output predictions (ie steric clashes, incorrect chirality etc). However, these potentials dramatically increase execution time and memory requirements.) |
 
 > You can override any of these parameters via the command line or a params file.

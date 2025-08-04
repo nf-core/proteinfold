@@ -1,8 +1,8 @@
 # AlphaFold2
 
-| Mode                                                                              | Protein | RNA | Small-molecule | PTM  | Constraints | pLM | MSA server | Split MSA |
-| :-------------------------------------------------------------------------------- | :----: | :--: | :------------: | :--: | :--------: | :--: | :---------: | :------: |
-| [AlphaFold2](https://github.com/deepmind/alphafold)                               |   ✅   | ❌  |       ❌       |  ❌ |     ❌     |  ❌ |     ❌     |    ✅    |
+| Mode                                                | Protein | RNA | Small-molecule | PTM | Constraints | pLM | MSA server | Split MSA |
+| :-------------------------------------------------- | :-----: | :-: | :------------: | :-: | :---------: | :-: | :--------: | :-------: |
+| [AlphaFold2](https://github.com/deepmind/alphafold) |   ✅    | ❌  |       ❌       | ❌  |     ❌      | ❌  |     ❌     |    ✅     |
 
 AlphaFold2 can be run using the command below:
 
@@ -17,7 +17,7 @@ nextflow run nf-core/proteinfold \
       -profile <docker/singularity/.../institute>
 ```
 
-> [!NOTE] 
+> [!NOTE]
 > By default, this will run a fork of AlphaFold2 where MSA generation is split from the neural network inference. This enables more efficient utilization of resources by allowing the CPU-bound MSA generation to be executed without occupying an idle GPU. If you want to run the original implementation of AlphaFold2 you can use the `--alphafold2_mode standard`.
 
 > [!WARNING]
@@ -103,7 +103,7 @@ The file structure of `--alphafold2_db` must be as follows:
 If individual components are available at different locations in the filesystem, they can be set using the following flags:
 
 ```console
---bfd_path </PATH/TO/bfd/> 
+--bfd_path </PATH/TO/bfd/>
 --alphafold2_small_bfd_path </PATH/TO/small_bfd/>
 --alphafold2_params_path </PATH/TO/params/alphafold_params_*>
 --alphafold2_mgnify_path </PATH/TO/mgnify/>
@@ -125,11 +125,11 @@ Without setting the `--alphafold2_db` flag, all of the required data files will 
 
 See the [AlphaFold2](https://github.com/google-deepmind/alphafold) documentation for a full description of additional arguments. The arguments supported by the proteinfold workflow are described briefly below:
 
-| Parameter             | Default        | Description                                         |
-| ----------------------| -------------- | --------------------------------------------------- |
-| `--full_dbs`          | `false`        | bfd is a large environmental sequence database used to identify homologs. small bfd is a redundancy recuced version of the bfd database which can reduce the execution time of homolog search but may reduce the depth of the resulting MSA in some cases. `--full_dbs` ensures that the full version of bfd is used for search.  |
-| `--random_seed`       | `null`         | AlphaFold2 model inference is a stochastic process. Fixing a numerical random seed ensures that results are reproducible between runs.   |
-| `--max_template_date` | `2038-01-19`   | Structural templates from the PDB are used as additional context when making predictions. Molecules with solved structures in the PDB can be trivially predicted by using these structures as inputs. When benchmarking model performance it can be useful to restrict the use of templates to those deposited before a fixed date to ensure solved structures do not bias predictions.   |
+| Parameter             | Default      | Description                                                                                                                                                                                                                                                                                                                                                                             |
+| --------------------- | ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--full_dbs`          | `false`      | bfd is a large environmental sequence database used to identify homologs. small bfd is a redundancy recuced version of the bfd database which can reduce the execution time of homolog search but may reduce the depth of the resulting MSA in some cases. `--full_dbs` ensures that the full version of bfd is used for search.                                                        |
+| `--random_seed`       | `null`       | AlphaFold2 model inference is a stochastic process. Fixing a numerical random seed ensures that results are reproducible between runs.                                                                                                                                                                                                                                                  |
+| `--max_template_date` | `2038-01-19` | Structural templates from the PDB are used as additional context when making predictions. Molecules with solved structures in the PDB can be trivially predicted by using these structures as inputs. When benchmarking model performance it can be useful to restrict the use of templates to those deposited before a fixed date to ensure solved structures do not bias predictions. |
 
 > You can override any of these parameters via the command line or a params file.
 

@@ -1,8 +1,8 @@
 # RoseTTAFold-All-Atom
 
-| Mode                                                                              | Protein | RNA | Small-molecule | PTM  | Constraints | pLM | MSA server | Split MSA |
-| :-------------------------------------------------------------------------------- | :----: | :--: | :------------: | :--: | :--------: | :--: | :---------: | :------: |
-| [RoseTTAFold-All-Atom](https://github.com/baker-laboratory/RoseTTAFold-All-Atom/) |   ✅   | ✅  |       ✅       |  ✅ |     ❌     |  ❌ |     ❌     |    ❌    |
+| Mode                                                                              | Protein | RNA | Small-molecule | PTM | Constraints | pLM | MSA server | Split MSA |
+| :-------------------------------------------------------------------------------- | :-----: | :-: | :------------: | :-: | :---------: | :-: | :--------: | :-------: |
+| [RoseTTAFold-All-Atom](https://github.com/baker-laboratory/RoseTTAFold-All-Atom/) |   ✅    | ✅  |       ✅       | ✅  |     ❌      | ❌  |     ❌     |    ❌     |
 
 RoseTTAFold All-Atom can be run using the command below:
 
@@ -57,7 +57,7 @@ The file structure of `--rosettafold_all_atom_db` must be as follows:
 If individual components are available at different locations in the filesystem, they can be set using the following flags:
 
 ```console
---bfd_rosettafold_all_atom_path </PATH/TO/bfd/> 
+--bfd_rosettafold_all_atom_path </PATH/TO/bfd/>
 --rfaa_paper_weights_path </PATH/TO/params/RFAA_paper_weights.pt>
 --uniref30_rosettafold_all_atom_path </PATH/TO/uniref30/>
 --pdb100_rosettafold_all_atom_path </PATH/TO/pdb100/>

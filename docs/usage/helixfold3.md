@@ -1,8 +1,8 @@
 # HelixFold3
 
-| Mode                                                                              | Protein | RNA | Small-molecule | PTM  | Constraints | pLM | MSA server | Split MSA |
-| :-------------------------------------------------------------------------------- | :----: | :--: | :------------: | :--: | :--------: | :--: | :---------: | :------: |
-| [HelixFold3](https://github.com/PaddlePaddle/PaddleHelix/tree/dev/apps/protein_folding/helixfold3) | ✅ | ✅ | ✅ |  ❌ |     ❌     |  ❌ |     ❌     |    ❌    |
+| Mode                                                                                               | Protein | RNA | Small-molecule | PTM | Constraints | pLM | MSA server | Split MSA |
+| :------------------------------------------------------------------------------------------------- | :-----: | :-: | :------------: | :-: | :---------: | :-: | :--------: | :-------: |
+| [HelixFold3](https://github.com/PaddlePaddle/PaddleHelix/tree/dev/apps/protein_folding/helixfold3) |   ✅    | ✅  |       ✅       | ❌  |     ❌      | ❌  |     ❌     |    ❌     |
 
 ## General Usage
 
@@ -106,11 +106,11 @@ T1024,T1024.json
 
 See the [HelixFold3](https://github.com/PaddlePaddle/PaddleHelix/tree/dev/apps/protein_folding/helixfold3#-running-helixfold-for-inference) documentation for a full description of additional arguments. The arguments supported by the proteinfold workflow are described briefly below:
 
-| Parameter               | Default       | Description                                         |
-| ----------------------- | ------------- | --------------------------------------------------- |
-| `--max_template_date`   | `2038-01-19`  | Structural templates from the PDB are used as additional context when making predictions. Molecules with solved structures in the PDB can be trivially predicted by using these structures as inputs. When benchmarking model performance it can be useful to restrict the use of templates to those deposited before a fixed date to ensure solved structures do not bias predictions.  |
-| `--preset`              | `reduced_dbs` | bfd is a large environmental sequence database used to identify homologs. small bfd is a redundancy recuced version of the bfd database which can reduce execution time of homolog search but may reduce the depth of the resulting MSA in some cases. `--preset` controls the version of bfd used for search. (reduced_dbs/full_dbs)  |
-| `--precision`           |   `bf16`      | Controls the numerical precision during neural network inference. bf16 is supported by GPU accelerators A100, H100 and higher, while others will require fp32 inference. (bf16/fp32)  |
-| `--infer_times`         |   `4`         | The number of independent seeds used to generate structure predictions using the HelixFold3 model.  |
+| Parameter             | Default       | Description                                                                                                                                                                                                                                                                                                                                                                             |
+| --------------------- | ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--max_template_date` | `2038-01-19`  | Structural templates from the PDB are used as additional context when making predictions. Molecules with solved structures in the PDB can be trivially predicted by using these structures as inputs. When benchmarking model performance it can be useful to restrict the use of templates to those deposited before a fixed date to ensure solved structures do not bias predictions. |
+| `--preset`            | `reduced_dbs` | bfd is a large environmental sequence database used to identify homologs. small bfd is a redundancy recuced version of the bfd database which can reduce execution time of homolog search but may reduce the depth of the resulting MSA in some cases. `--preset` controls the version of bfd used for search. (reduced_dbs/full_dbs)                                                   |
+| `--precision`         | `bf16`        | Controls the numerical precision during neural network inference. bf16 is supported by GPU accelerators A100, H100 and higher, while others will require fp32 inference. (bf16/fp32)                                                                                                                                                                                                    |
+| `--infer_times`       | `4`           | The number of independent seeds used to generate structure predictions using the HelixFold3 model.                                                                                                                                                                                                                                                                                      |
 
 > You can override any of these parameters via the command line or a params file.

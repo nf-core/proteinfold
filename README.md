@@ -30,16 +30,16 @@ On release, automated continuous integration tests run the pipeline on a full-si
 
 ![Alt text](docs/images/nf-core-proteinfold_metro_map_1.1.0.png?raw=true "nf-core-proteinfold 1.1.0 metro map")
 
-| Mode                                                                              | Protein | RNA | Small-molecule | PTM  | Constraints | pLM | MSA server | Split MSA |
-| :-------------------------------------------------------------------------------- | :----: | :--: | :------------: | :--: | :--------: | :--: | :---------: | :------: |
-| [AlphaFold2](https://github.com/deepmind/alphafold)                               |   ✅   | ❌  |       ❌       |  ❌ |     ❌     |  ❌ |     ❌     |    ✅    |
-| [ESMFold](https://github.com/facebookresearch/esm)                                |   ✅   | ❌  |       ❌       |  ❌ |     ❌     |  ✅ |     ❌     |    ❌    |
-| [ColabFold](https://github.com/sokrypton/ColabFold)                               |   ✅   | ❌  |       ❌       |  ❌ |     ❌     |  ❌ |     ✅     |    ✅    |
-| [RoseTTAFold2NA](https://github.com/uw-ipd/RoseTTAFold2NA)                        |   ✅   | ✅  |       ❌       |  ❌ |     ❌     |  ❌ |     ❌     |    ❌    |
-| [RoseTTAFold-All-Atom](https://github.com/baker-laboratory/RoseTTAFold-All-Atom/) |   ✅   | ✅  |       ✅       |  ✅ |     ❌     |  ❌ |     ❌     |    ❌    |
-| [AlphaFold3](https://github.com/google-deepmind/alphafold3)                       |   ✅   | ✅  |       ✅       |  ✅ |     ❌     |  ❌ |     ❌     |    ❌    |
-| [HelixFold3](https://github.com/PaddlePaddle/PaddleHelix/tree/dev/apps/protein_folding/helixfold3) | ✅ | ✅ | ✅ |  ✅ |     ❌     |  ❌ |     ❌     |    ❌    |
-| [Boltz](https://github.com/jwohlwend/boltz/)                                      |   ✅   | ✅  |       ✅       |  ✅ |     ✅     |  ❌ |     ✅     |    ✅    |
+| Mode                                                                                               | Protein | RNA | Small-molecule | PTM | Constraints | pLM | MSA server | Split MSA |
+| :------------------------------------------------------------------------------------------------- | :-----: | :-: | :------------: | :-: | :---------: | :-: | :--------: | :-------: |
+| [AlphaFold2](https://github.com/deepmind/alphafold)                                                |   ✅    | ❌  |       ❌       | ❌  |     ❌      | ❌  |     ❌     |    ✅     |
+| [ESMFold](https://github.com/facebookresearch/esm)                                                 |   ✅    | ❌  |       ❌       | ❌  |     ❌      | ✅  |     ❌     |    ❌     |
+| [ColabFold](https://github.com/sokrypton/ColabFold)                                                |   ✅    | ❌  |       ❌       | ❌  |     ❌      | ❌  |     ✅     |    ✅     |
+| [RoseTTAFold2NA](https://github.com/uw-ipd/RoseTTAFold2NA)                                         |   ✅    | ✅  |       ❌       | ❌  |     ❌      | ❌  |     ❌     |    ❌     |
+| [RoseTTAFold-All-Atom](https://github.com/baker-laboratory/RoseTTAFold-All-Atom/)                  |   ✅    | ✅  |       ✅       | ✅  |     ❌      | ❌  |     ❌     |    ❌     |
+| [AlphaFold3](https://github.com/google-deepmind/alphafold3)                                        |   ✅    | ✅  |       ✅       | ✅  |     ❌      | ❌  |     ❌     |    ❌     |
+| [HelixFold3](https://github.com/PaddlePaddle/PaddleHelix/tree/dev/apps/protein_folding/helixfold3) |   ✅    | ✅  |       ✅       | ✅  |     ❌      | ❌  |     ❌     |    ❌     |
+| [Boltz](https://github.com/jwohlwend/boltz/)                                                       |   ✅    | ✅  |       ✅       | ✅  |     ✅      | ❌  |     ✅     |    ✅     |
 
 **nf-core/proteinfold** supports multiple tools for general molecular structure prediction. Each of the methods have overlapping functionality which can be utilized within the pipeline. All tools support predicting protein structure from an input amino acid sequence. The pipeline is composed of the following steps:
 
@@ -49,15 +49,15 @@ On release, automated continuous integration tests run the pipeline on a full-si
 
 3. Structure prediction:
 
-    i. Combined: MSA Search + Model Inference: Structures are predicted from MSAs generated using built-in homolog search pipelines.
+   i. Combined: MSA Search + Model Inference: Structures are predicted from MSAs generated using built-in homolog search pipelines.
 
-    ii. Split: AlphaFold2 MSA Search + Model Inference: The AlphaFold2 MSA generation pipeline is executed independently and then provided as input for AlphaFold2 structure prediction.
+   ii. Split: AlphaFold2 MSA Search + Model Inference: The AlphaFold2 MSA generation pipeline is executed independently and then provided as input for AlphaFold2 structure prediction.
 
-    iii. Split: ColabFold MSA Search + Model Inference: The ColabFold MSA generation pipeline is used to produce input MSAs which can be used by ColabFold and Boltz.
+   iii. Split: ColabFold MSA Search + Model Inference: The ColabFold MSA generation pipeline is used to produce input MSAs which can be used by ColabFold and Boltz.
 
-    iv. pLM: Protein Language Model: The ESMFold model is used to predict structures without generating an MSA.
+   iv. pLM: Protein Language Model: The ESMFold model is used to predict structures without generating an MSA.
 
-4. Generate Report: The pipeline produces an interactive HTML report to visualize structure prediction outputs. 
+4. Generate Report: The pipeline produces an interactive HTML report to visualize structure prediction outputs.
 
 5. Comparison Report: The structures predicted by parallel modes are combined in an interactive HTML report.
 
@@ -88,7 +88,7 @@ nextflow run nf-core/proteinfold \
    --mode <alphafold2/esmfold/colabfold/rosettafold2na/rosettafold-all-atom/alphafold3/boltz/helixfold3>
 ```
 
-The pipeline takes care of downloading the databases and parameters required by each of the modes. In case you have already downloaded the required files, you can skip this step by providing the path to the databases using the `--db` parameter. 
+The pipeline takes care of downloading the databases and parameters required by each of the modes. In case you have already downloaded the required files, you can skip this step by providing the path to the databases using the `--db` parameter.
 
 ```bash
 nextflow run nf-core/proteinfold \
@@ -98,6 +98,7 @@ nextflow run nf-core/proteinfold \
    --mode <MODE> \
    --db <DBDIR>
 ```
+
 > [!WARNING]
 > The reference data for most methods is extremely large and may exceed individual user disk allocations on shared HPC systems.
 
