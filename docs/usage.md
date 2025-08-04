@@ -392,7 +392,6 @@ nextflow run nf-core/proteinfold \
 ## Optional parameters with default values:
     --helixfold3_max_template_date=2038-01-19
     --preset 'reduced_dbs'
-    --init_model './init_models/HelixFold3-240814.pdparams'
     --precision 'bf16'
     --infer_times 4
 ```
