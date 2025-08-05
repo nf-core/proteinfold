@@ -60,6 +60,7 @@ process RUN_ALPHAFOLD2 {
         then sed -i "/^\\w*0/d" pdb_seqres/pdb_seqres.txt
     fi
     if [ -d params/alphafold_params_* ]; then ln -r -s params/alphafold_params_*/* params/; fi
+    mgnify_db_path=\$(ls -v ./mgnify/mgy_clusters*.fa | tail -n 1)
     python3 /app/alphafold/run_alphafold.py \
         --fasta_paths=${fasta} \
         --model_preset=${alphafold2_model_preset} \
@@ -67,7 +68,7 @@ process RUN_ALPHAFOLD2 {
         --output_dir=\$PWD \
         --data_dir=\$PWD \
         --uniref90_database_path=./uniref90/uniref90.fasta \
-        --mgnify_database_path=./mgnify/mgy_clusters.fa \
+        --mgnify_database_path=\$mgnify_db_path \
         --template_mmcif_dir=./mmcif_files \
         --obsolete_pdbs_path=./obsolete_pdb/obsolete.dat \
         $args

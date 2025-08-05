@@ -46,6 +46,9 @@ process RUN_HELIXFOLD3 {
     }
     def args = task.ext.args ?: ''
     """
+    init_model_path=\$(ls ./init_models/*.pdparams | head -n 1)
+    mgnify_db_path=\$(ls -v ./mgnify/mgy_clusters*.fa | tail -n 1)
+
     mamba run --name helixfold python3.9 /app/helixfold3/inference.py \\
         --maxit_binary "./maxit_src/bin/maxit" \\
         --jackhmmer_binary_path "jackhmmer" \\
@@ -65,9 +68,11 @@ process RUN_HELIXFOLD3 {
         --obsolete_pdbs_path="./obsolete.dat" \\
         --ccd_preprocessed_path="./ccd_preprocessed_etkdg.pkl.gz" \\
         --uniref90_database_path "./uniref90/uniref90.fasta" \\
-        --mgnify_database_path "./mgnify/mgy_clusters.fa" \\
+        --mgnify_database_path "\$mgnify_db_path" \\
         --input_json="${fasta}" \\
-        --output_dir="\$PWD" $args
+        --output_dir="\$PWD" \\
+        --init_model "\$init_model_path" \\
+        $args
 
     cp "${fasta.baseName}/${fasta.baseName}-rank1/predicted_structure.pdb" "./${meta.id}_helixfold3.pdb"
     cp "${fasta.baseName}/${fasta.baseName}-rank1/predicted_structure.cif" "./${meta.id}_helixfold3.cif"

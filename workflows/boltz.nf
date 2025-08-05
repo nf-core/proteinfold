@@ -73,16 +73,16 @@ workflow BOLTZ {
                     ]
                 }
         )
-    .map{
-        def meta = it[0].clone()
-        meta.cnt = it[2]
-        [meta, it[1]]
-    }
-    .branch{
-        multimer: it[0].cnt > 1
-        monomer: it[0].cnt == 1
-    }
-    .set{ch_input}
+        .map{
+            def meta = it[0].clone()
+            meta.cnt = it[2]
+            [meta, it[1]]
+        }
+        .branch{
+            multimer: it[0].cnt > 1
+            monomer: it[0].cnt == 1
+        }
+        .set{ch_input}
 
     if (!msa_server){
         MULTIFASTA_TO_CSV(
