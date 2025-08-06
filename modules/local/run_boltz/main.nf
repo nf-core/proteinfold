@@ -31,6 +31,7 @@ process RUN_BOLTZ {
     tuple val(meta), path ("${meta.id}_plddt.tsv")                              , emit: plddt_raw
     tuple val(meta), path ("${meta.id}_msa.tsv")                                , emit: msa_raw
     tuple val(meta), path ("${meta.id}_*_pae.tsv")                              , optional: true, emit: pae_raw
+    tuple val(meta), path ("${meta.id}_0_pae.tsv")                              , optional: true, emit: pae_raw_0
     tuple val(meta), path ("${meta.id}_ptm.tsv")                                , emit: ptm_raw
     tuple val(meta), path ("${meta.id}_iptm.tsv")                               , emit: iptm_raw
     tuple val(meta), path ("${meta.id}_summary_chainwise_ptm.tsv")              , optional: true, emit: summary_chainwise_ptm_raw

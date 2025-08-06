@@ -9,7 +9,8 @@ process GENERATE_REPORT {
 
     input:
     tuple val(meta), path(pdb)
-    tuple val(meta_msa), path(msa)
+    tuple val(meta_msa), path(msa) // do we want to support a separate meta for MSA file?
+    tuple val(meta), path(pae) // why are we not accessing meta just once?
     val(output_type)
     path(template)
 

@@ -149,6 +149,12 @@ workflow BOLTZ {
 
     RUN_BOLTZ
         .out
+        .pae_raw_0
+    .map{it[0].model = "boltz"; it}
+    .set {ch_pae}
+
+    RUN_BOLTZ
+        .out
         .multiqc
         .map { it[1] }
         .collect(sort: true)
@@ -162,4 +168,5 @@ workflow BOLTZ {
     confidence      = RUN_BOLTZ.out.confidence
     multiqc_report  = ch_multiqc_report
     pdb             = ch_pdb
+    pae             = ch_pae
 }
