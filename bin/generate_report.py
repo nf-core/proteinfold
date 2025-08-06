@@ -3,16 +3,53 @@
 import os
 import argparse
 from matplotlib import pyplot as plt
+import numpy as np
 from collections import OrderedDict
 import base64
 import plotly.graph_objects as go
 import re
 from Bio import PDB
 
-#TODO: add PAE (model 0) to the HTML report. 
+#TODO: Refactor this code to user plot_utils.py for plotting, and GENERATE_REPORT module for process isolation 
 # KR - I have a local refactor that compacts and de-duplicates plotting functions but I'll leave until v2.1
+# go to https://github.com/Australian-Structural-Biology-Computing/proteinfold/blob/fix-multiqc-intermediates/modules/local/generate_report/generate_report.py 
+# and associate plot_utils.py for to plot generation re-write
 
-def generate_output_images(msa_path, plddt_data, name, out_dir, in_type, generate_tsv, pdb):
+def generate_pae_plot(pae_path, out_dir, name, save_image=False):
+    #save_image=False because plotly needs a local install of Google Chrome to save images.....
+    """
+    Generate a Plotly heatmap for Predicted Aligned Error (PAE) data.
+
+    Args:
+        pae (2D array): The PAE matrix.
+    Returns:
+        fig: A Plotly figure object of the PAE heatmap in green color scale
+    """
+    pae = np.genfromtxt(pae_path, delimiter="\t")
+    max_pae = np.max(pae)
+    fig = go.Figure()
+
+    # Add heatmap
+    fig.add_trace(
+        go.Heatmap(
+            z=pae,
+            colorscale="Greens_r",
+            zmin=0,
+            zmax=max_pae,
+        )
+    )
+    fig.update_layout(
+    xaxis=dict(title="Scored Residue"),
+    yaxis=dict(title="Aligned Residue"),
+    )
+
+    if save_image:
+            image_path = f"{out_dir}/{name+('_' if name else '')}PAE.png"
+            fig.write_image(image_path, width=800, height=800)
+
+    return fig
+
+def generate_output_images(msa_path, plddt_data, pae_path, name, out_dir, in_type, generate_tsv, pdb):
     msa = []
     if in_type.lower() != "colabfold" and not msa_path.endswith("NO_FILE"):
         with open(msa_path, "r") as in_file:
@@ -139,6 +176,17 @@ def generate_output_images(msa_path, plddt_data, name, out_dir, in_type, generat
     ) as out_file:
         out_file.write(html_content)
 
+    if pae_path:
+        pae_fig = generate_pae_plot(pae_path, out_dir, name)
+        pae_html_content = pae_fig.to_html(
+            full_html=False,
+            include_plotlyjs="cdn",
+            config={"displayModeBar": True, "displaylogo": False, "scrollZoom": True},
+        )
+        with open(
+            f"{out_dir}/{name+('_' if name else '')}PAE.html", "w"
+        ) as pae_out_file:
+            pae_out_file.write(pae_html_content)
 
 def generate_plots(msa_path, plddt_paths, name, out_dir):
     msa = []
@@ -335,6 +383,7 @@ parser.add_argument(
 )
 parser.add_argument("--msa", dest="msa", default="NO_FILE")
 parser.add_argument("--pdb", dest="pdb", required=True, nargs="+")
+parser.add_argument("--pae", dest="pae", default="NO_FILE")
 parser.add_argument("--name", dest="name")
 parser.add_argument("--output_dir", dest="output_dir")
 parser.add_argument("--html_template", dest="html_template")
@@ -347,9 +396,8 @@ args = parser.parse_args()
 lddt_data, lddt_averages = pdb_to_lddt(args.pdb, args.generate_tsv)
 
 generate_output_images(
-    args.msa, lddt_data, args.name, args.output_dir, args.in_type, args.generate_tsv, args.pdb
+    args.msa, lddt_data, args.pae, args.name, args.output_dir, args.in_type, args.generate_tsv, args.pdb
 )
-# generate_plots(args.msa, args.plddt, args.name, args.output_dir)
 
 print("generating html report...")
 structures = args.pdb
@@ -411,6 +459,16 @@ with open(
     proteinfold_template = proteinfold_template.replace(
         '<div id="lddt_placeholder"></div>', lddt_html
     )
+
+with open(
+    f"{args.output_dir}/{args.name + ('_' if args.name else '')}PAE.html",
+    "r",
+) as pae_in_file:
+    pae_html = pae_in_file.read()
+    proteinfold_template = proteinfold_template.replace(
+        '<div id="pae_placeholder"></div>', pae_html
+    )
+
 
 with open(
     f"{args.output_dir}/{args.name}_{args.in_type.lower()}_report.html", "w"
