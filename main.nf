@@ -428,7 +428,10 @@ workflow NFCORE_PROTEINFOLD {
                                                                     return 0  // fallback if no match
                                                                 }
                                                             }.subList(0, Math.min(5, it[1].size()))
-                                                    ]}.combine(ch_dummy_file))
+                                                    ]}
+                                                    .combine(ch_dummy_file) // I suspect this is NO_FILE not msa since we haven't switch to passing msa.tsv rather than a pre-generated plot
+                                                    .join(HELIXFOLD3.out.pae)
+                                                    )
         ch_top_ranked_model          = ch_top_ranked_model.mix(HELIXFOLD3.out.top_ranked_pdb)
     }
 
