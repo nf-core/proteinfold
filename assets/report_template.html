@@ -431,25 +431,43 @@
       <div id="viewport4" class="ngl-viewport"></div>
     </div>
     <!-- Plots -->
-    <div class="bg-gray-200 p-24 flex flex-col justify-center items-center gap-24 2xl:flex-row">
-      <div id="seq_coverage_container" class="flex-1 max-w-[720px]">
-        <div class="text-4xl font-bold tracking-tight mb-6">Sequence Coverage</div>
-        <div class="p-6 bg-white shadow-md rounded">
-          <div class="w-[660px] h-[600px] flex justify-center items-center mx-auto">
-            <img class="max-w-[600px] max-h-[600px]" id="seq_cov_img" src="seq_coverage.png" />
+
+<!-- Plots -->
+      <div class="bg-gray-200 p-12 xl:p-16">
+        <!-- Top row: Sequence Coverage (full width) -->
+        <div class="flex justify-center mb-12 xl:mb-16">
+          <div id="seq_coverage_container" class="max-w-[720px] xl:max-w-[900px] 2xl:max-w-[1100px] w-full">
+            <div class="text-3xl xl:text-4xl font-bold tracking-tight mb-4 xl:mb-6 text-center">Sequence Coverage</div>
+            <div class="p-4 xl:p-6 bg-white shadow-md rounded">
+              <div class="w-[660px] xl:w-[820px] 2xl:w-[1000px] h-[500px] xl:h-[600px] 2xl:h-[700px] flex justify-center items-center mx-auto">
+                <img class="max-w-[600px] xl:max-w-[760px] 2xl:max-w-[940px] max-h-[460px] xl:max-h-[560px] 2xl:max-h-[660px]" id="seq_cov_img" src="seq_coverage.png" />
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Bottom row: pLDDT and PAE side by side -->
+        <div class="flex flex-col xl:flex-row justify-center items-start gap-12 xl:gap-16 2xl:gap-20">
+          <div class="flex-1 max-w-[720px] xl:max-w-[850px] 2xl:max-w-[1000px]">
+            <div id="plddt-title" class="text-3xl xl:text-4xl font-bold tracking-tight mb-4 xl:mb-6 text-center">pLDDT</div>
+            <div class="p-4 xl:p-6 bg-white shadow-md rounded">
+              <div id="lddt_container" class="w-[660px] xl:w-[780px] 2xl:w-[920px] min-h-[500px] xl:min-h-[600px] 2xl:min-h-[700px] flex justify-center items-center mx-auto">
+                <div id="lddt_placeholder"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex-1 max-w-[720px] xl:max-w-[850px] 2xl:max-w-[1000px]">
+            <div class="text-3xl xl:text-4xl font-bold tracking-tight mb-4 xl:mb-6 text-center">PAE</div>
+            <div class="p-4 xl:p-6 bg-white shadow-md rounded">
+              <div class="w-[660px] xl:w-[780px] 2xl:w-[920px] min-h-[500px] xl:min-h-[600px] 2xl:min-h-[700px] flex justify-center items-center mx-auto">
+                <div id="pae_placeholder"></div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-      <div class="flex-1 max-w-[720px]">
-        <div id="plddt-title" class="text-4xl font-bold tracking-tight mb-6">pLDDT</div>
-        <div class="p-6 bg-white shadow-md rounded">
-          <div id="lddt_container" class="w-[660px] min-h-[600px] flex justify-center items-center mx-auto">
-            <div id="lddt_placeholder"></div>
-          </div>
-        </div>
-      </div>
-      <!--<div class="col" style="padding: 20px;"><img id="pae_img"  width="400px" src=""></div>-->
-    </div>
+
     <!-- Footer -->
     <div class="py-24 bg-gray-100 px-6 sm:px-0">
       <div class="flex flex-col justify-center">
