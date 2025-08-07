@@ -81,7 +81,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 |                              | `--alphafold3_mgnify_link`     |
 |                              | `--alphafold3_uniref90_link`   |
 |                              | `--alphafold3_pdb_seqres_link` |
-|                              | `--uniprot_link`               |
+|                              | `--alphafold3_uniprot_link`    |
+|                              | `--alphafold3_rnacentral_link` |
+|                              | `--alphafold3_nt_rna_link`     |
+|                              | `--alphafold3_rfam_link`       |
 |                              | `--alphafold3_small_bfd_path`  |
 |                              | `--alphafold3_params_path`     |
 |                              | `--alphafold3_mgnify_path`     |
@@ -89,6 +92,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 |                              | `--alphafold3_uniref90_path`   |
 |                              | `--alphafold3_pdb_seqres_path` |
 |                              | `--alphafold3_uniprot_path`    |
+|                              | `--alphafold3_rnacentral_path` |
+|                              | `--alphafold3_nt_rna_path`     |
+|                              | `--alphafold3_rfam_path`       |
 |                              | `--boltz_model`                |
 |                              | `--boltz_out_dir`              |
 |                              | `--boltz_output_format`        |

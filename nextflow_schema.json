@@ -574,10 +574,28 @@
                     "description": "Link to the PDB SEQRES database",
                     "fa_icon": "fas fa-link"
                 },
-                "uniprot_link": {
+                "alphafold3_uniprot_link": {
                     "type": "string",
                     "default": "https://storage.googleapis.com/alphafold-databases/v3.0/uniprot_all_2021_04.fa.zst",
                     "description": "Link to the UniProt database",
+                    "fa_icon": "fas fa-link"
+                },
+                "alphafold3_rnacentral_link": {
+                    "type": "string",
+                    "default": "https://storage.googleapis.com/alphafold-databases/v3.0/rnacentral_active_seq_id_90_cov_80_linclust.fasta.zst",
+                    "description": "Link to the RNAcentral database",
+                    "fa_icon": "fas fa-link"
+                },
+                "alphafold3_nt_rna_link": {
+                    "type": "string",
+                    "default": "https://storage.googleapis.com/alphafold-databases/v3.0/nt_rna_2023_02_23_clust_seq_id_90_cov_80_rep_seq.fasta.zst",
+                    "description": "Link to the nt_rna database",
+                    "fa_icon": "fas fa-link"
+                },
+                "alphafold3_rfam_link": {
+                    "type": "string",
+                    "default": "https://storage.googleapis.com/alphafold-databases/v3.0/rfam_14_9_clust_seq_id_90_cov_80_rep_seq.fasta.zst",
+                    "description": "Link to the Rfam database",
                     "fa_icon": "fas fa-link"
                 }
             }
@@ -629,6 +647,24 @@
                     "description": "Path to UniProt database containing the SwissProt and the TrEMBL databases",
                     "fa_icon": "fas fa-folder-open",
                     "default": "null/uniprot/*"
+                },
+                "alphafold3_rnacentral_path": {
+                    "type": "string",
+                    "description": "Path to the RNAcentral database",
+                    "fa_icon": "fas fa-folder-open",
+                    "default": "null/rnacentral/*"
+                },
+                "alphafold3_nt_rna_path": {
+                    "type": "string",
+                    "description": "Path to the nt_rna database",
+                    "fa_icon": "fas fa-folder-open",
+                    "default": "null/nt_rna/*"
+                },
+                "alphafold3_rfam_path": {
+                    "type": "string",
+                    "description": "Path to the Rfam database",
+                    "fa_icon": "fas fa-folder-open",
+                    "default": "null/rfam/*"
                 }
             }
         },
