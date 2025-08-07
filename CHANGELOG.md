@@ -96,12 +96,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 |                              | `--alphafold3_nt_rna_path`     |
 |                              | `--alphafold3_rfam_path`       |
 |                              | `--boltz_model`                |
-|                              | `--boltz_out_dir`              |
-|                              | `--boltz_output_format`        |
 |                              | `--boltz_use_msa_server`       |
 |                              | `--boltz_msa_server_url`       |
 |                              | `--boltz_use_potentials`       |
-|                              | `--boltz_write_full_pae`       |
 |                              | `--boltz2_aff_path`            |
 |                              | `--boltz2_conf_path`           |
 |                              | `--boltz2_mols_path`           |
