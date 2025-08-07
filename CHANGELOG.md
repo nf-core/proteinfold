@@ -58,6 +58,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[PR #360](https://github.com/nf-core/proteinfold/pull/360)] - Rename some DBs paths in the run modules so they are equal to those when DBs are downloaded.
 - [[PR #362](https://github.com/nf-core/proteinfold/pull/355)] - Update boltz Dockerfile and image pinning specific version (2.0.3).
 - [[#364](https://github.com/nf-core/proteinfold/issues/364)] - Move Dockerfiles to its corresponding module.
+- [[#369](https://github.com/nf-core/proteinfold/issues/369)] - Download all Alphafold3 DBs.
 
 ### Parameters
 
