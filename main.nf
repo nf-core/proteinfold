@@ -379,6 +379,7 @@ workflow NFCORE_PROTEINFOLD {
             params.helixfold3_mgnify_link,
             params.helixfold3_pdb_mmcif_link,
             params.helixfold3_obsolete_link,
+            params.helixfold3_maxit_src_link,
             params.helixfold3_uniclust30_path,
             params.helixfold3_ccd_preprocessed_path,
             params.helixfold3_rfam_path,

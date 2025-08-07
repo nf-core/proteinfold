@@ -63,7 +63,7 @@ process RUN_BOLTZ {
     export NUMBA_CACHE_DIR=/tmp
     export HOME=/tmp
 
-    boltz predict "${fasta}" ${args}
+    boltz predict "${fasta}" --output_format "pdb" ${args}
     cp boltz_results_*/predictions/*/*.pdb ./${meta.id}_boltz.pdb
 
     extract_metrics.py --name ${meta.id} \\
@@ -90,7 +90,7 @@ process RUN_BOLTZ {
     """
 
     stub:
-    def version = "0.4.1"
+    def version = "2.0.3"
     """
     mkdir -p boltz_results_${meta.id}/processed/msa/
     mkdir -p boltz_results_${meta.id}/processed/structures/

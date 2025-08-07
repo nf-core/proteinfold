@@ -12,11 +12,11 @@ LABEL Author="j.caley@unsw.edu.au, Jose Espinosa-Carrasco" \
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y wget git && \
     wget -q -P /tmp "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-$(uname)-$(uname -m).sh" && \
     bash /tmp/Miniforge3-$(uname)-$(uname -m).sh -b -p /conda && \
-    git clone --single-branch --branch dev --depth 1 --no-checkout https://github.com/PaddlePaddle/PaddleHelix.git /app/helixfold3 && \
+    git clone --filter=blob:none --no-checkout https://github.com/PaddlePaddle/PaddleHelix.git /app/helixfold3 && \
     cd /app/helixfold3 && \
     git sparse-checkout init --cone && \
     git sparse-checkout set apps/protein_folding/helixfold3 && \
-    git checkout dev && \
+    git checkout 705c2974a833cdc3a4420f4e3379da596091c97f && \
     mv apps/protein_folding/helixfold3/* . && \
     rm -rf /tmp/Miniforge3-$(uname)-$(uname -m).sh /var/lib/apt/lists/* /root/.cache apps && \
     apt-get remove --purge -y wget git && apt-get autoremove -y && apt-get clean -y

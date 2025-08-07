@@ -14,11 +14,12 @@ include {
     ARIA2_UNCOMPRESS as ARIA2_UNIREF90
     ARIA2_UNCOMPRESS as ARIA2_MGNIFY
     ARIA2_UNCOMPRESS as ARIA2_INIT_MODELS
+    ARIA2_UNCOMPRESS as ARIA2_MAXIT
 } from './aria2_uncompress'
 
 include { ARIA2 as ARIA2_PDB_SEQRES } from '../../modules/nf-core/aria2/main'
-include { COMBINE_UNIPROT   } from '../../modules/local/combine_uniprot'
-include { DOWNLOAD_PDBMMCIF } from '../../modules/local/download_pdbmmcif'
+include { COMBINE_UNIPROT           } from '../../modules/local/combine_uniprot'
+include { DOWNLOAD_PDBMMCIF         } from '../../modules/local/download_pdbmmcif'
 
 workflow PREPARE_HELIXFOLD3_DBS {
 
@@ -37,6 +38,7 @@ workflow PREPARE_HELIXFOLD3_DBS {
     helixfold3_mgnify_link
     helixfold3_pdb_mmcif_link
     helixfold3_obsolete_link
+    helixfold3_maxit_src_link
     helixfold3_uniclust30_path
     helixfold3_ccd_preprocessed_path
     helixfold3_rfam_path
@@ -100,7 +102,7 @@ workflow PREPARE_HELIXFOLD3_DBS {
 
         DOWNLOAD_PDBMMCIF(
             helixfold3_pdb_mmcif_link
-            )
+        )
         ch_helixfold3_mmcif_files = DOWNLOAD_PDBMMCIF.out.ch_db
         ch_versions               = ch_versions.mix(DOWNLOAD_PDBMMCIF.out.versions)
 
@@ -123,7 +125,6 @@ workflow PREPARE_HELIXFOLD3_DBS {
         ch_helixfold3_pdb_seqres = ARIA2_PDB_SEQRES.out.downloaded_file.map{ it[1] }
         ch_versions = ch_versions.mix(ARIA2_PDB_SEQRES.out.versions)
 
-
         ARIA2_UNIPROT_SPROT(
             helixfold3_uniprot_sprot_link
         )
@@ -138,6 +139,10 @@ workflow PREPARE_HELIXFOLD3_DBS {
         )
         ch_helixfold3_uniprot = COMBINE_UNIPROT.out.ch_db
         ch_versions =  ch_versions.mix(COMBINE_UNIPROT.out.versions)
+
+	ARIA2_MAXIT(helixfold3_maxit_src_link)
+        ch_helixfold3_maxit_src = ARIA2_MAXIT.out.db
+        ch_versions = ch_versions.mix(ARIA2_MAXIT.out.versions)
     }
 
     emit:

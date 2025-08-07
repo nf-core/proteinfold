@@ -100,14 +100,14 @@
                 },
                 "alphafold2_mode": {
                     "type": "string",
-                    "default": "standard",
+                    "default": "split_msa_prediction",
                     "description": "Specifies the mode in which AlphaFold2 will be run",
                     "enum": ["standard", "split_msa_prediction"],
                     "fa_icon": "fas fa-exchange-alt"
                 },
                 "alphafold2_model_preset": {
                     "type": "string",
-                    "default": "monomer",
+                    "default": "monomer_ptm",
                     "description": "Model preset for 'AlphaFold2' mode",
                     "enum": ["monomer", "monomer_casp14", "monomer_ptm", "multimer"],
                     "fa_icon": "fas fa-stream"
@@ -1094,6 +1094,10 @@
                 "helixfold3_obsolete_link": {
                     "type": "string",
                     "default": "https://files.rcsb.org/pub/pdb/data/status/obsolete.dat"
+                },
+                "helixfold3_maxit_src_link": {
+                    "type": "string",
+                    "default": "https://proteinfold-dataset.s3.amazonaws.com/test-data/db/helixfold3/maxit-v11.200-prod-src.tar.gz"
                 }
             }
         }
