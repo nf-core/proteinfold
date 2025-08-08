@@ -62,40 +62,27 @@ workflow ROSETTAFOLD2NA {
 
     RUN_ROSETTAFOLD2NA
         .out
-        .pdb
-        .combine(ch_dummy_file)
-        .map {
-            it[0]["model"] = "rosettafold2na"
-            [ it[0]["id"], it[0], it[1], it[2] ]
-        }
-        .set { ch_top_ranked_pdb }
-
-    RUN_ROSETTAFOLD2NA
-        .out
         .multiqc
         .map { it[1] }
         .toSortedList()
-        .map { [ [ "model": "rosettafold2na" ], it.flatten() ] }
+        .map { 
+            [ [ "model": "rosettafold_all_atom" ], it.flatten() ] 
+        }
         .set { ch_multiqc_report }
 
     RUN_ROSETTAFOLD2NA
         .out
         .pdb
-        .combine(ch_dummy_file)
         .map {
-            it[0]["model"] = "rosettafold2na"
-            it
+            def meta = it[0].clone();
+            meta.model = "rosettafold_all_atom";
+            [meta, it[1]]
         }
-        .set { ch_pdb_msa }
-
-    ch_pdb_msa
-        .map { [ it[0]["id"], it[0], it[1], it[2] ] }
-        .set { ch_top_ranked_pdb }
-
+        .set { ch_pdb_final }
+    
     emit:
-    pdb_msa        = ch_pdb_msa        // channel: [ meta, /path/to/*.pdb, dummy_file ]
-    top_ranked_pdb = ch_top_ranked_pdb // channel: [ id, meta, /path/to/*.pdb, dummy_file ]
-    multiqc_report = ch_multiqc_report // channel: [ [ model: "rosettafold2na" ], [ /path/to/*_plddt_mqc.tsv ] ]
+    pdb            = ch_pdb_final      // channel: [ id, /path/to/*.pdb ]
+    multiqc_report = ch_multiqc_report // channel: /path/to/multiqc_report.html
     versions       = ch_versions       // channel: [ path(versions.yml) ]
 }
 

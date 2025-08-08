@@ -475,11 +475,10 @@ workflow NFCORE_PROTEINFOLD {
             PREPARE_ROSETTAFOLD2NA_DBS.out.rna,
             ch_dummy_file
         )
-        ch_multiqc                       = ch_multiqc.mix(ROSETTAFOLD2NA.out.multiqc_report.collect())
-        ch_versions                      = ch_versions.mix(ROSETTAFOLD2NA.out.versions)
-        ch_report_input                  = ch_report_input.mix(ROSETTAFOLD2NA.out.pdb_msa)
-        // TODO FIX
-        ch_top_ranked_model              = ch_top_ranked_model.mix(ROSETTAFOLD2NA.out.top_ranked_pdb)
+        ch_multiqc                              = ch_multiqc.mix(ROSETTAFOLD2NA.out.multiqc_report.collect())
+        ch_versions                             = ch_versions.mix(ROSETTAFOLD2NA.out.versions)
+        ch_report_input                         = ch_report_input.mix(ROSETTAFOLD2NA.out.pdb.combine(ch_dummy_file))
+        ch_top_ranked_model                     = ch_top_ranked_model.mix(ROSETTAFOLD2NA.out.pdb)
     }
 
     // WORKFLOW: Run Boltz
