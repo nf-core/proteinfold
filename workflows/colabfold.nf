@@ -37,11 +37,12 @@ workflow COLABFOLD {
     main:
     ch_multiqc_report = Channel.empty()
 
-    if (params.colabfold_server == 'webserver') {
+    if (params.use_msa_server) {
         //
         // MODULE: Run colabfold
         //
-        if (params.colabfold_model_preset != 'alphafold2_ptm' && params.colabfold_model_preset != 'alphafold2') {
+        if (colabfold_model_preset != 'alphafold2_ptm' && colabfold_model_preset != 'alphafold2') {
+            //Multimer mode
             MULTIFASTA_TO_CSV(
                 ch_samplesheet
             )
@@ -67,11 +68,12 @@ workflow COLABFOLD {
             ch_versions = ch_versions.mix(COLABFOLD_BATCH.out.versions)
         }
 
-    } else if (params.colabfold_server == 'local') {
+    } else {
         //
         // MODULE: Run mmseqs
         //
         if (params.colabfold_model_preset != 'alphafold2_ptm' && params.colabfold_model_preset != 'alphafold2') {
+            //Multimer mode
             MULTIFASTA_TO_CSV(
                 ch_samplesheet
             )

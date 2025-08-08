@@ -49,6 +49,19 @@ def plddt_from_struct_b_factor_adhoc(struct_file):
 
     return res_plddts
 
+def get_chain_ids(struct_file):
+    from Bio import PDB
+    if str(struct_file).endswith(".pdb"):
+        parser = PDB.PDBParser(QUIET=True)
+        structure = parser.get_structure(id=id, file=struct_file)
+    elif str(struct_file).endswith(".cif"):
+        parser = PDB.MMCIFParser(QUIET=True)
+        structure = parser.get_structure(structure_id=id, filename=struct_file)
+    else:
+        raise ValueError(f"{struct_file} is neither a PDB or mmCIF file!")
+
+    return [chain.id for chain in structure.get_chains()]
+
 
 def plddt_from_struct_b_factor_biopython(struct_file):
     """

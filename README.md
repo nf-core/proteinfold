@@ -116,7 +116,6 @@ The pipeline takes care of downloading the databases and parameters required by 
       --input samplesheet.csv \
       --outdir <OUTDIR> \
       --mode colabfold \
-      --colabfold_server local \
       --colabfold_db <null (default) | PATH> \
       --num_recycles_colabfold 3 \
       --use_amber <true/false> \
@@ -133,8 +132,8 @@ The pipeline takes care of downloading the databases and parameters required by 
       --input samplesheet.csv \
       --outdir <OUTDIR> \
       --mode colabfold \
-      --colabfold_server webserver \
-      --host_url <custom MMSeqs2 API Server URL> \
+      --use_msa_server \
+      --msa_server_url <custom MMSeqs2 API Server URL> \
       --colabfold_db <null (default) | PATH> \
       --num_recycles_colabfold 3 \
       --use_amber <true/false> \

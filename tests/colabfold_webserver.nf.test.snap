@@ -16,20 +16,19 @@
             },
             [
                 "colabfold",
-                "colabfold/webserver",
-                "colabfold/webserver/T1024_colabfold.pdb",
-                "colabfold/webserver/T1024_coverage.png",
-                "colabfold/webserver/T1024_mqc.png",
-                "colabfold/webserver/T1024_relaxed_rank_01.pdb",
-                "colabfold/webserver/T1024_relaxed_rank_02.pdb",
-                "colabfold/webserver/T1024_relaxed_rank_03.pdb",
-                "colabfold/webserver/T1026_colabfold.pdb",
-                "colabfold/webserver/T1026_coverage.png",
-                "colabfold/webserver/T1026_mqc.png",
-                "colabfold/webserver/T1026_relaxed_rank_01.pdb",
-                "colabfold/webserver/T1026_relaxed_rank_02.pdb",
-                "colabfold/webserver/T1026_relaxed_rank_03.pdb",
-                "colabfold/webserver/top_ranked_structures",
+                "colabfold/T1024_colabfold.pdb",
+                "colabfold/T1024_coverage.png",
+                "colabfold/T1024_mqc.png",
+                "colabfold/T1024_relaxed_rank_01.pdb",
+                "colabfold/T1024_relaxed_rank_02.pdb",
+                "colabfold/T1024_relaxed_rank_03.pdb",
+                "colabfold/T1026_colabfold.pdb",
+                "colabfold/T1026_coverage.png",
+                "colabfold/T1026_mqc.png",
+                "colabfold/T1026_relaxed_rank_01.pdb",
+                "colabfold/T1026_relaxed_rank_02.pdb",
+                "colabfold/T1026_relaxed_rank_03.pdb",
+                "colabfold/top_ranked_structures",
                 "generate",
                 "generate/test_LDDT.html",
                 "generate/test_alphafold2_report.html",
@@ -63,6 +62,6 @@
             "nf-test": "0.9.2",
             "nextflow": "25.04.6"
         },
-        "timestamp": "2025-08-04T15:03:22.469274618"
+        "timestamp": "2025-08-07T11:02:35.349046908"
     }
 }

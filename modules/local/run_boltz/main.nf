@@ -29,13 +29,12 @@ process RUN_BOLTZ {
     tuple val(meta), path ("boltz_results_*/predictions/*/plddt_*model_0.npz")  , emit: plddt
     tuple val(meta), path ("boltz_results_*/predictions/*/pae_*model_0.npz")    , emit: pae
     tuple val(meta), path ("${meta.id}_plddt.tsv")                              , emit: plddt_raw
-    tuple val(meta), path ("${meta.id}_msa.tsv")                                , emit: msa_raw
-    tuple val(meta), path ("${meta.id}_*_pae.tsv")                              , optional: true, emit: pae_raw
+    tuple val(meta), path ("${meta.id}_msa.tsv")                                , optional: true, emit: msa_raw
+    tuple val(meta), path ("${meta.id}_*_pae.tsv")                              , emit: pae_raw
     tuple val(meta), path ("${meta.id}_ptm.tsv")                                , emit: ptm_raw
-    tuple val(meta), path ("${meta.id}_iptm.tsv")                               , emit: iptm_raw
-    tuple val(meta), path ("${meta.id}_summary_chainwise_ptm.tsv")              , optional: true, emit: summary_chainwise_ptm_raw
-    tuple val(meta), path ("${meta.id}_*_chainwise_iptm.tsv")                   , optional: true, emit: chainwise_iptm_raw
-    tuple val(meta), path ("${meta.id}_summary_chainwise_iptm.tsv")             , optional: true, emit: summary_chainwise_iptm_raw
+    tuple val(meta), path ("${meta.id}_iptm.tsv")                               , optional: true, emit: iptm_raw
+    tuple val(meta), path ("${meta.id}_chainwise_ptm.tsv")                      , emit: summary_chainwise_ptm_raw
+    tuple val(meta), path ("${meta.id}_chainwise_iptm.tsv")                     , optional: true, emit: chainwise_iptm_raw
 
     path "versions.yml", emit: versions
 
@@ -51,7 +50,6 @@ process RUN_BOLTZ {
     // TODO: what I really need to do is add a function to read /processed/msa/*.npz and convert it to a .tsv file
 
     // TODO: Boltz is the example to do chain-wise summary files. This will be better if model_id was properly written per prog and EXTRACT_METRICs was a process
-    //  paste will fail gracefully if a blank file is passed, so don't worry about overwriting summary_chainwise...tsv. model_0 has the labels, the rest are cut to col 2.
     if (workflow.profile.tokenize(',').intersect(['conda', 'mamba']).size() >= 1) {
         error("Local RUN_BOLTZ module does not support Conda. Please use Docker / Singularity / Podman instead.")
     }
@@ -62,25 +60,14 @@ process RUN_BOLTZ {
     export NUMBA_CACHE_DIR=/tmp
     export HOME=/tmp
 
-    boltz predict "${fasta}" --output_format "pdb" ${args}
-    cp boltz_results_*/predictions/*/*.pdb ./${meta.id}_boltz.pdb
+    boltz predict "${fasta}" --output_format "pdb" ${args} --cache ./
+    cp boltz_results_*/predictions/${meta.id}/*_0.pdb ./${meta.id}_boltz.pdb
 
     extract_metrics.py --name ${meta.id} \\
         --structs boltz_results_*/predictions/${meta.id}/*.pdb \\
         --jsons boltz_results_*/predictions/${meta.id}/confidence_*_model_*.json \\
         --npzs boltz_results_*/predictions/${meta.id}/pae_*_model_*.npz \\
-        --csvs boltz_results_*/msa/${meta.id}_*.csv \\
-
-    cp ${meta.id}_0_chainwise_ptm.tsv ${meta.id}_summary_chainwise_ptm.tsv
-    for i in {1..4}; do
-        paste ${meta.id}_summary_chainwise_ptm.tsv <(cut -f2 ${meta.id}_${i}_chainwise_ptm.tsv) > temp && mv temp ${meta.id}_summary_chainwise_ptm.tsv
-    done
-
-    cp ${meta.id}_0_chainwise_iptm.tsv ${meta.id}_summary_chainwise_iptm.tsv
-    for i in {1..4}; do
-        paste ${meta.id}_summary_chainwise_iptm.tsv <(cut -f2 ${meta.id}_${i}_chainwise_iptm.tsv) > temp && mv temp ${meta.id}_summary_chainwise_iptm.tsv
-    done
-
+        --csvs boltz_results_*/msa/${meta.id}_*.csv
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
@@ -108,10 +95,8 @@ process RUN_BOLTZ {
     touch "${meta.id}_0_pae.tsv"
     touch "${meta.id}_0_ptm.tsv"
     touch "${meta.id}_0_iptm.tsv"
-    touch "${meta.id}_0_chainwise_ptm.tsv"
-    touch "${meta.id}_summary_chainwise_ptm.tsv"
-    touch "${meta.id}_0_chainwise_iptm.tsv"
-    touch "${meta.id}_summary_chainwise_iptm.tsv"
+    touch "${meta.id}_chainwise_ptm.tsv"
+    touch "${meta.id}_chainwise_iptm.tsv"
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

@@ -97,30 +97,30 @@ workflow NFCORE_PROTEINFOLD {
         //
         PREPARE_ALPHAFOLD2_DBS (
             params.alphafold2_db,
-            params.full_dbs,
-            params.bfd_path,
+            params.alphafold2_full_dbs,
+            params.alphafold2_bfd_path,
             params.alphafold2_small_bfd_path,
             params.alphafold2_params_path,
             params.alphafold2_mgnify_path,
-            params.pdb70_path,
+            params.alphafold2_pdb70_path,
             params.alphafold2_pdb_mmcif_path,
-            params.pdb_obsolete_path,
+            params.alphafold2_pdb_obsolete_path,
             params.alphafold2_uniref30_path,
             params.alphafold2_uniref90_path,
             params.alphafold2_pdb_seqres_path,
             params.alphafold2_uniprot_path,
-            params.bfd_link,
+            params.alphafold2_bfd_link,
             params.alphafold2_small_bfd_link,
             params.alphafold2_params_link,
             params.alphafold2_mgnify_link,
-            params.pdb70_link,
+            params.alphafold2_pdb70_link,
             params.alphafold2_pdb_mmcif_link,
-            params.pdb_obsolete_link,
+            params.alphafold2_pdb_obsolete_link,
             params.alphafold2_uniref30_link,
             params.alphafold2_uniref90_link,
             params.alphafold2_pdb_seqres_link,
-            params.uniprot_sprot_link,
-            params.uniprot_trembl_link
+            params.alphafold2_uniprot_sprot_link,
+            params.alphafold2_uniprot_trembl_link
         )
         ch_versions = ch_versions.mix(PREPARE_ALPHAFOLD2_DBS.out.versions)
 
@@ -130,7 +130,7 @@ workflow NFCORE_PROTEINFOLD {
         ALPHAFOLD2 (
             ch_samplesheet,
             ch_versions,
-            params.full_dbs,
+            params.alphafold2_full_dbs,
             params.alphafold2_mode,
             params.alphafold2_model_preset,
             PREPARE_ALPHAFOLD2_DBS.out.params,
@@ -245,14 +245,14 @@ workflow NFCORE_PROTEINFOLD {
         //
         PREPARE_COLABFOLD_DBS (
             params.colabfold_db,
-            params.colabfold_server,
+            params.use_msa_server,
             params.colabfold_alphafold2_params_path,
-            params.colabfold_db_path,
+            params.colabfold_envdb_path,
             params.colabfold_uniref30_path,
             params.colabfold_alphafold2_params_link,
             params.colabfold_db_link,
             params.colabfold_uniref30_link,
-            params.create_colabfold_index
+            params.colabfold_create_index
         )
         ch_versions = ch_versions.mix(PREPARE_COLABFOLD_DBS.out.versions)
 
@@ -266,7 +266,7 @@ workflow NFCORE_PROTEINFOLD {
             PREPARE_COLABFOLD_DBS.out.params,
             PREPARE_COLABFOLD_DBS.out.colabfold_db,
             PREPARE_COLABFOLD_DBS.out.uniref30,
-            params.num_recycles_colabfold
+            params.colabfold_num_recycles
         )
 
         ch_multiqc                  = ch_multiqc.mix(COLABFOLD.out.multiqc_report)
@@ -311,7 +311,7 @@ workflow NFCORE_PROTEINFOLD {
             ch_samplesheet,
             ch_versions,
             PREPARE_ESMFOLD_DBS.out.params,
-            params.num_recycles_esmfold
+            params.esmfold_num_recycles
         )
 
         ch_multiqc                = ch_multiqc.mix(ESMFOLD.out.multiqc_report.collect())
@@ -329,14 +329,14 @@ workflow NFCORE_PROTEINFOLD {
         //
         PREPARE_ROSETTAFOLD_ALL_ATOM_DBS (
             params.rosettafold_all_atom_db,
-            params.bfd_rosettafold_all_atom_path,
-            params.uniref30_rosettafold_all_atom_path,
-            params.pdb100_rosettafold_all_atom_path,
-            params.rfaa_paper_weights_path,
-            params.bfd_rosettafold_all_atom_link,
-            params.uniref30_rosettafold_all_atom_link,
-            params.pdb100_rosettafold_all_atom_link,
-            params.rfaa_paper_weights_link
+            params.rosettafold_all_atom_bfd_path,
+            params.rosettafold_all_atom_uniref30_path,
+            params.rosettafold_all_atom_pdb100_path,
+            params.rosettafold_all_atom_paper_weights_path,
+            params.rosettafold_all_atom_bfd_link,
+            params.rosettafold_all_atom_uniref30_link,
+            params.rosettafold_all_atom_pdb100_link,
+            params.rosettafold_all_atom_paper_weights_link
         )
         ch_versions = ch_versions.mix(PREPARE_ROSETTAFOLD_ALL_ATOM_DBS.out.versions)
 
@@ -454,14 +454,14 @@ workflow NFCORE_PROTEINFOLD {
 
         PREPARE_COLABFOLD_DBS (
             params.colabfold_db,
-            params.colabfold_server,
+            params.use_msa_server,
             params.colabfold_alphafold2_params_path,
-            params.colabfold_db_path,
+            params.colabfold_envdb_path,
             params.colabfold_uniref30_path,
             params.colabfold_alphafold2_params_link,
             params.colabfold_db_link,
             params.colabfold_uniref30_link,
-            params.create_colabfold_index
+            params.colabfold_create_index
         )
         ch_versions = ch_versions.mix(PREPARE_COLABFOLD_DBS.out.versions)
 
@@ -475,7 +475,7 @@ workflow NFCORE_PROTEINFOLD {
             PREPARE_BOLTZ_DBS.out.boltz2_mols,
             PREPARE_COLABFOLD_DBS.out.colabfold_db,
             PREPARE_COLABFOLD_DBS.out.uniref30,
-            params.boltz_use_msa_server
+            params.use_msa_server
         )
         ch_multiqc                  = ch_multiqc.mix(BOLTZ.out.multiqc_report)
         ch_versions                 = ch_versions.mix(BOLTZ.out.versions)

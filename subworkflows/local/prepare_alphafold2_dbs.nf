@@ -23,7 +23,7 @@ workflow PREPARE_ALPHAFOLD2_DBS {
 
     take:
     alphafold2_db            // directory: path to alphafold2 DBs
-    full_dbs                 //   boolean: Use full databases (otherwise reduced version)
+    alphafold2_full_dbs                 //   boolean: Use full databases (otherwise reduced version)
     bfd_path                 // directory: /path/to/bfd/
     small_bfd_path           // directory: /path/to/small_bfd/
     alphafold2_params_path   // directory: /path/to/alphafold2/params/
@@ -55,7 +55,7 @@ workflow PREPARE_ALPHAFOLD2_DBS {
 
 
     if (alphafold2_db) {
-        if (full_dbs) {
+        if (alphafold2_full_dbs) {
             ch_bfd       = Channel.value(file(bfd_path))
             ch_small_bfd = Channel.value(file("${projectDir}/assets/dummy_db"))
         }
@@ -75,7 +75,7 @@ workflow PREPARE_ALPHAFOLD2_DBS {
         ch_uniprot        = Channel.value(file(uniprot_path))
     }
     else {
-        if (full_dbs) {
+        if (alphafold2_full_dbs) {
             ARIA2_BFD(
                 bfd_link
             )
