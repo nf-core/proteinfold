@@ -101,14 +101,14 @@ Changes in module 'nf-core/multiqc'
 --- modules/nf-core/multiqc/main.nf
 +++ modules/nf-core/multiqc/main.nf
 @@ -3,14 +3,16 @@
- 
+
      conda "${moduleDir}/environment.yml"
      container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
 -        'https://depot.galaxyproject.org/singularity/multiqc:1.21--pyhdfd78af_0' :
 -        'biocontainers/multiqc:1.21--pyhdfd78af_0' }"
 +        'https://depot.galaxyproject.org/singularity/multiqc:1.25.1--pyhdfd78af_0' :
 +        'biocontainers/multiqc:1.25.1--pyhdfd78af_0' }"
- 
+
      input:
 -    path  multiqc_files, stageAs: "?/*"
 +    tuple val(meta), path(multiqc_files)
@@ -117,11 +117,11 @@ Changes in module 'nf-core/multiqc'
      path(multiqc_logo)
 +    path(replace_names)
 +    path(sample_names)
- 
+
      output:
      path "*multiqc_report.html", emit: report
 @@ -23,16 +25,22 @@
- 
+
      script:
      def args = task.ext.args ?: ''
 +    def prefix = task.ext.prefix ? "--filename ${task.ext.prefix}.html" : "--filename ${meta.model}_multiqc_report.html"
@@ -142,7 +142,7 @@ Changes in module 'nf-core/multiqc'
 +        $replace \\
 +        $samples \\
          .
- 
+
      cat <<-END_VERSIONS > versions.yml
 @@ -44,7 +52,7 @@
      stub:
@@ -151,7 +151,7 @@ Changes in module 'nf-core/multiqc'
 -    touch multiqc_plots
 +    mkdir multiqc_plots
      touch multiqc_report.html
- 
+
      cat <<-END_VERSIONS > versions.yml
 
 --- modules/nf-core/multiqc/environment.yml
@@ -226,11 +226,11 @@ Changes in module 'nf-core/multiqc'
 @@ -8,6 +8,8 @@
      tag "modules_nfcore"
      tag "multiqc"
- 
+
 +    config "./nextflow.config"
 +
      test("sarscov2 single-end [fastqc]") {
- 
+
          when {
 @@ -17,6 +19,8 @@
                  input[1] = []

@@ -1,6 +1,7 @@
 process RUN_ESMFOLD {
     tag "$meta.id"
     label 'process_medium'
+    label 'process_gpu'
 
     container "nf-core/proteinfold_esmfold:dev"
 
@@ -10,8 +11,15 @@ process RUN_ESMFOLD {
     val numRec
 
     output:
-    tuple val(meta), path ("${meta.id}_esmfold.pdb")  , emit: pdb
-    tuple val(meta), path ("${meta.id}_plddt_mqc.tsv"), emit: multiqc
+    tuple val(meta), path ("${meta.id}_esmfold.pdb")  , emit: top_ranked_pdb
+    tuple val(meta), path ("*.pdb")                   , emit: pdb
+    tuple val(meta), path ("${meta.id}_plddt.tsv")    , emit: multiqc
+    // No MSA information in ESMFold
+    // PAE from ESMFold is an absolute pain to retrieve, skipping.
+    // https://github.com/facebookresearch/esm/issues/582
+    // Since neither MSA or PAE exist, the optional will be handled with a NO_FILE in main.nf
+    tuple val(meta), path ("${meta.id}_msa.tsv")      , optional: true, emit: msa
+    tuple val(meta), path ("${meta.id}_*_pae.tsv")    , optional: true, emit: paes
     path "versions.yml"                               , emit: versions
 
     when:
@@ -24,6 +32,8 @@ process RUN_ESMFOLD {
     def args = task.ext.args ?: ''
     def VERSION = '1.0.3' // WARN: Version information not provided by tool on CLI. Please update this string when bumping container versions.
 
+    // KR - note: removed the *.pdb -> tmp.pdb, tmp.pdb  -> esmfold.pdb. Why not just take directly?
+    // Only one .pdb per ESMFold run
     """
     esm-fold \
         -i ${fasta} \
@@ -32,12 +42,10 @@ process RUN_ESMFOLD {
         --num-recycles ${numRec} \
         $args
 
-    mv  *.pdb tmp.pdb
-    mv  tmp.pdb ${meta.id}_esmfold.pdb
+    mv  *.pdb ${meta.id}_esmfold.pdb
 
-    awk '{print \$2"\\t"\$3"\\t"\$4"\\t"\$6"\\t"\$11}' ${meta.id}_esmfold.pdb | grep -v 'N/A' | uniq > plddt.tsv
-    echo -e Atom_serial_number"\\t"Atom_name"\\t"Residue_name"\\t"Residue_sequence_number"\\t"pLDDT > header.tsv
-    cat header.tsv plddt.tsv > ${meta.id}_plddt_mqc.tsv
+    extract_metrics.py --name ${meta.id} \\
+        --structs ${meta.id}_esmfold.pdb
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
@@ -48,8 +56,8 @@ process RUN_ESMFOLD {
     stub:
     def VERSION = '1.0.3' // WARN: Version information not provided by tool on CLI. Please update this string when bumping container versions.
     """
-    touch ./${meta.id}_esmfold.pdb
-    touch ./${meta.id}_plddt_mqc.tsv
+    touch "${meta.id}_esmfold.pdb"
+    touch "${meta.id}_plddt.tsv"
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

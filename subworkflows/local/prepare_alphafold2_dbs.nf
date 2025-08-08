@@ -23,7 +23,7 @@ workflow PREPARE_ALPHAFOLD2_DBS {
 
     take:
     alphafold2_db            // directory: path to alphafold2 DBs
-    full_dbs                 //   boolean: Use full databases (otherwise reduced version)
+    alphafold2_full_dbs                 //   boolean: Use full databases (otherwise reduced version)
     bfd_path                 // directory: /path/to/bfd/
     small_bfd_path           // directory: /path/to/small_bfd/
     alphafold2_params_path   // directory: /path/to/alphafold2/params/
@@ -31,7 +31,7 @@ workflow PREPARE_ALPHAFOLD2_DBS {
     pdb70_path               // directory: /path/to/pdb70/
     pdb_mmcif_path           // directory: /path/to/pdb_mmcif/mmcif_files/
     pdb_obsolete_path        // directory: /path/to/pdb_mmcif/obsolete.dat
-    uniref30_alphafold2_path // directory: /path/to/uniref30/alphafold2/
+    alphafold2_uniref30_path // directory: /path/to/uniref30/alphafold2/
     uniref90_path            // directory: /path/to/uniref90/
     pdb_seqres_path          // directory: /path/to/pdb_seqres/
     uniprot_path             // directory: /path/to/uniprot/
@@ -42,7 +42,7 @@ workflow PREPARE_ALPHAFOLD2_DBS {
     pdb70_link               //    string: Specifies the link to download pdb70
     pdb_mmcif_link           //    string: Specifies the link to download pdb_mmcif
     pdb_obsolete_link        //    string: Specifies the link to download pdb_obsolete
-    uniref30_alphafold2_link //    string: Specifies the link to download uniref30_alphafold2
+    alphafold2_uniref30_link //    string: Specifies the link to download uniref30_alphafold2
     uniref90_link            //    string: Specifies the link to download uniref90
     pdb_seqres_link          //    string: Specifies the link to download pdb_seqres
     uniprot_sprot_link       //    string: Specifies the link to download uniprot_sprot
@@ -55,7 +55,7 @@ workflow PREPARE_ALPHAFOLD2_DBS {
 
 
     if (alphafold2_db) {
-        if (full_dbs) {
+        if (alphafold2_full_dbs) {
             ch_bfd       = Channel.value(file(bfd_path))
             ch_small_bfd = Channel.value(file("${projectDir}/assets/dummy_db"))
         }
@@ -66,16 +66,16 @@ workflow PREPARE_ALPHAFOLD2_DBS {
 
         ch_params         = Channel.value(file(alphafold2_params_path))
         ch_mgnify         = Channel.value(file(mgnify_path))
-        ch_pdb70          = Channel.value(file(pdb70_path, type: 'dir' ))
+        ch_pdb70          = Channel.value(file(pdb70_path))
         ch_mmcif_files    = Channel.value(file(pdb_mmcif_path))
         ch_obsolete       = Channel.value(file(pdb_obsolete_path, type: 'file'))
-        ch_uniref30       = Channel.value(file(uniref30_alphafold2_path, type: 'any'))
+        ch_uniref30       = Channel.value(file(alphafold2_uniref30_path, type: 'any'))
         ch_uniref90       = Channel.value(file(uniref90_path))
         ch_pdb_seqres     = Channel.value(file(pdb_seqres_path))
         ch_uniprot        = Channel.value(file(uniprot_path))
     }
     else {
-        if (full_dbs) {
+        if (alphafold2_full_dbs) {
             ARIA2_BFD(
                 bfd_link
             )
@@ -120,7 +120,7 @@ workflow PREPARE_ALPHAFOLD2_DBS {
         ch_versions = ch_versions.mix(ARIA2_OBSOLETE.out.versions)
 
         ARIA2_UNIREF30(
-            uniref30_alphafold2_link
+            alphafold2_uniref30_link
         )
         ch_uniref30 = ARIA2_UNIREF30.out.db
         ch_versions = ch_versions.mix(ARIA2_UNIREF30.out.versions)

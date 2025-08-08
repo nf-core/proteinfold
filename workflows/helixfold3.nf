@@ -8,6 +8,7 @@
 // MODULE: Loaded from modules/local/
 //
 include { RUN_HELIXFOLD3 } from '../modules/local/run_helixfold3'
+include { FASTA2JSON } from '../modules/local/data_convertor/fasta2json'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -35,7 +36,8 @@ workflow HELIXFOLD3 {
     ch_helixfold3_pdb_seqres
     ch_helixfold3_uniref90
     ch_helixfold3_mgnify
-    ch_helixfold3_pdb_mmcif
+    ch_helixfold3_mmcif_files
+    ch_helixfold3_obsolete
     ch_helixfold3_init_models
     ch_helixfold3_maxit_src
 
@@ -43,14 +45,22 @@ workflow HELIXFOLD3 {
     ch_multiqc_files  = Channel.empty()
     ch_pdb            = Channel.empty()
     ch_top_ranked_pdb = Channel.empty()
-    ch_msa            = Channel.empty()
     ch_multiqc_report = Channel.empty()
 
     //
     // SUBWORKFLOW: Run helixfold3
     //
+    ch_samplesheet.branch {
+        fasta: it[1].extension == "fasta" || it[1].extension == "fa"
+        json: it[1].extension == "json"
+    }.set{ch_input}
+
+    FASTA2JSON(
+        ch_input.fasta
+    )
+
     RUN_HELIXFOLD3 (
-        ch_samplesheet,
+        ch_input.json.mix(FASTA2JSON.out.json),
         ch_helixfold3_uniclust30,
         ch_helixfold3_ccd_preprocessed,
         ch_helixfold3_rfam,
@@ -60,7 +70,8 @@ workflow HELIXFOLD3 {
         ch_helixfold3_pdb_seqres,
         ch_helixfold3_uniref90,
         ch_helixfold3_mgnify,
-        ch_helixfold3_pdb_mmcif,
+        ch_helixfold3_mmcif_files,
+        ch_helixfold3_obsolete,
         ch_helixfold3_init_models,
         ch_helixfold3_maxit_src
     )
@@ -74,28 +85,27 @@ workflow HELIXFOLD3 {
         .set { ch_multiqc_report }
 
     ch_pdb            = ch_pdb.mix(RUN_HELIXFOLD3.out.pdb)
-    ch_top_ranked_pdb = ch_top_ranked_pdb.mix(RUN_HELIXFOLD3.out.top_ranked_pdb)
     ch_versions       = ch_versions.mix(RUN_HELIXFOLD3.out.versions)
 
-    ch_top_ranked_pdb
-        .map { [ it[0]["id"], it[0], it[1] ] }
-        .set { ch_top_ranked_pdb }
+    RUN_HELIXFOLD3.out.top_ranked_pdb
+    .map{
+        meta = it[0].clone();
+        meta.model = "helixfold3";
+        [meta, it[1]]
+    }
+    .set { ch_top_ranked_pdb }
 
     ch_pdb
-        .join(ch_msa)
-        .map {
-            it[0]["model"] = "helixfold3"
-            it
-        }
-        .set { ch_pdb_msa }
-
-    ch_pdb_msa
-        .map { [ it[0]["id"], it[0], it[1], it[2] ] }
-        .set { ch_top_ranked_pdb }
+    .map{
+        meta = it[0].clone();
+        meta.model = "helixfold3";
+        [meta, it[1]]
+    }
+    .set { ch_pdb_final }
 
     emit:
-    top_ranked_pdb = ch_top_ranked_pdb // channel: [ id, /path/to/*.pdb ]
-    pdb_msa        = ch_pdb_msa        // channel: [ meta, /path/to/*.pdb, /path/to/*_coverage.png ]
+    top_ranked_pdb = ch_top_ranked_pdb
+    pdb            = ch_pdb_final // channel: [ id, /path/to/*.pdb ]
     multiqc_report = ch_multiqc_report // channel: /path/to/multiqc_report.html
     versions       = ch_versions       // channel: [ path(versions.yml) ]
 }

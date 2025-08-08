@@ -1,30 +1,33 @@
-FROM nvidia/cuda:12.6.0-cudnn-devel-ubuntu24.04
+ARG CUDA=12.6.0
+FROM nvidia/cuda:${CUDA}-runtime-ubuntu24.04 AS builder
+# FROM directive resets ARGS, so we specify again (the value is retained if
+# previously set).
+ARG CUDA
 
 LABEL Author="j.caley@unsw.edu.au" \
     title="nfcore/proteinfold_rosettafold_all_atom" \
-    Version="0.9.0" \
+    Version="1.2.0dev" \
     description="Docker image containing all software requirements to run the RUN_ROSETTAFOLD_ALL_ATOM module using the nf-core/proteinfold pipeline"
 
 ENV PYTHONPATH="/app/RoseTTAFold-All-Atom" \
     PATH="/conda/bin:/app/RoseTTAFold-All-Atom:$PATH" \
     DGLBACKEND="pytorch" \
-    LD_LIBRARY_PATH="/conda/lib:/usr/local/cuda-12.6/lib64:$LD_LIBRARY_PATH"
+    LD_LIBRARY_PATH="/conda/lib:/usr/local/cuda-$(cut -f1,2 -d. <<< ${CUDA})/lib64:$LD_LIBRARY_PATH"
 
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y wget git && \
-    wget -q -P /tmp "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-$(uname)-$(uname -m).sh" && \
+    wget -q -P /tmp "https://github.com/conda-forge/miniforge/releases/download/24.11.0-0/Miniforge3-$(uname)-$(uname -m).sh" && \
     bash /tmp/Miniforge3-$(uname)-$(uname -m).sh -b -p /conda && \
-    rm -rf /tmp/Miniforge3-$(uname)-$(uname -m).sh /var/lib/apt/lists/* && \
-    apt-get autoremove -y && apt-get clean -y
-
-RUN git clone --single-branch --depth 1 https://github.com/Australian-Structural-Biology-Computing/RoseTTAFold-All-Atom.git /app/RoseTTAFold-All-Atom && \
+    rm -rf /tmp/Miniforge3-$(uname)-$(uname -m).sh /var/lib/apt/lists/* /root/.cache && \
+    git clone --single-branch --depth 1 https://github.com/Australian-Structural-Biology-Computing/RoseTTAFold-All-Atom.git /app/RoseTTAFold-All-Atom && \
     cd /app/RoseTTAFold-All-Atom && \
+    git fetch --depth 1 origin e8f94d6d6ddfb07da2119bcfa94359bc6912fd29 && \
+    git checkout e8f94d6d6ddfb07da2119bcfa94359bc6912fd29 && \
     /conda/bin/mamba env create --file=environment.yaml && \
     /conda/bin/mamba run -n RFAA bash -c \
         "python /app/RoseTTAFold-All-Atom/rf2aa/SE3Transformer/setup.py install && \
         bash /app/RoseTTAFold-All-Atom/install_dependencies.sh" && \
-    /conda/bin/mamba clean --all --force-pkgs-dirs -y
-
-RUN cd /app/RoseTTAFold-All-Atom && \
+    /conda/bin/mamba clean --all --force-pkgs-dirs -y && \
+    cd /app/RoseTTAFold-All-Atom && \
     wget https://ftp.ncbi.nlm.nih.gov/blast/executables/legacy.NOTSUPPORTED/2.2.26/blast-2.2.26-x64-linux.tar.gz && \
     mkdir -p blast-2.2.26 && \
     tar -xf blast-2.2.26-x64-linux.tar.gz -C blast-2.2.26 && \
@@ -32,4 +35,17 @@ RUN cd /app/RoseTTAFold-All-Atom && \
     rm -r blast-2.2.26 && \
     mv blast-2.2.26_bk/ blast-2.2.26 && \
     rm -rf /root/.cache *.tar.gz && \
-    apt-get autoremove -y && apt-get remove --purge -y wget git && apt-get clean -y
+    apt-get remove --purge -y wget git && apt-get autoremove -y && apt-get clean -y
+
+FROM nvidia/cuda:${CUDA}-base-ubuntu24.04
+# FROM directive resets ARGS, so we specify again (the value is retained if
+# previously set).
+ARG CUDA
+
+COPY --from=builder /app /app
+COPY --from=builder /conda /conda
+
+ENV PYTHONPATH="/app/RoseTTAFold-All-Atom" \
+    PATH="/conda/bin:/app/RoseTTAFold-All-Atom:$PATH" \
+    DGLBACKEND="pytorch" \
+    LD_LIBRARY_PATH="/conda/lib:/usr/local/cuda-$(cut -f1,2 -d. <<< ${CUDA})/lib64:$LD_LIBRARY_PATH"

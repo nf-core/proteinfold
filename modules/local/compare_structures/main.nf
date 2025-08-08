@@ -8,8 +8,9 @@ process COMPARE_STRUCTURES {
         'community.wave.seqera.io/library/biopython_matplotlib_pip_plotly:35975fa0fc54b2d3' }"
 
     input:
-    tuple val(meta), path(pdb)
-    tuple val(meta_msa), path(msa)
+    tuple val(meta), val(pdb)
+    tuple val(meta_msa), val(msa)
+    path (all_files)
     path(template)
 
     output:

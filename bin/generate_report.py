@@ -219,13 +219,14 @@ def align_structures(structures):
     ref_structure = structures[0]
 
     common_atoms = set(
-        f"{atom.get_parent().get_id()[1]}-{atom.name}"
-        for atom in ref_structure.get_atoms()
+        f"{atom.get_parent().get_parent().get_id()}-{atom.get_parent().get_id()[1]}-{atom.name}"
+        for atom in ref_structure.get_atoms() if not atom.element == 'H'
     )
+    #print(common_atoms)
     for i, structure in enumerate(structures[1:], start=1):
         common_atoms = common_atoms.intersection(
             set(
-                f"{atom.get_parent().get_id()[1]}-{atom.name}"
+                f"{atom.get_parent().get_parent().get_id()}-{atom.get_parent().get_id()[1]}-{atom.name}"
                 for atom in structure.get_atoms()
             )
         )
@@ -233,7 +234,7 @@ def align_structures(structures):
     ref_atoms = [
         atom
         for atom in ref_structure.get_atoms()
-        if f"{atom.get_parent().get_id()[1]}-{atom.name}" in common_atoms
+        if f"{atom.get_parent().get_parent().get_id()}-{atom.get_parent().get_id()[1]}-{atom.name}" in common_atoms
     ]
     # print(ref_atoms)
     super_imposer = PDB.Superimposer()
@@ -243,7 +244,7 @@ def align_structures(structures):
         target_atoms = [
             atom
             for atom in structure.get_atoms()
-            if f"{atom.get_parent().get_id()[1]}-{atom.name}" in common_atoms
+            if f"{atom.get_parent().get_parent().get_id()}-{atom.get_parent().get_id()[1]}-{atom.name}" in common_atoms
         ]
 
         super_imposer.set_atoms(ref_atoms, target_atoms)
@@ -286,8 +287,12 @@ def pdb_to_lddt(struct_files, generate_tsv):
                 res_atom_count +=1
                 res_pLDDT_tot += atom.get_bfactor()
 
-            plddt_values.append(res_pLDDT_tot/res_atom_count) #residue-level mean for ESMfold atom-level pLDDT
+            # Residue-level mean for ESMfold atom-level pLDDT
+            res_pLDDT_ave = res_pLDDT_tot/res_atom_count
 
+            if res_pLDDT_ave < 1.0:
+                res_pLDDT_ave *= 100
+            plddt_values.append(res_pLDDT_ave)
 
         # Calculate the average PLDDT value for the current file
         if plddt_values:
@@ -314,10 +319,12 @@ version = "1.0.0"
 model_name = {
     "esmfold": "ESMFold",
     "alphafold2": "AlphaFold2",
+    "alphafold3": "Alphafold3",
     "colabfold": "ColabFold",
     "rosettafold_all_atom": "Rosettafold_All_Atom",
     "helixfold3": "HelixFold3",
     "rosettafold2na": "RoseTTAFold2NA"
+    "boltz": "Boltz-1"
 }
 
 parser = argparse.ArgumentParser()

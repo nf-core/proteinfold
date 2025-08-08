@@ -1,6 +1,7 @@
 process COLABFOLD_BATCH {
     tag "$meta.id"
     label 'process_medium'
+    label 'process_gpu'
 
     container "nf-core/proteinfold_colabfold:dev"
 
@@ -14,7 +15,7 @@ process COLABFOLD_BATCH {
 
     output:
     tuple val(meta), path ("${meta.id}_colabfold.pdb"), emit: top_ranked_pdb
-    tuple val(meta), path ("*_relaxed_rank_*.pdb")    , emit: pdb
+    tuple val(meta), path ("*relaxed_rank_*.pdb")     , emit: pdb
     tuple val(meta), path ("*_coverage.png")          , emit: msa
     tuple val(meta), path ("*_mqc.png")               , emit: multiqc
     path "versions.yml"                               , emit: versions
@@ -28,10 +29,11 @@ process COLABFOLD_BATCH {
         error("Local COLABFOLD_BATCH module does not support Conda. Please use Docker / Singularity / Podman instead.")
     }
     def args = task.ext.args ?: ''
-    def VERSION = '1.5.2' // WARN: Version information not provided by tool on CLI. Please update this string when bumping container versions.
 
     """
-    ln -r -s params/alphafold_params_*/* params/
+    ln -s \$(realpath params/alphafold_params_*/*) params/
+    touch params/download_finished.txt
+
     colabfold_batch \\
         $args \\
         --num-recycle ${numRec} \\
@@ -39,18 +41,20 @@ process COLABFOLD_BATCH {
         --model-type ${colabfold_model_preset} \\
         ${fasta} \\
         \$PWD
-    for i in `find *_relaxed_rank_001*.pdb`; do cp \$i `echo \$i | sed "s|_relaxed_rank_|\t|g" | cut -f1`"_colabfold.pdb"; done
     for i in `find *.png -maxdepth 0`; do cp \$i \${i%'.png'}_mqc.png; done
-    cp *_relaxed_rank_001*.pdb ${meta.id}_colabfold.pdb
+    if [ ! -e `find *_relaxed_rank_001_*.pdb` ]; then
+        cp *_relaxed_rank_001*.pdb ${meta.id}_colabfold.pdb
+    else
+        cp *_unrelaxed_rank_001*.pdb ${meta.id}_colabfold.pdb
+    fi
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        colabfold_batch: $VERSION
+        colabfold_batch: \$(conda run -n colabfold pip list | grep "^colabfold" | awk '{print \$2}')
     END_VERSIONS
     """
 
     stub:
-    def VERSION = '1.5.2' // WARN: Version information not provided by tool on CLI. Please update this string when bumping container versions.
     """
     touch ./"${meta.id}"_colabfold.pdb
     touch ./"${meta.id}"_mqc.png
@@ -62,7 +66,7 @@ process COLABFOLD_BATCH {
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        colabfold_batch: $VERSION
+        colabfold_batch: \$(conda run -n colabfold pip list | grep "^colabfold" | awk '{print \$2}')
     END_VERSIONS
     """
 }

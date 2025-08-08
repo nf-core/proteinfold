@@ -29,7 +29,6 @@ workflow ESMFOLD {
     ch_versions       // channel: [ path(versions.yml) ]
     ch_esmfold_params // directory: /path/to/esmfold/params/
     ch_num_recycles   // int: Number of recycles for esmfold
-    ch_dummy_file     // channel: [ path(NO_FILE) ]
 
     main:
     ch_multiqc_files = Channel.empty()
@@ -60,12 +59,12 @@ workflow ESMFOLD {
     RUN_ESMFOLD
         .out
         .pdb
-        .combine(ch_dummy_file)
-        .map {
-            it[0]["model"] = "esmfold"
-            [ it[0]["id"], it[0], it[1], it[2] ]
+        .map{
+            meta = it[0].clone();
+            meta.model = "esmfold";
+            [meta, it[1]]
         }
-        .set { ch_top_ranked_pdb }
+        .set{ch_pdb_final}
 
     RUN_ESMFOLD
         .out
@@ -75,23 +74,8 @@ workflow ESMFOLD {
         .map { [ [ "model": "esmfold"], it.flatten() ] }
         .set { ch_multiqc_report  }
 
-    RUN_ESMFOLD
-        .out
-        .pdb
-        .combine(ch_dummy_file)
-        .map {
-            it[0]["model"] = "esmfold"
-            it
-        }
-        .set { ch_pdb_msa }
-
-    ch_pdb_msa
-        .map { [ it[0]["id"], it[0], it[1], it[2] ] }
-        .set { ch_top_ranked_pdb }
-
     emit:
-    pdb_msa        = ch_pdb_msa          // channel: [ meta, /path/to/*.pdb, dummy_file ]
-    top_ranked_pdb = ch_top_ranked_pdb   // channel: [ id, /path/to/*.pdb ]
+    pdb            = ch_pdb_final   // channel: [ id, /path/to/*.pdb ]
     multiqc_report = ch_multiqc_report   // channel: /path/to/multiqc_report.html
     versions       = ch_versions         // channel: [ path(versions.yml) ]
 }

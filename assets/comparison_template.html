@@ -441,6 +441,7 @@
 
     const LDDT_AVERAGES = [];
     const SEQ_COV_IMGS = [];
+    const SEQ_COV_METHODS = [];
     const MODELS = [];
 
     const MODELS_DATA = [
@@ -800,13 +801,7 @@
 
         const label = document.createElement("div");
         label.className = "font-semibold mb-2";
-
-        if (MODELS[index].includes("colabfold")) {
-          if (!MODELS[index + 1]) return;
-          label.textContent = MODELS[index + 1].replace(".pdb", "");
-        } else {
-          label.textContent = MODELS[index].replace(".pdb", "");
-        }
+        label.textContent = SEQ_COV_METHODS[index];
 
         const imgContainer = document.createElement("div");
         imgContainer.className = "w-[660px] h-auto p-6 bg-white shadow-md rounded items-center";

@@ -5,155 +5,6 @@
     "description": "Protein 3D structure prediction pipeline",
     "type": "object",
     "$defs": {
-        "helixfold3_options": {
-            "title": "helixfold3 options",
-            "type": "object",
-            "description": "HelixFold3 options",
-            "default": "",
-            "properties": {
-                "helixfold3_db": {
-                    "type": "string"
-                },
-                "model_name": {
-                    "type": "string"
-                },
-                "preset": {
-                    "type": "string"
-                },
-                "init_model": {
-                    "type": "string"
-                },
-                "logging_level": {
-                    "type": "string"
-                },
-                "precision": {
-                    "type": "string"
-                },
-                "infer_times": {
-                    "type": "string"
-                },
-                "helixfold3_max_template_date": {
-                    "type": "string",
-                    "default": "2024-08-14"
-                }
-            }
-        },
-        "helixfold3_dbs_and_parameters_paths_options": {
-            "title": "helixfold3 dbs and parameters paths options",
-            "type": "object",
-            "description": "Parameters used to provide the paths to the DBs and parameters for HelixFold3.",
-            "default": "",
-            "properties": {
-                "helixfold3_init_models_path": {
-                    "type": "string",
-                    "default": "null/HelixFold3-240814.pdparams"
-                },
-                "helixfold3_uniclust30_path": {
-                    "type": "string",
-                    "default": "null/uniclust30/*"
-                },
-                "helixfold3_ccd_preprocessed_path": {
-                    "type": "string",
-                    "default": "null/ccd_preprocessed_etkdg.pkl.gz"
-                },
-                "helixfold3_rfam_path": {
-                    "type": "string",
-                    "default": "null/Rfam-14.9_rep_seq.fasta"
-                },
-                "helixfold3_bfd_path": {
-                    "type": "string",
-                    "default": "null/bfd/*"
-                },
-                "helixfold3_small_bfd_path": {
-                    "type": "string",
-                    "default": "null/small_bfd/*"
-                },
-                "helixfold3_uniprot_path": {
-                    "type": "string",
-                    "default": "null/uniprot/*"
-                },
-                "helixfold3_pdb_seqres_path": {
-                    "type": "string",
-                    "default": "null/pdb_seqres/*"
-                },
-                "helixfold3_uniref90_path": {
-                    "type": "string",
-                    "default": "null/uniref90/*"
-                },
-                "helixfold3_mgnify_path": {
-                    "type": "string",
-                    "default": "null/mgnify/*"
-                },
-                "helixfold3_pdb_mmcif_path": {
-                    "type": "string",
-                    "default": "null/pdb_mmcif/*"
-                },
-                "helixfold3_maxit_src_path": {
-                    "type": "string",
-                    "default": "null/maxit-v11.200-prod-src"
-                }
-            }
-        },
-        "helixfold3_dbs_and_parameters_link_options": {
-            "title": "helixfold3 dbs and parameters link options",
-            "type": "object",
-            "description": "Parameters used to provide the links to the parameters public resources to HelixFold3.",
-            "default": "",
-            "properties": {
-                "helixfold3_init_models_link": {
-                    "type": "string",
-                    "default": "https://paddlehelix.bd.bcebos.com/HelixFold3/params/HelixFold3-params-240814.zip"
-                },
-                "helixfold3_uniclust30_link": {
-                    "type": "string",
-                    "default": "https://storage.googleapis.com/alphafold-databases/casp14_versions/uniclust30_2018_08_hhsuite.tar.gz"
-                },
-                "helixfold3_ccd_preprocessed_link": {
-                    "type": "string",
-                    "default": "https://paddlehelix.bd.bcebos.com/HelixFold3/CCD/ccd_preprocessed_etkdg.pkl.gz"
-                },
-                "helixfold3_rfam_link": {
-                    "type": "string",
-                    "default": "https://paddlehelix.bd.bcebos.com/HelixFold3/MSA/Rfam-14.9_rep_seq.fasta"
-                },
-                "helixfold3_bfd_link": {
-                    "type": "string",
-                    "default": "https://storage.googleapis.com/alphafold-databases/casp14_versions/bfd_metaclust_clu_complete_id30_c90_final_seq.sorted_opt.tar.gz"
-                },
-                "helixfold3_small_bfd_link": {
-                    "type": "string",
-                    "default": "https://storage.googleapis.com/alphafold-databases/reduced_dbs/bfd-first_non_consensus_sequences.fasta.gz"
-                },
-                "helixfold3_pdb_seqres_link": {
-                    "type": "string",
-                    "default": "https://files.wwpdb.org/pub/pdb/derived_data/pdb_seqres.txt"
-                },
-                "helixfold3_uniref90_link": {
-                    "type": "string",
-                    "default": "ftp://ftp.uniprot.org/pub/databases/uniprot/uniref/uniref90/uniref90.fasta.gz"
-                },
-                "helixfold3_mgnify_link": {
-                    "type": "string",
-                    "default": "https://storage.googleapis.com/alphafold-databases/casp14_versions/mgy_clusters_2018_12.fa.gz"
-                },
-                "helixfold3_pdb_mmcif_link": {
-                    "type": "string",
-                    "default": "rsync.rcsb.org::ftp_data/structures/divided/mmCIF/"
-                },
-                "helixfold3_uniprot_sprot_link": {
-                    "type": "string",
-                    "default": "ftp://ftp.ebi.ac.uk/pub/databases/uniprot/current_release/knowledgebase/complete/uniprot_sprot.fasta.gz"
-                },
-                "helixfold3_uniprot_trembl_link": {
-                    "type": "string",
-                    "default": "ftp://ftp.ebi.ac.uk/pub/databases/uniprot/current_release/knowledgebase/complete/uniprot_trembl.fasta.gz"
-                },
-                "helixfold3_pdb_obsolete_link": {
-                    "type": "string",
-                    "default": "ftp://ftp.wwpdb.org/pub/pdb/data/status/obsolete.dat"
-                }
-            }
-        },
         "input_output_options": {
             "title": "Global options",
             "type": "object",
@@ -170,13 +21,15 @@
                     "pattern": "^\\S+\\.csv$",
                     "description": "Path to comma-separated file containing information about the samples in the experiment.",
                     "help_text": "You will need to create a design file with information about the samples in your experiment before running the pipeline. Use this parameter to specify its location. It has to be a comma-separated file with 3 columns, and a header row. See [usage docs](https://nf-co.re/proteinfold/usage#samplesheet-input).",
-                    "fa_icon": "fas fa-file-csv"
+                    "fa_icon": "fas fa-file-csv",
+                    "errorMessage": "Input samplesheet must be a CSV file that exists. Please check the file path and format."
                 },
                 "outdir": {
                     "type": "string",
                     "format": "directory-path",
                     "description": "The output directory where the results will be saved. You have to use absolute paths to storage on Cloud infrastructure.",
-                    "fa_icon": "fas fa-folder-open"
+                    "fa_icon": "fas fa-folder-open",
+                    "errorMessage": "Output directory path must be specified"
                 },
                 "interactions": {
                     "type": "string",
@@ -192,8 +45,10 @@
                 "mode": {
                     "type": "string",
                     "default": "alphafold2",
-                    "description": "Specifies the mode in which the pipeline will be run. mode can be any combination of ['alphafold2', 'colabfold', 'esmfold', 'rosettafold_all_atom', 'rosettafold2na'] separated by a comma (',') with no spaces.",
-                    "fa_icon": "fas fa-cogs"
+                    "description": "Specifies the mode in which the pipeline will be run. mode can be any combination of ['alphafold2', 'alphafold3', 'colabfold', 'esmfold', 'rosettafold_all_atom', 'boltz', 'helixfold3'] separated by a comma (',') with no spaces.",
+                    "fa_icon": "fas fa-cogs",
+                    "pattern": "^(alphafold2|alphafold3|colabfold|esmfold|rosettafold_all_atom|helixfold3|boltz|)(,(alphafold2|alphafold3|colabfold|esmfold|rosettafold_all_atom|helixfold3|boltz)?,?)*(?<!,)$",
+                    "errorMessage": "Mode must be a comma-separated list containing any combination of 'alphafold2', 'alphafold3', 'colabfold', 'esmfold', 'rosettafold_all_atom', 'boltz', or 'helixfold3' with no spaces."
                 },
                 "use_gpu": {
                     "type": "boolean",
@@ -210,85 +65,105 @@
                     "description": "Email address for completion summary.",
                     "fa_icon": "fas fa-envelope",
                     "help_text": "Set this parameter to your e-mail address to get a summary e-mail with details of the run sent to you when the workflow exits. If set in your user config file (`~/.nextflow/config`) then you don't need to specify this on the command line for every run.",
-                    "pattern": "^([a-zA-Z0-9_\\-\\.]+)@([a-zA-Z0-9_\\-\\.]+)\\.([a-zA-Z]{2,5})$"
+                    "pattern": "^([a-zA-Z0-9_\\-\\.]+)@([a-zA-Z0-9_\\-\\.]+)\\.([a-zA-Z]{2,5})$",
+                    "errorMessage": "Please provide a valid email address"
                 },
                 "multiqc_title": {
                     "type": "string",
                     "description": "MultiQC report title. Printed as page header, used for filename if not otherwise specified.",
-                    "fa_icon": "fas fa-file-signature"
+                    "fa_icon": "fas fa-file-signature",
+                    "maxLength": 100,
+                    "errorMessage": "MultiQC title must be less than or equal to 100 characters"
+                },
+                "db": {
+                    "type": "string",
+                    "format": "directory-path",
+                    "description": "The directory where reference data is stored. Individual methods can be overwritten with method-specific paths.",
+                    "fa_icon": "fas fa-folder-open"
+                },
+                "uniref30_prefix": {
+                    "type": "string",
+                    "default": "UniRef30_2023_02",
+                    "description": "UniRef major release",
+                    "enum": ["UniRef30_2023_02", "UniRef30_2022_02", "UniRef30_2021_03"],
+                    "fa_icon": "fas fa-database"
+                },
+                "use_msa_server": {
+                    "type": "boolean",
+                    "description": "Use the cloud MSA server",
+                    "icon": "fas folder-open"
+                },
+                "msa_server_url": {
+                    "type": "string",
+                    "description": "Specify your custom MMSeqs2 API server url",
+                    "fa_icon": "fas fa-link",
+                    "format": "uri",
+                    "errorMessage": "Please provide a valid URL for the MMSeqs2 API server"
                 }
             }
         },
         "alphafold2_options": {
-            "title": "Alphafold2 options",
+            "title": "AlphaFold2 options",
             "type": "object",
             "fa_icon": "fas fa-dna",
-            "description": "Alphafold2 options.",
+            "description": "AlphaFold2 options.",
             "properties": {
-                "max_template_date": {
+                "alphafold2_max_template_date": {
                     "type": "string",
-                    "default": "2020-05-14",
+                    "default": "2038-01-19",
                     "description": "Maximum date of the PDB templates used by 'AlphaFold2' mode",
-                    "fa_icon": "fas fa-calendar-check"
+                    "fa_icon": "fas fa-calendar-check",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+                    "errorMessage": "Date must be in YYYY-MM-DD format"
                 },
-                "alphafold2_db": {
-                    "type": "string",
-                    "format": "path",
-                    "exists": true,
-                    "description": "Specifies the DB and PARAMS path used by 'AlphaFold2' mode",
-                    "fa_icon": "fas fa-database"
-                },
-                "full_dbs": {
+                "alphafold2_full_dbs": {
                     "type": "boolean",
                     "description": "If true uses the full version of the BFD database otherwise, otherwise it uses its reduced version, small bfd",
                     "fa_icon": "fas fa-battery-full"
                 },
                 "alphafold2_mode": {
                     "type": "string",
-                    "default": "standard",
-                    "description": "Specifies the mode in which Alphafold2 will be run",
+                    "default": "split_msa_prediction",
+                    "description": "Specifies the mode in which AlphaFold2 will be run",
                     "enum": ["standard", "split_msa_prediction"],
                     "fa_icon": "fas fa-exchange-alt"
                 },
                 "alphafold2_model_preset": {
                     "type": "string",
-                    "default": "monomer",
+                    "default": "monomer_ptm",
                     "description": "Model preset for 'AlphaFold2' mode",
                     "enum": ["monomer", "monomer_casp14", "monomer_ptm", "multimer"],
                     "fa_icon": "fas fa-stream"
                 },
-                "random_seed": {
-                    "type": "string"
+                "alphafold2_random_seed": {
+                    "type": "string",
+                    "description": "Random seed to control stochastic alphafold inference."
+                },
+                "alphafold2_params_prefix": {
+                    "type": "string",
+                    "default": "alphafold_params_2022-12-06",
+                    "description": "Alphafold2 parameters version",
+                    "enum": [
+                        "alphafold_params_2022-12-06",
+                        "alphafold_params_2022-03-02",
+                        "alphafold_params_2022-01-19",
+                        "alphafold_params_2021-07-14"
+                    ],
+                    "fa_icon": "fas fa-database"
                 }
             }
         },
         "colabfold_options": {
-            "title": "Colabfold options",
+            "title": "ColabFold options",
             "type": "object",
             "fa_icon": "fas fa-coins",
-            "description": "Colabfold options.",
+            "description": "ColabFold options.",
             "properties": {
-                "colabfold_db": {
-                    "type": "string",
-                    "format": "path",
-                    "exists": true,
-                    "description": "Specifies the PARAMS and DB path used by 'colabfold'  mode",
-                    "fa_icon": "fas fa-folder-open"
-                },
-                "colabfold_server": {
-                    "type": "string",
-                    "default": "webserver",
-                    "description": "Specifies the MSA server used by Colabfold",
-                    "enum": ["webserver", "local"],
-                    "fa_icon": "fas fa-server"
-                },
                 "colabfold_model_preset": {
                     "type": "string",
                     "default": "alphafold2_ptm",
                     "description": "Model preset for 'colabfold' mode",
                     "enum": [
-                        "auto",
-                        "alphafold2",
                         "alphafold2_ptm",
                         "alphafold2_multimer_v1",
                         "alphafold2_multimer_v2",
@@ -296,37 +171,35 @@
                     ],
                     "fa_icon": "fas fa-stream"
                 },
-                "num_recycles_colabfold": {
+                "colabfold_num_recycles": {
                     "type": "integer",
                     "default": 3,
-                    "description": "Number of recycles for Colabfold",
-                    "fa_icon": "fas fa-recycle"
+                    "description": "Number of recycles for ColabFold",
+                    "fa_icon": "fas fa-recycle",
+                    "minimum": 1,
+                    "maximum": 20,
+                    "errorMessage": "Number of recycles must be a whole number between 1 and 20"
                 },
-                "use_amber": {
+                "colabfold_use_amber": {
                     "type": "boolean",
                     "default": true,
                     "description": "Use Amber minimization to refine the predicted structures",
                     "fa_icon": "fas fa-compress-alt"
                 },
-                "db_load_mode": {
+                "colabfold_db_load_mode": {
                     "type": "integer",
-                    "default": 0,
                     "description": "Specify the way that MMSeqs2 will load the required databases in memory",
                     "fa_icon": "fas fa-download",
-                    "enum": [0, 1, 2, 3]
+                    "enum": [0, 1, 2, 3],
+                    "errorMessage": "DB load mode must be 0, 1, 2, or 3"
                 },
-                "host_url": {
-                    "type": "string",
-                    "description": "Specify your custom MMSeqs2 API server url",
-                    "fa_icon": "fas fa-link"
-                },
-                "use_templates": {
+                "colabfold_use_templates": {
                     "type": "boolean",
                     "default": true,
                     "description": "Use PDB templates",
                     "fa_icon": "fas fa-paste"
                 },
-                "create_colabfold_index": {
+                "colabfold_create_index": {
                     "type": "boolean",
                     "description": "Create databases indexes when running colabfold_local mode",
                     "fa_icon": "fas fa-bezier-curve"
@@ -334,23 +207,19 @@
             }
         },
         "esmfold_options": {
-            "title": "Esmfold options",
+            "title": "ESMFold options",
             "type": "object",
             "fa_icon": "fas fa-coins",
-            "description": "Esmfold options.",
+            "description": "ESMFold options.",
             "properties": {
-                "esmfold_db": {
-                    "type": "string",
-                    "format": "path",
-                    "exists": true,
-                    "description": "Specifies the PARAMS path used by 'esmfold' mode",
-                    "fa_icon": "fas fa-folder-open"
-                },
-                "num_recycles_esmfold": {
+                "esmfold_num_recycles": {
                     "type": "integer",
                     "default": 4,
-                    "description": "Specifies the number of recycles used by Esmfold",
-                    "fa_icon": "fas fa-server"
+                    "description": "Specifies the number of recycles used by ESMFold",
+                    "fa_icon": "fas fa-server",
+                    "minimum": 1,
+                    "maximum": 20,
+                    "errorMessage": "Number of recycles must be a whole number between 1 and 20"
                 },
                 "esmfold_model_preset": {
                     "type": "string",
@@ -373,6 +242,22 @@
                     "exists": true,
                     "description": "Specifies the DB and PARAMS path used by 'RosettaFold2NA' mode",
                     "fa_icon": "fas fa-database"
+                }
+            }
+        },
+        "boltz_options": {
+            "title": "Boltz options",
+            "type": "object",
+            "fa_icon": "fas fa-database",
+            "description": "Boltz options.",
+            "properties": {
+                "boltz_use_potentials": {
+                    "type": "boolean",
+                    "description": "run Boltz-2 using inference time potentials"
+                },
+                "boltz_model": {
+                    "type": "string",
+                    "description": "Sets the model to use for prediction. Default is boltz2"
                 }
             }
         },
@@ -404,6 +289,35 @@
                     "type": "string",
                     "description": "Specifies the arguments to be passed to foldseek easysearch command",
                     "fa_icon": "fas fa-server"
+                }
+            }
+        },
+        "helixfold3_options": {
+            "title": "HelixFold3 options",
+            "type": "object",
+            "description": "HelixFold3 options",
+            "default": "",
+            "properties": {
+                "helixfold3_full_dbs": {
+                    "type": "boolean",
+                    "description": "If true uses the full version of the BFD database otherwise, otherwise it uses its reduced version, small bfd"
+                },
+                "helixfold3_precision": {
+                    "type": "string",
+                    "enum": ["bf16", "fp32"],
+                    "description": "The numerical precision used by the HelixFold3 model.",
+                    "default": "bf16"
+                },
+                "helixfold3_infer_times": {
+                    "type": "integer",
+                    "default": 4,
+                    "minimum": 1,
+                    "description": "Number of independent predictions made with the HelixFold3 model"
+                },
+                "helixfold3_max_template_date": {
+                    "type": "string",
+                    "default": "2038-01-19",
+                    "description": "No PDB template released after this date will be used to guide predictions."
                 }
             }
         },
@@ -474,18 +388,18 @@
             }
         },
         "alphafold2_dbs_and_parameters_link_options": {
-            "title": "Alphafold2 DBs and parameters links options",
+            "title": "AlphaFold2 DBs and parameters links options",
             "type": "object",
             "fa_icon": "fas fa-database",
-            "description": "Parameters used to provide the links to the DBs and parameters public resources to Alphafold2.",
+            "description": "Parameters used to provide the links to the DBs and parameters public resources to AlphaFold2.",
             "properties": {
-                "bfd_link": {
+                "alphafold2_bfd_link": {
                     "type": "string",
                     "default": "https://storage.googleapis.com/alphafold-databases/casp14_versions/bfd_metaclust_clu_complete_id30_c90_final_seq.sorted_opt.tar.gz",
                     "description": "Link to BFD dababase",
                     "fa_icon": "fas fa-link"
                 },
-                "small_bfd_link": {
+                "alphafold2_small_bfd_link": {
                     "type": "string",
                     "default": "https://storage.googleapis.com/alphafold-databases/reduced_dbs/bfd-first_non_consensus_sequences.fasta.gz",
                     "description": "Link to a reduced version of the BFD dababase",
@@ -494,58 +408,58 @@
                 "alphafold2_params_link": {
                     "type": "string",
                     "default": "https://storage.googleapis.com/alphafold/alphafold_params_2022-12-06.tar",
-                    "description": "Link to the Alphafold2 parameters",
+                    "description": "Link to the AlphaFold2 parameters",
                     "fa_icon": "fas fa-link"
                 },
-                "mgnify_link": {
+                "alphafold2_mgnify_link": {
                     "type": "string",
-                    "default": "https://storage.googleapis.com/alphafold-databases/v2.3/mgy_clusters_2022_05.fa.gz",
+                    "default": "https://ftp.ebi.ac.uk/pub/databases/metagenomics/peptide_database/2024_04/mgy_clusters.fa.gz",
                     "description": "Link to the MGnify database",
                     "fa_icon": "fas fa-link"
                 },
-                "pdb70_link": {
+                "alphafold2_pdb70_link": {
                     "type": "string",
-                    "default": "http://wwwuser.gwdg.de/~compbiol/data/hhsuite/databases/hhsuite_dbs/old-releases/pdb70_from_mmcif_200916.tar.gz",
+                    "default": "https://wwwuser.gwdguser.de/~compbiol/data/hhsuite/databases/hhsuite_dbs/pdb70_from_mmcif_220313.tar.gz",
                     "description": "Link to the PDB70 database",
                     "fa_icon": "fas fa-link"
                 },
-                "pdb_mmcif_link": {
+                "alphafold2_pdb_mmcif_link": {
                     "type": "string",
                     "default": "rsync.rcsb.org::ftp_data/structures/divided/mmCIF/",
                     "description": "Link to the PDB mmCIF database",
                     "fa_icon": "fas fa-link"
                 },
-                "pdb_obsolete_link": {
+                "alphafold2_pdb_obsolete_link": {
                     "type": "string",
                     "default": "https://files.wwpdb.org/pub/pdb/data/status/obsolete.dat",
                     "description": "Link to the PDB obsolete database",
                     "fa_icon": "fas fa-link"
                 },
-                "uniref30_alphafold2_link": {
+                "alphafold2_uniref30_link": {
                     "type": "string",
-                    "default": "https://storage.googleapis.com/alphafold-databases/v2.3/UniRef30_2021_03.tar.gz",
+                    "default": "https://wwwuser.gwdguser.de/~compbiol/uniclust/2023_02/UniRef30_2023_02_hhsuite.tar.gz",
                     "description": "Link to the Uniclust30 database",
                     "fa_icon": "fas fa-link"
                 },
-                "uniref90_link": {
+                "alphafold2_uniref90_link": {
                     "type": "string",
                     "default": "https://ftp.ebi.ac.uk/pub/databases/uniprot/uniref/uniref90/uniref90.fasta.gz",
                     "description": "Link to the UniRef90 database",
                     "fa_icon": "fas fa-link"
                 },
-                "pdb_seqres_link": {
+                "alphafold2_pdb_seqres_link": {
                     "type": "string",
                     "default": "https://files.wwpdb.org/pub/pdb/derived_data/pdb_seqres.txt",
                     "description": "Link to the PDB SEQRES database",
                     "fa_icon": "fas fa-link"
                 },
-                "uniprot_sprot_link": {
+                "alphafold2_uniprot_sprot_link": {
                     "type": "string",
                     "default": "https://ftp.ebi.ac.uk/pub/databases/uniprot/current_release/knowledgebase/complete/uniprot_sprot.fasta.gz",
                     "description": "Link to the SwissProt UniProt database",
                     "fa_icon": "fas fa-link"
                 },
-                "uniprot_trembl_link": {
+                "alphafold2_uniprot_trembl_link": {
                     "type": "string",
                     "default": "https://ftp.ebi.ac.uk/pub/databases/uniprot/current_release/knowledgebase/complete/uniprot_trembl.fasta.gz",
                     "description": "Link to the TrEMBL UniProt database",
@@ -553,19 +467,27 @@
                 }
             }
         },
-        "alphafold2_dbs_and_parameters_path_options": {
-            "title": "Alphafold2 DBs and parameters links options",
+        "alphafold2_dbs_and_parameters_paths_options": {
+            "title": "AlphaFold2 DBs and parameters paths options",
             "type": "object",
             "fa_icon": "fas fa-database",
-            "description": "Parameters used to provide the paths to the DBs and parameters for Alphafold2.",
+            "description": "Parameters used to provide the paths to the DBs and parameters for AlphaFold2.",
             "properties": {
-                "bfd_path": {
+                "alphafold2_db": {
+                    "type": "string",
+                    "format": "path",
+                    "exists": true,
+                    "description": "Specifies the DB and PARAMS path used by 'AlphaFold2' mode",
+                    "fa_icon": "fas fa-database",
+                    "errorMessage": "Please provide a valid path to AlphaFold2 database"
+                },
+                "alphafold2_bfd_path": {
                     "type": "string",
                     "description": "Path to BFD dababase",
                     "fa_icon": "fas fa-folder-open",
                     "default": "null/bfd/*"
                 },
-                "small_bfd_path": {
+                "alphafold2_small_bfd_path": {
                     "type": "string",
                     "description": "Path to a reduced version of the BFD database",
                     "fa_icon": "fas fa-folder-open",
@@ -573,53 +495,155 @@
                 },
                 "alphafold2_params_path": {
                     "type": "string",
-                    "description": "Path to the Alphafold2 parameters",
+                    "description": "Path to the AlphaFold2 parameters",
                     "fa_icon": "fas fa-folder-open",
-                    "default": "null/alphafold_params_*/*"
+                    "default": "null/params/alphafold_params_2022-12-06/*"
                 },
-                "mgnify_path": {
+                "alphafold2_mgnify_path": {
                     "type": "string",
                     "description": "Path to the MGnify database",
                     "fa_icon": "fas fa-folder-open",
                     "default": "null/mgnify/*"
                 },
-                "pdb70_path": {
+                "alphafold2_pdb70_path": {
                     "type": "string",
                     "description": "Path to the PDB70 database",
                     "fa_icon": "fas fa-folder-open",
                     "default": "null/pdb70/**"
                 },
-                "pdb_mmcif_path": {
+                "alphafold2_pdb_mmcif_path": {
                     "type": "string",
                     "description": "Path to the PDB mmCIF database",
                     "fa_icon": "fas fa-folder-open",
                     "default": "null/pdb_mmcif/mmcif_files"
                 },
-                "pdb_obsolete_path": {
+                "alphafold2_pdb_obsolete_path": {
                     "type": "string",
                     "description": "Path to the PDB obsolete file",
                     "fa_icon": "fas fa-folder-open",
                     "default": "null/pdb_mmcif/obsolete.dat"
                 },
-                "uniref30_alphafold2_path": {
+                "alphafold2_uniref30_path": {
                     "type": "string",
                     "description": "Path to the Uniref30 database",
                     "fa_icon": "fas fa-folder-open",
                     "default": "null/uniref30/*"
                 },
-                "uniref90_path": {
+                "alphafold2_uniref90_path": {
                     "type": "string",
                     "description": "Path to the UniRef90 database",
                     "fa_icon": "fas fa-folder-open",
                     "default": "null/uniref90/*"
                 },
-                "pdb_seqres_path": {
+                "alphafold2_pdb_seqres_path": {
                     "type": "string",
                     "description": "Path to the PDB SEQRES database",
                     "fa_icon": "fas fa-folder-open",
                     "default": "null/pdb_seqres/*"
                 },
-                "uniprot_path": {
+                "alphafold2_uniprot_path": {
+                    "type": "string",
+                    "description": "Path to UniProt database containing the SwissProt and the TrEMBL databases",
+                    "fa_icon": "fas fa-folder-open",
+                    "default": "null/uniprot/*"
+                }
+            }
+        },
+        "alphafold3_dbs_and_parameters_link_options": {
+            "title": "Alphafold3 DBs and parameters links options",
+            "type": "object",
+            "fa_icon": "fas fa-database",
+            "description": "Parameters used to provide the links to the DBs and parameters public resources to Alphafold3.",
+            "properties": {
+                "alphafold3_db": {
+                    "type": "string",
+                    "format": "path",
+                    "exists": true,
+                    "description": "Specifies the DB and PARAMS path used by 'AlphaFold3' mode",
+                    "fa_icon": "fas fa-database",
+                    "errorMessage": "Please provide a valid path to AlphaFold3 database"
+                },
+                "alphafold3_small_bfd_link": {
+                    "type": "string",
+                    "default": "https://storage.googleapis.com/alphafold-databases/v3.0/bfd-first_non_consensus_sequences.fasta.zst",
+                    "description": "Link to a reduced version of the BFD dababase",
+                    "fa_icon": "fas fa-link"
+                },
+                "alphafold3_mgnify_link": {
+                    "type": "string",
+                    "default": "https://storage.googleapis.com/alphafold-databases/v3.0/mgy_clusters_2022_05.fa.zst",
+                    "description": "Link to the MGnify database",
+                    "fa_icon": "fas fa-link"
+                },
+                "alphafold3_pdb_mmcif_link": {
+                    "type": "string",
+                    "default": "https://storage.googleapis.com/alphafold-databases/v3.0/pdb_2022_09_28_mmcif_files.tar.zst",
+                    "description": "Link to the PDB mmCIF database",
+                    "fa_icon": "fas fa-link"
+                },
+                "alphafold3_uniref90_link": {
+                    "type": "string",
+                    "default": "https://storage.googleapis.com/alphafold-databases/v3.0/uniref90_2022_05.fa.zst",
+                    "description": "Link to the UniRef90 database",
+                    "fa_icon": "fas fa-link"
+                },
+                "alphafold3_pdb_seqres_link": {
+                    "type": "string",
+                    "default": "https://storage.googleapis.com/alphafold-databases/v3.0/pdb_seqres_2022_09_28.fasta.zst",
+                    "description": "Link to the PDB SEQRES database",
+                    "fa_icon": "fas fa-link"
+                },
+                "alphafold3_uniprot_link": {
+                    "type": "string",
+                    "default": "https://storage.googleapis.com/alphafold-databases/v3.0/uniprot_all_2021_04.fa.zst",
+                    "description": "Link to the UniProt database",
+                    "fa_icon": "fas fa-link"
+                }
+            }
+        },
+        "alphafold3_dbs_and_parameters_path_options": {
+            "title": "Alphafold3 DBs and parameters links options",
+            "type": "object",
+            "fa_icon": "fas fa-database",
+            "description": "Parameters used to provide the paths to the DBs and parameters for Alphafold2.",
+            "properties": {
+                "alphafold3_small_bfd_path": {
+                    "type": "string",
+                    "description": "Path to the reduced version of the BFD database",
+                    "fa_icon": "fas fa-folder-open",
+                    "default": "null/small_bfd/*"
+                },
+                "alphafold3_params_path": {
+                    "type": "string",
+                    "description": "Path to the Alphafold3 parameters",
+                    "fa_icon": "fas fa-folder-open",
+                    "default": "null/params/*"
+                },
+                "alphafold3_mgnify_path": {
+                    "type": "string",
+                    "description": "Path to the MGnify database",
+                    "fa_icon": "fas fa-folder-open",
+                    "default": "null/mgnify/*"
+                },
+                "alphafold3_pdb_mmcif_path": {
+                    "type": "string",
+                    "description": "Path to the PDB mmCIF database",
+                    "fa_icon": "fas fa-folder-open",
+                    "default": "null/mmcif_files"
+                },
+                "alphafold3_uniref90_path": {
+                    "type": "string",
+                    "description": "Path to the UniRef90 database",
+                    "fa_icon": "fas fa-folder-open",
+                    "default": "null/uniref90/*"
+                },
+                "alphafold3_pdb_seqres_path": {
+                    "type": "string",
+                    "description": "Path to the PDB SEQRES database",
+                    "fa_icon": "fas fa-folder-open",
+                    "default": "null/pdb_seqres/*"
+                },
+                "alphafold3_uniprot_path": {
                     "type": "string",
                     "description": "Path to UniProt database containing the SwissProt and the TrEMBL databases",
                     "fa_icon": "fas fa-folder-open",
@@ -628,18 +652,18 @@
             }
         },
         "colabfold_dbs_and_parameters_link_options": {
-            "title": "Colabfold DBs and parameters links options",
+            "title": "ColabFold DBs and parameters links options",
             "type": "object",
-            "description": "Parameters used to provide the links to the DBs and parameters public resources to Colabfold.",
+            "description": "Parameters used to provide the links to the DBs and parameters public resources to ColabFold.",
             "fa_icon": "fas fa-database",
             "properties": {
                 "colabfold_db_link": {
                     "type": "string",
                     "default": "http://wwwuser.gwdg.de/~compbiol/colabfold/colabfold_envdb_202108.tar.gz",
-                    "description": "Link to the Colabfold database",
+                    "description": "Link to the ColabFold database",
                     "fa_icon": "fas fa-link"
                 },
-                "uniref30_colabfold_link": {
+                "colabfold_uniref30_link": {
                     "type": "string",
                     "default": "https://wwwuser.gwdg.de/~compbiol/colabfold/uniref30_2302.tar.gz",
                     "description": "Link to the UniRef30 database",
@@ -652,23 +676,31 @@
                 }
             }
         },
-        "colabfold_dbs_and_parameters_path_options": {
-            "title": "Colabfold DBs and parameters links options",
+        "colabfold_dbs_and_parameters_paths_options": {
+            "title": "ColabFold DBs and parameters paths options",
             "type": "object",
-            "description": "Parameters used to provide the links to the DBs and parameters public resources to Colabfold.",
+            "description": "Parameters used to provide the paths to the DBs and parameters public resources to ColabFold.",
             "fa_icon": "fas fa-database",
             "properties": {
-                "colabfold_db_path": {
+                "colabfold_db": {
                     "type": "string",
-                    "description": "Link to the Colabfold database",
+                    "format": "path",
+                    "exists": true,
+                    "description": "Specifies the PARAMS and DB path used by 'colabfold'  mode",
                     "fa_icon": "fas fa-folder-open",
-                    "default": "null/colabfold_envdb_202108"
+                    "errorMessage": "Please provide a valid path to ColabFold database"
                 },
-                "uniref30_colabfold_path": {
+                "colabfold_envdb_path": {
+                    "type": "string",
+                    "description": "Link to the ColabFold database",
+                    "fa_icon": "fas fa-folder-open",
+                    "default": "null/colabfold_envdb/*"
+                },
+                "colabfold_uniref30_path": {
                     "type": "string",
                     "description": "Link to the UniRef30 database",
                     "fa_icon": "fas fa-folder-open",
-                    "default": "null/uniref30_2302"
+                    "default": "null/colabfold_uniref30/*"
                 },
                 "colabfold_alphafold2_params_path": {
                     "type": "string",
@@ -683,43 +715,125 @@
             }
         },
         "esmfold_parameters_link_options": {
-            "title": "Esmfold parameters links options",
+            "title": "ESMFold parameters links options",
             "type": "object",
-            "description": "Parameters used to provide the links to the parameters public resources to Esmfold.",
+            "description": "Parameters used to provide the links to the parameters public resources to ESMFold.",
             "fa_icon": "fas fa-database",
             "properties": {
                 "esmfold_3B_v1": {
                     "type": "string",
                     "default": "https://dl.fbaipublicfiles.com/fair-esm/models/esmfold_3B_v1.pt",
-                    "description": "Link to the Esmfold 3B-v1 model",
+                    "description": "Link to the ESMFold 3B-v1 model",
                     "fa_icon": "fas fa-link"
                 },
                 "esm2_t36_3B_UR50D": {
                     "type": "string",
                     "default": "https://dl.fbaipublicfiles.com/fair-esm/models/esm2_t36_3B_UR50D.pt",
-                    "description": "Link to the Esmfold t36-3B-UR50D model",
+                    "description": "Link to the ESMFold t36-3B-UR50D model",
                     "fa_icon": "fas fa-link"
                 },
                 "esm2_t36_3B_UR50D_contact_regression": {
                     "type": "string",
                     "default": "https://dl.fbaipublicfiles.com/fair-esm/regression/esm2_t36_3B_UR50D-contact-regression.pt",
-                    "description": "Link to the Esmfold t36-3B-UR50D-contact-regression model",
+                    "description": "Link to the ESMFold t36-3B-UR50D-contact-regression model",
                     "fa_icon": "fas fa-link"
                 }
             }
         },
-
-        "esmfold_parameters_path_options": {
-            "title": "Esmfold parameters links options",
+        "esmfold_parameters_paths_options": {
+            "title": "ESMFold parameters paths options",
             "type": "object",
-            "description": "Parameters used to provide the links to the parameters public resources to Esmfold.",
+            "description": "Parameters used to provide the paths to the parameters public resources to ESMFold.",
             "fa_icon": "fas fa-database",
             "properties": {
+                "esmfold_db": {
+                    "type": "string",
+                    "format": "path",
+                    "exists": true,
+                    "description": "Specifies the PARAMS path used by 'esmfold' mode",
+                    "fa_icon": "fas fa-folder-open",
+                    "errorMessage": "Please provide a valid path to ESMFold database"
+                },
                 "esmfold_params_path": {
                     "type": "string",
-                    "description": "Link to the Esmfold parameters",
+                    "description": "Link to the ESMFold parameters",
                     "fa_icon": "fas fa-folder-open",
-                    "default": "null/*"
+                    "default": "null/params/*"
+                }
+            }
+        },
+        "boltz_dbs_and_model_links_options": {
+            "title": "Boltz DBs and model links options",
+            "type": "object",
+            "fa_icon": "fas fa-database",
+            "description": "Links used to provide model links and weight links to Boltz",
+            "properties": {
+                "boltz_ccd_link": {
+                    "type": "string",
+                    "description": "Link to download CCD file",
+                    "icon": "fas fa-link",
+                    "default": "https://huggingface.co/boltz-community/boltz-1/resolve/main/ccd.pkl"
+                },
+                "boltz_model_link": {
+                    "type": "string",
+                    "description": "Link to download model file",
+                    "icon": "fas fa-link",
+                    "default": "https://huggingface.co/boltz-community/boltz-1/resolve/main/boltz1_conf.ckpt"
+                },
+                "boltz2_aff_link": {
+                    "type": "string",
+                    "default": "https://huggingface.co/boltz-community/boltz-2/resolve/main/boltz2_aff.ckpt",
+                    "description": "Link to download boltz affinity file"
+                },
+                "boltz2_conf_link": {
+                    "type": "string",
+                    "default": "https://huggingface.co/boltz-community/boltz-2/resolve/main/boltz2_conf.ckpt",
+                    "description": "Link to download boltz-2 conf file"
+                },
+                "boltz2_mols_link": {
+                    "type": "string",
+                    "default": "https://huggingface.co/boltz-community/boltz-2/resolve/main/mols.tar",
+                    "description": "Link to download boltz-2 mols"
+                }
+            }
+        },
+        "boltz_dbs_and_parameters_paths_options": {
+            "title": "Boltz DBs and model paths options",
+            "type": "object",
+            "fa_icon": "fas fa-database",
+            "description": "Paths used to provide model paths and weight paths to Boltz",
+            "properties": {
+                "boltz_db": {
+                    "type": "string",
+                    "description": "Path to boltz databases",
+                    "icon": "fas folder-open"
+                },
+                "boltz_ccd_path": {
+                    "type": "string",
+                    "description": "Path to CCD file",
+                    "icon": "fas folder-open",
+                    "default": "null/params/ccd.pkl"
+                },
+                "boltz_model_path": {
+                    "type": "string",
+                    "description": "Path to boltz Model file",
+                    "icon": "fas folder-open",
+                    "default": "null/params/boltz1_conf.ckpt"
+                },
+                "boltz2_aff_path": {
+                    "type": "string",
+                    "default": "null/params/boltz2_aff.ckpt",
+                    "description": "Path to boltz affinity file"
+                },
+                "boltz2_conf_path": {
+                    "type": "string",
+                    "default": "null/params/boltz2_conf.ckpt",
+                    "description": "Path to boltz-2 conf file"
+                },
+                "boltz2_mols_path": {
+                    "type": "string",
+                    "default": "null/params/mols/",
+                    "description": "Path to boltz-2 mols"
                 }
             }
         },
@@ -839,7 +953,8 @@
                     "pattern": "^\\d+(\\.\\d+)?\\.?\\s*(K|M|G|T)?B$",
                     "default": "25.MB",
                     "fa_icon": "fas fa-file-upload",
-                    "hidden": true
+                    "hidden": true,
+                    "errorMessage": "File size must be specified with units (KB, MB, GB, TB)"
                 },
                 "monochrome_logs": {
                     "type": "boolean",
@@ -852,7 +967,9 @@
                     "description": "Incoming hook URL for messaging service",
                     "fa_icon": "fas fa-people-group",
                     "help_text": "Incoming hook URL for messaging service. Currently, MS Teams and Slack are supported.",
-                    "hidden": true
+                    "hidden": true,
+                    "format": "uri",
+                    "errorMessage": "Please provide a valid webhook URL"
                 },
                 "multiqc_config": {
                     "type": "string",
@@ -902,38 +1019,31 @@
                 }
             }
         },
-        "rosettafold_all_atom_options": {
-            "title": "RoseTTAFold All Atom options",
-            "type": "object",
-            "description": "RoseTTAFold All Atom options.",
-            "default": "",
-            "properties": {
-                "rosettafold_all_atom_db": {
-                    "type": "string"
-                }
-            }
-        },
         "rosettafold_all_atom_dbs_and_parameters_links_options": {
             "title": "RoseTTAFold All Atom DBs and parameters links options",
             "type": "object",
             "description": "Parameters used to provide the paths to the DBs and parameters for RoseTTAFold All Atom.",
             "default": "",
             "properties": {
-                "uniref30_rosettafold_all_atom_link": {
+                "rosettafold_all_atom_uniref30_link": {
                     "type": "string",
-                    "default": "http://wwwuser.gwdg.de/~compbiol/uniclust/2020_06/UniRef30_2020_06_hhsuite.tar.gz"
+                    "default": "https://wwwuser.gwdguser.de/~compbiol/uniclust/2023_02/UniRef30_2023_02_hhsuite.tar.gz",
+                    "description": "Link to the UniRef30 database for RoseTTAFold All Atom"
                 },
-                "bfd_rosettafold_all_atom_link": {
+                "rosettafold_all_atom_bfd_link": {
                     "type": "string",
-                    "default": "https://bfd.mmseqs.com/bfd_metaclust_clu_complete_id30_c90_final_seq.sorted_opt.tar.gz"
+                    "default": "https://bfd.mmseqs.com/bfd_metaclust_clu_complete_id30_c90_final_seq.sorted_opt.tar.gz",
+                    "description": "Link to the BFD database for RoseTTAFold All Atom"
                 },
-                "pdb100_rosettafold_all_atom_link": {
+                "rosettafold_all_atom_pdb100_link": {
                     "type": "string",
-                    "default": "https://files.ipd.uw.edu/pub/RoseTTAFold/pdb100_2021Mar03.tar.gz"
+                    "default": "https://files.ipd.uw.edu/pub/RoseTTAFold/pdb100_2021Mar03.tar.gz",
+                    "description": "Link to the PDB100 database for RoseTTAFold All Atom"
                 },
-                "rfaa_paper_weights_link": {
+                "rosettafold_all_atom_paper_weights_link": {
                     "type": "string",
-                    "default": "http://files.ipd.uw.edu/pub/RF-All-Atom/weights/RFAA_paper_weights.pt"
+                    "default": "http://files.ipd.uw.edu/pub/RF-All-Atom/weights/RFAA_paper_weights.pt",
+                    "description": "Link to the RoseTTAFold All Atom paper weights"
                 }
             }
         },
@@ -943,35 +1053,189 @@
             "description": "Parameters used to provide the paths to the DBs and parameters for RoseTTAFold All Atom.",
             "default": "",
             "properties": {
-                "uniref30_rosettafold_all_atom_path": {
+                "rosettafold_all_atom_db": {
                     "type": "string",
-                    "default": "null/uniref30/UniRef30_2020_06/*"
+                    "description": "Path to RoseTTAFold All Atom database"
                 },
-                "bfd_rosettafold_all_atom_path": {
+                "rosettafold_all_atom_uniref30_path": {
                     "type": "string",
-                    "default": "null/bfd/*"
+                    "default": "null/uniref30/*",
+                    "description": "Path to UniRef30 database for RoseTTAFold All Atom"
                 },
-                "pdb100_rosettafold_all_atom_path": {
+                "rosettafold_all_atom_bfd_path": {
                     "type": "string",
-                    "default": "null/pdb100_2021Mar03/*"
+                    "default": "null/bfd/*",
+                    "description": "Path to BFD database for RoseTTAFold All Atom"
                 },
-                "rfaa_paper_weights_path": {
+                "rosettafold_all_atom_pdb100_path": {
                     "type": "string",
-                    "default": "null/RFAA_paper_weights.pt"
+                    "default": "null/pdb100/*",
+                    "description": "Path to PDB100 database for RoseTTAFold All Atom"
+                },
+                "rosettafold_all_atom_paper_weights_path": {
+                    "type": "string",
+                    "default": "null/params/RFAA_paper_weights.pt",
+                    "description": "Path to RoseTTAFold All Atom paper weights"
+                }
+            }
+        },
+        "helixfold3_dbs_and_parameters_paths_options": {
+            "title": "HelixFold3 dbs and parameters paths options",
+            "type": "object",
+            "description": "Parameters used to provide the paths to the DBs and parameters for HelixFold3.",
+            "default": "",
+            "properties": {
+                "helixfold3_db": {
+                    "type": "string",
+                    "description": "Path to HelixFold3 database"
+                },
+                "helixfold3_init_models_path": {
+                    "type": "string",
+                    "default": "null/params/HelixFold3-240814.pdparams",
+                    "description": "Path to HelixFold3 init models"
+                },
+                "helixfold3_uniclust30_path": {
+                    "type": "string",
+                    "default": "null/uniref30/*",
+                    "description": "Path to UniRef30 database for HelixFold3"
+                },
+                "helixfold3_ccd_preprocessed_path": {
+                    "type": "string",
+                    "default": "null/params/ccd_preprocessed_etkdg.pkl.gz",
+                    "description": "Path to CCD preprocessed file for HelixFold3"
+                },
+                "helixfold3_rfam_path": {
+                    "type": "string",
+                    "default": "null/rfam/Rfam-14.9_rep_seq.fasta",
+                    "description": "Path to Rfam database for HelixFold3"
+                },
+                "helixfold3_bfd_path": {
+                    "type": "string",
+                    "default": "null/bfd/*",
+                    "description": "Path to BFD database for HelixFold3"
+                },
+                "helixfold3_small_bfd_path": {
+                    "type": "string",
+                    "default": "null/small_bfd/*",
+                    "description": "Path to reduced BFD database for HelixFold3"
+                },
+                "helixfold3_uniprot_path": {
+                    "type": "string",
+                    "default": "null/uniprot/*",
+                    "description": "Path to UniProt database for HelixFold3"
+                },
+                "helixfold3_pdb_seqres_path": {
+                    "type": "string",
+                    "default": "null/pdb_seqres/*",
+                    "description": "Path to PDB SEQRES database for HelixFold3"
+                },
+                "helixfold3_uniref90_path": {
+                    "type": "string",
+                    "default": "null/uniref90/*",
+                    "description": "Path to UniRef90 database for HelixFold3"
+                },
+                "helixfold3_mgnify_path": {
+                    "type": "string",
+                    "default": "null/mgnify/*",
+                    "description": "Path to MGnify database for HelixFold3"
+                },
+                "helixfold3_pdb_mmcif_path": {
+                    "type": "string",
+                    "default": "null/pdb_mmcif/mmcif_files",
+                    "description": "Path to PDB mmCIF database for HelixFold3"
+                },
+                "helixfold3_maxit_src_path": {
+                    "type": "string",
+                    "default": "null/maxit-v11.200-prod-src",
+                    "description": "Path to Maxit Suite for HelixFold3"
+                },
+                "helixfold3_obsolete_path": {
+                    "type": "string",
+                    "default": "null/pdb_mmcif/obsolete.dat",
+                    "description": "Path to obsolete PDB file for HelixFold3"
+                }
+            }
+        },
+        "helixfold3_dbs_and_parameters_link_options": {
+            "title": "HelixFold3 dbs and parameters link options",
+            "type": "object",
+            "description": "Parameters used to provide the links to the parameters public resources to HelixFold3.",
+            "default": "",
+            "properties": {
+                "helixfold3_init_models_link": {
+                    "type": "string",
+                    "default": "https://paddlehelix.bd.bcebos.com/HelixFold3/params/HelixFold3-params-240814.zip",
+                    "description": "Link to HelixFold3 init models"
+                },
+                "helixfold3_uniclust30_link": {
+                    "type": "string",
+                    "default": "https://wwwuser.gwdguser.de/~compbiol/uniclust/2023_02/UniRef30_2023_02_hhsuite.tar.gz",
+                    "description": "Link to UniRef30 database for HelixFold3"
+                },
+                "helixfold3_ccd_preprocessed_link": {
+                    "type": "string",
+                    "default": "https://paddlehelix.bd.bcebos.com/HelixFold3/CCD/ccd_preprocessed_etkdg.pkl.gz",
+                    "description": "Link to CCD preprocessed file for HelixFold3"
+                },
+                "helixfold3_rfam_link": {
+                    "type": "string",
+                    "default": "https://paddlehelix.bd.bcebos.com/HelixFold3/MSA/Rfam-14.9_rep_seq.fasta",
+                    "description": "Link to Rfam database for HelixFold3"
+                },
+                "helixfold3_bfd_link": {
+                    "type": "string",
+                    "default": "https://storage.googleapis.com/alphafold-databases/casp14_versions/bfd_metaclust_clu_complete_id30_c90_final_seq.sorted_opt.tar.gz",
+                    "description": "Link to BFD database for HelixFold3"
+                },
+                "helixfold3_small_bfd_link": {
+                    "type": "string",
+                    "default": "https://storage.googleapis.com/alphafold-databases/reduced_dbs/bfd-first_non_consensus_sequences.fasta.gz",
+                    "description": "Link to reduced BFD database for HelixFold3"
+                },
+                "helixfold3_pdb_seqres_link": {
+                    "type": "string",
+                    "default": "https://files.wwpdb.org/pub/pdb/derived_data/pdb_seqres.txt",
+                    "description": "Link to PDB SEQRES database for HelixFold3"
+                },
+                "helixfold3_uniref90_link": {
+                    "type": "string",
+                    "default": "ftp://ftp.uniprot.org/pub/databases/uniprot/uniref/uniref90/uniref90.fasta.gz",
+                    "description": "Link to UniRef90 database for HelixFold3"
+                },
+                "helixfold3_mgnify_link": {
+                    "type": "string",
+                    "default": "https://ftp.ebi.ac.uk/pub/databases/metagenomics/peptide_database/2024_04/mgy_clusters.fa.gz",
+                    "description": "Link to MGnify database for HelixFold3"
+                },
+                "helixfold3_pdb_mmcif_link": {
+                    "type": "string",
+                    "default": "rsync.rcsb.org::ftp_data/structures/divided/mmCIF/",
+                    "description": "Link to PDB mmCIF database for HelixFold3"
+                },
+                "helixfold3_uniprot_sprot_link": {
+                    "type": "string",
+                    "default": "ftp://ftp.ebi.ac.uk/pub/databases/uniprot/current_release/knowledgebase/complete/uniprot_sprot.fasta.gz",
+                    "description": "Link to UniProt SwissProt database for HelixFold3"
+                },
+                "helixfold3_uniprot_trembl_link": {
+                    "type": "string",
+                    "default": "ftp://ftp.ebi.ac.uk/pub/databases/uniprot/current_release/knowledgebase/complete/uniprot_trembl.fasta.gz",
+                    "description": "Link to UniProt TrEMBL database for HelixFold3"
+                },
+                "helixfold3_obsolete_link": {
+                    "type": "string",
+                    "default": "https://files.rcsb.org/pub/pdb/data/status/obsolete.dat",
+                    "description": "Link to obsolete PDB file for HelixFold3"
+                },
+                "helixfold3_maxit_src_link": {
+                    "type": "string",
+                    "default": "https://proteinfold-dataset.s3.amazonaws.com/test-data/db/helixfold3/maxit-v11.200-prod-src.tar.gz",
+                    "description": "Link to Maxit Suite for HelixFold3"
                 }
             }
         }
     },
     "allOf": [
-        {
-            "$ref": "#/$defs/helixfold3_options"
-        },
-        {
-            "$ref": "#/$defs/helixfold3_dbs_and_parameters_paths_options"
-        },
-        {
-            "$ref": "#/$defs/helixfold3_dbs_and_parameters_link_options"
-        },
         {
             "$ref": "#/$defs/input_output_options"
         },
@@ -985,7 +1249,13 @@
             "$ref": "#/$defs/esmfold_options"
         },
         {
+            "$ref": "#/$defs/boltz_options"
+        },
+        {
             "$ref": "#/$defs/foldseek_options"
+        },
+        {
+            "$ref": "#/$defs/helixfold3_options"
         },
         {
             "$ref": "#/$defs/process_skipping_options"
@@ -997,25 +1267,34 @@
             "$ref": "#/$defs/alphafold2_dbs_and_parameters_link_options"
         },
         {
-            "$ref": "#/$defs/alphafold2_dbs_and_parameters_path_options"
+            "$ref": "#/$defs/alphafold2_dbs_and_parameters_paths_options"
+        },
+        {
+            "$ref": "#/$defs/alphafold3_dbs_and_parameters_link_options"
+        },
+        {
+            "$ref": "#/$defs/alphafold3_dbs_and_parameters_path_options"
         },
         {
             "$ref": "#/$defs/colabfold_dbs_and_parameters_link_options"
         },
         {
-            "$ref": "#/$defs/colabfold_dbs_and_parameters_path_options"
+            "$ref": "#/$defs/colabfold_dbs_and_parameters_paths_options"
         },
         {
             "$ref": "#/$defs/esmfold_parameters_link_options"
         },
         {
-            "$ref": "#/$defs/esmfold_parameters_path_options"
+            "$ref": "#/$defs/esmfold_parameters_paths_options"
+        },
+        {
+            "$ref": "#/$defs/boltz_dbs_and_model_links_options"
+        },
+        {
+            "$ref": "#/$defs/boltz_dbs_and_parameters_paths_options"
         },
         {
             "$ref": "#/$defs/generic_options"
-        },
-        {
-            "$ref": "#/$defs/rosettafold_all_atom_options"
         },
         {
             "$ref": "#/$defs/rosettafold_all_atom_dbs_and_parameters_links_options"
@@ -1031,6 +1310,12 @@
         },
         {
             "$ref": "#/$defs/rosettafold2na_dbs_and_parameters_path_options"
+        },
+        {
+            "$ref": "#/$defs/helixfold3_dbs_and_parameters_link_options"
+        },
+        {
+            "$ref": "#/$defs/helixfold3_dbs_and_parameters_paths_options"
         }
     ]
 }

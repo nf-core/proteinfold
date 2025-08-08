@@ -8,7 +8,7 @@ process MULTIFASTA_TO_SINGLEFASTA {
         'nf-core/ubuntu:20.04' }"
 
     input:
-    tuple val(meta), path(fasta)
+    tuple val(meta), path(fasta, stageAs: 'query.fasta')
 
     output:
     tuple val(meta), path("${meta.id}.fasta"), emit: input_fasta

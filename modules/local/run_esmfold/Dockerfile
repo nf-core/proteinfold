@@ -30,13 +30,13 @@ RUN wget -q -P /tmp "https://github.com/conda-forge/miniforge/releases/latest/do
 RUN /conda/bin/conda install --quiet -y conda==24.11.1 pip python=3.9 \
     && conda clean --all --force-pkgs-dirs --yes
 
-RUN	cd / && /conda/bin/conda update -qy conda \
+RUN    cd / && /conda/bin/conda update -qy conda \
     && /conda/bin/conda install -y -c conda-forge pip python
 
-RUN	/conda/bin/pip install --no-cache-dir git+https://github.com/facebookresearch/esm.git
-RUN	/conda/bin/pip install --no-cache-dir "fair-esm[esmfold]"
+RUN    /conda/bin/pip install --no-cache-dir git+https://github.com/facebookresearch/esm.git
+RUN    /conda/bin/pip install --no-cache-dir "fair-esm[esmfold]"
 RUN /conda/bin/pip install --no-cache-dir torch==2.0.0 torchvision==0.15.0 --upgrade --force-reinstall --index-url https://download.pytorch.org/whl/cu118
-RUN	/conda/bin/pip install --no-cache-dir \
+RUN    /conda/bin/pip install --no-cache-dir \
     pytorch_lightning==1.9.5 \
     biopython==1.85 \
     ## https://github.com/facebookresearch/esm/issues/621#issuecomment-1741684707
@@ -51,7 +51,7 @@ RUN	/conda/bin/pip install --no-cache-dir \
     typing-extensions==4.12.2 \
     wandb==0.12.21
 
-RUN	/conda/bin/pip install --no-cache-dir 'dllogger @ git+https://github.com/NVIDIA/dllogger.git'
+RUN    /conda/bin/pip install --no-cache-dir 'dllogger @ git+https://github.com/NVIDIA/dllogger.git'
 
 ## https://github.com/aqlaboratory/insilico_design_pipeline/blob/main/README.md#additional-notes
 RUN git clone https://github.com/aqlaboratory/openfold.git && \

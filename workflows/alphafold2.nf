@@ -28,7 +28,7 @@ workflow ALPHAFOLD2 {
     take:
     ch_samplesheet          // channel: samplesheet read in from --input
     ch_versions             // channel: [ path(versions.yml) ]
-    full_dbs                // boolean: Use full databases (otherwise reduced version)
+    alphafold2_full_dbs                // boolean: Use full databases (otherwise reduced version)
     alphafold2_mode         //  string: Mode to run Alphafold2 in
     alphafold2_model_preset //  string: Specifies the model preset to use for Alphafold2
     ch_alphafold2_params    // channel: path(alphafold2_params)
@@ -66,7 +66,7 @@ workflow ALPHAFOLD2 {
         //
         RUN_ALPHAFOLD2 (
             ch_samplesheet,
-            full_dbs,
+            alphafold2_full_dbs,
             alphafold2_model_preset,
             ch_alphafold2_params,
             ch_bfd,
@@ -100,7 +100,7 @@ workflow ALPHAFOLD2 {
         //
         RUN_ALPHAFOLD2_MSA (
             ch_samplesheet,
-            full_dbs,
+            alphafold2_full_dbs,
             alphafold2_model_preset,
             ch_alphafold2_params,
             ch_bfd,
@@ -114,7 +114,7 @@ workflow ALPHAFOLD2 {
             ch_pdb_seqres,
             ch_uniprot
         )
-        ch_versions    = ch_versions.mix(RUN_ALPHAFOLD2_MSA.out.versions)
+        ch_versions = ch_versions.mix(RUN_ALPHAFOLD2_MSA.out.versions)
 
         RUN_ALPHAFOLD2_PRED (
             ch_samplesheet,
@@ -147,23 +147,35 @@ workflow ALPHAFOLD2 {
         ch_versions       = ch_versions.mix(RUN_ALPHAFOLD2_PRED.out.versions)
     }
 
-    ch_top_ranked_pdb
-        .map { [ it[0]["id"], it[0], it[1] ] }
-        .set { ch_top_ranked_pdb }
-
     ch_pdb
-        .join(ch_msa)
-        .map {
-            it[0]["model"] = "alphafold2"
-            it
+        .map{
+            meta = it[0].clone();
+            meta.model = "alphafold2";
+            [ meta, it[1] ]
         }
-        .set { ch_pdb_msa }
+        .set { ch_pdb_final }
+
+    ch_msa
+        .map{
+            meta = it[0].clone();
+            meta.model = "alphafold2";
+            [ meta, it[1] ]
+        }
+        .set { ch_msa_final }
+
+    ch_top_ranked_pdb_final = ch_top_ranked_pdb
+                                .map{
+                                    meta = it[0].clone();
+                                    meta.model = "alphafold2";
+                                    [ meta, it[1] ]
+                                }
 
     emit:
-    top_ranked_pdb = ch_top_ranked_pdb // channel: [ id, /path/to/*.pdb ]
-    pdb_msa        = ch_pdb_msa        // channel: [ meta, /path/to/*.pdb, /path/to/*_coverage.png ]
-    multiqc_report = ch_multiqc_report // channel: /path/to/multiqc_report.html
-    versions       = ch_versions       // channel: [ path(versions.yml) ]
+    top_ranked_pdb = ch_top_ranked_pdb_final // channel: [ meta, /path/to/*.pdb ]
+    pdb            = ch_pdb_final            // channel: [ meta, /path/to/*.pdb ]
+    msa            = ch_msa_final            // channel: [ meta, /path/to/*.pdb, /path/to/*_coverage.png ]
+    multiqc_report = ch_multiqc_report       // channel: /path/to/multiqc_report.html
+    versions       = ch_versions             // channel: [ path(versions.yml) ]
 }
 
 /*

@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[#235](https://github.com/nf-core/proteinfold/issues/235)] - Update samplesheet to new version (switch from `sequence` column to `id`).
 - [[#239](https://github.com/nf-core/proteinfold/issues/239)] - Update alphafold2 standard mode Dockerfile.
 - [[#240](https://github.com/nf-core/proteinfold/issues/240)] - Separate download and input of pdb `mmcif` files and `obsolete` database.
+- [[#229](https://github.com/nf-core/proteinfold/issues/229)] - Add Boltz pipeline [PR #227](https://github.com/nf-core/proteinfold/pull/227).
 - [[PR #249](https://github.com/nf-core/proteinfold/pull/249)] - Update pipeline template to [nf-core/tools 3.2.0](https://github.com/nf-core/tools/releases/tag/3.2.0).
 - [[PR #271](https://github.com/nf-core/proteinfold/pull/271)] - Update RFAA and HF3 dockerfiles for quicker building and reduction in image size.
 - [[PR #274](https://github.com/nf-core/proteinfold/pull/274)] - Simplify run_helixfold3 module and move arguments to `modules.config`.
@@ -32,13 +33,85 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[PR #294](https://github.com/nf-core/proteinfold/pull/294)] - Temporary downgrade of schema for passing CI tests with Nextflow edge version.
 - [[#272](https://github.com/nf-core/proteinfold/issues/272)] - Colouring scheme conforming to AlphaFold2 confidence bands in html report.
 - [[PR #297](https://github.com/nf-core/proteinfold/pull/297)] - Update pipeline template to [nf-core/tools 3.2.1](https://github.com/nf-core/tools/releases/tag/3.2.1).
-- [PR ##YOUR_PR_NUMBER] - Add RosettaFold2NA module.
+- [[#273](https://github.com/nf-core/proteinfold/issues/273)] - Fixes comparison report to correctly label msa coverage plots with corresponding method label.
+- [[#290](https://github.com/nf-core/proteinfold/issues/290)] - Update Alphafold2 split images to make them compatible Hopper gpus.
+- [[PR #302](https://github.com/nf-core/proteinfold/pull/302)] - Fix HF3 dbs and max_template_date.
+- [[PR #305](https://github.com/nf-core/proteinfold/pull/305)] - Stop RFAA and HF3 symlinking scripts into workdir.
+- [[PR #306](https://github.com/nf-core/proteinfold/pull/306)] - extract_output.py -> extract_metrics.py so pLDDT, MSA, PAE emitted as raw data .tsv files
+- [[PR #307](https://github.com/nf-core/proteinfold/pull/307)] - Update Boltz-1 boilerplate and formatting.
+- [[PR #314](https://github.com/nf-core/proteinfold/pull/314)] - Fix extract metrics for broken modules.
+- [[PR #312](https://github.com/nf-core/proteinfold/pull/312)] - pTM & ipTM metrics now extracted
+- [[PR #315](https://github.com/nf-core/proteinfold/pull/315)] - Add global db flag.
+- [[#263](https://github.com/nf-core/proteinfold/issues/263)] - Removed broken colabfold options (`auto` and `alphafold2`)
+- [[PR #316](https://github.com/nf-core/proteinfold/pull/316)] - Add process_gpu label to modules which use GPU.
+- [[PR #319](https://github.com/nf-core/proteinfold/pull/319)] - Update boltz workflow to accept YAML as input.
+- [[PR #322](https://github.com/nf-core/proteinfold/pull/322)] - Updates and reorganises the reference database directory structure.
+- [[PR #329](https://github.com/nf-core/proteinfold/pull/329)] - Updates Boltz module to include Boltz-2.
+- [[PR #332](https://github.com/nf-core/proteinfold/pull/332)] - Fix rare superposition bug in reports.
+- [[PR #333](https://github.com/nf-core/proteinfold/pull/333)] - Updates the RFAA dockerfile for better versioning and smaller image size.
+- [[PR #335](https://github.com/nf-core/proteinfold/pull/335)] - Update pipeline template to [nf-core/tools 3.3.1](https://github.com/nf-core/tools/releases/tag/3.3.1).
+- [[PR #346](https://github.com/nf-core/proteinfold/pull/346)] - Update pipeline template to [nf-core/tools 3.3.2](https://github.com/nf-core/tools/releases/tag/3.3.2).
+- [[PR #351](https://github.com/nf-core/proteinfold/pull/351)] - add chain-wise (i)pTM values and summary file for AF3-generation codes.
+- [[PR #355](https://github.com/nf-core/proteinfold/pull/355)] - Remove unneccesary params from Boltz and Helixfold3 modes.
+- [[PR #356](https://github.com/nf-core/proteinfold/pull/356)] - Update AF2 defaults to use split mode and monomer_ptm model.
+- [[PR #357](https://github.com/nf-core/proteinfold/pull/357)] - Update ColabFold module and image.
+- [[PR #359](https://github.com/nf-core/proteinfold/pull/359)] - Harmonize parameters across modes.
+- [[PR #360](https://github.com/nf-core/proteinfold/pull/360)] - Rename some DBs paths in the run modules so they are equal to those when DBs are downloaded.
+- [[PR #362](https://github.com/nf-core/proteinfold/pull/355)] - Update boltz Dockerfile and image pinning specific version (2.0.3).
+- [[#364](https://github.com/nf-core/proteinfold/issues/364)] - Move Dockerfiles to its corresponding module.
+- [[PR #370](https://github.com/nf-core/proteinfold/pull/370)] - Fix extract chain metrics.
+- [[#367](https://github.com/nf-core/proteinfold/issues/367)] - Boltz post-processing crashes.
+- [[#368](https://github.com/nf-core/proteinfold/issues/368)] - Helixfold3 iPTM output missing when dealing with monomers make the process to fail.
+- [PR #246] - Add RosettaFold2NA mode.
 
 ### Parameters
 
-| Old parameter | New parameter         |
-| ------------- | --------------------- |
-|               | `--pdb_obsolete_path` |
+| Old parameter                | New parameter                    |
+| ---------------------------- | -------------------------------- |
+|                              | `--alphafold2_pdb_obsolete_path` |
+| `--small_bfd_link`           | `--alphafold2_small_bfd_link`    |
+| `--mgnify_link`              | `--alphafold2_mgnify_link`       |
+| `--pdb_mmcif_link`           | `--alphafold2_pdb_mmcif_link`    |
+| `--uniref30_alphafold2_link` | `--alphafold2_uniref30_link`     |
+| `--uniref90_link`            | `--alphafold2_uniref90_link`     |
+| `--pdb_seqres_link`          | `--alphafold2_pdb_seqres_link`   |
+| `--small_bfd_path`           | `--alphafold2_small_bfd_path`    |
+| `--mgnify_path_alphafold2`   | `--alphafold2_mgnify_path`       |
+| `--pdb_mmcif_path`           | `--alphafold2_pdb_mmcif_path`    |
+| `--uniref30_alphafold2_path` | `--alphafold2_uniref30_path`     |
+| `--uniref90_path`            | `--alphafold2_uniref90_path`     |
+| `--pdb_seqres_path`          | `--alphafold2_pdb_seqres_path`   |
+| `--uniprot_path`             | `--alphafold2_uniprot_path`      |
+|                              | `--alphafold3_small_bfd_link`    |
+|                              | `--alphafold3_mgnify_link`       |
+|                              | `--alphafold3_uniref90_link`     |
+|                              | `--alphafold3_pdb_seqres_link`   |
+|                              | `--alphafold3_uniprot_link`      |
+|                              | `--alphafold3_small_bfd_path`    |
+|                              | `--alphafold3_params_path`       |
+|                              | `--alphafold3_mgnify_path`       |
+|                              | `--alphafold3_pdb_mmcif_path`    |
+|                              | `--alphafold3_uniref90_path`     |
+|                              | `--alphafold3_pdb_seqres_path`   |
+|                              | `--alphafold3_uniprot_path`      |
+|                              | `--boltz_model`                  |
+|                              | `--boltz_out_dir`                |
+|                              | `--boltz_output_format`          |
+|                              | `--boltz_use_msa_server`         |
+|                              | `--boltz_msa_server_url`         |
+|                              | `--boltz_use_potentials`         |
+|                              | `--boltz_write_full_pae`         |
+|                              | `--boltz2_aff_path`              |
+|                              | `--boltz2_conf_path`             |
+|                              | `--boltz2_mols_path`             |
+|                              | `--boltz_model_path`             |
+|                              | `--boltz_ccd_path`               |
+|                              | `--boltz_db`                     |
+|                              | `--boltz2_aff_link`              |
+|                              | `--boltz2_conf_link`             |
+|                              | `--boltz2_mols_link`             |
+|                              | `--boltz_model_link`             |
+|                              | `--boltz_ccd_link`               |
 
 > **NB:** Parameter has been **updated** if both old and new parameter information is present.
 > **NB:** Parameter has been **added** if just the new parameter information is present.
@@ -121,8 +194,8 @@ Thank you to everyone else that has contributed by reporting bugs, enhancements 
 | `--uniprot_sprot`     | `--uniprot_sprot_link`                   |
 | `--uniprot_trembl`    | `--uniprot_trembl_link`                  |
 | `--uniclust30_path`   | `--uniref30_alphafold2_path`             |
-| `--uniref30`          | `--uniref30_colabfold_link`              |
-| `--uniref30_path`     | `--uniref30_colabfold_path`              |
+| `--uniref30`          | `--colabfold_uniref30_link`              |
+| `--uniref30_path`     | `--colabfold_uniref30_path`              |
 | `--num_recycle`       | `--num_recycles_colabfold`               |
 |                       | `--num_recycles_esmfold`                 |
 |                       | `--uniref30_alphafold2_link`             |

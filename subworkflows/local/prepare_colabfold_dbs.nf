@@ -14,14 +14,14 @@ workflow PREPARE_COLABFOLD_DBS {
 
     take:
     colabfold_db                     // directory: path/to/colabfold/DBs and params
-    colabfold_server                 //    string: Specifies the server to use for colabfold
+    use_msa_server                   //      bool: Specifies whether to use web msa server
     colabfold_alphafold2_params_path // directory: /path/to/colabfold/alphafold2/params/
-    colabfold_db_path                // directory: /path/to/colabfold/db/
-    uniref30_colabfold_path          // directory: /path/to/uniref30/colabfold/
+    colabfold_envdb_path             // directory: /path/to/colabfold/db/
+    colabfold_uniref30_path          // directory: /path/to/uniref30/colabfold/
     colabfold_alphafold2_params_link //    string: Specifies the link to download colabfold alphafold2 params
     colabfold_db_link                //    string: Specifies the link to download colabfold db
-    uniref30_colabfold_link          //    string: Specifies the link to download uniref30
-    create_colabfold_index           //   boolean: Create index for colabfold db
+    colabfold_uniref30_link          //    string: Specifies the link to download uniref30
+    colabfold_create_index           //   boolean: Create index for colabfold db
 
     main:
     ch_params       = Channel.empty()
@@ -30,10 +30,10 @@ workflow PREPARE_COLABFOLD_DBS {
     ch_versions     = Channel.empty()
 
     if (colabfold_db) {
-        ch_params = Channel.value(file( colabfold_alphafold2_params_path, type: 'any' ))
-        if (colabfold_server == 'local') {
-            ch_colabfold_db = Channel.value(file( colabfold_db_path, type: 'any' ))
-            ch_uniref30     = Channel.value(file( uniref30_colabfold_path , type: 'any' ))
+        ch_params = Channel.value(file(colabfold_alphafold2_params_path, type: 'any'))
+        if (!use_msa_server) {
+            ch_colabfold_db = Channel.value(file(colabfold_envdb_path, type: 'any'))
+            ch_uniref30     = Channel.value(file(colabfold_uniref30_path, type: 'any'))
         }
     }
     else {
@@ -43,7 +43,7 @@ workflow PREPARE_COLABFOLD_DBS {
         ch_params = ARIA2_COLABFOLD_PARAMS.out.db
         ch_versions = ch_versions.mix(ARIA2_COLABFOLD_PARAMS.out.versions)
 
-        if (params.colabfold_server == 'local') {
+        if (!use_msa_server) {
             ARIA2_COLABFOLD_DB (
                 colabfold_db_link
             )
@@ -55,7 +55,7 @@ workflow PREPARE_COLABFOLD_DBS {
             ch_colabfold_db = MMSEQS_TSV2EXPROFILEDB_COLABFOLDDB.out.db_exprofile
             ch_versions = ch_versions.mix(MMSEQS_TSV2EXPROFILEDB_COLABFOLDDB.out.versions)
 
-            if (params.create_colabfold_index) {
+            if (params.colabfold_create_index) {
                 MMSEQS_CREATEINDEX_COLABFOLDDB (
                     MMSEQS_TSV2EXPROFILEDB_COLABFOLDDB.out.db_exprofile
                 )
@@ -64,7 +64,7 @@ workflow PREPARE_COLABFOLD_DBS {
             }
 
             ARIA2_UNIREF30(
-                uniref30_colabfold_link
+                colabfold_uniref30_link
             )
             ch_versions = ch_versions.mix(ARIA2_UNIREF30.out.versions)
 
@@ -74,7 +74,7 @@ workflow PREPARE_COLABFOLD_DBS {
             ch_uniref30 = MMSEQS_TSV2EXPROFILEDB_UNIPROT30.out.db_exprofile
             ch_versions = ch_versions.mix(MMSEQS_TSV2EXPROFILEDB_UNIPROT30.out.versions)
 
-            if (create_colabfold_index) {
+            if (colabfold_create_index) {
                 MMSEQS_CREATEINDEX_UNIPROT30 (
                     MMSEQS_TSV2EXPROFILEDB_UNIPROT30.out.db_exprofile
                 )

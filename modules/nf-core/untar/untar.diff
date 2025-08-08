@@ -11,7 +11,7 @@ Changes in module 'nf-core/untar'
 +    untar = archive.toString().endsWith('tar.gz')? archive.toString() - '.tar.gz' : archive.toString() - '.tar'
      """
      mkdir output
- 
+
 @@ -30,14 +30,14 @@
      if [[ \$(tar -tzf ${archive} | grep -o -P "^.*?\\/" | uniq | wc -l) -eq 1 ]]; then
          tar \\
@@ -31,12 +31,12 @@ Changes in module 'nf-core/untar'
              $args2
 @@ -52,7 +52,7 @@
      """
- 
+
      stub:
 -    untar     = archive.toString() - '.tar.gz'
 +    untar = archive.toString().endsWith('tar.gz')? archive.toString() - '.tar.gz' : archive.toString() - '.tar'
      """
      touch $untar
- 
+
 
 ************************************************************
