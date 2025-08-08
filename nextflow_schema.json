@@ -45,9 +45,9 @@
                 "mode": {
                     "type": "string",
                     "default": "alphafold2",
-                    "description": "Specifies the mode in which the pipeline will be run. mode can be any combination of ['alphafold2', 'alphafold3', 'colabfold', 'esmfold', 'rosettafold_all_atom', 'boltz', 'helixfold3'] separated by a comma (',') with no spaces.",
+                    "description": "Specifies the mode in which the pipeline will be run. mode can be any combination of ['alphafold2', 'alphafold3', 'colabfold', 'esmfold', 'rosettafold_all_atom', 'boltz', 'helixfold3', 'rosettafold2na'] separated by a comma (',') with no spaces.",
                     "fa_icon": "fas fa-cogs",
-                    "pattern": "^(alphafold2|alphafold3|colabfold|esmfold|rosettafold_all_atom|helixfold3|boltz|)(,(alphafold2|alphafold3|colabfold|esmfold|rosettafold_all_atom|helixfold3|boltz)?,?)*(?<!,)$",
+                    "pattern": "^(alphafold2|alphafold3|colabfold|esmfold|rosettafold_all_atom|helixfold3|boltz|rosettafold2na|)(,(alphafold2|alphafold3|colabfold|esmfold|rosettafold_all_atom|helixfold3|boltz|rosettafold2na)?,?)*(?<!,)$",
                     "errorMessage": "Mode must be a comma-separated list containing any combination of 'alphafold2', 'alphafold3', 'colabfold', 'esmfold', 'rosettafold_all_atom', 'boltz', or 'helixfold3' with no spaces."
                 },
                 "use_gpu": {
