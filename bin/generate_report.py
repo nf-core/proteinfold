@@ -10,9 +10,9 @@ import plotly.graph_objects as go
 import re
 from Bio import PDB
 
-#TODO: Refactor this code to user plot_utils.py for plotting, and GENERATE_REPORT module for process isolation 
+#TODO: Refactor this code to user plot_utils.py for plotting, and GENERATE_REPORT module for process isolation
 # KR - I have a local refactor that compacts and de-duplicates plotting functions but I'll leave until v2.1
-# go to https://github.com/Australian-Structural-Biology-Computing/proteinfold/blob/fix-multiqc-intermediates/modules/local/generate_report/generate_report.py 
+# go to https://github.com/Australian-Structural-Biology-Computing/proteinfold/blob/fix-multiqc-intermediates/modules/local/generate_report/generate_report.py
 # and associate plot_utils.py for to plot generation re-write
 
 def generate_pae_plot(pae_path, out_dir, name, save_image=False):
