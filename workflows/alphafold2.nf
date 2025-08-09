@@ -28,7 +28,7 @@ workflow ALPHAFOLD2 {
     take:
     ch_samplesheet          // channel: samplesheet read in from --input
     ch_versions             // channel: [ path(versions.yml) ]
-    full_dbs                // boolean: Use full databases (otherwise reduced version)
+    alphafold2_full_dbs                // boolean: Use full databases (otherwise reduced version)
     alphafold2_mode         //  string: Mode to run Alphafold2 in
     alphafold2_model_preset //  string: Specifies the model preset to use for Alphafold2
     ch_alphafold2_params    // channel: path(alphafold2_params)
@@ -66,7 +66,7 @@ workflow ALPHAFOLD2 {
         //
         RUN_ALPHAFOLD2 (
             ch_samplesheet,
-            full_dbs,
+            alphafold2_full_dbs,
             alphafold2_model_preset,
             ch_alphafold2_params,
             ch_bfd,
@@ -100,7 +100,7 @@ workflow ALPHAFOLD2 {
         //
         RUN_ALPHAFOLD2_MSA (
             ch_samplesheet,
-            full_dbs,
+            alphafold2_full_dbs,
             alphafold2_model_preset,
             ch_alphafold2_params,
             ch_bfd,
