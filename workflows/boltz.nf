@@ -149,7 +149,7 @@ workflow BOLTZ {
 
     RUN_BOLTZ
         .out
-        .pae_raw_0
+        .pae_raw
     .map{it[0].model = "boltz"; it}
     .set {ch_pae}
 
