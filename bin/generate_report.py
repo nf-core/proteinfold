@@ -49,7 +49,7 @@ def generate_pae_plot(pae_path, out_dir, name, save_image=False):
 
     return fig
 
-def generate_output_images(msa_path, plddt_data, pae_path, name, out_dir, in_type, generate_tsv, pdb):
+def generate_output_images(msa_path, plddt_data, name, out_dir, in_type, generate_tsv, pdb):
     msa = []
     if in_type.lower() != "colabfold" and not msa_path.endswith("NO_FILE"):
         with open(msa_path, "r") as in_file:
@@ -176,8 +176,8 @@ def generate_output_images(msa_path, plddt_data, pae_path, name, out_dir, in_typ
     ) as out_file:
         out_file.write(html_content)
 
-    if pae_path:
-        pae_fig = generate_pae_plot(pae_path, out_dir, name)
+    if args.pae:
+        pae_fig = generate_pae_plot(args.pae, out_dir, name)
         pae_html_content = pae_fig.to_html(
             full_html=False,
             include_plotlyjs="cdn",
@@ -396,7 +396,7 @@ args = parser.parse_args()
 lddt_data, lddt_averages = pdb_to_lddt(args.pdb, args.generate_tsv)
 
 generate_output_images(
-    args.msa, lddt_data, args.pae, args.name, args.output_dir, args.in_type, args.generate_tsv, args.pdb
+    args.msa, lddt_data, args.name, args.output_dir, args.in_type, args.generate_tsv, args.pdb
 )
 
 print("generating html report...")

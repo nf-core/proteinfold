@@ -30,6 +30,7 @@ process GENERATE_REPORT {
     generate_report.py \\
         --type ${output_type} \\
         --msa ${msa} \\
+        --pae ${pae} \\
         --pdb ${pdb.join(' ')} \\
         --html_template ${template} \\
         --output_dir ./ \\
