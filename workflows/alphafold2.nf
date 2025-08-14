@@ -172,7 +172,7 @@ workflow ALPHAFOLD2 {
             meta.model = "alphafold2";
             [ meta, it[1] ]
         }
-        .set { ch_pae_final }    
+        .set { ch_pae_final }
 
     ch_top_ranked_pdb_final = ch_top_ranked_pdb
                                 .map{

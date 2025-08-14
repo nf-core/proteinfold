@@ -162,7 +162,7 @@ workflow NFCORE_PROTEINFOLD {
                                                     .join(ALPHAFOLD2.out.msa)
                                                     .join(ALPHAFOLD2.out.pae)
                                                     )
-                                                    
+
 
         ch_top_ranked_model         = ch_top_ranked_model.mix(ALPHAFOLD2.out.top_ranked_pdb)
     }
