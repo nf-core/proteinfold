@@ -31,6 +31,7 @@ process RUN_HELIXFOLD3 {
     tuple val(meta), path ("${meta.id}_plddt.tsv")      , emit: multiqc
     tuple val(meta), path ("${meta.id}_msa.tsv")        , emit: msa
     // If ${meta.id}-rank*/all_results.json" doesn't have PAE vales in the key, this will be empty
+    tuple val(meta), path ("${meta.id}_0_pae.tsv")      , emit: pae
     tuple val(meta), path ("${meta.id}_*_pae.tsv")      , emit: paes
     tuple val(meta), path ("${meta.id}_ptm.tsv")        , emit: ptms
     tuple val(meta), path ("${meta.id}_iptm.tsv")       , optional: true, emit: iptms
@@ -87,6 +88,14 @@ process RUN_HELIXFOLD3 {
         cp "${fasta.baseName}/${fasta.baseName}-rank\$i/predicted_structure.pdb" "${meta.id}-ranked_\$i.pdb"
 
     done
+
+    # Ensure dummy MSA/PAE files exist if not generated
+    if [ ! -f "${meta.id}_msa.tsv" ]; then
+        echo "0" > "${meta.id}_msa.tsv"
+    fi
+    if [ ! -f "${meta.id}_0_pae.tsv" ]; then
+        echo "0" > "${meta.id}_0_pae.tsv"
+    fi
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

@@ -229,6 +229,7 @@ workflow NFCORE_PROTEINFOLD {
                                         ]
                                     }
                                 .join(ALPHAFOLD3.out.msa)
+                                .join(ALPHAFOLD3.out.pae)
                             )
         ch_top_ranked_model = ch_top_ranked_model.mix(ALPHAFOLD3.out.top_ranked_pdb)
     }
@@ -280,8 +281,9 @@ workflow NFCORE_PROTEINFOLD {
                                                         }
                                                     }.subList(0, Math.min(5, it[1].size()))
                                             ]}
-                                            .join(COLABFOLD.out.msa))
-                                            // NOTE : COLABFOLD.out.pae not mixed in since current release use colabfold's own way of generating plots
+                                            .join(COLABFOLD.out.msa)
+                                            .join(COLABFOLD.out.pae)
+                                            )
 
         ch_top_ranked_model         = ch_top_ranked_model.mix(COLABFOLD.out.top_ranked_pdb)
     }
@@ -356,7 +358,7 @@ workflow NFCORE_PROTEINFOLD {
         ch_multiqc                              = ch_multiqc.mix(ROSETTAFOLD_ALL_ATOM.out.multiqc_report.collect())
         ch_versions                             = ch_versions.mix(ROSETTAFOLD_ALL_ATOM.out.versions)
         ch_report_input                         = ch_report_input.mix(ROSETTAFOLD_ALL_ATOM.out.pdb
-                                                                    .combine(ch_dummy_file) // I suspect this is NO_FILE not msa since we haven't switch to passing msa.tsv rather than a pre-generated plot
+                                                                    .join(ROSETTAFOLD_ALL_ATOM.out.msa)
                                                                     .join(ROSETTAFOLD_ALL_ATOM.out.pae)
                                                                     )
         ch_top_ranked_model                     = ch_top_ranked_model.mix(ROSETTAFOLD_ALL_ATOM.out.pdb)
@@ -435,7 +437,7 @@ workflow NFCORE_PROTEINFOLD {
                                                                 }
                                                             }.subList(0, Math.min(5, it[1].size()))
                                                     ]}
-                                                    .combine(ch_dummy_file) // I suspect this is NO_FILE not msa since we haven't switch to passing msa.tsv rather than a pre-generated plot
+                                                    .join(HELIXFOLD3.out.msa)
                                                     .join(HELIXFOLD3.out.pae)
                                                     )
         ch_top_ranked_model          = ch_top_ranked_model.mix(HELIXFOLD3.out.top_ranked_pdb)

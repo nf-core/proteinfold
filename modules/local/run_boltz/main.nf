@@ -69,6 +69,14 @@ process RUN_BOLTZ {
         --npzs boltz_results_*/predictions/${meta.id}/pae_*_model_*.npz \\
         --csvs boltz_results_*/msa/${meta.id}_*.csv
 
+    # Ensure dummy MSA/PAE files exist if not generated
+    if [ ! -f "${meta.id}_msa.tsv" ]; then
+        echo "0" > "${meta.id}_msa.tsv"
+    fi
+    if [ ! -f "${meta.id}_0_pae.tsv" ]; then
+        echo "0" > "${meta.id}_0_pae.tsv"
+    fi
+
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         boltz: $version
