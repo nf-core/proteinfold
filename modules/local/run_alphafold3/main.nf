@@ -107,6 +107,7 @@ process RUN_ALPHAFOLD3 {
     touch publish/${prefix}_ranked_5.cif
     touch ${prefix}_plddt.tsv
     touch ${prefix}_msa.tsv
+    touch ${prefix}_0_pae.tsv
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
