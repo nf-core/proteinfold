@@ -1,7 +1,7 @@
 {
     "-profile test_alphafold2_download": {
         "content": [
-            22,
+            23,
             {
                 "ARIA2": {
                     "aria2": null
@@ -14,6 +14,10 @@
                 },
                 "DOWNLOAD_PDBMMCIF": {
                     "awk": null
+                },
+                "GENERATE_REPORT": {
+                    "python": "3.12.7",
+                    "generate_report.py": "Python 3.12.7"
                 },
                 "RUN_ALPHAFOLD2": {
                     "python": null
@@ -55,6 +59,10 @@
                 "alphafold2/standard/T1024/paes/T1024_0_pae.tsv",
                 "alphafold2/standard/top_ranked_structures",
                 "alphafold2/standard/top_ranked_structures/T1024.pdb",
+                "generate",
+                "generate/test_LDDT.html",
+                "generate/test_alphafold2_report.html",
+                "generate/test_seq_coverage.png",
                 "multiqc",
                 "multiqc/alphafold2_multiqc_data",
                 "multiqc/alphafold2_multiqc_plots",
@@ -95,6 +103,9 @@
                 "T1024_ptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1024_0_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1024.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "test_LDDT.html:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "test_alphafold2_report.html:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "test_seq_coverage.png:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "alphafold2_multiqc_report.html:md5,d41d8cd98f00b204e9800998ecf8427e"
             ]
         ],
@@ -102,6 +113,6 @@
             "nf-test": "0.9.2",
             "nextflow": "25.04.6"
         },
-        "timestamp": "2025-08-21T17:54:04.194697317"
+        "timestamp": "2025-08-21T18:07:11.550451136"
     }
 }
