@@ -58,24 +58,28 @@ workflow ESMFOLD {
 
     RUN_ESMFOLD
         .out
-        .pdb
-        .map{
-            meta = it[0].clone();
-            meta.model = "esmfold";
-            [meta, it[1]]
-        }
-        .set{ch_pdb_final}
-
-    RUN_ESMFOLD
-        .out
         .multiqc
         .map { it[1] }
         .toSortedList()
         .map { [ [ "model": "esmfold"], it.flatten() ] }
         .set { ch_multiqc_report  }
 
+    def esmfoldChannel = { ch ->
+        ch.map { meta, value ->
+            meta = meta.clone()
+            meta.model = "esmfold"
+            [meta, value]
+        }
+    }
+
+    esmfoldChannel(RUN_ESMFOLD.out.pdb).set { ch_pdb_final }
+    esmfoldChannel(RUN_ESMFOLD.out.msa).set { ch_msa_final }
+    esmfoldChannel(RUN_ESMFOLD.out.pae).set { ch_pae_final }
+
     emit:
     pdb            = ch_pdb_final   // channel: [ id, /path/to/*.pdb ]
+    msa            = ch_msa_final   // channel: [ id, /path/to/*_msa.tsv ]
+    pae            = ch_pae_final   // channel: [ id, /path/to/*_pae.tsv ]
     multiqc_report = ch_multiqc_report   // channel: /path/to/multiqc_report.html
     versions       = ch_versions         // channel: [ path(versions.yml) ]
 }

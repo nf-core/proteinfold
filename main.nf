@@ -314,7 +314,11 @@ workflow NFCORE_PROTEINFOLD {
 
         ch_multiqc                = ch_multiqc.mix(ESMFOLD.out.multiqc_report.collect())
         ch_versions               = ch_versions.mix(ESMFOLD.out.versions)
-        ch_report_input           = ch_report_input.mix(ESMFOLD.out.pdb.combine(ch_dummy_file)) // not mixing in out.msa (doesn't exist) or out.pae (really hard to retrieve)
+        ch_report_input = ch_report_input.mix(
+            ESMFOLD.out.pdb
+                .join(ESMFOLD.out.msa)
+                .join(ESMFOLD.out.pae)
+        )
         ch_top_ranked_model       = ch_top_ranked_model.mix(ESMFOLD.out.pdb)
     }
 

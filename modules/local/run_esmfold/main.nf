@@ -14,12 +14,8 @@ process RUN_ESMFOLD {
     tuple val(meta), path ("${meta.id}_esmfold.pdb")  , emit: top_ranked_pdb
     tuple val(meta), path ("*.pdb")                   , emit: pdb
     tuple val(meta), path ("${meta.id}_plddt.tsv")    , emit: multiqc
-    // No MSA information in ESMFold
-    // PAE from ESMFold is an absolute pain to retrieve, skipping.
-    // https://github.com/facebookresearch/esm/issues/582
-    // Since neither MSA or PAE exist, the optional will be handled with a NO_FILE in main.nf
-    tuple val(meta), path ("${meta.id}_msa.tsv")      , optional: true, emit: msa
-    tuple val(meta), path ("${meta.id}_*_pae.tsv")    , optional: true, emit: paes
+    tuple val(meta), path ("${meta.id}_msa.tsv")      , emit: msa
+    tuple val(meta), path ("${meta.id}_0_pae.tsv")    , emit: pae
     path "versions.yml"                               , emit: versions
 
     when:
@@ -47,6 +43,17 @@ process RUN_ESMFOLD {
     extract_metrics.py --name ${meta.id} \\
         --structs ${meta.id}_esmfold.pdb
 
+    # No MSA information in ESMFold
+    # PAE from ESMFold is an absolute pain to retrieve, skipping.
+    # https://github.com/facebookresearch/esm/issues/582
+    # Since neither MSA or PAE exist, dummy files are generated
+    if [ ! -f "${meta.id}_msa.tsv" ]; then
+        echo "0" > "${meta.id}_msa.tsv"
+    fi
+    if [ ! -f "${meta.id}_0_pae.tsv" ]; then
+        echo "0" > "${meta.id}_0_pae.tsv"
+    fi
+
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         esm-fold: $VERSION
@@ -58,6 +65,8 @@ process RUN_ESMFOLD {
     """
     touch "${meta.id}_esmfold.pdb"
     touch "${meta.id}_plddt.tsv"
+    touch "${meta.id}_msa.tsv"
+    touch "${meta.id}_0_pae.tsv"
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
