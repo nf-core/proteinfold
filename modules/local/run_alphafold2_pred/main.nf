@@ -23,7 +23,7 @@ process RUN_ALPHAFOLD2_PRED {
     path ('pdb_seqres/*')
     path ('uniprot/*')
     // TODO: do we ever really want to be dragging arounda  meta2? Can't we just augment meta fields for tracebility?
-    tuple val(meta2), path(features)
+    tuple val(meta), path(features)
 
     output:
     path ("${fasta.baseName}*")
