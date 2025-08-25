@@ -147,8 +147,10 @@ def read_pkl(name, pkl_files):
             write_tsv(f"{name}_msa.tsv", format_msa_rows(data["msa"]))
     # AlphaFold2.3 non-summary, for each pkl. TODO: Need to either read in ranking_debug.json to get the ranking order, or do it later in the workflow.
         else:
-            model_id = os.path.basename(pkl_file).replace("result_model_", "").replace(".pkl", "")
-
+            model_info = os.path.basename(pkl_file).replace("result_", "").replace(".pkl", "")
+            with open(os.path.join(os.path.dirname(pkl_file),"ranking_debug.json")) as f:
+                ranking_data = json.load(f)['order']
+            model_id = ranking_data.index(model_info)
             if 'predicted_aligned_error' not in data.keys():
                 print(f"No PAE output in {pkl_file}, it was likely a monomer calculation")
             else:
