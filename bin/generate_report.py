@@ -26,7 +26,6 @@ def generate_pae_plot(pae_path, out_dir, name, save_image=False):
         fig: A Plotly figure object of the PAE heatmap in green color scale
     """
     pae = np.genfromtxt(pae_path, delimiter="\t")
-    max_pae = np.max(pae)
     fig = go.Figure()
 
     # Add heatmap
@@ -35,12 +34,14 @@ def generate_pae_plot(pae_path, out_dir, name, save_image=False):
             z=pae,
             colorscale="Greens_r",
             zmin=0,
-            zmax=max_pae,
+            zmax=30,
         )
     )
     fig.update_layout(
-    xaxis=dict(title="Scored Residue"),
-    yaxis=dict(title="Aligned Residue"),
+        xaxis=dict(title="Scored Residue", minallowed=0, maxallowed=pae.shape[0]),
+        yaxis=dict(title="Aligned Residue", minallowed=0, maxallowed=pae.shape[1], autorange="reversed"),
+        width=600,
+        height=600,
     )
 
     if save_image:
@@ -83,6 +84,9 @@ def generate_output_images(msa_path, plddt_data, name, out_dir, in_type, generat
                 ]
             )
 
+        xaxis_size = len(final[0])
+        yaxis_size = len(final)
+
         # ##################################################################
         plt.figure(figsize=(14, 14), dpi=100)
         # ##################################################################
@@ -95,6 +99,7 @@ def generate_output_images(msa_path, plddt_data, name, out_dir, in_type, generat
             vmin=0,
             vmax=1,
             origin="lower",
+            extent=(0, xaxis_size, 0, yaxis_size)
         )
 
         column_counts = [0] * len(msa[0])
@@ -148,13 +153,12 @@ def generate_output_images(msa_path, plddt_data, name, out_dir, in_type, generat
     fig.update_layout(
         title=dict(text="Predicted LDDT per position", x=0.5, xanchor="center"),
         xaxis=dict(
-            title="Positions", showline=True, linecolor="black", gridcolor="WhiteSmoke"
+            title="Positions", showline=True, linecolor="black", gridcolor="WhiteSmoke", minallowed=0, maxallowed=len(value_plddt)
         ),
         yaxis=dict(
             title="Predicted LDDT",
             range=[0, 100],
-            minallowed=0,
-            maxallowed=100,
+            fixedrange=True,
             showline=True,
             linecolor="black",
             gridcolor="WhiteSmoke",
