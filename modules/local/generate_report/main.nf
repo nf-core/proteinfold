@@ -8,10 +8,7 @@ process GENERATE_REPORT {
         'community.wave.seqera.io/library/biopython_matplotlib_pip_plotly:35975fa0fc54b2d3' }"
 
     input:
-    tuple val(meta), path(pdb)
-    tuple val(meta_msa), path(msa) // do we want to support a separate meta for MSA file?
-    tuple val(meta), path(pae) // why are we not accessing meta just once?
-    val(output_type)
+    tuple val(meta), path(pdb), path(msa), path(pae)
     path(template)
 
     output:
@@ -28,7 +25,7 @@ process GENERATE_REPORT {
 
     """
     generate_report.py \\
-        --type ${output_type} \\
+        --type ${meta.model} \\
         --msa ${msa} \\
         --pae ${pae} \\
         --pdb ${pdb.join(' ')} \\

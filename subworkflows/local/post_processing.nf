@@ -42,10 +42,7 @@ workflow POST_PROCESSING {
 
     if (!skip_visualisation){
         GENERATE_REPORT(
-            ch_report_input.map { [it[0], it[1]] }, // meta, PDB files
-            ch_report_input.map { [it[0], it[2]] }, //meta_msa (why separate?), MSA file
-            ch_report_input.map { [it[0], it[3]] }, // PAE tsv plaintext file
-            ch_report_input.map { it[0].model }, // .model is typically the program name, used since colabfold currently and exception
+            ch_report_input,
             ch_report_template
         )
         ch_versions = ch_versions.mix(GENERATE_REPORT.out.versions)
