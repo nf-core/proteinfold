@@ -176,7 +176,7 @@ def read_pkl(name, pkl_files):
 
 
 def read_a3m(name, a3m_files):
-    # ColabFold, RosettaFold-All-Atom, Boltz-1
+    # ColabFold, RosettaFold-All-Atom
     for a3m_file in a3m_files:
         int_seqs = a3m_to_int(a3m_file)
         write_tsv(f"{name}_msa.tsv", format_msa_rows(int_seqs))
@@ -190,17 +190,25 @@ def read_npz(name, npz_files):
             write_tsv(f"{name}_{model_id}_pae.tsv", format_pae_rows(data["pae"]))
 
 def read_csv(name, csv_files):
-   for idx, csv_file in enumerate(csv_files):
-        if not os.path.isfile(csv_file): return #TODO: Fix temporary workaround
-        model_id = os.path.basename(csv_file).split('_')[-1].split('.csv')[0]
+    #TODO: Add un-paired - currently paired only
+    if not os.path.isfile(csv_files[0]): return #TODO: Fix temporary workaround
+    all_msa_rows = []
+    for csv_file in sorted(csv_files, key=lambda x: int(x.split('_')[-1].split('.csv')[0])):
         msa_lines = []
         with open(csv_file) as f:
             f.readline()
             for line in f:
+                if line.split(',')[0] == '-1' and len(csv_files)>1: continue
                 msa_lines.append(''.join(c for c in line.strip('\n').split(',')[1] if not c.islower()))
         msa_rows = [[str(AA_to_int.get(residue, 20)) for residue in line] for line in msa_lines]
-        write_tsv(f"{name}_msa.tsv", msa_rows)
-        break # only 1 csv
+        all_msa_rows.append(msa_rows)
+    final_rows = []
+    for i in range(len(all_msa_rows[0])):
+        temp_row = []
+        for j in range(len(all_msa_rows)):
+            temp_row.extend(all_msa_rows[j][i])
+        final_rows.append(temp_row)
+    write_tsv(f"{name}_msa.tsv", final_rows)
 
 def read_json(name, json_files):
     ptm_data = {}

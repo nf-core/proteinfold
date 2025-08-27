@@ -491,7 +491,7 @@ workflow NFCORE_PROTEINFOLD {
         ch_versions                 = ch_versions.mix(BOLTZ.out.versions)
         ch_report_input             = ch_report_input.mix(
             BOLTZ.out.pdb
-            .combine(ch_dummy_file)
+            .join(BOLTZ.out.msa)
             .join(BOLTZ.out.pae)
             )
         ch_top_ranked_model         = ch_top_ranked_model.mix(BOLTZ.out.pdb)

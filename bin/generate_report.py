@@ -38,8 +38,8 @@ def generate_pae_plot(pae_path, out_dir, name, save_image=False):
         )
     )
     fig.update_layout(
-        xaxis=dict(title="Scored Residue", minallowed=0, maxallowed=pae.shape[0]),
-        yaxis=dict(title="Aligned Residue", minallowed=0, maxallowed=pae.shape[1], autorange="reversed"),
+        xaxis=dict(title="Scored Residue", minallowed=0, maxallowed=pae.shape[0]-1),
+        yaxis=dict(title="Aligned Residue", minallowed=0, maxallowed=pae.shape[1]-1, autorange="reversed"),
         width=600,
         height=600,
     )
@@ -88,7 +88,7 @@ def generate_output_images(msa_path, plddt_data, name, out_dir, in_type, generat
         yaxis_size = len(final)
 
         # ##################################################################
-        plt.figure(figsize=(14, 14), dpi=100)
+        plt.figure(figsize=(16, 10), dpi=100)
         # ##################################################################
         plt.title("Sequence coverage", fontsize=30, pad=36)
         plt.imshow(
@@ -109,8 +109,8 @@ def generate_output_images(msa_path, plddt_data, name, out_dir, in_type, generat
                     column_counts[col] += 1
 
         plt.plot(column_counts, color="black")
-        plt.xlim(-0.5, len(msa[0]) - 0.5)
-        plt.ylim(-0.5, len(msa) - 0.5)
+        plt.xlim(0, len(msa[0]))
+        plt.ylim(0, len(msa))
 
         plt.tick_params(axis="both", which="both", labelsize=18)
 
@@ -153,7 +153,7 @@ def generate_output_images(msa_path, plddt_data, name, out_dir, in_type, generat
     fig.update_layout(
         title=dict(text="Predicted LDDT per position", x=0.5, xanchor="center"),
         xaxis=dict(
-            title="Positions", showline=True, linecolor="black", gridcolor="WhiteSmoke", minallowed=0, maxallowed=len(value_plddt)
+            title="Positions", showline=True, linecolor="black", gridcolor="WhiteSmoke", minallowed=0, maxallowed=len(value_plddt)-1
         ),
         yaxis=dict(
             title="Predicted LDDT",
