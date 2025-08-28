@@ -148,6 +148,7 @@ def read_pkl(name, pkl_files):
     # AlphaFold2.3 non-summary, for each pkl. TODO: Need to either read in ranking_debug.json to get the ranking order, or do it later in the workflow.
         else:
             model_info = os.path.basename(pkl_file).replace("result_", "").replace(".pkl", "")
+            #TODO: Make this explicit input
             with open(os.path.join(os.path.dirname(pkl_file),"ranking_debug.json")) as f:
                 ranking_data = json.load(f)['order']
             model_id = ranking_data.index(model_info)
@@ -189,25 +190,64 @@ def read_npz(name, npz_files):
             model_id = os.path.basename(npz_file).split('_model_')[-1].split('.npz')[0]
             write_tsv(f"{name}_{model_id}_pae.tsv", format_pae_rows(data["pae"]))
 
+# Boltz MSA processing
 def read_csv(name, csv_files):
-    #TODO: Add un-paired - currently paired only
     if not os.path.isfile(csv_files[0]): return #TODO: Fix temporary workaround
-    all_msa_rows = []
+    msa_rows = {}
+    unpaired_msa_rows = {}
     for csv_file in sorted(csv_files, key=lambda x: int(x.split('_')[-1].split('.csv')[0])):
         msa_lines = []
+        unpaired_msa_lines = []
         with open(csv_file) as f:
             f.readline()
             for line in f:
-                if line.split(',')[0] == '-1' and len(csv_files)>1: continue
-                msa_lines.append(''.join(c for c in line.strip('\n').split(',')[1] if not c.islower()))
-        msa_rows = [[str(AA_to_int.get(residue, 20)) for residue in line] for line in msa_lines]
-        all_msa_rows.append(msa_rows)
+                if line.split(',')[0] == '-1' and len(csv_files)>1: #Server MSA appears as un-paired
+                    unpaired_msa_lines.append(''.join(c for c in line.strip('\n').split(',')[1] if not c.islower()))
+                else:
+                    msa_lines.append(''.join(c for c in line.strip('\n').split(',')[1] if not c.islower()))
+        msa_rows[csv_file.split('_')[-1].split('.csv')[0]] = [[str(AA_to_int.get(residue, 20)) for residue in line] for line in msa_lines]
+        unpaired_msa_rows[csv_file.split('_')[-1].split('.csv')[0]] = [[str(AA_to_int.get(residue, 20)) for residue in line] for line in unpaired_msa_lines]
+           
+    # Get Chain to MSA mapping (ie non-redundant for homomers)
+    # TODO: Make this explicit input
+    with open(f'boltz_results_{name}/processed/manifest.json') as f:
+        manifest = json.load(f)
+    
     final_rows = []
-    for i in range(len(all_msa_rows[0])):
+    # Paired
+    for i in range(len(msa_rows["0"])): #The number of paired lines is common to all MSAs
         temp_row = []
-        for j in range(len(all_msa_rows)):
-            temp_row.extend(all_msa_rows[j][i])
+        #This needs to be fixed if inference is batched in future.
+        for chain in manifest["records"][0]["chains"]:
+            j = chain["msa_id"].split("_")[-1]
+            temp_row.extend(msa_rows[j][i])
         final_rows.append(temp_row)
+
+    # Un-paired
+    msa_widths = [len(msa_rows[chain["msa_id"].split("_")[-1]][0]) for chain in manifest["records"][0]["chains"]]
+    msa_heights = [len(unpaired_msa_rows[chain["msa_id"].split("_")[-1]]) for chain in manifest["records"][0]["chains"]]
+
+    cum_total_rows = np.cumsum(msa_heights)
+
+    for row_idx in range(cum_total_rows[-1]):
+        temp_row = []
+
+        for i, chain in enumerate(manifest["records"][0]["chains"]):
+            msa = unpaired_msa_rows[chain["msa_id"].split("_")[-1]]
+            width = msa_widths[i]
+            if i == 0:
+                minrow = 0
+            else:
+                minrow = cum_total_rows[i-1]
+            maxrow = cum_total_rows[i]
+
+            if minrow <= row_idx < maxrow:
+                msa_row_idx = row_idx - minrow
+                temp_row.extend(msa[msa_row_idx])
+            else:
+                temp_row.extend(["21"] * width) #gap
+        final_rows.append(temp_row)
+
     write_tsv(f"{name}_msa.tsv", final_rows)
 
 def read_json(name, json_files):
