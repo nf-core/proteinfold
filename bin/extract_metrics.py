@@ -335,13 +335,15 @@ def read_json(name, json_files):
 
 def read_pt(name, pt_files):
     import torch # moved to a conditional import since too bulky import if not used
+    #TODO: Handle this better when refactored - Is this just RFAA??
     for pt_file in pt_files:
         with open(pt_file, 'rb') as f:   # TODO: point to [protein]_aux.pt
             data = torch.load(f, map_location="cpu")
             if 'pae' in data:
                 # The pt file contains a tensor that needs to be cast as an array
                 # Squeeze leading dimension (batch?)
-                write_tsv(f"{name}_pae.tsv", format_pae_rows(np.squeeze(data["pae"].numpy())))
+                write_tsv(f"{name}_0_pae.tsv", format_pae_rows(np.squeeze(data["pae"].numpy())))
+        break
 
 def main():
     parser = argparse.ArgumentParser()

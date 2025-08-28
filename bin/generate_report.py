@@ -180,7 +180,7 @@ def generate_output_images(msa_path, plddt_data, name, out_dir, in_type, generat
     ) as out_file:
         out_file.write(html_content)
 
-    if args.pae:
+    if args.pae and not args.pae.endswith('NO_FILE_PAE'):
         pae_fig = generate_pae_plot(args.pae, out_dir, name)
         pae_html_content = pae_fig.to_html(
             full_html=False,
@@ -375,7 +375,7 @@ model_name = {
     "alphafold2": "AlphaFold2",
     "alphafold3": "Alphafold3",
     "colabfold": "ColabFold",
-    "rosettafold_all_atom": "Rosettafold_All_Atom",
+    "rosettafold_all_atom": "RosettaFold All-Atom",
     "helixfold3": "HelixFold3",
     "boltz": "Boltz"
 }
@@ -452,7 +452,7 @@ if not args.msa.endswith("NO_FILE"):
             f"data:image/png;base64,{base64.b64encode(in_file.read()).decode('utf-8')}",
         )
 else:
-    pattern = r'<div id="seq_coverage_container".*?>.*?(<!--.*?-->.*?)*?</div>\s*</div>'
+    pattern = r'<div id="seq_coverage_container".*?>.*?(<!--.*?-->.*?)*?</div>\s*</div>\s*</div>\s*</div>'
     proteinfold_template = re.sub(pattern, "", proteinfold_template, flags=re.DOTALL)
 
 with open(
@@ -464,15 +464,18 @@ with open(
         '<div id="lddt_placeholder"></div>', lddt_html
     )
 
-with open(
-    f"{args.output_dir}/{args.name + ('_' if args.name else '')}PAE.html",
-    "r",
-) as pae_in_file:
-    pae_html = pae_in_file.read()
-    proteinfold_template = proteinfold_template.replace(
-        '<div id="pae_placeholder"></div>', pae_html
-    )
-
+if not args.pae.endswith("NO_FILE_PAE"):
+    with open(
+        f"{args.output_dir}/{args.name + ('_' if args.name else '')}PAE.html",
+        "r",
+    ) as pae_in_file:
+        pae_html = pae_in_file.read()
+        proteinfold_template = proteinfold_template.replace(
+            '<div id="pae_placeholder"></div>', pae_html
+        )
+else:
+    pattern = r'<div id="pae_container".*?>.*?(<!--.*?-->.*?)*?</div>\s*</div>'
+    proteinfold_template = re.sub(pattern, "", proteinfold_template, flags=re.DOTALL)
 
 with open(
     f"{args.output_dir}/{args.name}_{args.in_type.lower()}_report.html", "w"

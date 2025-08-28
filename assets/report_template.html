@@ -435,8 +435,8 @@
     <!-- Plots -->
     <div class="bg-gray-200 p-12 xl:p-16">
       <!-- Top row: Sequence Coverage (full width) -->
-      <div class="flex justify-center mb-12 xl:mb-16">
-        <div id="seq_coverage_container" class="max-w-[720px] xl:max-w-[900px] 2xl:max-w-[1100px] w-full">
+      <div id="seq_coverage_container" class="flex justify-center mb-12 xl:mb-16">
+        <div class="max-w-[720px] xl:max-w-[900px] 2xl:max-w-[1100px] w-full">
           <div class="text-3xl xl:text-4xl font-bold tracking-tight mb-4 xl:mb-6 text-center">
             Sequence Coverage – MSA
           </div>
@@ -470,7 +470,8 @@
           </div>
         </div>
 
-        <div class="flex-1 max-w-[720px] xl:max-w-[850px] 2xl:max-w-[1000px]">
+        <div id="pae_container" class="flex-1 max-w-[720px] xl:max-w-[850px] 2xl:max-w-[1000px]">
+          <div class="max-w-[720px] xl:max-w-[900px] 2xl:max-w-[1100px] w-full"></div>
           <div class="text-3xl xl:text-4xl font-bold tracking-tight mb-4 xl:mb-6 text-center">
             Residue-pair alignment error - PAE
           </div>
@@ -479,6 +480,7 @@
               class="w-[660px] xl:w-[780px] 2xl:w-[920px] min-h-[500px] xl:min-h-[600px] 2xl:min-h-[700px] flex justify-center items-center mx-auto"
             >
               <div id="pae_placeholder"></div>
+            </div>
             </div>
           </div>
         </div>

@@ -31,7 +31,7 @@ process RUN_HELIXFOLD3 {
     tuple val(meta), path ("${meta.id}_plddt.tsv")      , emit: multiqc
     tuple val(meta), path ("${meta.id}_msa.tsv")        , emit: msa
     // If ${meta.id}-rank*/all_results.json" doesn't have PAE vales in the key, this will be empty
-    tuple val(meta), path ("${meta.id}_0_pae.tsv")      , emit: pae
+    tuple val(meta), path ("${meta.id}_1_pae.tsv")      , emit: pae
     tuple val(meta), path ("${meta.id}_*_pae.tsv")      , emit: paes
     tuple val(meta), path ("${meta.id}_ptm.tsv")        , emit: ptms
     tuple val(meta), path ("${meta.id}_iptm.tsv")       , optional: true, emit: iptms
@@ -89,14 +89,6 @@ process RUN_HELIXFOLD3 {
 
     done
 
-    # Ensure dummy MSA/PAE files exist if not generated
-    if [ ! -f "${meta.id}_msa.tsv" ]; then
-        echo "0" > "${meta.id}_msa.tsv"
-    fi
-    if [ ! -f "${meta.id}_0_pae.tsv" ]; then
-        echo "0" > "${meta.id}_0_pae.tsv"
-    fi
-
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         python: \$(python3 --version | sed 's/Python //g')
@@ -111,11 +103,11 @@ process RUN_HELIXFOLD3 {
     touch "${meta.id}_msa.tsv"
     touch "${meta.id}_ptm.tsv"
     touch "${meta.id}_iptm.tsv"
-    touch "${meta.id}_0_pae.tsv"
     touch "${meta.id}_1_pae.tsv"
     touch "${meta.id}_2_pae.tsv"
     touch "${meta.id}_3_pae.tsv"
     touch "${meta.id}_4_pae.tsv"
+    touch "${meta.id}_5_pae.tsv"
     mkdir "${meta.id}"
     touch "${meta.id}-ranked_1.pdb"
     touch "${meta.id}-ranked_2.pdb"

@@ -52,14 +52,6 @@ process RUN_ROSETTAFOLD_ALL_ATOM {
         --a3ms "\$yaml_name"/A/t000_.msa0.a3m \\
         --pts "\$yaml_name"_aux.pt
 
-    # Ensure dummy MSA/PAE files exist if not generated
-    if [ ! -f "${meta.id}_msa.tsv" ]; then
-        echo "0" > "${meta.id}_msa.tsv"
-    fi
-    if [ ! -f "${meta.id}_0_pae.tsv" ]; then
-        echo "0" > "${meta.id}_0_pae.tsv"
-    fi
-
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         python: \$(python3 --version | sed 's/Python //g')
