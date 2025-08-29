@@ -495,7 +495,7 @@ workflow NFCORE_PROTEINFOLD {
             .join(BOLTZ.out.msa)
             .join(BOLTZ.out.pae)
             )
-        ch_top_ranked_model         = ch_top_ranked_model.mix(BOLTZ.out.pdb)
+        ch_top_ranked_model         = ch_top_ranked_model.mix(BOLTZ.out.top_ranked_pdb)
     }
     //
     // POST PROCESSING: generate visualisation reports

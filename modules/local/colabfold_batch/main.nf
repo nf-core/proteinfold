@@ -49,13 +49,10 @@ process COLABFOLD_BATCH {
         cp *_unrelaxed_rank_001*.pdb ${meta.id}_colabfold.pdb
     fi
 
-    # Ensure dummy MSA/PAE files exist if not generated
-    if [ ! -f "${meta.id}_msa.tsv" ]; then
-        echo "0" > "${meta.id}_msa.tsv"
-    fi
-    if [ ! -f "${meta.id}_0_pae.tsv" ]; then
-        echo "0" > "${meta.id}_0_pae.tsv"
-    fi
+    extract_metrics.py --name ${meta.id} \\
+        --colabfold_pae ${meta.id}_predicted_aligned_error_v1.json
+
+    mv ${meta.id}_coverage.png ${meta.id}_seq_coverage.png
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
@@ -72,7 +69,6 @@ process COLABFOLD_BATCH {
     touch ./${meta.id}_relaxed_rank_03.pdb
     touch ./${meta.id}_coverage.png
     touch ./${meta.id}_scores_rank.json
-    touch ./${meta.id}_msa.tsv
     touch ./${meta.id}_0_pae.tsv
 
     cat <<-END_VERSIONS > versions.yml

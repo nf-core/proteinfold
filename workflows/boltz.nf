@@ -143,6 +143,12 @@ workflow BOLTZ {
 
     RUN_BOLTZ
         .out
+        .top_ranked_pdb
+        .map{it[0].model = "boltz"; it}
+        .set {ch_top_ranked_pdb}
+
+    RUN_BOLTZ
+        .out
         .msa_raw
     .map{it[0].model = "boltz"; it}
     .set {ch_msa}
@@ -167,6 +173,7 @@ workflow BOLTZ {
     structures      = RUN_BOLTZ.out.structures
     confidence      = RUN_BOLTZ.out.confidence
     multiqc_report  = ch_multiqc_report
+    top_ranked_pdb  = ch_top_ranked_pdb
     pdb             = ch_pdb
     pae             = ch_pae
 }

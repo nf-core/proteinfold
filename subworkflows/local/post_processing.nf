@@ -48,22 +48,15 @@ workflow POST_PROCESSING {
         ch_versions = ch_versions.mix(GENERATE_REPORT.out.versions)
 
         if (requested_modes_size > 1){
-            ch_comparison_report_files = ch_comparison_report_files.mix(
-                ch_top_ranked_model
-                .filter{it[0]["model"] == "alphafold2"}
-                .map{[it[0], it[1]]}
-                .join(GENERATE_REPORT.out.sequence_coverage
-                    .filter { it[0]["model"] == "alphafold2" }
-                    , remainder:true
-                )
-            )
-            ch_comparison_report_files = ch_comparison_report_files.mix(
-                ch_top_ranked_model
-                .filter{it[0]["model"] != "alphafold2"}
-                .join(
-                    ch_report_input.map{[it[0], it[2]]}
-                )
-            )
+            ch_dummy_file = Channel.fromPath("$projectDir/assets/NO_FILE")
+            
+            def esm = ch_top_ranked_model.filter{it[0].model == 'esmfold' }
+            def not_esm = ch_top_ranked_model.filter{it[0].model != 'esmfold' }
+
+            esm = esm.map{[it[0], it[1]]}.merge(ch_dummy_file)
+            not_esm = not_esm.map{[it[0], it[1]]}.join(GENERATE_REPORT.out.sequence_coverage)
+            not_esm.mix(esm).set{ch_comparison_report_files}
+
             ch_comparison_report_files
                 .map{
                     [["id": it[0].id], it[0], it[1], it[2]]

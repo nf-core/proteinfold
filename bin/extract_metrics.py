@@ -345,6 +345,12 @@ def read_pt(name, pt_files):
                 write_tsv(f"{name}_0_pae.tsv", format_pae_rows(np.squeeze(data["pae"].numpy())))
         break
 
+def read_colabfold_paes(name, colabfold_pae_fn):
+    with open(colabfold_pae_fn) as f:
+        data = json.load(f)
+    pae = data["predicted_aligned_error"]
+    write_tsv(f"{name}_0_pae.tsv", format_pae_rows(pae))
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--pkls", dest="pkls", required=False, nargs="+") # For reading both HelixFold3 and AlphaFold2 MSA formats
@@ -352,6 +358,7 @@ def main():
     parser.add_argument("--a3ms", dest="a3ms", required=False, nargs="+") # For reading the RosettaFold-All-Atom, ColabFold MSA formats
     parser.add_argument("--csvs", dest="csvs", required=False, nargs="+") # For reading boltz csvs
     parser.add_argument("--jsons", dest="jsons", required=False, nargs="+") # For reading the AF3 MSA & PAE, HF3 PAE
+    parser.add_argument("--colabfold_pae_fn", required=False)
     parser.add_argument("--pts", dest="pts", required=False, nargs="+") # For read RFAA pytorch model to get PAE data
     parser.add_argument("--structs", dest="structs", required=False, nargs="+")
     parser.add_argument("--name", default="untitled", dest="name") # might need a --name $meta.id
@@ -371,6 +378,8 @@ def main():
         read_pt(args.name, args.pts)
     if args.structs:
         extract_structs_plddt_to_tsv(args.name, args.structs)
+    if args.colabfold_pae_fn:
+        read_colabfold_paes(args.name, args.colabfold_pae_fn)
 
 if __name__ == "__main__":
     main()

@@ -119,7 +119,7 @@ def generate_output_images(msa_path, plddt_data, name, out_dir, in_type, generat
         cbar.ax.tick_params(labelsize=18)
         plt.xlabel("Positions", fontsize=24, labelpad=24)
         plt.ylabel("Sequences", fontsize=24, labelpad=36)
-        plt.savefig(f"{out_dir}/{name+('_' if name else '')}seq_coverage.png")
+        plt.savefig(f"{out_dir}/{name}_{in_type}_seq_coverage.png")
 
         # ##################################################################
 
@@ -444,7 +444,7 @@ if not args.msa.endswith("NO_FILE"):
     image_path = (
         f"{args.output_dir}/{args.msa}"
         if args.in_type.lower() == "colabfold"
-        else f"{args.output_dir}/{args.name + ('_' if args.name else '')}seq_coverage.png"
+        else f"{args.output_dir}/{args.name}_{args.in_type}_seq_coverage.png"
     )
     with open(image_path, "rb") as in_file:
         proteinfold_template = proteinfold_template.replace(

@@ -29,7 +29,7 @@ process RUN_ALPHAFOLD2_PRED {
     path ("${fasta.baseName}*")
     tuple val(meta), path ("${meta.id}_alphafold2.pdb")     , emit: top_ranked_pdb
     tuple val(meta), path ("${fasta.baseName}/ranked*.pdb") , emit: pdb
-    tuple val(meta), path ("${meta.id}_msa.tsv")            , emit: msa
+    tuple val(meta), path ("${meta.id}_alphafold2_msa.tsv") , emit: msa
     // TODO: re-label multiqc -> plddt so multiqc channel can take in all metrics
     tuple val(meta), path ("${meta.id}_plddt.tsv")          , emit: multiqc
     // TODO: alphafold2_model_preset == "monomer" the pae file won't exist.
@@ -63,6 +63,8 @@ process RUN_ALPHAFOLD2_PRED {
     extract_metrics.py --name ${meta.id} \\
         --pkls ${features} ${fasta.baseName}/*.pkl \\
         --structs ${fasta.baseName}/ranked*.pdb
+
+    mv "${meta.id}_msa.tsv" "${meta.id}_alphafold2_msa.tsv"
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
