@@ -41,17 +41,6 @@ process RUN_ESMFOLD {
     extract_metrics.py --name ${meta.id} \\
         --structs ${meta.id}_esmfold.pdb
 
-    # No MSA information in ESMFold
-    # PAE from ESMFold is an absolute pain to retrieve, skipping.
-    # https://github.com/facebookresearch/esm/issues/582
-    # Since neither MSA or PAE exist, dummy files are generated
-    if [ ! -f "${meta.id}_msa.tsv" ]; then
-        echo "0" > "${meta.id}_msa.tsv"
-    fi
-    if [ ! -f "${meta.id}_0_pae.tsv" ]; then
-        echo "0" > "${meta.id}_0_pae.tsv"
-    fi
-
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         esm-fold: $VERSION
@@ -63,8 +52,6 @@ process RUN_ESMFOLD {
     """
     touch "${meta.id}_esmfold.pdb"
     touch "${meta.id}_plddt.tsv"
-    touch "${meta.id}_msa.tsv"
-    touch "${meta.id}_0_pae.tsv"
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
