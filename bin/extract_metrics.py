@@ -177,10 +177,44 @@ def read_pkl(name, pkl_files):
 
 
 def read_a3m(name, a3m_files):
-    # ColabFold, RosettaFold-All-Atom
+    # RosettaFold-All-Atom 
+    #TODO: DRY with unpaired below for Boltz
+    msa_rows = {}
+    for a3m_file in a3m_files: #Should already be alphabetical by chain
+        msa_rows[a3m_file] = a3m_to_int(a3m_file)
+    
+    final_rows = []
+    temp_row = []
     for a3m_file in a3m_files:
-        int_seqs = a3m_to_int(a3m_file)
-        write_tsv(f"{name}_msa.tsv", format_msa_rows(int_seqs))
+        temp_row.extend(msa_rows[a3m_file][0])
+    final_rows.append(temp_row)
+
+    # Un-paired TODO: get pairing code from RF-AA source
+    # https://github.com/baker-laboratory/RoseTTAFold-All-Atom/blob/main/rf2aa/data/parsers.py#L405
+    msa_widths = [len(msa_rows[chain][0]) for chain in a3m_files]
+    msa_heights = [len(msa_rows[chain]) for chain in a3m_files]
+
+    cum_total_rows = np.cumsum(msa_heights)
+    for row_idx in range(cum_total_rows[-1]):
+        temp_row = []
+
+        for i, chain in enumerate(a3m_files):
+            msa = msa_rows[chain]
+            width = msa_widths[i]
+            if i == 0:
+                minrow = 0
+            else:
+                minrow = cum_total_rows[i-1]
+            maxrow = cum_total_rows[i]
+
+            if minrow <= row_idx < maxrow:
+                msa_row_idx = row_idx - minrow
+                temp_row.extend(msa[msa_row_idx])
+            else:
+                temp_row.extend(["21"] * width) #gap
+        final_rows.append(temp_row)
+    
+    write_tsv(f"{name}_msa.tsv", format_msa_rows(final_rows))
 
 def read_npz(name, npz_files):
    for idx, npz_file in enumerate(npz_files):

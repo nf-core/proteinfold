@@ -49,7 +49,7 @@ process RUN_ROSETTAFOLD_ALL_ATOM {
 
     mamba run --name RFAA extract_metrics.py --name ${meta.id} \\
         --structs "${meta.id}_rosettafold_all_atom.pdb" \\
-        --a3ms "\$yaml_name"/A/t000_.msa0.a3m \\
+        --a3ms "\$yaml_name"/*/t000_.msa0.a3m \\
         --pts "\$yaml_name"_aux.pt
 
     mv "${meta.id}_msa.tsv" "${meta.id}_rosettafold_all_atom_msa.tsv"
