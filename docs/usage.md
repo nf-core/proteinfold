@@ -77,6 +77,7 @@ To provide the predownloaded AlphaFold2 databases and parameters you can specify
 
 <details markdown="1">
 <summary>Directory structure</summary>
+      
 ```console
 ├── params
 │   └── alphafold_params_2022-12-06
@@ -216,6 +217,7 @@ If you specify the `--colabfold_db <PATH>` parameter, the directory structure of
 
 <details markdown="1">
 <summary>Directory structure</summary>
+      
 ```console
 ├── colabfold_envdb
 │   ├── colabfold_envdb_202108_db.0
