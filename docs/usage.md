@@ -51,7 +51,7 @@ nextflow run nf-core/proteinfold \
       --outdir <OUTDIR> \
       --mode alphafold2 \
       --alphafold2_db <null (default) | DB_PATH> \
-      --full_dbs <true/false> \
+      --alphafold2_full_dbs <true/false> \
       --alphafold2_model_preset monomer \
       --use_gpu <true/false> \
       -profile <docker/singularity/.../institute>
@@ -66,7 +66,7 @@ nextflow run nf-core/proteinfold \
       --mode alphafold2 \
       --alphafold2_mode split_msa_prediction \
       --alphafold2_db <null (default) | DB_PATH> \
-      --full_dbs <true/false> \
+      --alphafold2_full_dbs <true/false> \
       --alphafold2_model_preset monomer \
       --use_gpu <true/false> \
       --random_seed 53343 \
