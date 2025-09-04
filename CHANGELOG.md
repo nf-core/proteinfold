@@ -64,6 +64,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[#368](https://github.com/nf-core/proteinfold/issues/368)] - Helixfold3 iPTM output missing when dealing with monomers make the process to fail.
 - [[PR #377](https://github.com/nf-core/proteinfold/pull/377)] - Fix sequence msa synch for af2 split.
 - [[#380](https://github.com/nf-core/proteinfold/issues/380)] - Fixes alphafold2_model_preset bug on retry.
+- [[#382](https://github.com/nf-core/proteinfold/issues/382)] - Readds `--full_dbs` as a global option.
 
 ### Parameters
 

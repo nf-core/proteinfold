@@ -70,6 +70,11 @@
                     "description": "The directory where reference data is stored. Individual methods can be overwritten with method-specific paths.",
                     "fa_icon": "fas fa-folder-open"
                 },
+                "full_dbs": {
+                    "type": "boolean",
+                    "description": "Global toggle for full database usage.",
+                    "fa_icon": "fas fa-battery-full"
+                },
                 "uniref30_prefix": {
                     "type": "string",
                     "default": "UniRef30_2023_02",

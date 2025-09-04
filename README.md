@@ -73,7 +73,7 @@ The pipeline takes care of downloading the databases and parameters required by 
       --outdir <OUTDIR> \
       --mode alphafold2 \
       --alphafold2_db <null (default) | DB_PATH> \
-      --full_dbs <true/false> \
+      --alphafold2_full_dbs <true/false> \
       --alphafold2_model_preset monomer \
       --use_gpu <true/false> \
       -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
@@ -88,7 +88,7 @@ The pipeline takes care of downloading the databases and parameters required by 
       --mode alphafold2 \
       --alphafold2_mode split_msa_prediction \
       --alphafold2_db <null (default) | DB_PATH> \
-      --full_dbs <true/false> \
+      --alphafold2_full_dbs <true/false> \
       --alphafold2_model_preset monomer \
       --use_gpu <true/false> \
       -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
