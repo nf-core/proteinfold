@@ -96,7 +96,7 @@ process RUN_BOLTZ {
 
     touch "${meta.id}_boltz.pdb"
     touch "${meta.id}_plddt.tsv"
-    touch "${meta.id}_msa.tsv"
+    touch "${meta.id}_boltz_msa.tsv"
     touch "${meta.id}_0_pae.tsv"
     touch "${meta.id}_0_ptm.tsv"
     touch "${meta.id}_0_iptm.tsv"

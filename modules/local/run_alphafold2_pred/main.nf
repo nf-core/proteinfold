@@ -76,7 +76,7 @@ process RUN_ALPHAFOLD2_PRED {
     """
     touch "${meta.id}_alphafold2.pdb"
     touch "${meta.id}_plddt.tsv"
-    touch "${meta.id}_msa.tsv"
+    touch "${meta.id}_alphafold2_msa.tsv"
     touch "${meta.id}_0_pae.tsv"
     mkdir "${fasta.baseName}"
     touch "${fasta.baseName}/ranked_0.pdb"

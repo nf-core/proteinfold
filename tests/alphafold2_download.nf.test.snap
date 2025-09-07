@@ -51,8 +51,8 @@
                 "alphafold2/standard/T1024/T1024.1/ranked_3.pdb",
                 "alphafold2/standard/T1024/T1024.1/ranked_4.pdb",
                 "alphafold2/standard/T1024/T1024_alphafold2.pdb",
+                "alphafold2/standard/T1024/T1024_alphafold2_msa.tsv",
                 "alphafold2/standard/T1024/T1024_iptm.tsv",
-                "alphafold2/standard/T1024/T1024_msa.tsv",
                 "alphafold2/standard/T1024/T1024_plddt.tsv",
                 "alphafold2/standard/T1024/T1024_ptm.tsv",
                 "alphafold2/standard/T1024/paes",
@@ -97,8 +97,8 @@
                 "ranked_3.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "ranked_4.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1024_alphafold2.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1024_alphafold2_msa.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1024_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "T1024_msa.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1024_plddt.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1024_ptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1024_0_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
@@ -113,6 +113,6 @@
             "nf-test": "0.9.2",
             "nextflow": "25.04.6"
         },
-        "timestamp": "2025-08-21T18:07:11.550451136"
+        "timestamp": "2025-09-08T09:57:36.448160596"
     }
 }

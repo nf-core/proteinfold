@@ -101,7 +101,7 @@ process RUN_HELIXFOLD3 {
     touch "${meta.id}_helixfold3.cif"
     touch "${meta.id}_helixfold3.pdb"
     touch "${meta.id}_plddt.tsv"
-    touch "${meta.id}_msa.tsv"
+    touch "${meta.id}_helixfold3_msa.tsv"
     touch "${meta.id}_ptm.tsv"
     touch "${meta.id}_iptm.tsv"
     touch "${meta.id}_1_pae.tsv"

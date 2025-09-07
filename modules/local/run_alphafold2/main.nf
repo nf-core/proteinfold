@@ -92,7 +92,7 @@ process RUN_ALPHAFOLD2 {
     """
     touch "${meta.id}_alphafold2.pdb"
     touch "${meta.id}_plddt.tsv"
-    touch "${meta.id}_msa.tsv"
+    touch "${meta.id}_alphafold2_msa.tsv"
     touch "${meta.id}_0_pae.tsv"
     touch "${meta.id}_ptm.tsv"
     touch "${meta.id}_iptm.tsv"

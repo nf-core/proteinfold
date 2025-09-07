@@ -17,13 +17,9 @@
             [
                 "esmfold",
                 "esmfold/default",
-                "esmfold/default/T1024_0_pae.tsv",
                 "esmfold/default/T1024_esmfold.pdb",
-                "esmfold/default/T1024_msa.tsv",
                 "esmfold/default/T1024_plddt.tsv",
-                "esmfold/default/T1026_0_pae.tsv",
                 "esmfold/default/T1026_esmfold.pdb",
-                "esmfold/default/T1026_msa.tsv",
                 "esmfold/default/T1026_plddt.tsv",
                 "esmfold/default/top_ranked_structures",
                 "esmfold/default/top_ranked_structures/T1024.pdb",
@@ -40,13 +36,9 @@
                 "pipeline_info/nf_core_proteinfold_software_mqc_versions.yml"
             ],
             [
-                "T1024_0_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1024_esmfold.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "T1024_msa.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1024_plddt.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "T1026_0_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1026_esmfold.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "T1026_msa.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1026_plddt.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1024.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1026.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
@@ -59,6 +51,6 @@
             "nf-test": "0.9.2",
             "nextflow": "25.04.6"
         },
-        "timestamp": "2025-08-21T17:48:04.839098604"
+        "timestamp": "2025-09-08T09:59:03.65872041"
     }
 }

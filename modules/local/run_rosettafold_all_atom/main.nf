@@ -66,7 +66,7 @@ process RUN_ROSETTAFOLD_ALL_ATOM {
     touch "${meta.id}.pdb"
     touch "${meta.id}_aux.pt"
     touch "${meta.id}_plddt.tsv"
-    touch "${meta.id}_msa.tsv"
+    touch "${meta.id}_rosettafold_all_atom_msa.tsv"
     touch "${meta.id}_0_pae.tsv"
 
     cat <<-END_VERSIONS > versions.yml
