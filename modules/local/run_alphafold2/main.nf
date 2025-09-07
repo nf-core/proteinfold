@@ -50,11 +50,11 @@ process RUN_ALPHAFOLD2 {
     def args = task.ext.args ?: ''
     def db_preset_cmd = db_preset ? "full_dbs --bfd_database_path=./bfd/bfd_metaclust_clu_complete_id30_c90_final_seq.sorted_opt --uniref30_database_path=./uniref30/${params.uniref30_prefix}" :
         "reduced_dbs --small_bfd_database_path=./small_bfd/bfd-first_non_consensus_sequences.fasta"
+    def extra_dbs = ""
     if (alphafold2_model_preset == 'multimer') {
-        alphafold2_model_preset += " --pdb_seqres_database_path=./pdb_seqres/pdb_seqres.txt --uniprot_database_path=./uniprot/uniprot.fasta "
-    }
-    else {
-        alphafold2_model_preset += " --pdb70_database_path=./pdb70/pdb70 "
+        extra_dbs = " --pdb_seqres_database_path=./pdb_seqres/pdb_seqres.txt --uniprot_database_path=./uniprot/uniprot.fasta "
+    } else {
+        extra_dbs = " --pdb70_database_path=./pdb70/pdb70 "
     }
     """
     if [ -f pdb_seqres/pdb_seqres.txt ]
@@ -64,7 +64,7 @@ process RUN_ALPHAFOLD2 {
     mgnify_db_path=\$(ls -v ./mgnify/mgy_clusters*.fa | tail -n 1)
     python3 /app/alphafold/run_alphafold.py \
         --fasta_paths=${fasta} \
-        --model_preset=${alphafold2_model_preset} \
+        --model_preset=${alphafold2_model_preset}${extra_dbs} \
         --db_preset=${db_preset_cmd} \
         --output_dir=\$PWD \
         --data_dir=\$PWD \
