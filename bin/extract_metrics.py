@@ -177,12 +177,12 @@ def read_pkl(name, pkl_files):
 
 
 def read_a3m(name, a3m_files):
-    # RosettaFold-All-Atom 
+    # RosettaFold-All-Atom
     #TODO: DRY with unpaired below for Boltz
     msa_rows = {}
     for a3m_file in a3m_files: #Should already be alphabetical by chain
         msa_rows[a3m_file] = a3m_to_int(a3m_file)
-    
+
     final_rows = []
     temp_row = []
     for a3m_file in a3m_files:
@@ -213,7 +213,7 @@ def read_a3m(name, a3m_files):
             else:
                 temp_row.extend(["21"] * width) #gap
         final_rows.append(temp_row)
-    
+
     write_tsv(f"{name}_msa.tsv", format_msa_rows(final_rows))
 
 def read_npz(name, npz_files):
@@ -241,12 +241,12 @@ def read_csv(name, csv_files):
                     msa_lines.append(''.join(c for c in line.strip('\n').split(',')[1] if not c.islower()))
         msa_rows[csv_file.split('_')[-1].split('.csv')[0]] = [[str(AA_to_int.get(residue, 20)) for residue in line] for line in msa_lines]
         unpaired_msa_rows[csv_file.split('_')[-1].split('.csv')[0]] = [[str(AA_to_int.get(residue, 20)) for residue in line] for line in unpaired_msa_lines]
-           
+
     # Get Chain to MSA mapping (ie non-redundant for homomers)
     # TODO: Make this explicit input
     with open(f'boltz_results_{name}/processed/manifest.json') as f:
         manifest = json.load(f)
-    
+
     final_rows = []
     # Paired
     for i in range(len(msa_rows["0"])): #The number of paired lines is common to all MSAs

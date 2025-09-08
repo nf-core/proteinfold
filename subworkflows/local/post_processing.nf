@@ -49,7 +49,7 @@ workflow POST_PROCESSING {
 
         if (requested_modes_size > 1){
             ch_dummy_file = Channel.fromPath("$projectDir/assets/NO_FILE")
-            
+
             def esm = ch_top_ranked_model.filter{it[0].model == 'esmfold' }
             def not_esm = ch_top_ranked_model.filter{it[0].model != 'esmfold' }
 
