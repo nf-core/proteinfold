@@ -55,24 +55,28 @@ workflow PREPARE_ALPHAFOLD2_DBS {
 
 
     if (alphafold2_db) {
+        // Optimization: Stage the entire database directory once via Fusion, 
+        // then create sub-directory channels to avoid individual S3 staging operations
+        ch_db_root = Channel.value(file(alphafold2_db))
+        
         if (alphafold2_full_dbs) {
-            ch_bfd       = Channel.value(file(bfd_path))
+            ch_bfd       = ch_db_root.map { db -> file("${db}/bfd") }
             ch_small_bfd = Channel.value(file("${projectDir}/assets/dummy_db"))
         }
         else {
             ch_bfd       = Channel.value(file("${projectDir}/assets/dummy_db"))
-            ch_small_bfd = Channel.value(file(small_bfd_path))
+            ch_small_bfd = ch_db_root.map { db -> file("${db}/small_bfd") }
         }
 
-        ch_params         = Channel.value(file(alphafold2_params_path))
-        ch_mgnify         = Channel.value(file(mgnify_path))
-        ch_pdb70          = Channel.value(file(pdb70_path))
-        ch_mmcif_files    = Channel.value(file(pdb_mmcif_path))
-        ch_obsolete       = Channel.value(file(pdb_obsolete_path, type: 'file'))
-        ch_uniref30       = Channel.value(file(alphafold2_uniref30_path, type: 'any'))
-        ch_uniref90       = Channel.value(file(uniref90_path))
-        ch_pdb_seqres     = Channel.value(file(pdb_seqres_path))
-        ch_uniprot        = Channel.value(file(uniprot_path))
+        ch_params         = ch_db_root.map { db -> file("${db}/alphafold_params_*") }
+        ch_mgnify         = ch_db_root.map { db -> file("${db}/mgnify") }
+        ch_pdb70          = ch_db_root.map { db -> file("${db}/pdb70") }
+        ch_mmcif_files    = ch_db_root.map { db -> file("${db}/pdb_mmcif/mmcif_files") }
+        ch_obsolete       = ch_db_root.map { db -> file("${db}/pdb_mmcif/obsolete.dat") }
+        ch_uniref30       = ch_db_root.map { db -> file("${db}/uniref30") }
+        ch_uniref90       = ch_db_root.map { db -> file("${db}/uniref90") }
+        ch_pdb_seqres     = ch_db_root.map { db -> file("${db}/pdb_seqres") }
+        ch_uniprot        = ch_db_root.map { db -> file("${db}/uniprot") }
     }
     else {
         if (alphafold2_full_dbs) {
