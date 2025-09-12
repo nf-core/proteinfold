@@ -98,11 +98,11 @@ workflow BOLTZ {
         ch_versions = ch_versions.mix(MMSEQS_COLABFOLDSEARCH.out.versions)
 
         SPLIT_MSA(
-            MMSEQS_COLABFOLDSEARCH.out.a3m.filter{it[0].cnt > 1}
+            MMSEQS_COLABFOLDSEARCH.out.a3m
         )
         ch_versions = ch_versions.mix(SPLIT_MSA.out.versions)
         ch_input.monomer
-            .join(MMSEQS_COLABFOLDSEARCH.out.a3m.filter{it[0].cnt == 1})
+            .join(SPLIT_MSA.out.msa_csv)
             .mix(
                 ch_input.multimer.join(SPLIT_MSA.out.msa_csv)
             ).set{ch_prepare_fasta}
@@ -143,9 +143,21 @@ workflow BOLTZ {
 
     RUN_BOLTZ
         .out
-        .msa
+        .top_ranked_pdb
+        .map{it[0].model = "boltz"; it}
+        .set {ch_top_ranked_pdb}
+
+    RUN_BOLTZ
+        .out
+        .msa_raw
     .map{it[0].model = "boltz"; it}
     .set {ch_msa}
+
+    RUN_BOLTZ
+        .out
+        .pae_raw
+    .map{it[0].model = "boltz"; it}
+    .set {ch_pae}
 
     RUN_BOLTZ
         .out
@@ -161,5 +173,7 @@ workflow BOLTZ {
     structures      = RUN_BOLTZ.out.structures
     confidence      = RUN_BOLTZ.out.confidence
     multiqc_report  = ch_multiqc_report
+    top_ranked_pdb  = ch_top_ranked_pdb
     pdb             = ch_pdb
+    pae             = ch_pae
 }

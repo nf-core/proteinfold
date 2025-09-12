@@ -147,8 +147,11 @@ def read_pkl(name, pkl_files):
             write_tsv(f"{name}_msa.tsv", format_msa_rows(data["msa"]))
     # AlphaFold2.3 non-summary, for each pkl. TODO: Need to either read in ranking_debug.json to get the ranking order, or do it later in the workflow.
         else:
-            model_id = os.path.basename(pkl_file).replace("result_model_", "").replace(".pkl", "")
-
+            model_info = os.path.basename(pkl_file).replace("result_", "").replace(".pkl", "")
+            #TODO: Make this explicit input
+            with open(os.path.join(os.path.dirname(pkl_file),"ranking_debug.json")) as f:
+                ranking_data = json.load(f)['order']
+            model_id = ranking_data.index(model_info)
             if 'predicted_aligned_error' not in data.keys():
                 print(f"No PAE output in {pkl_file}, it was likely a monomer calculation")
             else:
@@ -174,10 +177,44 @@ def read_pkl(name, pkl_files):
 
 
 def read_a3m(name, a3m_files):
-    # ColabFold, RosettaFold-All-Atom, Boltz-1
+    # RosettaFold-All-Atom
+    #TODO: DRY with unpaired below for Boltz
+    msa_rows = {}
+    for a3m_file in a3m_files: #Should already be alphabetical by chain
+        msa_rows[a3m_file] = a3m_to_int(a3m_file)
+
+    final_rows = []
+    temp_row = []
     for a3m_file in a3m_files:
-        int_seqs = a3m_to_int(a3m_file)
-        write_tsv(f"{name}_msa.tsv", format_msa_rows(int_seqs))
+        temp_row.extend(msa_rows[a3m_file][0])
+    final_rows.append(temp_row)
+
+    # Un-paired TODO: get pairing code from RF-AA source
+    # https://github.com/baker-laboratory/RoseTTAFold-All-Atom/blob/main/rf2aa/data/parsers.py#L405
+    msa_widths = [len(msa_rows[chain][0]) for chain in a3m_files]
+    msa_heights = [len(msa_rows[chain]) for chain in a3m_files]
+
+    cum_total_rows = np.cumsum(msa_heights)
+    for row_idx in range(cum_total_rows[-1]):
+        temp_row = []
+
+        for i, chain in enumerate(a3m_files):
+            msa = msa_rows[chain]
+            width = msa_widths[i]
+            if i == 0:
+                minrow = 0
+            else:
+                minrow = cum_total_rows[i-1]
+            maxrow = cum_total_rows[i]
+
+            if minrow <= row_idx < maxrow:
+                msa_row_idx = row_idx - minrow
+                temp_row.extend(msa[msa_row_idx])
+            else:
+                temp_row.extend(["21"] * width) #gap
+        final_rows.append(temp_row)
+
+    write_tsv(f"{name}_msa.tsv", format_msa_rows(final_rows))
 
 def read_npz(name, npz_files):
    for idx, npz_file in enumerate(npz_files):
@@ -187,18 +224,65 @@ def read_npz(name, npz_files):
             model_id = os.path.basename(npz_file).split('_model_')[-1].split('.npz')[0]
             write_tsv(f"{name}_{model_id}_pae.tsv", format_pae_rows(data["pae"]))
 
+# Boltz MSA processing
 def read_csv(name, csv_files):
-   for idx, csv_file in enumerate(csv_files):
-        if not os.path.isfile(csv_file): return #TODO: Fix temporary workaround
-        model_id = os.path.basename(csv_file).split('_')[-1].split('.csv')[0]
+    if not os.path.isfile(csv_files[0]): return #TODO: Fix temporary workaround
+    msa_rows = {}
+    unpaired_msa_rows = {}
+    for csv_file in sorted(csv_files, key=lambda x: int(x.split('_')[-1].split('.csv')[0])):
         msa_lines = []
+        unpaired_msa_lines = []
         with open(csv_file) as f:
             f.readline()
             for line in f:
-                msa_lines.append(''.join(c for c in line.strip('\n').split(',')[1] if not c.islower()))
-        msa_rows = [[str(AA_to_int.get(residue, 20)) for residue in line] for line in msa_lines]
-        write_tsv(f"{name}_msa.tsv", msa_rows)
-        break # only 1 csv
+                if line.split(',')[0] == '-1' and len(csv_files)>1: #Server MSA appears as un-paired
+                    unpaired_msa_lines.append(''.join(c for c in line.strip('\n').split(',')[1] if not c.islower()))
+                else:
+                    msa_lines.append(''.join(c for c in line.strip('\n').split(',')[1] if not c.islower()))
+        msa_rows[csv_file.split('_')[-1].split('.csv')[0]] = [[str(AA_to_int.get(residue, 20)) for residue in line] for line in msa_lines]
+        unpaired_msa_rows[csv_file.split('_')[-1].split('.csv')[0]] = [[str(AA_to_int.get(residue, 20)) for residue in line] for line in unpaired_msa_lines]
+
+    # Get Chain to MSA mapping (ie non-redundant for homomers)
+    # TODO: Make this explicit input
+    with open(f'boltz_results_{name}/processed/manifest.json') as f:
+        manifest = json.load(f)
+
+    final_rows = []
+    # Paired
+    for i in range(len(msa_rows["0"])): #The number of paired lines is common to all MSAs
+        temp_row = []
+        #This needs to be fixed if inference is batched in future.
+        for chain in manifest["records"][0]["chains"]:
+            j = chain["msa_id"].split("_")[-1]
+            temp_row.extend(msa_rows[j][i])
+        final_rows.append(temp_row)
+
+    # Un-paired
+    msa_widths = [len(msa_rows[chain["msa_id"].split("_")[-1]][0]) for chain in manifest["records"][0]["chains"]]
+    msa_heights = [len(unpaired_msa_rows[chain["msa_id"].split("_")[-1]]) for chain in manifest["records"][0]["chains"]]
+
+    cum_total_rows = np.cumsum(msa_heights)
+
+    for row_idx in range(cum_total_rows[-1]):
+        temp_row = []
+
+        for i, chain in enumerate(manifest["records"][0]["chains"]):
+            msa = unpaired_msa_rows[chain["msa_id"].split("_")[-1]]
+            width = msa_widths[i]
+            if i == 0:
+                minrow = 0
+            else:
+                minrow = cum_total_rows[i-1]
+            maxrow = cum_total_rows[i]
+
+            if minrow <= row_idx < maxrow:
+                msa_row_idx = row_idx - minrow
+                temp_row.extend(msa[msa_row_idx])
+            else:
+                temp_row.extend(["21"] * width) #gap
+        final_rows.append(temp_row)
+
+    write_tsv(f"{name}_msa.tsv", final_rows)
 
 def read_json(name, json_files):
     ptm_data = {}
@@ -285,13 +369,21 @@ def read_json(name, json_files):
 
 def read_pt(name, pt_files):
     import torch # moved to a conditional import since too bulky import if not used
+    #TODO: Handle this better when refactored - Is this just RFAA??
     for pt_file in pt_files:
         with open(pt_file, 'rb') as f:   # TODO: point to [protein]_aux.pt
             data = torch.load(f, map_location="cpu")
             if 'pae' in data:
                 # The pt file contains a tensor that needs to be cast as an array
                 # Squeeze leading dimension (batch?)
-                write_tsv(f"{name}_pae.tsv", format_pae_rows(np.squeeze(data["pae"].numpy())))
+                write_tsv(f"{name}_0_pae.tsv", format_pae_rows(np.squeeze(data["pae"].numpy())))
+        break
+
+def read_colabfold_paes(name, colabfold_pae_fn):
+    with open(colabfold_pae_fn) as f:
+        data = json.load(f)
+    pae = data["predicted_aligned_error"]
+    write_tsv(f"{name}_0_pae.tsv", format_pae_rows(pae))
 
 def main():
     parser = argparse.ArgumentParser()
@@ -300,6 +392,7 @@ def main():
     parser.add_argument("--a3ms", dest="a3ms", required=False, nargs="+") # For reading the RosettaFold-All-Atom, ColabFold MSA formats
     parser.add_argument("--csvs", dest="csvs", required=False, nargs="+") # For reading boltz csvs
     parser.add_argument("--jsons", dest="jsons", required=False, nargs="+") # For reading the AF3 MSA & PAE, HF3 PAE
+    parser.add_argument("--colabfold_pae_fn", required=False)
     parser.add_argument("--pts", dest="pts", required=False, nargs="+") # For read RFAA pytorch model to get PAE data
     parser.add_argument("--structs", dest="structs", required=False, nargs="+")
     parser.add_argument("--name", default="untitled", dest="name") # might need a --name $meta.id
@@ -319,6 +412,8 @@ def main():
         read_pt(args.name, args.pts)
     if args.structs:
         extract_structs_plddt_to_tsv(args.name, args.structs)
+    if args.colabfold_pae_fn:
+        read_colabfold_paes(args.name, args.colabfold_pae_fn)
 
 if __name__ == "__main__":
     main()

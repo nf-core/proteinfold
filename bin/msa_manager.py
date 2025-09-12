@@ -31,7 +31,7 @@ def get_sub_sequences(seq_lengths, whole_seq):
     return out_seqs
 
 
-def parse_msa(msa_path, output_dir):
+def parse_msa(msa_path, output_dir, meta_id):
     os.makedirs(output_dir, exist_ok=True)
     homolog = ""
     section_index = 0
@@ -39,12 +39,17 @@ def parse_msa(msa_path, output_dir):
     with open(msa_path, "r") as file:
         first_line = file.readline()
         if not first_line.startswith("#"):
-            print("Error: File might not have multiple A3M sections.")
-            return
+            homologs_lengths = [len(file.readline().strip('\n'))]
+            sequence_groups = [[[],[]]]
+            is_multimer = False
+        else:
+            homologs_lengths = [int(x.strip()) for x in first_line.replace('#',"").split()[0].split(",")]
+            sequence_groups = [[[], []] for _ in range(len(homologs_lengths))]
+            is_multimer = True
 
-        homologs_lengths = [int(x.strip()) for x in first_line.replace("#", "").split()[0].split(",")]
-        sequence_groups = [[[], []] for _ in range(len(homologs_lengths))]
-
+    with open(msa_path, "r") as file:
+        if is_multimer:
+            file.readline()
         header_line = file.readline().strip()[1:]
         expected_section_headers = [x.strip() for x in header_line.split()]
         current_header = header_line
@@ -89,25 +94,31 @@ def parse_msa(msa_path, output_dir):
                                 sequence_groups[seq_index][1].append(sub_sequences[seq_index])
 
     for seq_index in range(len(homologs_lengths)):
-        filename = os.path.join(output_dir, f"{ID_CHARS[seq_index]}.csv")
+        filename = os.path.join(output_dir, f"{meta_id}_{seq_index}.csv")
         with open(filename, "w") as out_file:
             out_file.write("key,sequence\n")
-            paired_sequences = sequence_groups[seq_index][0]
-            for i, seq in enumerate(paired_sequences, start=1):
-                out_file.write(f"{i},{seq}\n")
+            if len(homologs_lengths)==1: #Homo-oligomer: all sequences are paired
+                paired_sequences = sequence_groups[seq_index][0]+sequence_groups[seq_index][1]
+                for i, seq in enumerate(paired_sequences):
+                    out_file.write(f"{i},{seq}\n")
+            else:
+                paired_sequences = sequence_groups[seq_index][0]
+                for i, seq in enumerate(paired_sequences, start=1):
+                    out_file.write(f"{i},{seq}\n")
 
-            unpaired_sequences = sequence_groups[seq_index][1]
-            for seq in unpaired_sequences:
-                out_file.write(f"-1,{seq}\n")
+                unpaired_sequences = sequence_groups[seq_index][1]
+                for seq in unpaired_sequences:
+                    out_file.write(f"-1,{seq}\n")
 
 
 def main():
     parser = argparse.ArgumentParser(description="Split multi-A3M file into CSV sequences per section.")
     parser.add_argument("msa_path", help="Path to input .a3m file")
     parser.add_argument("-o", "--output_dir", default="output_msa", help="Directory to write output CSVs")
+    parser.add_argument("--meta_id", default="default", help="Prefix for MSA files")
 
     args = parser.parse_args()
-    parse_msa(args.msa_path, args.output_dir)
+    parse_msa(args.msa_path, args.output_dir, args.meta_id)
 
 
 if __name__ == "__main__":

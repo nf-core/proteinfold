@@ -18,6 +18,7 @@ process COLABFOLD_BATCH {
     tuple val(meta), path ("*relaxed_rank_*.pdb")     , emit: pdb
     tuple val(meta), path ("*_coverage.png")          , emit: msa
     tuple val(meta), path ("*_mqc.png")               , emit: multiqc
+    tuple val(meta), path ("${meta.id}_0_pae.tsv")    , emit: pae
     path "versions.yml"                               , emit: versions
 
     when:
@@ -48,6 +49,11 @@ process COLABFOLD_BATCH {
         cp *_unrelaxed_rank_001*.pdb ${meta.id}_colabfold.pdb
     fi
 
+    extract_metrics.py --name ${meta.id} \\
+        --colabfold_pae ${meta.id}_predicted_aligned_error_v1.json
+
+    mv ${meta.id}_coverage.png ${meta.id}_seq_coverage.png
+
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         colabfold_batch: \$(conda run -n colabfold pip list | grep "^colabfold" | awk '{print \$2}')
@@ -63,6 +69,7 @@ process COLABFOLD_BATCH {
     touch ./${meta.id}_relaxed_rank_03.pdb
     touch ./${meta.id}_coverage.png
     touch ./${meta.id}_scores_rank.json
+    touch ./${meta.id}_0_pae.tsv
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
