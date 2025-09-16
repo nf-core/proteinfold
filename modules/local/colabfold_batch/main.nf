@@ -49,10 +49,11 @@ process COLABFOLD_BATCH {
         cp *_unrelaxed_rank_001*.pdb ${meta.id}_colabfold.pdb
     fi
 
+    #Note: only multimer prefix is meta.id
     extract_metrics.py --name ${meta.id} \\
-        --colabfold_pae ${meta.id}_predicted_aligned_error_v1.json
+        --colabfold_pae *_predicted_aligned_error_v1.json
 
-    mv ${meta.id}_coverage.png ${meta.id}_seq_coverage.png
+    mv *_coverage.png ${meta.id}_seq_coverage.png
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
