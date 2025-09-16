@@ -2,7 +2,7 @@
  * Run Alphafold2
  */
 process RUN_ALPHAFOLD2 {
-    tag "$meta.id"
+    tag   "$meta.id"
     label 'process_medium'
     label 'process_gpu'
 
@@ -17,8 +17,8 @@ process RUN_ALPHAFOLD2 {
     path ('small_bfd/*')
     path ('mgnify/*')
     path ('pdb70/*')
-    path ('mmcif_files')
-    path ('obsolete_pdb/*')
+    path ('pdb_mmcif/mmcif_files')
+    path ('pdb_mmcif/*')
     path ('uniref30/*')
     path ('uniref90/*')
     path ('pdb_seqres/*')
@@ -73,7 +73,7 @@ process RUN_ALPHAFOLD2 {
         --data_dir=\$PWD \
         --uniref90_database_path=./uniref90/uniref90.fasta \
         --mgnify_database_path=\$mgnify_db_path \
-        --template_mmcif_dir=./mmcif_files \
+        --template_mmcif_dir=./pdb_mmcif/mmcif_files \
         --obsolete_pdbs_path=./clean_obsolete.dat \
         $args
 
