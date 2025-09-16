@@ -3,12 +3,52 @@
 import os
 import argparse
 from matplotlib import pyplot as plt
+import numpy as np
 from collections import OrderedDict
 import base64
 import plotly.graph_objects as go
 import re
 from Bio import PDB
 
+#TODO: Refactor this code to user plot_utils.py for plotting, and GENERATE_REPORT module for process isolation
+# KR - I have a local refactor that compacts and de-duplicates plotting functions but I'll leave until v2.1
+# go to https://github.com/Australian-Structural-Biology-Computing/proteinfold/blob/fix-multiqc-intermediates/modules/local/generate_report/generate_report.py
+# and associate plot_utils.py for to plot generation re-write
+
+def generate_pae_plot(pae_path, out_dir, name, save_image=False):
+    #save_image=False because plotly needs a local install of Google Chrome to save images.....
+    """
+    Generate a Plotly heatmap for Predicted Aligned Error (PAE) data.
+
+    Args:
+        pae (2D array): The PAE matrix.
+    Returns:
+        fig: A Plotly figure object of the PAE heatmap in green color scale
+    """
+    pae = np.genfromtxt(pae_path, delimiter="\t")
+    fig = go.Figure()
+
+    # Add heatmap
+    fig.add_trace(
+        go.Heatmap(
+            z=pae,
+            colorscale="Greens_r",
+            zmin=0,
+            zmax=30,
+        )
+    )
+    fig.update_layout(
+        xaxis=dict(title="Scored Residue", minallowed=0, maxallowed=pae.shape[0]-1),
+        yaxis=dict(title="Aligned Residue", minallowed=0, maxallowed=pae.shape[1]-1, autorange="reversed"),
+        width=600,
+        height=600,
+    )
+
+    if save_image:
+            image_path = f"{out_dir}/{name+('_' if name else '')}PAE.png"
+            fig.write_image(image_path, width=800, height=800)
+
+    return fig
 
 def generate_output_images(msa_path, plddt_data, name, out_dir, in_type, generate_tsv, pdb):
     msa = []
@@ -44,8 +84,11 @@ def generate_output_images(msa_path, plddt_data, name, out_dir, in_type, generat
                 ]
             )
 
+        xaxis_size = len(final[0])
+        yaxis_size = len(final)
+
         # ##################################################################
-        plt.figure(figsize=(14, 14), dpi=100)
+        plt.figure(figsize=(16, 10), dpi=100)
         # ##################################################################
         plt.title("Sequence coverage", fontsize=30, pad=36)
         plt.imshow(
@@ -56,6 +99,7 @@ def generate_output_images(msa_path, plddt_data, name, out_dir, in_type, generat
             vmin=0,
             vmax=1,
             origin="lower",
+            extent=(0, xaxis_size, 0, yaxis_size)
         )
 
         column_counts = [0] * len(msa[0])
@@ -65,8 +109,8 @@ def generate_output_images(msa_path, plddt_data, name, out_dir, in_type, generat
                     column_counts[col] += 1
 
         plt.plot(column_counts, color="black")
-        plt.xlim(-0.5, len(msa[0]) - 0.5)
-        plt.ylim(-0.5, len(msa) - 0.5)
+        plt.xlim(0, len(msa[0]))
+        plt.ylim(0, len(msa))
 
         plt.tick_params(axis="both", which="both", labelsize=18)
 
@@ -75,7 +119,7 @@ def generate_output_images(msa_path, plddt_data, name, out_dir, in_type, generat
         cbar.ax.tick_params(labelsize=18)
         plt.xlabel("Positions", fontsize=24, labelpad=24)
         plt.ylabel("Sequences", fontsize=24, labelpad=36)
-        plt.savefig(f"{out_dir}/{name+('_' if name else '')}seq_coverage.png")
+        plt.savefig(f"{out_dir}/{name}_{in_type}_seq_coverage.png")
 
         # ##################################################################
 
@@ -109,13 +153,12 @@ def generate_output_images(msa_path, plddt_data, name, out_dir, in_type, generat
     fig.update_layout(
         title=dict(text="Predicted LDDT per position", x=0.5, xanchor="center"),
         xaxis=dict(
-            title="Positions", showline=True, linecolor="black", gridcolor="WhiteSmoke"
+            title="Positions", showline=True, linecolor="black", gridcolor="WhiteSmoke", minallowed=0, maxallowed=len(value_plddt)-1
         ),
         yaxis=dict(
             title="Predicted LDDT",
             range=[0, 100],
-            minallowed=0,
-            maxallowed=100,
+            fixedrange=True,
             showline=True,
             linecolor="black",
             gridcolor="WhiteSmoke",
@@ -137,6 +180,17 @@ def generate_output_images(msa_path, plddt_data, name, out_dir, in_type, generat
     ) as out_file:
         out_file.write(html_content)
 
+    if args.pae and not args.pae.endswith('NO_FILE_PAE'):
+        pae_fig = generate_pae_plot(args.pae, out_dir, name)
+        pae_html_content = pae_fig.to_html(
+            full_html=False,
+            include_plotlyjs="cdn",
+            config={"displayModeBar": True, "displaylogo": False, "scrollZoom": True},
+        )
+        with open(
+            f"{out_dir}/{name+('_' if name else '')}PAE.html", "w"
+        ) as pae_out_file:
+            pae_out_file.write(pae_html_content)
 
 def generate_plots(msa_path, plddt_paths, name, out_dir):
     msa = []
@@ -321,9 +375,9 @@ model_name = {
     "alphafold2": "AlphaFold2",
     "alphafold3": "Alphafold3",
     "colabfold": "ColabFold",
-    "rosettafold_all_atom": "Rosettafold_All_Atom",
+    "rosettafold_all_atom": "RosettaFold All-Atom",
     "helixfold3": "HelixFold3",
-    "boltz": "Boltz-1"
+    "boltz": "Boltz"
 }
 
 parser = argparse.ArgumentParser()
@@ -333,6 +387,7 @@ parser.add_argument(
 )
 parser.add_argument("--msa", dest="msa", default="NO_FILE")
 parser.add_argument("--pdb", dest="pdb", required=True, nargs="+")
+parser.add_argument("--pae", dest="pae", default="NO_FILE")
 parser.add_argument("--name", dest="name")
 parser.add_argument("--output_dir", dest="output_dir")
 parser.add_argument("--html_template", dest="html_template")
@@ -347,7 +402,6 @@ lddt_data, lddt_averages = pdb_to_lddt(args.pdb, args.generate_tsv)
 generate_output_images(
     args.msa, lddt_data, args.name, args.output_dir, args.in_type, args.generate_tsv, args.pdb
 )
-# generate_plots(args.msa, args.plddt, args.name, args.output_dir)
 
 print("generating html report...")
 structures = args.pdb
@@ -390,7 +444,7 @@ if not args.msa.endswith("NO_FILE"):
     image_path = (
         f"{args.output_dir}/{args.msa}"
         if args.in_type.lower() == "colabfold"
-        else f"{args.output_dir}/{args.name + ('_' if args.name else '')}seq_coverage.png"
+        else f"{args.output_dir}/{args.name}_{args.in_type}_seq_coverage.png"
     )
     with open(image_path, "rb") as in_file:
         proteinfold_template = proteinfold_template.replace(
@@ -398,7 +452,7 @@ if not args.msa.endswith("NO_FILE"):
             f"data:image/png;base64,{base64.b64encode(in_file.read()).decode('utf-8')}",
         )
 else:
-    pattern = r'<div id="seq_coverage_container".*?>.*?(<!--.*?-->.*?)*?</div>\s*</div>'
+    pattern = r'<div id="seq_coverage_container".*?>.*?(<!--.*?-->.*?)*?</div>\s*</div>\s*</div>\s*</div>'
     proteinfold_template = re.sub(pattern, "", proteinfold_template, flags=re.DOTALL)
 
 with open(
@@ -409,6 +463,19 @@ with open(
     proteinfold_template = proteinfold_template.replace(
         '<div id="lddt_placeholder"></div>', lddt_html
     )
+
+if not args.pae.endswith("NO_FILE_PAE"):
+    with open(
+        f"{args.output_dir}/{args.name + ('_' if args.name else '')}PAE.html",
+        "r",
+    ) as pae_in_file:
+        pae_html = pae_in_file.read()
+        proteinfold_template = proteinfold_template.replace(
+            '<div id="pae_placeholder"></div>', pae_html
+        )
+else:
+    pattern = r'<div id="pae_container".*?>.*?(<!--.*?-->.*?)*?</div>\s*</div>'
+    proteinfold_template = re.sub(pattern, "", proteinfold_template, flags=re.DOTALL)
 
 with open(
     f"{args.output_dir}/{args.name}_{args.in_type.lower()}_report.html", "w"

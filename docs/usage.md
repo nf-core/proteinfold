@@ -51,7 +51,7 @@ nextflow run nf-core/proteinfold \
       --outdir <OUTDIR> \
       --mode alphafold2 \
       --alphafold2_db <null (default) | DB_PATH> \
-      --full_dbs <true/false> \
+      --alphafold2_full_dbs <true/false> \
       --alphafold2_model_preset monomer \
       --use_gpu <true/false> \
       -profile <docker/singularity/.../institute>
@@ -66,7 +66,7 @@ nextflow run nf-core/proteinfold \
       --mode alphafold2 \
       --alphafold2_mode split_msa_prediction \
       --alphafold2_db <null (default) | DB_PATH> \
-      --full_dbs <true/false> \
+      --alphafold2_full_dbs <true/false> \
       --alphafold2_model_preset monomer \
       --use_gpu <true/false> \
       --random_seed 53343 \
@@ -77,6 +77,7 @@ To provide the predownloaded AlphaFold2 databases and parameters you can specify
 
 <details markdown="1">
 <summary>Directory structure</summary>
+
 ```console
 ├── params
 │   └── alphafold_params_2022-12-06
@@ -138,6 +139,7 @@ To provide the predownloaded AlphaFold2 databases and parameters you can specify
 └── uniref90
     └── uniref90.fasta
 ```
+
 </details>
 
 AlphaFold3 can be run using this command:
@@ -159,6 +161,7 @@ To provide the predownloaded AlphaFold3 databases and parameters you can specify
 
 <details markdown="1">
 <summary>Directory structure</summary>
+
 ```console
 ├── mgnify
 │   └── mgy_clusters_2022_05.fa
@@ -177,6 +180,7 @@ To provide the predownloaded AlphaFold3 databases and parameters you can specify
 └── uniref90
     └── uniref90_2022_05.fa
 ```
+
 </details>
 
 Colabfold mode can be used with local database search using the following command:
@@ -216,6 +220,7 @@ If you specify the `--colabfold_db <PATH>` parameter, the directory structure of
 
 <details markdown="1">
 <summary>Directory structure</summary>
+
 ```console
 ├── colabfold_envdb
 │   ├── colabfold_envdb_202108_db.0
@@ -352,6 +357,7 @@ If you specify the `--colabfold_db <PATH>` parameter, the directory structure of
     ├── uniref30_2302_db_seq_h.index -> uniref30_2302_db_h.index
     └── uniref30_2302_db_seq.index
 ```
+
 </details>
 
 ```console

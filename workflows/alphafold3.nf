@@ -133,10 +133,22 @@ workflow ALPHAFOLD3 {
         .map { [ [ "model": "alphafold3" ], it.flatten() ] }
         .set { ch_multiqc_report }
 
+    // Prepare dummy pae input
+    RUN_ALPHAFOLD3
+        .out
+        .pae
+        .map {
+            def meta = it[0].clone();
+            meta.model = "alphafold3";
+            [ meta, it[1] ]
+        }
+        .set { ch_pae_final }
+
     emit:
     top_ranked_pdb = ch_top_ranked_pdb // channel: [ id, /path/to/*.pdb ]
     pdb            = ch_pdb_final      // channel: [ meta, /path/to/*.pdb, ...,/path/to/*.pdb ]
     msa            = ch_msa_final      // channel: [ meta, /path/to/*.pdb, /path/to/*_coverage.png ]
+    pae            = ch_pae_final      // channel: [ meta, path/to/*_pae.tsv ]
     multiqc_report = ch_multiqc_report // channel: /path/to/multiqc_report.html
     versions       = ch_versions       // channel: [ path(versions.yml) ]
 }

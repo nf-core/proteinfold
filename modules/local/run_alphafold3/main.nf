@@ -23,6 +23,7 @@ process RUN_ALPHAFOLD3 {
     tuple val(meta), path ("publish/*ranked_*.cif")  , emit: cif
     tuple val(meta), path ("${meta.id}_plddt.tsv")   , emit: multiqc
     tuple val(meta), path ("${meta.id}_msa.tsv")     , emit: msa
+    tuple val(meta), path ("${meta.id}_0_pae.tsv")   , emit: pae
     path "versions.yml"                              , emit: versions
 
     when:
@@ -80,6 +81,14 @@ process RUN_ALPHAFOLD3 {
         --jsons ${af3_id}/${af3_id}_data.json \\
         --structs publish/*ranked_*.cif
 
+    # Ensure dummy MSA/PAE files exist if not generated
+    if [ ! -f "${meta.id}_msa.tsv" ]; then
+        echo "0" > "${meta.id}_msa.tsv"
+    fi
+    if [ ! -f "${meta.id}_0_pae.tsv" ]; then
+        echo "0" > "${meta.id}_0_pae.tsv"
+    fi
+
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         python: \$(python3 --version | sed 's/Python //g')
@@ -98,6 +107,7 @@ process RUN_ALPHAFOLD3 {
     touch publish/${prefix}_ranked_5.cif
     touch ${prefix}_plddt.tsv
     touch ${prefix}_msa.tsv
+    touch ${prefix}_0_pae.tsv
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
