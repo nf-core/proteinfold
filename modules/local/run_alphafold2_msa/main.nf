@@ -49,6 +49,9 @@ process RUN_ALPHAFOLD2_MSA {
     if [ -f pdb_seqres/pdb_seqres.txt ]
         then sed -i "/^\\w*0/d" pdb_seqres/pdb_seqres.txt
     fi
+
+    fix_obsolete.py pdb_mmcif/obsolete.dat > clean_obsolete.dat
+
     python3 /app/alphafold/run_msa.py \
         --fasta_paths=${fasta} \
         --model_preset=${alphafold2_model_preset}${extra_dbs} \
@@ -58,7 +61,7 @@ process RUN_ALPHAFOLD2_MSA {
         --uniref90_database_path=./uniref90/uniref90.fasta \
         --mgnify_database_path=./mgnify/mgy_clusters.fa \
         --template_mmcif_dir=./pdb_mmcif/mmcif_files \
-        --obsolete_pdbs_path=./pdb_mmcif/obsolete.dat  \
+        --obsolete_pdbs_path=./clean_obsolete.dat  \
         $args
 
     cat <<-END_VERSIONS > versions.yml
