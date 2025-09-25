@@ -63,6 +63,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[#367](https://github.com/nf-core/proteinfold/issues/367)] - Boltz post-processing crashes.
 - [[#368](https://github.com/nf-core/proteinfold/issues/368)] - Helixfold3 iPTM output missing when dealing with monomers make the process to fail.
 - [[#369](https://github.com/nf-core/proteinfold/issues/369)] - Download all Alphafold3 DBs.
+- [[PR #350](https://github.com/nf-core/proteinfold/pull/350)] - PAE of model 0 in Boltz HTML report, AlphaFold2 to pass the build system
+- [[PR #377](https://github.com/nf-core/proteinfold/pull/377)] - Fix sequence msa synch for af2 split.
+- [[#380](https://github.com/nf-core/proteinfold/issues/380)] - Fixes alphafold2_model_preset bug on retry.
+- [[#382](https://github.com/nf-core/proteinfold/issues/382)] - Readds `--full_dbs` as a global option.
+- [[#378](https://github.com/nf-core/proteinfold/issues/378)] - Fix nested obsolete pdbs from pdb70.
+- [[#388](https://github.com/nf-core/proteinfold/issues/388)] - Fix colabfold prefix handling for output metrics.
+- [[#387](https://github.com/nf-core/proteinfold/issues/387)] - Fix alphafold2_standard obsolete.dat path error.
+- [[#369](https://github.com/nf-core/proteinfold/issues/369)] - Download all Alphafold3 DBs.
+- [[#389](https://github.com/nf-core/proteinfold/issues/389)] - Locked version numbers for HelixFold3 image to prevent bug caused by newer mamba versions.
 
 ### Parameters
 
