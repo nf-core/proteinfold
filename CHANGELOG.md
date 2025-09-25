@@ -70,6 +70,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[#388](https://github.com/nf-core/proteinfold/issues/388)] - Fix colabfold prefix handling for output metrics.
 - [[#387](https://github.com/nf-core/proteinfold/issues/387)] - Fix alphafold2_standard obsolete.dat path error.
 - [[#369](https://github.com/nf-core/proteinfold/issues/369)] - Download all Alphafold3 DBs.
+- [[#389](https://github.com/nf-core/proteinfold/issues/389)] - Locked version numbers for HelixFold3 image to prevent bug caused by newer mamba versions.
 
 ### Parameters
 
