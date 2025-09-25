@@ -20,7 +20,7 @@ process SPLIT_MSA {
     def args = task.ext.args ?: ''
 
     """
-    msa_manager.py ${msa} -o output_msa
+    msa_manager.py ${msa} -o output_msa --meta_id ${meta.id}
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

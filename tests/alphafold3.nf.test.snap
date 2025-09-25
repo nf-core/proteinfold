@@ -25,8 +25,10 @@
             },
             [
                 "alphafold3",
+                "alphafold3/T1024_0_pae.tsv",
                 "alphafold3/T1024_msa.tsv",
                 "alphafold3/T1024_plddt.tsv",
+                "alphafold3/T1026_0_pae.tsv",
                 "alphafold3/T1026_msa.tsv",
                 "alphafold3/T1026_plddt.tsv",
                 "alphafold3/publish",
@@ -70,8 +72,10 @@
                 "pipeline_info/nf_core_proteinfold_software_mqc_versions.yml"
             ],
             [
+                "T1024_0_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1024_msa.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1024_plddt.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1026_0_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1026_msa.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1026_plddt.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1024_ranked_1.cif:md5,d41d8cd98f00b204e9800998ecf8427e",
@@ -107,8 +111,8 @@
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "24.10.5"
+            "nextflow": "25.04.6"
         },
-        "timestamp": "2025-07-24T16:54:38.626994903"
+        "timestamp": "2025-08-21T17:54:31.439431078"
     }
 }
