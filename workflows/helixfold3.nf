@@ -95,17 +95,23 @@ workflow HELIXFOLD3 {
     }
     .set { ch_top_ranked_pdb }
 
-    ch_pdb
-    .map{
-        meta = it[0].clone();
-        meta.model = "helixfold3";
-        [meta, it[1]]
+    def helixfold3Channel = { ch ->
+        ch.map { meta, value ->
+            meta = meta.clone()
+            meta.model = "helixfold3"
+            [meta, value]
+        }
     }
-    .set { ch_pdb_final }
+
+    helixfold3Channel(RUN_HELIXFOLD3.out.pdb).set { ch_pdb_final }
+    helixfold3Channel(RUN_HELIXFOLD3.out.msa).set { ch_msa_final }
+    helixfold3Channel(RUN_HELIXFOLD3.out.pae).set { ch_pae_final }
 
     emit:
     top_ranked_pdb = ch_top_ranked_pdb
-    pdb            = ch_pdb_final // channel: [ id, /path/to/*.pdb ]
+    pdb            = ch_pdb_final   // channel: [ id, /path/to/*.pdb ]
+    msa            = ch_msa_final   // channel: [ id, /path/to/*_msa.tsv ]
+    pae            = ch_pae_final   // channel: [ id, /path/to/*_pae.tsv ]
     multiqc_report = ch_multiqc_report // channel: /path/to/multiqc_report.html
     versions       = ch_versions       // channel: [ path(versions.yml) ]
 }

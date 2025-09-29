@@ -23,17 +23,18 @@ process RUN_ALPHAFOLD2_PRED {
     path ('pdb_seqres/*')
     path ('uniprot/*')
     // TODO: do we ever really want to be dragging arounda  meta2? Can't we just augment meta fields for tracebility?
-    tuple val(meta2), path(features)
+    tuple val(meta), path(features)
 
     output:
     path ("${fasta.baseName}*")
     tuple val(meta), path ("${meta.id}_alphafold2.pdb")     , emit: top_ranked_pdb
     tuple val(meta), path ("${fasta.baseName}/ranked*.pdb") , emit: pdb
-    tuple val(meta), path ("${meta.id}_msa.tsv")            , emit: msa
+    tuple val(meta), path ("${meta.id}_alphafold2_msa.tsv") , emit: msa
     // TODO: re-label multiqc -> plddt so multiqc channel can take in all metrics
     tuple val(meta), path ("${meta.id}_plddt.tsv")          , emit: multiqc
     // TODO: alphafold2_model_preset == "monomer" the pae file won't exist.
     tuple val(meta), path ("${meta.id}_*_pae.tsv")          , optional: true, emit: paes
+    tuple val(meta), path ("${meta.id}_0_pae.tsv")          , optional: true, emit: pae
     tuple val(meta), path ("${meta.id}_ptm.tsv")            , optional: true, emit: ptms
     tuple val(meta), path ("${meta.id}_iptm.tsv")           , optional: true, emit: iptms
     path "versions.yml"                                     , emit: versions
@@ -63,6 +64,8 @@ process RUN_ALPHAFOLD2_PRED {
         --pkls ${features} ${fasta.baseName}/*.pkl \\
         --structs ${fasta.baseName}/ranked*.pdb
 
+    mv "${meta.id}_msa.tsv" "${meta.id}_alphafold2_msa.tsv"
+
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         python: \$(python3 --version | sed 's/Python //g')
@@ -73,7 +76,7 @@ process RUN_ALPHAFOLD2_PRED {
     """
     touch "${meta.id}_alphafold2.pdb"
     touch "${meta.id}_plddt.tsv"
-    touch "${meta.id}_msa.tsv"
+    touch "${meta.id}_alphafold2_msa.tsv"
     touch "${meta.id}_0_pae.tsv"
     mkdir "${fasta.baseName}"
     touch "${fasta.baseName}/ranked_0.pdb"

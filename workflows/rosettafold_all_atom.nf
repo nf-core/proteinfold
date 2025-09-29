@@ -67,17 +67,22 @@ workflow ROSETTAFOLD_ALL_ATOM {
         .map { [ [ "model": "rosettafold_all_atom" ], it.flatten() ] }
         .set { ch_multiqc_report }
 
-    RUN_ROSETTAFOLD_ALL_ATOM
-        .out
-        .pdb
-        .map{
-            meta = it[0].clone();
-            meta.model = "rosettafold_all_atom";
-            [meta, it[1]]
-        }.set { ch_pdb_final }
+    def rosettafold_all_atomChannel = { ch ->
+        ch.map { meta, value ->
+            meta = meta.clone()
+            meta.model = "rosettafold_all_atom"
+            [meta, value]
+        }
+    }
+
+    rosettafold_all_atomChannel(RUN_ROSETTAFOLD_ALL_ATOM.out.pdb).set { ch_pdb_final }
+    rosettafold_all_atomChannel(RUN_ROSETTAFOLD_ALL_ATOM.out.msa).set { ch_msa_final }
+    rosettafold_all_atomChannel(RUN_ROSETTAFOLD_ALL_ATOM.out.pae).set { ch_pae_final }
 
     emit:
-    pdb            = ch_pdb_final // channel: [ id, /path/to/*.pdb ]
+    pdb            = ch_pdb_final   // channel: [ id, /path/to/*.pdb ]
+    msa            = ch_msa_final   // channel: [ id, /path/to/*_msa.tsv ]
+    pae            = ch_pae_final   // channel: [ id, /path/to/*_pae.tsv ]
     multiqc_report = ch_multiqc_report // channel: /path/to/multiqc_report.html
     versions       = ch_versions       // channel: [ path(versions.yml) ]
 }
