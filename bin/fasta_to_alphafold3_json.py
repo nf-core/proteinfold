@@ -4,6 +4,8 @@ import sys
 import argparse
 import json
 import string
+import re
+from Bio import SeqIO
 
 def parse_args(args=None):
     """
@@ -44,6 +46,31 @@ def parse_args(args=None):
 
     return parser.parse_args(args)
 
+def infer_entity_type(header, sequence):
+    ENTITY_TYPES = ["protein", "ccd", "smiles", "dna", "rna"]
+
+    header_lower = header.lower()
+
+    for entity in ENTITY_TYPES:
+        if entity in header_lower:
+            return entity
+    seq = sequence.strip()
+    seq_set = set(seq)
+    # RNA: only A,C,U,G,N
+    if len(seq_set - set("ACUGN")) == 0:
+        return "rna"
+    # DNA: only A,C,T,G,N
+    if len(seq_set - set("ACTGN")) == 0:
+        return "dna"
+    # Protein: only 20 AA, not just A,C,T,G,U,N
+    protein_letters = set("ACDEFGHIKLMNPQRSTVWY")
+    if len(seq_set - protein_letters) == 0 and not (seq_set <= set("ACUGTN")):
+        return "protein"
+    # SMILES: fallback
+    if re.fullmatch(r"[A-Za-z0-9@+\\-\\[\\]\\(\\)=#\\\$%]+", seq):
+        return "smiles"
+    return "unknown"
+
 def sanitised_name(id):
     """
     Sanitize the input ID to create a valid filename.
@@ -63,7 +90,7 @@ def sanitised_name(id):
     allowed_chars = set(string.ascii_lowercase + string.digits + '_-.')
     return ''.join(l for l in lower_spaceless_name if l in allowed_chars)
 
-def fasta_to_alphafold3_json(file_in, id):
+def fasta_to_alphafold3_json(file_in):
     """
     Convert a single-sequence FASTA file to AlphaFold3 JSON format.
 
@@ -85,27 +112,18 @@ def fasta_to_alphafold3_json(file_in, id):
     Raises:
         RuntimeError: If the input file contains multiple sequences
     """
-    sequence_list = []
-    sequence = None
-    fasta_mapping_dict = {}
+    VALID_CHAIN_IDS = list(string.ascii_uppercase) + list(string.ascii_lowercase) + [str(x) for x in range(0, 10)]
+    entities = []
 
-    with open(file_in, "r", encoding="utf-8-sig") as fin:
-        n_seq = 0
-        for l in fin:
-            l = l.strip()
-            if l.startswith(">"):
-                if n_seq > 1:
-                    raise RuntimeError("Multifasta files are not allowed")
-                n_seq += 1
-                if sequence:
-                    sequence_list.append(sequence)
-                sequence = {"id": id, "sequence": ""}
-            else:
-                sequence["sequence"] += l
+    for i, record in enumerate(SeqIO.parse(file_in, "fasta")):
+        sequence = record.seq._data.decode()
+        header = record.description
+        entity_type = infer_entity_type(header, sequence)
+        entities.append((entity_type, VALID_CHAIN_IDS[i], sequence))
 
-    return sequence
+    return entities
 
-def create_json_dict(sequence, model_seed):
+def create_json_dict(id, entities, model_seed):
     """
     Create the final JSON dictionary in AlphaFold3 format.
 
@@ -132,26 +150,29 @@ def create_json_dict(sequence, model_seed):
     Returns:
         dict: JSON-compatible dictionary in AlphaFold3 format
     """
-    json_sequence_dict = {}
 
-    item = {
-        "name": f"{sequence['id']}",
-        "sequences": [
-            {
-                "protein": {
-                    "id": "A",
-                    "sequence": sequence["sequence"]
-                }
-            },
-        ],
+    json_sequence_list = []
+
+    for entity in entities:
+        item = {
+            entity[0]: {
+                "id": entity[1],
+                "sequence": entity[2]
+            }
+        }
+
+        json_sequence_list.append(item)
+
+
+    alphafold3_json_dict = {
+        "name": f"{id}",
+        "sequences": json_sequence_list,
         "modelSeeds": model_seed,
         "dialect": "alphafold3",
         "version": 1
     }
 
-    json_sequence_dict[sequence["id"]] = item
-
-    return json_sequence_dict
+    return alphafold3_json_dict
 
 def main(args=None):
     """
@@ -177,12 +198,12 @@ def main(args=None):
 
     out_json = f"{reformatted_id}.json"
 
-    sequence = fasta_to_alphafold3_json(args.FILE_IN, reformatted_id)
-    json_dict = create_json_dict(sequence, args.MODEL_SEED)
+    entities = fasta_to_alphafold3_json(args.FILE_IN)
+    json_dict = create_json_dict(reformatted_id, entities, args.MODEL_SEED)
 
     print ("json file " + out_json)
     with open(out_json, "w") as fout:
-        json.dump(json_dict[reformatted_id], fout, indent=4)
+        json.dump(json_dict, fout, indent=4)
 
     with open(out_json, 'r') as f:
         json_str = f.read()
