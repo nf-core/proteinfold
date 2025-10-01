@@ -47,6 +47,16 @@ def parse_args(args=None):
     return parser.parse_args(args)
 
 def infer_entity_type(header, sequence):
+    """
+    Infer the entity type from the header and sequence.
+
+    Args:
+        header (str): Sequence header
+        sequence (str): Sequence
+
+    Returns:
+        str: Entity type (one of "protein", "ccd", "smiles", "dna", "rna", or "unknown")
+    """
     ENTITY_TYPES = ["protein", "ccd", "smiles", "dna", "rna"]
 
     header_lower = header.lower()
@@ -92,25 +102,13 @@ def sanitised_name(id):
 
 def fasta_to_alphafold3_json(file_in):
     """
-    Convert a single-sequence FASTA file to AlphaFold3 JSON format.
-
-    This function reads a FASTA file and converts it to the format required by AlphaFold3.
-    It only processes single-sequence FASTA files and raises an error for multi-sequence files.
-
-    The function expects a samplesheet.csv with the following format:
-        id,fasta
-        T1024,path/to/T1024.fasta
-        T1026,path/to/T1026.fasta
+    Convert a FASTA file to a list of entities in AlphaFold3 format.
 
     Args:
-        file_in (str): Path to input FASTA file
-        id (str): Identifier for the sequence
+        file_in (str): Path to the input FASTA file
 
     Returns:
-        dict: Dictionary containing the sequence information in AlphaFold3 format
-
-    Raises:
-        RuntimeError: If the input file contains multiple sequences
+        list: List of entities in AlphaFold3 format
     """
     VALID_CHAIN_IDS = list(string.ascii_uppercase) + list(string.ascii_lowercase) + [str(x) for x in range(0, 10)]
     entities = []
@@ -127,7 +125,8 @@ def create_json_dict(id, entities, model_seed):
     """
     Create the final JSON dictionary in AlphaFold3 format.
 
-    The function creates a JSON structure that follows AlphaFold3's requirements:
+    The function takes in the sequence ID, a list of entities, and a list of model seeds and
+    creates a JSON structure that follows AlphaFold3's requirements:
     {
         "name": "sequence_id",
         "sequences": [
@@ -144,7 +143,8 @@ def create_json_dict(id, entities, model_seed):
     }
 
     Args:
-        sequence (dict): Dictionary containing sequence information
+        id (str): Sequence ID
+        entities (list): List of entities in AlphaFold3 format
         model_seed (list): List of model seeds to use
 
     Returns:
