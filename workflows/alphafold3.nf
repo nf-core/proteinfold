@@ -43,7 +43,7 @@ workflow ALPHAFOLD3 {
     ch_msa_final      = Channel.empty()
     ch_multiqc_report = Channel.empty()
     ch_versions       = Channel.empty()
-    ch_samplesheet.view()
+    
     FASTA_TO_ALPHAFOLD3_JSON(ch_samplesheet)
     ch_versions       = ch_versions.mix(FASTA_TO_ALPHAFOLD3_JSON.out.versions)
 
