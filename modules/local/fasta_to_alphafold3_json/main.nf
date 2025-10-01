@@ -16,7 +16,7 @@ process FASTA_TO_ALPHAFOLD3_JSON {
 
     when:
     task.ext.when == null || task.ext.when
-    
+
     script:
     def args    = task.ext.args ?: ''
     def prefix  = task.ext.prefix ?: "${meta.id}"
@@ -30,7 +30,7 @@ process FASTA_TO_ALPHAFOLD3_JSON {
         python: \$(python3 --version | sed 's/Python //g')
     END_VERSIONS
     """
-    
+
     stub:
     def prefix  = task.ext.prefix ?: "${meta.id}"
     """

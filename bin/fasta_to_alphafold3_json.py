@@ -125,7 +125,7 @@ def create_json_dict(id, entities, model_seed):
     """
     Create the final JSON dictionary in AlphaFold3 format.
 
-    The function takes in the sequence ID, a list of entities, and a list of model seeds and 
+    The function takes in the sequence ID, a list of entities, and a list of model seeds and
     creates a JSON structure that follows AlphaFold3's requirements:
     {
         "name": "sequence_id",
