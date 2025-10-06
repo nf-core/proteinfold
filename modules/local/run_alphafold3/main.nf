@@ -33,25 +33,56 @@ process RUN_ALPHAFOLD3 {
     def prefix = task.ext.prefix ?: "${meta.id}"
     def af3_id = meta.id.toLowerCase()
     """
-    if [ -f pdb_seqres/pdb_seqres.txt ]
+    for f in ./pdb_seqres/pdb_seqres.txt ./pdb_seqres/pdb_seqres_2022_09_28.fasta; do
+	if [[ -f \$f ]]; then
+            pdb_seqres=\$f
+            break
+        fi
+    done    
+
+    if [ -f \$pdb_seqres ]
     then
-        sed -i "/^\\w*0/d" pdb_seqres/pdb_seqres.txt
+        sed -i "/^\\w*0/d" \$pdb_seqres
     fi
+
+    for f in ./uniref90/uniref90*.fa ./uniref90/uniref90*.fasta; do
+    	if [[ -f \$f ]]; then
+            uniref90=\$f
+            break
+    	fi
+    done
+    
+    for f in ./mgnify/mgy_clusters*.fa ./mgnify/mgnify_clusters*.fasta; do
+        if [[ -f \$f ]]; then
+            mgnify=\$f
+            break
+        fi
+    done
+    
+    for f in ./uniprot/uniprot.fasta ./uniprot/uniprot*.fa; do
+        if [[ -f \$f ]]; then
+            uniprot=\$f
+            break
+        fi
+    done
+ 
     python3 /app/alphafold/run_alphafold.py \\
         --json_path=${json} \\
         --model_dir=./params \\
-        --uniref90_database_path=./uniref90/uniref90_2022_05.fa \\
-        --mgnify_database_path=./mgnify/mgy_clusters_2022_05.fa \\
+        --uniref90_database_path=\$uniref90 \\
+        --mgnify_database_path=\$mgnify \\
         --pdb_database_path=./mmcif_files \\
         --small_bfd_database_path=./small_bfd/bfd-first_non_consensus_sequences.fasta \\
-        --uniprot_cluster_annot_database_path=./uniprot/uniprot_all_2021_04.fa \\
-        --seqres_database_path=./pdb_seqres/pdb_seqres_2022_09_28.fasta \\
+        --uniprot_cluster_annot_database_path=\$uniprot \\
+        --seqres_database_path=\$pdb_seqres \\
         --output_dir=\$PWD \\
         $args
+    
     ## Rename the top ranked model
     if [ ! -d publish ]; then
         mkdir -p publish
     fi
+
     ## Move the rest of the models and rename them according to their rank
     name=\$(jq -r '.name' ${json})
     cp -n "\${name}/\${name}_model.cif" "publish/${prefix}_alphafold3.cif"
@@ -68,11 +99,13 @@ process RUN_ALPHAFOLD3 {
         --jsons ${af3_id}/${af3_id}_data.json ${af3_id}/${af3_id}_summary_confidences.json ${af3_id}/${af3_id}_confidences.json \\
         --structs publish/*ranked_*.cif
     mv "${prefix}_msa.tsv" "${meta.id}_alphafold3_msa.tsv"
+
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         python: \$(python3 --version | sed 's/Python //g')
     END_VERSIONS
     """
+    
     stub:
     def prefix = task.ext.prefix ?: "${meta.id}"
     """
@@ -86,6 +119,7 @@ process RUN_ALPHAFOLD3 {
     touch ${prefix}_plddt.tsv
     touch ${prefix}_alphafold3_msa.tsv
     touch ${prefix}_0_pae.tsv
+
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         python: \$(python3 --version | sed 's/Python //g')
