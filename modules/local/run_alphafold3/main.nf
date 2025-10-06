@@ -6,6 +6,7 @@ process RUN_ALPHAFOLD3 {
     label 'process_medium'
     label 'process_gpu'
     container "nf-core/proteinfold_alphafold3_standard:1.2.0dev"
+    
     input:
     tuple val(meta), path(json)
     path "params/*"
@@ -15,6 +16,7 @@ process RUN_ALPHAFOLD3 {
     path "uniref90/*"
     path "pdb_seqres/*"
     path "uniprot/*"
+    
     output:
     tuple val(meta), path ("publish/*alphafold3.cif")       , emit: top_ranked_cif
     tuple val(meta), path ("publish/*ranked_*.cif")         , emit: cif
@@ -22,19 +24,22 @@ process RUN_ALPHAFOLD3 {
     tuple val(meta), path ("${meta.id}_alphafold3_msa.tsv") , emit: msa
     tuple val(meta), path ("${meta.id}_0_pae.tsv")          , emit: pae
     path "versions.yml"                                     , emit: versions
+    
     when:
     task.ext.when == null || task.ext.when
+    
     script:
     // Exit if running this module with -profile conda / -profile mamba
     if (workflow.profile.tokenize(',').intersect(['conda', 'mamba']).size() >= 1) {
         error("Local RUN_ALPHAFOLD3 module does not support Conda. Please use Docker / Singularity / Podman instead.")
     }
+
     def args   = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${meta.id}"
     def af3_id = meta.id.toLowerCase()
     """
     for f in ./pdb_seqres/pdb_seqres.txt ./pdb_seqres/pdb_seqres_2022_09_28.fasta; do
-	if [[ -f \$f ]]; then
+	    if [[ -f \$f ]]; then
             pdb_seqres=\$f
             break
         fi
@@ -51,21 +56,21 @@ process RUN_ALPHAFOLD3 {
             break
     	fi
     done
-    
+
     for f in ./mgnify/mgy_clusters*.fa ./mgnify/mgnify_clusters*.fasta; do
         if [[ -f \$f ]]; then
             mgnify=\$f
             break
         fi
     done
-    
+
     for f in ./uniprot/uniprot.fasta ./uniprot/uniprot*.fa; do
         if [[ -f \$f ]]; then
             uniprot=\$f
             break
         fi
     done
- 
+
     python3 /app/alphafold/run_alphafold.py \\
         --json_path=${json} \\
         --model_dir=./params \\
@@ -86,18 +91,22 @@ process RUN_ALPHAFOLD3 {
     ## Move the rest of the models and rename them according to their rank
     name=\$(jq -r '.name' ${json})
     cp -n "\${name}/\${name}_model.cif" "publish/${prefix}_alphafold3.cif"
-    # Sort the rows by ranking_score in descending order
+    
+    ## Sort the rows by ranking_score in descending order
     sorted_csv=\$(head -n 1 "\${name}/ranking_scores.csv"; tail -n +2 "\${name}/ranking_scores.csv" | sort -t, -k3 -nr)
     rank=0
     touch publish/combined_plddt_mqc.tsv
-    # Generate files with rank tag
+
+    ## Generate files with rank tag
     echo "\$sorted_csv" | tail -n +2 | while IFS=',' read -r seed sample ranking_score; do
     cp -n "\${name}/seed-\${seed}_sample-\${sample}/model.cif" "publish/seed_\${seed}_sample_\${sample}_ranked_\${rank}.cif"
     rank=\$((rank + 1))
     done
+
     extract_metrics.py --name ${prefix} \\
         --jsons ${af3_id}/${af3_id}_data.json ${af3_id}/${af3_id}_summary_confidences.json ${af3_id}/${af3_id}_confidences.json \\
         --structs publish/*ranked_*.cif
+
     mv "${prefix}_msa.tsv" "${meta.id}_alphafold3_msa.tsv"
 
     cat <<-END_VERSIONS > versions.yml
