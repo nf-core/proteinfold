@@ -6,7 +6,7 @@ process RUN_ALPHAFOLD3 {
     label 'process_medium'
     label 'process_gpu'
     container "nf-core/proteinfold_alphafold3_standard:1.2.0dev"
-    
+
     input:
     tuple val(meta), path(json)
     path "params/*"
@@ -16,7 +16,7 @@ process RUN_ALPHAFOLD3 {
     path "uniref90/*"
     path "pdb_seqres/*"
     path "uniprot/*"
-    
+
     output:
     tuple val(meta), path ("publish/*alphafold3.cif")       , emit: top_ranked_cif
     tuple val(meta), path ("publish/*ranked_*.cif")         , emit: cif
@@ -24,10 +24,10 @@ process RUN_ALPHAFOLD3 {
     tuple val(meta), path ("${meta.id}_alphafold3_msa.tsv") , emit: msa
     tuple val(meta), path ("${meta.id}_0_pae.tsv")          , emit: pae
     path "versions.yml"                                     , emit: versions
-    
+
     when:
     task.ext.when == null || task.ext.when
-    
+
     script:
     // Exit if running this module with -profile conda / -profile mamba
     if (workflow.profile.tokenize(',').intersect(['conda', 'mamba']).size() >= 1) {
@@ -43,7 +43,7 @@ process RUN_ALPHAFOLD3 {
             pdb_seqres=\$f
             break
         fi
-    done    
+    done
 
     if [ -f \$pdb_seqres ]
     then
@@ -82,7 +82,7 @@ process RUN_ALPHAFOLD3 {
         --seqres_database_path=\$pdb_seqres \\
         --output_dir=\$PWD \\
         $args
-    
+
     ## Rename the top ranked model
     if [ ! -d publish ]; then
         mkdir -p publish
@@ -91,7 +91,7 @@ process RUN_ALPHAFOLD3 {
     ## Move the rest of the models and rename them according to their rank
     name=\$(jq -r '.name' ${json})
     cp -n "\${name}/\${name}_model.cif" "publish/${prefix}_alphafold3.cif"
-    
+
     ## Sort the rows by ranking_score in descending order
     sorted_csv=\$(head -n 1 "\${name}/ranking_scores.csv"; tail -n +2 "\${name}/ranking_scores.csv" | sort -t, -k3 -nr)
     rank=0
@@ -114,7 +114,7 @@ process RUN_ALPHAFOLD3 {
         python: \$(python3 --version | sed 's/Python //g')
     END_VERSIONS
     """
-    
+
     stub:
     def prefix = task.ext.prefix ?: "${meta.id}"
     """
