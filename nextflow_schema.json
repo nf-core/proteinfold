@@ -622,7 +622,7 @@
                     "type": "string",
                     "description": "Path to the PDB mmCIF database",
                     "fa_icon": "fas fa-folder-open",
-                    "default": "null/mmcif_files"
+                    "default": "null/pdb_mmcif/mmcif_files"
                 },
                 "alphafold3_uniref90_path": {
                     "type": "string",
