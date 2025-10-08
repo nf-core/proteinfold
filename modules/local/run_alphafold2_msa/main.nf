@@ -52,6 +52,9 @@ process RUN_ALPHAFOLD2_MSA {
 
     fix_obsolete.py pdb_mmcif/obsolete.dat > clean_obsolete.dat
 
+    ## Handles multiple versions of mgnify database and selects the latest version
+    mgnify_db_path=\$(ls -v ./mgnify/mgy_clusters*.fa | tail -n 1)
+
     python3 /app/alphafold/run_msa.py \
         --fasta_paths=${fasta} \
         --model_preset=${alphafold2_model_preset}${extra_dbs} \
@@ -59,9 +62,9 @@ process RUN_ALPHAFOLD2_MSA {
         --output_dir=\$PWD \
         --data_dir=\$PWD \
         --uniref90_database_path=./uniref90/uniref90.fasta \
-        --mgnify_database_path=./mgnify/mgy_clusters.fa \
+        --mgnify_database_path=\$mgnify_db_path \
         --template_mmcif_dir=./pdb_mmcif/mmcif_files \
-        --obsolete_pdbs_path=./clean_obsolete.dat  \
+        --obsolete_pdbs_path=./clean_obsolete.dat \
         $args
 
     cat <<-END_VERSIONS > versions.yml

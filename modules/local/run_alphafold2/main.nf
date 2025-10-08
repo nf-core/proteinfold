@@ -64,7 +64,10 @@ process RUN_ALPHAFOLD2 {
     fix_obsolete.py pdb_mmcif/obsolete.dat > clean_obsolete.dat
 
     if [ -d params/alphafold_params_* ]; then ln -r -s params/alphafold_params_*/* params/; fi
+
+    ## Handles multiple versions of mgnify database and selects the latest version
     mgnify_db_path=\$(ls -v ./mgnify/mgy_clusters*.fa | tail -n 1)
+
     python3 /app/alphafold/run_alphafold.py \
         --fasta_paths=${fasta} \
         --model_preset=${alphafold2_model_preset}${extra_dbs} \
