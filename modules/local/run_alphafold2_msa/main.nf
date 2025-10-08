@@ -70,6 +70,9 @@ process RUN_ALPHAFOLD2_MSA {
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         python: \$(python3 --version | sed 's/Python //g')
+        alphafold2: \$(cd /app/alphafold && git rev-parse HEAD 2>/dev/null || echo "unknown")
+        numpy: \$(python3 -c "import numpy; print(numpy.__version__)" 2>/dev/null || echo "unknown")
+        biopython: \$(python3 -c "import Bio; print(Bio.__version__)" 2>/dev/null || echo "unknown")
     END_VERSIONS
     """
 
@@ -80,7 +83,10 @@ process RUN_ALPHAFOLD2_MSA {
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        awk: \$(gawk --version| head -1 | sed 's/GNU Awk //; s/, API:.*//')
+        python: \$(python3 --version | sed 's/Python //g')
+        alphafold2: \$(cd /app/alphafold && git rev-parse HEAD 2>/dev/null || echo "unknown")
+        numpy: \$(python3 -c "import numpy; print(numpy.__version__)" 2>/dev/null || echo "unknown")
+        biopython: \$(python3 -c "import Bio; print(Bio.__version__)" 2>/dev/null || echo "unknown")
     END_VERSIONS
     """
 }
