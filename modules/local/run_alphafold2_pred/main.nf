@@ -22,7 +22,6 @@ process RUN_ALPHAFOLD2_PRED {
     path ('uniref90/*')
     path ('pdb_seqres/*')
     path ('uniprot/*')
-    // TODO: do we ever really want to be dragging arounda  meta2? Can't we just augment meta fields for tracebility?
     tuple val(meta), path(features)
 
     output:
@@ -44,7 +43,6 @@ process RUN_ALPHAFOLD2_PRED {
 
     script:
     // Exit if running this module with -profile conda / -profile mamba
-    // Note: --pkls ${fasta.baseName}/*.pkl redundantly processes the features.pkl file. The use of input: features makes the conceptural separation clear
     if (workflow.profile.tokenize(',').intersect(['conda', 'mamba']).size() >= 1) {
         error("Local RUN_ALPHAFOLD2_PRED module does not support Conda. Please use Docker / Singularity / Podman instead.")
     }
