@@ -57,10 +57,6 @@ process RUN_ALPHAFOLD2 {
         extra_dbs = " --pdb70_database_path=./pdb70/pdb70 "
     }
     """
-    if [ -f pdb_seqres/pdb_seqres.txt ]
-        then sed -i "/^\\w*0/d" pdb_seqres/pdb_seqres.txt
-    fi
-
     fix_obsolete.py pdb_mmcif/obsolete.dat > clean_obsolete.dat
 
     if [ -d params/alphafold_params_* ]; then ln -r -s params/alphafold_params_*/* params/; fi

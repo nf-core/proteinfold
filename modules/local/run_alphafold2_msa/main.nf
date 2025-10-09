@@ -46,10 +46,6 @@ process RUN_ALPHAFOLD2_MSA {
         extra_dbs = " --pdb70_database_path=./pdb70/pdb70 "
     }
     """
-    if [ -f pdb_seqres/pdb_seqres.txt ]
-        then sed -i "/^\\w*0/d" pdb_seqres/pdb_seqres.txt
-    fi
-
     fix_obsolete.py pdb_mmcif/obsolete.dat > clean_obsolete.dat
 
     ## Handles multiple versions of mgnify database and selects the latest version
