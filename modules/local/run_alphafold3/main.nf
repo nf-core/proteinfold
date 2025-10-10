@@ -45,11 +45,6 @@ process RUN_ALPHAFOLD3 {
         fi
     done
 
-    if [ -f \$pdb_seqres ]
-    then
-        sed -i "/^\\w*0/d" \$pdb_seqres
-    fi
-
     for f in ./uniref90/uniref90*.fa ./uniref90/uniref90*.fasta; do
     	if [[ -f \$f ]]; then
             uniref90=\$f
