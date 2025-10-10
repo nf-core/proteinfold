@@ -184,12 +184,18 @@ workflow NFCORE_PROTEINFOLD {
             params.alphafold3_uniref90_path,
             params.alphafold3_pdb_seqres_path,
             params.alphafold3_uniprot_path,
+            params.alphafold3_rnacentral_path,
+            params.alphafold3_nt_rna_path,
+            params.alphafold3_rfam_path,
             params.alphafold3_small_bfd_link,
             params.alphafold3_mgnify_link,
             params.alphafold3_pdb_mmcif_link,
             params.alphafold3_uniref90_link,
             params.alphafold3_pdb_seqres_link,
-            params.alphafold3_uniprot_link
+            params.alphafold3_uniprot_link,
+            params.alphafold3_rnacentral_link,
+            params.alphafold3_nt_rna_link,
+            params.alphafold3_rfam_link
         )
         ch_versions = ch_versions.mix(PREPARE_ALPHAFOLD3_DBS.out.versions)
 

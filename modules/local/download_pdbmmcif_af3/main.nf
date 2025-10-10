@@ -42,7 +42,7 @@ process DOWNLOAD_PDBMMCIF_AF3 {
     stub:
     """
     mkdir mmcif_files
-    touch mmcif_files/stub.mmcif
+    touch mmcif_files/stub.cif
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
