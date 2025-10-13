@@ -66,7 +66,7 @@ workflow ROSETTAFOLD2NA {
         .map { it[1] }
         .toSortedList()
         .map { 
-            [ [ "model": "rosettafold_all_atom" ], it.flatten() ] 
+            [ [ "model": "rosettafold2na" ], it.flatten() ] 
         }
         .set { ch_multiqc_report }
 
@@ -75,13 +75,24 @@ workflow ROSETTAFOLD2NA {
         .pdb
         .map {
             def meta = it[0].clone();
-            meta.model = "rosettafold_all_atom";
+            meta.model = "rosettafold2na";
             [meta, it[1]]
         }
         .set { ch_pdb_final }
+
+    RUN_ROSETTAFOLD2NA
+        .out
+        .pae
+        .map {
+            def meta = it[0].clone();
+            meta.model = "rosettafold2na";
+            [meta, it[1]]
+        }
+        .set { ch_pae_final }
     
     emit:
     pdb            = ch_pdb_final      // channel: [ id, /path/to/*.pdb ]
+    pae            = ch_pae_final      // channel: [ id, /path/to/*_pae.tsv ]
     multiqc_report = ch_multiqc_report // channel: /path/to/multiqc_report.html
     versions       = ch_versions       // channel: [ path(versions.yml) ]
 }

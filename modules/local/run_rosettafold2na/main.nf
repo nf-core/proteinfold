@@ -19,6 +19,7 @@ process RUN_ROSETTAFOLD2NA {
     output:
     tuple val(meta), path("${meta.id}_rf2na.pdb"), emit: pdb
     tuple val(meta), path("${meta.id}_plddt_mqc.tsv"), emit: multiqc
+    tuple val(meta), path("${meta.id}_0_pae.tsv"), emit: pae
     path "versions.yml", emit: versions
 
     when:
@@ -46,24 +47,31 @@ process RUN_ROSETTAFOLD2NA {
 
     cp ${meta.id}_rf2na_output/models/model_00.pdb ./${meta.id}_rf2na.pdb
 
+    # Extract PAE matrix from NPZ and save as TSV for reporting
+    /conda/envs/RF2NA/bin/python3 - <<'PY' "${meta.id}_rf2na_output/models/model_00.npz" "${meta.id}_0_pae.tsv"
+import numpy as np, sys
+npz, out = sys.argv[1], sys.argv[2]
+d = np.load(npz)
+np.savetxt(out, d["pae"], fmt="%.3f", delimiter="\t")
+PY
+
     awk '{printf "%s\\t%.0f\\n", \$6, \$11 * 100}' "${meta.id}_rf2na.pdb" | uniq > plddt.tsv
     echo -e Positions"\\t""${meta.id}"_rf2na.pdb > header.tsv
     cat header.tsv plddt.tsv > "${meta.id}_plddt_mqc.tsv"
 
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        python: \$(python3 --version | sed 's/Python //g')
-    END_VERSIONS
+    printf '"%s":\n  python: %s\n' \
+        "${task.process}" \
+        "\$(/conda/envs/RF2NA/bin/python3 --version | sed 's/Python //g')" > versions.yml
     """
 
     stub:
     """
     touch "${meta.id}_rf2na.pdb"
     touch "${meta.id}_plddt_mqc.tsv"
+    touch "${meta.id}_0_pae.tsv"
 
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        python: \$(python3 --version | sed 's/Python //g')
-    END_VERSIONS
+    printf '"%s":\n  python: %s\n' \
+        "${task.process}" \
+        "\$(/conda/envs/RF2NA/bin/python3 --version | sed 's/Python //g')" > versions.yml
     """
 }
