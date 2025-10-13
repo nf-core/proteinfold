@@ -47,7 +47,7 @@ process RUN_ALPHAFOLD2_MSA {
     }
     """
     fix_obsolete.py pdb_mmcif/obsolete.dat > clean_obsolete.dat
-    
+
     if [ -d params/alphafold_params_* ]; then ln -r -s params/alphafold_params_*/* params/; fi
     if [ -d pdb70/pdb70_* ]; then ln -r -s pdb70/pdb70_*/* pdb70/; fi
     if [ -d uniref30/UniRef30_* ]; then ln -r -s uniref30/UniRef30_*/* uniref30/; fi

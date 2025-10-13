@@ -70,7 +70,7 @@ workflow PREPARE_BOLTZ_DBS {
         )
         ch_boltz2_conf = ARIA2_BOLTZ2_CONF.out.downloaded_file.map{ it[1] }
         ch_versions = ch_versions.mix(ARIA2_BOLTZ2_CONF.out.versions)
-        
+
 	ARIA2_UNCOMPRESS(
                 boltz2_mols_link
         )
