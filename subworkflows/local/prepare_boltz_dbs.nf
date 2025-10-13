@@ -7,7 +7,6 @@ include {
         ARIA2 as ARIA2_BOLTZ_MODEL
         ARIA2 as ARIA2_BOLTZ2_AFF
         ARIA2 as ARIA2_BOLTZ2_CONF
-        // ARIA2 as ARIA2_MOLS
 } from '../../modules/nf-core/aria2/main'
 
 include { ARIA2_UNCOMPRESS } from './aria2_uncompress'
