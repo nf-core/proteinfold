@@ -49,8 +49,8 @@ workflow PREPARE_ALPHAFOLD2_DBS {
     uniprot_trembl_link      //    string: Specifies the link to download uniprot_trembl
 
     main:
-    ch_bfd        = Channel.empty()
-    ch_small_bfd  = Channel.empty()
+    ch_bfd        = Channel.value([])
+    ch_small_bfd  = Channel.value([])
     ch_versions   = Channel.empty()
 
 
