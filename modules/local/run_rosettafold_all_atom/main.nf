@@ -37,6 +37,10 @@ process RUN_ROSETTAFOLD_ALL_ATOM {
     }
     def args = task.ext.args ?: ''
     """
+    if [ -d uniref30/UniRef30_* ]; then ln -r -s uniref30/UniRef30_*/* uniref30/; fi
+    if [ -d bfd/bfd_* ]; then ln -r -s bfd/bfd_*/* bfd/; fi
+    if [ -d pdb100_2021Mar03/pdb100_2021Mar03 ]; then ln -r -s pdb100_2021Mar03/pdb100_2021Mar03/* pdb100_2021Mar03/; fi
+   
     export DB_UR30="uniref30/${params.uniref30_prefix}"
     mamba run --name RFAA python /app/RoseTTAFold-All-Atom/rf2aa/run_inference.py \\
         --config-dir /app/RoseTTAFold-All-Atom/rf2aa/config/inference \\

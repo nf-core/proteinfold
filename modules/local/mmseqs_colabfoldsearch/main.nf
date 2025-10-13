@@ -24,6 +24,9 @@ process MMSEQS_COLABFOLDSEARCH {
     def args = task.ext.args ?: ''
 
     """
+    if [ -d db/uniref30_* ]; then ln -r -s db/uniref30_*/* db/; fi
+    if [ -d db/colabfold_envdb_* ]; then ln -r -s db/colabfold_envdb_*/* db/; fi
+
     colabfold_search \\
         $args \\
         --threads $task.cpus ${fasta} \\
