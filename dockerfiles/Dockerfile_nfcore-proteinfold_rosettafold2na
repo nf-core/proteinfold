@@ -47,7 +47,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --no-instal
 
 ## Using an add-hoc environment file to update dependencies
 COPY environment_nfcore-proteinfold_rosettafold2na.yml ./environment.yml
-RUN /conda/bin/mamba env create -f environment.yml 
+RUN /conda/bin/mamba env create -f environment.yml
 
 RUN git clone --depth 1 https://github.com/uw-ipd/RoseTTAFold2NA.git /app/RoseTTAFold2NA && \
     cd /app/RoseTTAFold2NA && \

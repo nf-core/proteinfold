@@ -65,8 +65,8 @@ workflow ROSETTAFOLD2NA {
         .multiqc
         .map { it[1] }
         .toSortedList()
-        .map { 
-            [ [ "model": "rosettafold2na" ], it.flatten() ] 
+        .map {
+            [ [ "model": "rosettafold2na" ], it.flatten() ]
         }
         .set { ch_multiqc_report }
 
@@ -89,7 +89,7 @@ workflow ROSETTAFOLD2NA {
             [meta, it[1]]
         }
         .set { ch_pae_final }
-    
+
     emit:
     pdb            = ch_pdb_final      // channel: [ id, /path/to/*.pdb ]
     pae            = ch_pae_final      // channel: [ id, /path/to/*_pae.tsv ]

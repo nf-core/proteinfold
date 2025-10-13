@@ -184,7 +184,7 @@ The pipeline takes care of downloading the databases and parameters required by 
       --use_gpu <true/false> \
       -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
   ```
-  
+
   - The RosettaFold2NA mode can be run using the command below:
 
   ```console
