@@ -110,16 +110,16 @@ workflow PREPARE_COLABFOLD_DBS {
                                     [meta, files]
                                 }
                 ch_versions = ch_versions.mix(MMSEQS_CREATEINDEX_UNIPROT30.out.versions)
-            // } else {
-            //     ch_colabfold_db = ch_colabfold_db
-            //                         .map { dir_path ->
-            //                             file("${dir_path}/*")
-            //                         }
+            } else {
+                ch_colabfold_db = ch_colabfold_db
+                                    .map { dir_path ->
+                                        file("${dir_path}/*")
+                                    }
 
-            //     ch_uniref30 = ch_uniref30
-            //                     .map { dir_path ->
-            //                         file("${dir_path}/*")
-            //                     }
+                ch_uniref30 = ch_uniref30
+                                .map { dir_path ->
+                                    file("${dir_path}/*")
+                                }
             }
         }
     }
