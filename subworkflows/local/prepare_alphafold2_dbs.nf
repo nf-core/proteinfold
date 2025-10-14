@@ -82,8 +82,8 @@ workflow PREPARE_ALPHAFOLD2_DBS {
             ch_bfd =  ARIA2_BFD
                         .out
                         .db
-                        .map { 
-                            dir -> dir.listFiles().findAll { it.isFile() } 
+                        .map {
+                            dir -> dir.listFiles().findAll { it.isFile() }
                         }
             ch_versions = ch_versions.mix(ARIA2_BFD.out.versions)
         } else {
@@ -100,10 +100,10 @@ workflow PREPARE_ALPHAFOLD2_DBS {
         ch_params = ARIA2_ALPHAFOLD2_PARAMS
 			.out
             .db
-            .map { 
-                dir -> dir.listFiles().findAll { it.isFile() } 
+            .map {
+                dir -> dir.listFiles().findAll { it.isFile() }
             }
-                        
+
         ch_versions = ch_versions.mix(ARIA2_ALPHAFOLD2_PARAMS.out.versions)
 
         ARIA2_MGNIFY(
@@ -118,8 +118,8 @@ workflow PREPARE_ALPHAFOLD2_DBS {
         ch_pdb70 = ARIA2_PDB70
                     .out
                     .db
-                    .map { 
-                        dir -> dir.listFiles().findAll { it.isFile() } 
+                    .map {
+                        dir -> dir.listFiles().findAll { it.isFile() }
                     }
         ch_versions = ch_versions.mix(ARIA2_PDB70.out.versions)
 

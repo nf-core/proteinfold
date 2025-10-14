@@ -41,7 +41,7 @@ workflow PREPARE_COLABFOLD_DBS {
             colabfold_alphafold2_params_link
         )
         ch_params = ARIA2_COLABFOLD_PARAMS
-                        .out    
+                        .out
                         .db
                         .map { dir -> dir.listFiles().findAll { it.isFile() } }
 
@@ -64,7 +64,7 @@ workflow PREPARE_COLABFOLD_DBS {
                     MMSEQS_TSV2EXPROFILEDB_COLABFOLDDB
                         .out
                         .db_exprofile
-                        .map { path_str -> 
+                        .map { path_str ->
                             def db_file = file(path_str)  // Convert to proper file object
                             [ [id: 'sample1', type: 'db'], db_file ]
                         }
@@ -72,7 +72,7 @@ workflow PREPARE_COLABFOLD_DBS {
                 ch_colabfold_db = MMSEQS_CREATEINDEX_COLABFOLDDB
                                     .out
                                     .db_indexed
-                                    .map { meta, dir -> 
+                                    .map { meta, dir ->
                                         def files = dir.listFiles().findAll { it.isFile() }
                                         [ meta, files ]
                                     }
@@ -97,7 +97,7 @@ workflow PREPARE_COLABFOLD_DBS {
                     MMSEQS_TSV2EXPROFILEDB_UNIPROT30
                         .out
                         .db_exprofile
-                        .map { path_str -> 
+                        .map { path_str ->
                             def db_file = file(path_str)  // Convert to proper file object
                             [ [id: 'sample1', type: 'db'], db_file ]
                         }
@@ -105,7 +105,7 @@ workflow PREPARE_COLABFOLD_DBS {
                 ch_uniref30 = MMSEQS_CREATEINDEX_UNIPROT30
                                 .out
                                 .db_indexed
-                                .map { meta, dir -> 
+                                .map { meta, dir ->
                                     def files = dir.listFiles().findAll { it.isFile() }
                                     [meta, files]
                                 }

@@ -39,18 +39,18 @@ workflow PREPARE_ROSETTAFOLD_ALL_ATOM_DBS {
         ch_bfd = ARIA2_BFD
                     .out
                     .db
-                    .map { 
-                        dir -> dir.listFiles().findAll { it.isFile() } 
+                    .map {
+                        dir -> dir.listFiles().findAll { it.isFile() }
                     }
-                    
+
         ch_versions = ch_versions.mix(ARIA2_BFD.out.versions)
 
         ARIA2_UNIREF30(rosettafold_all_atom_uniref30_link)
         ch_uniref30 = ARIA2_UNIREF30
                         .out
                         .db
-                        .map { 
-                            dir -> dir.listFiles().findAll { it.isFile() } 
+                        .map {
+                            dir -> dir.listFiles().findAll { it.isFile() }
                         }
         ch_versions = ch_versions.mix(ARIA2_UNIREF30.out.versions)
 
@@ -58,9 +58,9 @@ workflow PREPARE_ROSETTAFOLD_ALL_ATOM_DBS {
         ch_pdb100 = ARIA2_PDB100
                         .out
                         .db
-                        .map { 
-                            dir -> dir.listFiles().findAll { it.isFile() } 
-                        }  
+                        .map {
+                            dir -> dir.listFiles().findAll { it.isFile() }
+                        }
         ch_versions = ch_versions.mix(ARIA2_PDB100.out.versions)
 
         ARIA2_WEIGHTS(rosettafold_all_atom_paper_weights_link)
