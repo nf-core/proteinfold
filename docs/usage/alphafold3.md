@@ -42,6 +42,7 @@ The file structure of `--alphafold3_db` must be as follows:
 └── uniref90
     └── uniref90_2022_05.fa
 ```
+
 </details>
 
 > [!NOTE]

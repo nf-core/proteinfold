@@ -40,6 +40,7 @@ The file structure of `--boltz_db` must be as follows:
     ├── ccd.pkl
     └── mols
 ```
+
 </details>
 
 If individual components are available at different locations in the filesystem, they can be set using the following flags:
@@ -73,6 +74,7 @@ Similarly, the `--colabfold_db` flag must be set to run the local execution of C
     ├── uniref30_2302_db_aln.dbtype
     └── ...
 ```
+
 </details>
 
 Without setting the `--boltz_db` and `--colabfold_db` flags, all of the required data files will be downloaded during the workflow execution.

@@ -38,6 +38,7 @@ The file structure of `--esmfold_db` must be as follows:
 ├── esm2_t36_3B_UR50D.pt
 └── esmfold_3B_v1.pt
 ```
+
 </details>
 
 ## Additional Arguments

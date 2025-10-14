@@ -65,6 +65,7 @@ The file structure of `--colabfold_db` must be as follows:
         ├── params_model_5_multimer_v3.npz
         └── params_model_5.npz
 ```
+
 </details>
 
 If individual components are available at different locations in the filesystem, they can be set using the following flags:

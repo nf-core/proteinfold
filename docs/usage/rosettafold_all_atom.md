@@ -53,6 +53,7 @@ The file structure of `--rosettafold_all_atom_db` must be as follows:
     ├── UniRef30_2023_02_hhm.ffindex
     └── UniRef30_2023_02.md5sums
 ```
+
 </details>
 
 If individual components are available at different locations in the filesystem, they can be set using the following flags:
