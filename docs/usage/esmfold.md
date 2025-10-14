@@ -46,6 +46,6 @@ See the [ESMFold](https://github.com/facebookresearch/esm) documentation for a f
 
 | Parameter                | Default | Description                                                                                                                                                                                                                                                                                       |
 | ------------------------ | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `--num_recycles_esmfold` | `4`     | The ESMFold model provides initial structure predictions as a recycled model input in an iterative refinement process. This parameter controls the number of times model outputs are recycled. Increasing the number of recycles has been found to improve performance for some challening cases. |
+| `--esmfold_num_recycles` | `4`     | The ESMFold model provides initial structure predictions as a recycled model input in an iterative refinement process. This parameter controls the number of times model outputs are recycled. Increasing the number of recycles has been found to improve performance for some challening cases. |
 
 > You can override any of these parameters via the command line or a params file.

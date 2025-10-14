@@ -70,7 +70,7 @@ The file structure of `--colabfold_db` must be as follows:
 If individual components are available at different locations in the filesystem, they can be set using the following flags:
 
 ```console
---colabfold_db_path </PATH/TO/colabfold_envdb/>
+--colabfold_envdb_path </PATH/TO/colabfold_envdb/>
 --colabfold_uniref30_path </PATH/TO/colabfold_uniref30/>
 --colabfold_alphafold2_params_path </PATH/TO/params/>
 ```
@@ -103,7 +103,7 @@ See the [ColabFold](https://github.com/sokrypton/ColabFold) documentation for a 
 
 | Parameter                  | Default | Description                                                                                                                                                                                                                                                                                                                     |
 | -------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `--num_recycles_colabfold` | `3`     | The AlphaFold2 model used by ColabFold provides initial structure predictions as a recycled model input in an iterative refinement process. This parameter controls the number of times model outputs are recycled. Increasing the number of recycles has been found to improve performance for some challening cases.          |
-| `--use_amber`              | `null`  | ColabFold outputs will sometimes contain phsyical violations such as steric clashes. These clashes can be resolved by post-processing the outputs with a short relaxation using the Amber Force Field. Non-clashing atoms are pinned to starting coordinates such that the relaxation has a minimal impact on final structures. |
+| `--colabfold_num_recycles` | `3`     | The AlphaFold2 model used by ColabFold provides initial structure predictions as a recycled model input in an iterative refinement process. This parameter controls the number of times model outputs are recycled. Increasing the number of recycles has been found to improve performance for some challening cases.          |
+| `--colabfold_use_amber`    | `null`  | ColabFold outputs will sometimes contain phsyical violations such as steric clashes. These clashes can be resolved by post-processing the outputs with a short relaxation using the Amber Force Field. Non-clashing atoms are pinned to starting coordinates such that the relaxation has a minimal impact on final structures. |
 
 > You can override any of these parameters via the command line or a params file.
