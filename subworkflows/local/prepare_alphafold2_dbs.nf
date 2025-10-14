@@ -79,7 +79,12 @@ workflow PREPARE_ALPHAFOLD2_DBS {
             ARIA2_BFD(
                 bfd_link
             )
-            ch_bfd =  ARIA2_BFD.out.db
+            ch_bfd =  ARIA2_BFD
+                        .out
+                        .db
+                        .map { 
+                            dir -> dir.listFiles().findAll { it.isFile() } 
+                        }
             ch_versions = ch_versions.mix(ARIA2_BFD.out.versions)
         } else {
             ARIA2_SMALL_BFD(
@@ -92,7 +97,13 @@ workflow PREPARE_ALPHAFOLD2_DBS {
         ARIA2_ALPHAFOLD2_PARAMS(
             alphafold2_params_link
         )
-        ch_params = ARIA2_ALPHAFOLD2_PARAMS.out.db
+        ch_params = ARIA2_ALPHAFOLD2_PARAMS
+			.out
+            .db
+            .map { 
+                dir -> dir.listFiles().findAll { it.isFile() } 
+            }
+                        
         ch_versions = ch_versions.mix(ARIA2_ALPHAFOLD2_PARAMS.out.versions)
 
         ARIA2_MGNIFY(
@@ -104,7 +115,12 @@ workflow PREPARE_ALPHAFOLD2_DBS {
         ARIA2_PDB70(
             pdb70_link
         )
-        ch_pdb70 = ARIA2_PDB70.out.db
+        ch_pdb70 = ARIA2_PDB70
+                    .out
+                    .db
+                    .map { 
+                        dir -> dir.listFiles().findAll { it.isFile() } 
+                    }
         ch_versions = ch_versions.mix(ARIA2_PDB70.out.versions)
 
         DOWNLOAD_PDBMMCIF(
@@ -122,8 +138,11 @@ workflow PREPARE_ALPHAFOLD2_DBS {
         ARIA2_UNIREF30(
             alphafold2_uniref30_link
         )
-        ch_uniref30 = ARIA2_UNIREF30.out.db
-        ch_versions = ch_versions.mix(ARIA2_UNIREF30.out.versions)
+        ch_uniref30 = ARIA2_UNIREF30
+		      	        .out
+			            .db
+			            .map { dir -> dir.listFiles().findAll { it.isFile() } }
+	    ch_versions = ch_versions.mix(ARIA2_UNIREF30.out.versions)
 
         ARIA2_UNIREF90(
             uniref90_link

@@ -40,7 +40,11 @@ workflow PREPARE_COLABFOLD_DBS {
         ARIA2_COLABFOLD_PARAMS (
             colabfold_alphafold2_params_link
         )
-        ch_params = ARIA2_COLABFOLD_PARAMS.out.db
+        ch_params = ARIA2_COLABFOLD_PARAMS
+                        .out    
+                        .db
+                        .map { dir -> dir.listFiles().findAll { it.isFile() } }
+
         ch_versions = ch_versions.mix(ARIA2_COLABFOLD_PARAMS.out.versions)
 
         if (!use_msa_server) {
@@ -57,9 +61,21 @@ workflow PREPARE_COLABFOLD_DBS {
 
             if (params.colabfold_create_index) {
                 MMSEQS_CREATEINDEX_COLABFOLDDB (
-                    MMSEQS_TSV2EXPROFILEDB_COLABFOLDDB.out.db_exprofile
+                    MMSEQS_TSV2EXPROFILEDB_COLABFOLDDB
+                        .out
+                        .db_exprofile
+                        .map { path_str -> 
+                            def db_file = file(path_str)  // Convert to proper file object
+                            [ [id: 'sample1', type: 'db'], db_file ]
+                        }
                 )
-                ch_colabfold_db = MMSEQS_CREATEINDEX_COLABFOLDDB.out.db_indexed
+                ch_colabfold_db = MMSEQS_CREATEINDEX_COLABFOLDDB
+                                    .out
+                                    .db_indexed
+                                    .map { meta, dir -> 
+                                        def files = dir.listFiles().findAll { it.isFile() }
+                                        [ meta, files ]
+                                    }
                 ch_versions = ch_versions.mix(MMSEQS_CREATEINDEX_COLABFOLDDB.out.versions)
             }
 
@@ -72,14 +88,38 @@ workflow PREPARE_COLABFOLD_DBS {
                 ARIA2_UNIREF30.out.db
             )
             ch_uniref30 = MMSEQS_TSV2EXPROFILEDB_UNIPROT30.out.db_exprofile
-            ch_versions = ch_versions.mix(MMSEQS_TSV2EXPROFILEDB_UNIPROT30.out.versions)
 
+            ch_versions = ch_versions.mix(MMSEQS_TSV2EXPROFILEDB_UNIPROT30.out.versions)
+            MMSEQS_TSV2EXPROFILEDB_UNIPROT30.out.db_exprofile.view()
             if (colabfold_create_index) {
+                MMSEQS_TSV2EXPROFILEDB_UNIPROT30.out.db_exprofile.view()
                 MMSEQS_CREATEINDEX_UNIPROT30 (
-                    MMSEQS_TSV2EXPROFILEDB_UNIPROT30.out.db_exprofile
+                    MMSEQS_TSV2EXPROFILEDB_UNIPROT30
+                        .out
+                        .db_exprofile
+                        .map { path_str -> 
+                            def db_file = file(path_str)  // Convert to proper file object
+                            [ [id: 'sample1', type: 'db'], db_file ]
+                        }
                 )
-                ch_uniref30 = MMSEQS_CREATEINDEX_UNIPROT30.out.db_indexed
+                ch_uniref30 = MMSEQS_CREATEINDEX_UNIPROT30
+                                .out
+                                .db_indexed
+                                .map { meta, dir -> 
+                                    def files = dir.listFiles().findAll { it.isFile() }
+                                    [meta, files]
+                                }
                 ch_versions = ch_versions.mix(MMSEQS_CREATEINDEX_UNIPROT30.out.versions)
+            // } else {
+            //     ch_colabfold_db = ch_colabfold_db
+            //                         .map { dir_path ->
+            //                             file("${dir_path}/*")
+            //                         }
+
+            //     ch_uniref30 = ch_uniref30
+            //                     .map { dir_path ->
+            //                         file("${dir_path}/*")
+            //                     }
             }
         }
     }
