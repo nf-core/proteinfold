@@ -72,8 +72,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[#387](https://github.com/nf-core/proteinfold/issues/387)] - Fix alphafold2_standard obsolete.dat path error.
 - [[#389](https://github.com/nf-core/proteinfold/issues/389)] - Locked version numbers for HelixFold3 image to prevent bug caused by newer mamba versions.
 - [[PR #397](https://github.com/nf-core/proteinfold/pull/397)] - Fix AF2 mgnify handling and improve version reporting for AlphaFold2 containers.
-- [[#399](https://github.com/nf-core/proteinfold/pulls/399)] - Update alphafold2 and alphafold2_pred Dockerfiles.
-- [[PR #404](https://github.com/nf-core/proteinfold/pulls/404)] - Boltz cache files moved to workdir, fixed version checks and Botlz stubRun.
+- [[PR #398](https://github.com/nf-core/proteinfold/pull/398)] - Fix issues with PREPARE_DBS subworkflows.
+- [[PR #399](https://github.com/nf-core/proteinfold/pulls/399)] - Update alphafold2 and alphafold2_pred Dockerfiles.
+- [[PR #404](https://github.com/nf-core/proteinfold/pulls/404)] - Boltz cache files moved to workdir, fixed version checks and Boltz stubRun.
 
 ### Parameters
 
