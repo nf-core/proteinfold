@@ -31,6 +31,7 @@ The file structure of `--esmfold_db` must be as follows:
 
 <details markdown="1">
 <summary>Directory structure</summary>
+
 ```
 <esmfold_db>/params/
 ├── esm2_t36_3B_UR50D-contact-regression.pt

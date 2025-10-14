@@ -23,6 +23,7 @@ The file structure of `--alphafold3_db` must be as follows:
 
 <details markdown="1">
 <summary>Directory structure</summary>
+
 ```console
 ├── mgnify
 │   └── mgy_clusters_2022_05.fa

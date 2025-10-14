@@ -24,6 +24,7 @@ The file structure of `--helixfold3_db` must be as follows:
 
 <details markdown="1">
 <summary>Directory structure</summary>
+
 ```
 <helixfold3_db>/
 ├── bfd

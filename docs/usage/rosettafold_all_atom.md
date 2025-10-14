@@ -22,6 +22,7 @@ The file structure of `--rosettafold_all_atom_db` must be as follows:
 
 <details markdown="1">
 <summary>Directory structure</summary>
+
 ```console
 <rosettafold_all_atom_db>/
 ├── bfd

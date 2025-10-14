@@ -33,6 +33,7 @@ The file structure of `--colabfold_db` must be as follows:
 
 <details markdown="1">
 <summary>Directory structure</summary>
+
 ```
 <colabfold_db>/
 ├── colabfold_envdb

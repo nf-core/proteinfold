@@ -30,6 +30,7 @@ The file structure of `--boltz_db` must be as follows:
 
 <details markdown="1">
 <summary>Directory structure</summary>
+
 ```
 <boltz_db>/
 └── params
@@ -58,6 +59,7 @@ Similarly, the `--colabfold_db` flag must be set to run the local execution of C
 
 <details markdown="1">
 <summary>Directory structure</summary>
+
 ```
 <colabfold_db>/
 ├── colabfold_envdb

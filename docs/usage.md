@@ -56,6 +56,7 @@ Each mode has specific reference data requirements. To support all modes the `--
 
 <details markdown="1">
 <summary>Directory structure</summary>
+
 ```
 <db>/
 ├── bfd

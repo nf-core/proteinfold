@@ -29,6 +29,7 @@ The file structure of `--alphafold2_db` must be as follows:
 
 <details markdown="1">
 <summary>Directory structure</summary>
+
 ```console
 <alphafold2_db>/
 ├── bfd
