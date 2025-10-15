@@ -20,7 +20,7 @@
             [
                 "DBs",
                 "DBs/colabfold",
-                "DBs/colabfold/alphafold_params_2021-07-14",
+                "DBs/colabfold/params",
                 "colabfold",
                 "colabfold/T1024_0_pae.tsv",
                 "colabfold/T1024_colabfold.pdb",
