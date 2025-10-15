@@ -66,7 +66,7 @@ workflow PREPARE_COLABFOLD_DBS {
                         .db_exprofile
                         .map { path_str ->
                             def db_file = file(path_str)  // Convert to proper file object
-                            [ [id: 'sample1', type: 'db'], db_file ]
+                            [ [id: 'colabfolddb'], db_file ]
                         }
                 )
                 ch_colabfold_db = MMSEQS_CREATEINDEX_COLABFOLDDB
@@ -99,7 +99,7 @@ workflow PREPARE_COLABFOLD_DBS {
                         .db_exprofile
                         .map { path_str ->
                             def db_file = file(path_str)  // Convert to proper file object
-                            [ [id: 'sample1', type: 'db'], db_file ]
+                            [ [id: 'uniprot30'], db_file ]
                         }
                 )
                 ch_uniref30 = MMSEQS_CREATEINDEX_UNIPROT30
