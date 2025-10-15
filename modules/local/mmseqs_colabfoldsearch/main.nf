@@ -28,6 +28,7 @@ process MMSEQS_COLABFOLDSEARCH {
         $args \\
         --threads $task.cpus ${fasta} \\
         ./db \\
+        --af3-json \\
         "result/"
 
     cat <<-END_VERSIONS > versions.yml
