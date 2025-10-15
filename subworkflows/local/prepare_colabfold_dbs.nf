@@ -90,7 +90,7 @@ workflow PREPARE_COLABFOLD_DBS {
             ch_uniref30 = MMSEQS_TSV2EXPROFILEDB_UNIPROT30.out.db_exprofile
 
             ch_versions = ch_versions.mix(MMSEQS_TSV2EXPROFILEDB_UNIPROT30.out.versions)
-            
+
             if (colabfold_create_index) {
                 MMSEQS_CREATEINDEX_UNIPROT30 (
                     MMSEQS_TSV2EXPROFILEDB_UNIPROT30
