@@ -65,7 +65,7 @@ workflow PREPARE_COLABFOLD_DBS {
                         .out
                         .db_exprofile
                         .map { path_str ->
-                            def db_file = file(path_str)  // Convert to proper file object
+                            def db_file = file(path_str)
                             [ [id: 'colabfolddb'], db_file ]
                         }
                 )
@@ -74,7 +74,7 @@ workflow PREPARE_COLABFOLD_DBS {
                                     .db_indexed
                                     .map { meta, dir ->
                                         def files = dir.listFiles().findAll { it.isFile() }
-                                        [ meta, files ]
+                                        files
                                     }
                 ch_versions = ch_versions.mix(MMSEQS_CREATEINDEX_COLABFOLDDB.out.versions)
             }
@@ -97,7 +97,7 @@ workflow PREPARE_COLABFOLD_DBS {
                         .out
                         .db_exprofile
                         .map { path_str ->
-                            def db_file = file(path_str)  // Convert to proper file object
+                            def db_file = file(path_str)
                             [ [id: 'uniprot30'], db_file ]
                         }
                 )
@@ -106,7 +106,7 @@ workflow PREPARE_COLABFOLD_DBS {
                                 .db_indexed
                                 .map { meta, dir ->
                                     def files = dir.listFiles().findAll { it.isFile() }
-                                    [meta, files]
+                                    files
                                 }
                 ch_versions = ch_versions.mix(MMSEQS_CREATEINDEX_UNIPROT30.out.versions)
             } else {
