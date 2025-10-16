@@ -670,13 +670,13 @@
             "properties": {
                 "colabfold_db_link": {
                     "type": "string",
-                    "default": "http://wwwuser.gwdg.de/~compbiol/colabfold/colabfold_envdb_202108.tar.gz",
+                    "default": "https://opendata.mmseqs.org/colabfold/colabfold_envdb_202108.db.tar.gz",
                     "description": "Link to the ColabFold database",
                     "fa_icon": "fas fa-link"
                 },
                 "colabfold_uniref30_link": {
                     "type": "string",
-                    "default": "https://wwwuser.gwdg.de/~compbiol/colabfold/uniref30_2302.tar.gz",
+                    "default": "https://opendata.mmseqs.org/colabfold/uniref30_2302.db.tar.gz",
                     "description": "Link to the UniRef30 database",
                     "fa_icon": "fas fa-link"
                 },

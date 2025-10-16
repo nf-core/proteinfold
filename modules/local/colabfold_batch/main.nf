@@ -32,6 +32,7 @@ process COLABFOLD_BATCH {
     def args = task.ext.args ?: ''
 
     """
+    ln -s \$(realpath params/alphafold_params_*/*) params/
     touch params/download_finished.txt
 
     colabfold_batch \\
