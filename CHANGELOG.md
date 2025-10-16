@@ -75,6 +75,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[PR #398](https://github.com/nf-core/proteinfold/pull/398)] - Fix issues with PREPARE_DBS subworkflows.
 - [[PR #399](https://github.com/nf-core/proteinfold/pulls/399)] - Update alphafold2 and alphafold2_pred Dockerfiles.
 - [[PR #404](https://github.com/nf-core/proteinfold/pulls/404)] - Boltz cache files moved to workdir, fixed version checks and Boltz stubRun.
+- [[#401](https://github.com/nf-core/proteinfold/issues/401)] - Get rid of symlinking in the prediction tools processes when using "PREPARE_DBS" subworkflows
 
 ### Parameters
 
