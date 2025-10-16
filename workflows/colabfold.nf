@@ -56,6 +56,7 @@ workflow COLABFOLD {
                 num_recycles
             )
             ch_versions = ch_versions.mix(COLABFOLD_BATCH.out.versions)
+
         } else {
             COLABFOLD_BATCH(
                 ch_samplesheet,
@@ -84,6 +85,7 @@ workflow COLABFOLD {
                 ch_uniref30
             )
             ch_versions = ch_versions.mix(MMSEQS_COLABFOLDSEARCH.out.versions)
+
         } else {
             MMSEQS_COLABFOLDSEARCH (
                 ch_samplesheet,
