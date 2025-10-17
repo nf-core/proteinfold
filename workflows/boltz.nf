@@ -167,6 +167,8 @@ workflow BOLTZ {
         .map { [ [ "model": "boltz"], it.flatten() ] }
         .set { ch_multiqc_report  }
 
+    ch_versions       = ch_versions.mix(RUN_BOLTZ.out.versions)
+
     emit:
     versions        = ch_versions
     msa             = ch_msa
