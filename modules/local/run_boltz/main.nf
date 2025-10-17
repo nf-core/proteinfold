@@ -53,12 +53,11 @@ process RUN_BOLTZ {
     if (workflow.profile.tokenize(',').intersect(['conda', 'mamba']).size() >= 1) {
         error("Local RUN_BOLTZ module does not support Conda. Please use Docker / Singularity / Podman instead.")
     }
-    def version = "2.0.3"
     def args = task.ext.args ?: ''
 
     """
-    export NUMBA_CACHE_DIR=/tmp
-    export HOME=/tmp
+    mkdir -p ./home
+    export HOME=./home
 
     boltz predict "${fasta}" --output_format "pdb" ${args} --cache ./
     cp boltz_results_*/predictions/${meta.id}/*_0.pdb ./${meta.id}_boltz.pdb
@@ -76,12 +75,11 @@ process RUN_BOLTZ {
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        boltz: $version
+        boltz: \$(pip list | grep -i boltz | awk '{print \$2}')
     END_VERSIONS
     """
 
     stub:
-    def version = "2.0.3"
     """
     mkdir -p boltz_results_${meta.id}/processed/msa/
     mkdir -p boltz_results_${meta.id}/processed/structures/
@@ -105,7 +103,7 @@ process RUN_BOLTZ {
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        boltz: $version
+        boltz: \$(pip list | grep -i boltz | awk '{print \$2}')
     END_VERSIONS
     """
 }
