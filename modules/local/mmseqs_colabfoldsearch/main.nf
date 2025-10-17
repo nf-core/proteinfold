@@ -29,12 +29,11 @@ process MMSEQS_COLABFOLDSEARCH {
         --threads $task.cpus ${fasta} \\
         ./db \\
         --af3-json \\
-        "result/"
+        "results/"
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        colabfold_search: \$(conda run -n colabfold pip list | grep "^colabfold" | awk '{print \$2}')
-        alphafold_colabfold: \$(conda run -n colabfold pip list | grep "^alphafold-colabfold" | awk '{print \$2}')
+        colabfold_search: \$(pip list | grep "^colabfold" | awk '{print \$2}' 2>/dev/null || echo "unknown")
         mmseqs: \$(mmseqs version)
     END_VERSIONS
     """
@@ -46,8 +45,7 @@ process MMSEQS_COLABFOLDSEARCH {
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        colabfold_search: \$(conda run -n colabfold pip list | grep "^colabfold" | awk '{print \$2}')
-        alphafold_colabfold: \$(conda run -n colabfold pip list | grep "^alphafold-colabfold" | awk '{print \$2}')
+        colabfold_search: \$(pip list | grep "^colabfold" | awk '{print \$2}' 2>/dev/null || echo "unknown")
         mmseqs: \$(mmseqs version)
     END_VERSIONS
     """
