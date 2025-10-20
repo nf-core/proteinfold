@@ -3,7 +3,7 @@ ARG MMSEQS2_VERSION=18-8cc5c
 
 LABEL Author="Joshua Storm Caley" \
     title="nf-core/proteinfold_mmseqs_colabfoldsearch" \
-    Version="2.0.0rc2" \
+    Version="2.0.0dev" \
     description="Lightweight Docker image containing all software requirements to run the MMSEQS_COLABFOLDSEARCH module using the nf-core/proteinfold pipeline"
 
 RUN apt-get update && \
@@ -37,7 +37,5 @@ RUN apt-get update && \
     pip cache purge
 
 ENV MPLBACKEND=Agg
-ENV MPLCONFIGDIR=/cache
-ENV XDG_CACHE_HOME=/cache
-
-VOLUME cache
+ENV MPLCONFIGDIR=/tmp/mplconfig
+ENV XDG_CACHE_HOME=/tmp/xdg_cache
