@@ -4,7 +4,7 @@ ARG CUDA_VERSION=12.9.1
 
 LABEL Author="Joshua Storm Caley" \
     title="nf-core/proteinfold_colabfold" \
-    Version="2.0.0rc2" \
+    Version="2.0.0dev" \
     description="Docker image containing all software requirements to run the COLABFOLD_BATCH module using the nf-core/proteinfold pipeline"
 
 RUN apt-get update && \
@@ -38,9 +38,7 @@ RUN apt-get update && \
     pip cache purge
 
 ENV MPLBACKEND=Agg
-ENV MPLCONFIGDIR=/cache
-ENV XDG_CACHE_HOME=/cache
+ENV MPLCONFIGDIR=/tmp/mplconfig
+ENV XDG_CACHE_HOME=/tmp/xdg_cache
 ENV XLA_FLAGS="--xla_gpu_cuda_data_dir=/usr/local/cuda"
 ENV CUDA_ROOT="/usr/local/cuda"
-
-VOLUME cache
