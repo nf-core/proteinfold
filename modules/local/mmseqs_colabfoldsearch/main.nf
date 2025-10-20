@@ -1,6 +1,7 @@
 process MMSEQS_COLABFOLDSEARCH {
     tag "$meta.id"
     label 'process_high_memory'
+    label 'process_high'
 
     container "nf-core/proteinfold_mmseqs_colabfoldsearch:dev"
 
