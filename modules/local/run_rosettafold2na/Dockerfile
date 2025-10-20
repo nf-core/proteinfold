@@ -8,7 +8,7 @@ FROM nvidia/cuda:${CUDA}-cudnn8-runtime-ubuntu20.04 AS builder
 ARG CUDA
 
 LABEL Author="petrislp@gmail.com, Jose Espinosa-Carrasco" \
-    Version="1.2.0dev" \
+    Version="2.0.0dev" \
     description="Docker image containing all software requirements to run the RUN_ROSETTAFOLD2NA module using the nf-core/proteinfold pipeline"
 
 # Switch default shell to bash for subsequent RUN commands
@@ -51,6 +51,7 @@ RUN /conda/bin/mamba env create -f environment.yaml
 
 RUN git clone --depth 1 https://github.com/uw-ipd/RoseTTAFold2NA.git /app/RoseTTAFold2NA && \
     cd /app/RoseTTAFold2NA && \
+    git checkout f761af286729ea08a6ddab149023c1b73458fbe2 && \
     /conda/bin/mamba run -n RF2NA bash -c "\
         cd SE3Transformer && \
         pip install --no-cache-dir -r requirements.txt && \
