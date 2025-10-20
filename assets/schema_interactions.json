@@ -16,13 +16,13 @@
             "interaction_id": {
                 "type": "string",
                 "pattern": "^\\S+$",
-                "errorMessage": "Molecule interancting sequence name must be provided and cannot contain spaces",
+                "errorMessage": "Molecule interacting sequence name must be provided and cannot contain spaces",
                 "meta": ["interaction_id"]
             },
             "interaction_type": {
                 "type": "string",
                 "pattern": "^(P|D|R|S|PR)$",
-                "errorMessage": "Molecule interancting sequence name must be provided and cannot contain spaces",
+                "errorMessage": "Molecule interacting sequence name must be provided and cannot contain spaces",
                 "meta": ["interaction_type"]
             }
         },

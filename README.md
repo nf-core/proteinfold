@@ -49,7 +49,7 @@ On release, automated continuous integration tests run the pipeline on a full-si
 
    ix. [Boltz](https://github.com/jwohlwend/boltz/) - Regular Boltz-1
 
-   viii. [RosettaFold2NA](https://github.com/uw-ipd/RoseTTAFold2NA) - RoseTTAFold2NA
+   x. [RosettaFold2NA](https://github.com/uw-ipd/RoseTTAFold2NA) - Regular RF2NA
 
 ## Usage
 
