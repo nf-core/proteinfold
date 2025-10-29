@@ -16,15 +16,15 @@ workflow PREPARE_ROSETTAFOLD2NA_DBS {
 
     take:
     rosettafold2na_db
-    bfd_rosettafold2na_path
-    uniref30_rosettafold2na_path
-    pdb100_rosettafold2na_path
-    rna_rosettafold2na_path
-    rf2na_weights_path
-    bfd_rosettafold2na_link
-    uniref30_rosettafold2na_link
-    pdb100_rosettafold2na_link
-    rf2na_weights_link
+    rosettafold2na_bfd_path
+    rosettafold2na_uniref30_path
+    rosettafold2na_pdb100_path
+    rosettafold2na_rna_path
+    rosettafold2na_weights_path
+    rosettafold2na_bfd_link
+    rosettafold2na_uniref30_link
+    rosettafold2na_pdb100_link
+    rosettafold2na_weights_link
     rfam_full_region_link
     rfam_cm_link
     rnacentral_rfam_annotations_link
@@ -35,21 +35,21 @@ workflow PREPARE_ROSETTAFOLD2NA_DBS {
     ch_versions = Channel.empty()
 
     if (rosettafold2na_db) {
-        ch_bfd      = Channel.value(file(bfd_rosettafold2na_path))
-        ch_uniref30 = Channel.value(file(uniref30_rosettafold2na_path))
-        ch_pdb100   = Channel.value(file(pdb100_rosettafold2na_path))
-        ch_rf2na_weights = Channel.value(file(rf2na_weights_path))
-        ch_rna      = Channel.value(file(rna_rosettafold2na_path))
+        ch_bfd      = Channel.value(file(rosettafold2na_bfd_path))
+        ch_uniref30 = Channel.value(file(rosettafold2na_uniref30_path))
+        ch_pdb100   = Channel.value(file(rosettafold2na_pdb100_path))
+        ch_weights  = Channel.value(file(rosettafold2na_weights_path))
+        ch_rna      = Channel.value(file(rosettafold2na_rna_path))
     } else {
-        ARIA2_BFD(bfd_rosettafold2na_link)
+        ARIA2_BFD(rosettafold2na_bfd_link)
         ch_bfd = ARIA2_BFD.out.db
         ch_versions = ch_versions.mix(ARIA2_BFD.out.versions)
 
-        ARIA2_UNIREF30(uniref30_rosettafold2na_link)
+        ARIA2_UNIREF30(rosettafold2na_uniref30_link)
         ch_uniref30 = ARIA2_UNIREF30.out.db
         ch_versions = ch_versions.mix(ARIA2_UNIREF30.out.versions)
 
-        ARIA2_PDB100(pdb100_rosettafold2na_link)
+        ARIA2_PDB100(rosettafold2na_pdb100_link)
         ch_pdb100 = ARIA2_PDB100.out.db
         ch_versions = ch_versions.mix(ARIA2_PDB100.out.versions)
 
@@ -63,8 +63,8 @@ workflow PREPARE_ROSETTAFOLD2NA_DBS {
         ch_rna = DOWNLOAD_RNA_DATABASES.out.ch_db
         ch_versions = ch_versions.mix(DOWNLOAD_RNA_DATABASES.out.versions)
 
-        ARIA2_WEIGHTS(rf2na_weights_link)
-        ch_rf2na_weights = ARIA2_WEIGHTS.out.db
+        ARIA2_WEIGHTS(rosettafold2na_weights_link)
+        ch_weights = ARIA2_WEIGHTS.out.db
         ch_versions = ch_versions.mix(ARIA2_WEIGHTS.out.versions)
 
     }
@@ -74,6 +74,6 @@ workflow PREPARE_ROSETTAFOLD2NA_DBS {
     uniref30        = ch_uniref30
     pdb100          = ch_pdb100
     rna             = ch_rna
-    rf2na_weights   = ch_rf2na_weights
+    rosettafold2na_weights = ch_weights
     versions        = ch_versions
 }

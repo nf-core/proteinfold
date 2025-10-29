@@ -25,7 +25,7 @@ workflow ROSETTAFOLD2NA {
     ch_uniref30             // channel: path(uniref30)
     ch_pdb100               // channel: path(pdb100)
     ch_rna                  // channel: path(rna)
-    ch_rf2na_weights        // channel: path(rf2na_weights)
+    ch_rosettafold2na_weights // channel: path(rosettafold2na_weights)
     ch_dummy_file           // channel: path(NO_FILE)
 
     main:
@@ -56,7 +56,7 @@ workflow ROSETTAFOLD2NA {
         ch_uniref30,
         ch_pdb100,
         ch_rna,
-        ch_rf2na_weights
+        ch_rosettafold2na_weights
     )
     ch_versions = ch_versions.mix(RUN_ROSETTAFOLD2NA.out.versions)
 

@@ -461,15 +461,15 @@ workflow NFCORE_PROTEINFOLD {
         //
         PREPARE_ROSETTAFOLD2NA_DBS (
             params.rosettafold2na_db,
-            params.bfd_rosettafold2na_path,
-            params.uniref30_rosettafold2na_path,
-            params.pdb100_rosettafold2na_path,
-            params.rna_rosettafold2na_path,
-            params.rf2na_weights_path,
-            params.bfd_rosettafold2na_link,
-            params.uniref30_rosettafold2na_link,
-            params.pdb100_rosettafold2na_link,
-            params.rf2na_weights_link,
+            params.rosettafold2na_bfd_path,
+            params.rosettafold2na_uniref30_path,
+            params.rosettafold2na_pdb100_path,
+            params.rosettafold2na_rna_path,
+            params.rosettafold2na_weights_path,
+            params.rosettafold2na_bfd_link,
+            params.rosettafold2na_uniref30_link,
+            params.rosettafold2na_pdb100_link,
+            params.rosettafold2na_weights_link,
             params.rfam_full_region_link,
             params.rfam_cm_link,
             params.rnacentral_rfam_annotations_link,
@@ -489,7 +489,7 @@ workflow NFCORE_PROTEINFOLD {
             PREPARE_ROSETTAFOLD2NA_DBS.out.uniref30,
             PREPARE_ROSETTAFOLD2NA_DBS.out.pdb100,
             PREPARE_ROSETTAFOLD2NA_DBS.out.rna,
-            PREPARE_ROSETTAFOLD2NA_DBS.out.rf2na_weights,
+            PREPARE_ROSETTAFOLD2NA_DBS.out.rosettafold2na_weights,
             ch_dummy_file
         )
         ch_multiqc                              = ch_multiqc.mix(ROSETTAFOLD2NA.out.multiqc_report.collect())

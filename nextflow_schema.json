@@ -844,19 +844,19 @@
             "fa_icon": "fas fa-database",
             "description": "Parameters used to provide the links to the DBs and parameters public resources to RosettaFold2NA.",
             "properties": {
-                "uniref30_rosettafold2na_link": {
+                "rosettafold2na_uniref30_link": {
                     "type": "string",
                     "default": "http://wwwuser.gwdg.de/~compbiol/uniclust/2020_06/UniRef30_2020_06_hhsuite.tar.gz"
                 },
-                "bfd_rosettafold2na_link": {
+                "rosettafold2na_bfd_link": {
                     "type": "string",
                     "default": "https://bfd.mmseqs.com/bfd_metaclust_clu_complete_id30_c90_final_seq.sorted_opt.tar.gz"
                 },
-                "pdb100_rosettafold2na_link": {
+                "rosettafold2na_pdb100_link": {
                     "type": "string",
                     "default": "https://files.ipd.uw.edu/pub/RoseTTAFold/pdb100_2021Mar03.tar.gz"
                 },
-                "rf2na_weights_link": {
+                "rosettafold2na_weights_link": {
                     "type": "string",
                     "default": "https://files.ipd.uw.edu/dimaio/RF2NA_apr23.tgz"
                 },
@@ -888,23 +888,23 @@
             "description": "Parameters used to provide the paths to the DBs and parameters for RosettaFold2NA.",
             "default": "",
             "properties": {
-                "uniref30_rosettafold2na_path": {
+                "rosettafold2na_uniref30_path": {
                     "type": "string",
                     "default": "null/UniRef30_2020_06/*"
                 },
-                "bfd_rosettafold2na_path": {
+                "rosettafold2na_bfd_path": {
                     "type": "string",
                     "default": "null/bfd/*"
                 },
-                "pdb100_rosettafold2na_path": {
+                "rosettafold2na_pdb100_path": {
                     "type": "string",
                     "default": "null/pdb100_2021Mar03/*"
                 },
-                "rf2na_weights_path": {
+                "rosettafold2na_weights_path": {
                     "type": "string",
-                    "default": "null/network/weights/RF2NA_apr23.pt"
+                    "default": "null/params/network/weights/RF2NA_apr23.pt"
                 },
-                "rna_rosettafold2na_path": {
+                "rosettafold2na_rna_path": {
                     "type": "string",
                     "description": "Path to the RNA folder containing all necessary RNA databases for RF2NA",
                     "default": "null/RNA/*"
