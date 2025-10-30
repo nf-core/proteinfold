@@ -90,9 +90,20 @@ workflow ROSETTAFOLD2NA {
         }
         .set { ch_pae_final }
 
+    RUN_ROSETTAFOLD2NA
+        .out
+        .msa
+        .map {
+            def meta = it[0].clone();
+            meta.model = "rosettafold2na";
+            [meta, it[1]]
+        }
+        .set { ch_msa_final }
+
     emit:
     pdb            = ch_pdb_final      // channel: [ id, /path/to/*.pdb ]
     pae            = ch_pae_final      // channel: [ id, /path/to/*_pae.tsv ]
+    msa            = ch_msa_final      // channel: [ id, /path/to/*_msa.tsv ]
     multiqc_report = ch_multiqc_report // channel: /path/to/multiqc_report.html
     versions       = ch_versions       // channel: [ path(versions.yml) ]
 }

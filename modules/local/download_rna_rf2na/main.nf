@@ -65,6 +65,7 @@ process DOWNLOAD_RNA_DATABASES {
     """
     mkdir -p RNA
     touch RNA/Rfam.full_region RNA/Rfam.cm RNA/id_mapping.tsv RNA/rfam_annotations.tsv RNA/rnacentral.fasta
+    touch RNA/nt.00.nhr RNA/nt.00.nin RNA/nt.00.nsq
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

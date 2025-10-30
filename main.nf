@@ -499,7 +499,7 @@ workflow NFCORE_PROTEINFOLD {
                                                         .out
                                                         .pdb
                                                         .map { meta, pdb -> [ meta, [ pdb ] ] }
-                                                        .combine(ch_dummy_file)
+                                                        .join(ROSETTAFOLD2NA.out.msa)
                                                         .join(ROSETTAFOLD2NA.out.pae)
                                                 )
         ch_top_ranked_model                     = ch_top_ranked_model.mix(ROSETTAFOLD2NA.out.pdb)
