@@ -7,8 +7,9 @@ include {
         ARIA2 as ARIA2_BOLTZ_MODEL
         ARIA2 as ARIA2_BOLTZ2_AFF
         ARIA2 as ARIA2_BOLTZ2_CONF
-        ARIA2 as ARIA2_MOLS
 } from '../../modules/nf-core/aria2/main'
+
+include { ARIA2_UNCOMPRESS } from './aria2_uncompress'
 
 workflow PREPARE_BOLTZ_DBS {
     take:
@@ -70,14 +71,11 @@ workflow PREPARE_BOLTZ_DBS {
         ch_boltz2_conf = ARIA2_BOLTZ2_CONF.out.downloaded_file.map{ it[1] }
         ch_versions = ch_versions.mix(ARIA2_BOLTZ2_CONF.out.versions)
 
-        ARIA2_MOLS(
-            [
-                [:],
+	ARIA2_UNCOMPRESS(
                 boltz2_mols_link
-            ]
         )
-        ch_boltz2_mols = ARIA2_MOLS.out.downloaded_file.map{ it[1] }
-        ch_versions = ch_versions.mix(ARIA2_MOLS.out.versions)
+        ch_boltz2_mols = ARIA2_UNCOMPRESS.out.db
+        ch_versions = ch_versions.mix(ARIA2_UNCOMPRESS.out.versions)
     }
 
     emit:

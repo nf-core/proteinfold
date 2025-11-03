@@ -142,8 +142,8 @@ workflow NFCORE_PROTEINFOLD {
             params.alphafold2_mode,
             params.alphafold2_model_preset,
             PREPARE_ALPHAFOLD2_DBS.out.params,
-            PREPARE_ALPHAFOLD2_DBS.out.bfd.ifEmpty([]),
-            PREPARE_ALPHAFOLD2_DBS.out.small_bfd.ifEmpty([]),
+            PREPARE_ALPHAFOLD2_DBS.out.bfd,
+            PREPARE_ALPHAFOLD2_DBS.out.small_bfd,
             PREPARE_ALPHAFOLD2_DBS.out.mgnify,
             PREPARE_ALPHAFOLD2_DBS.out.pdb70,
             PREPARE_ALPHAFOLD2_DBS.out.pdb_mmcif,
@@ -191,12 +191,18 @@ workflow NFCORE_PROTEINFOLD {
             params.alphafold3_uniref90_path,
             params.alphafold3_pdb_seqres_path,
             params.alphafold3_uniprot_path,
+            params.alphafold3_rnacentral_path,
+            params.alphafold3_nt_rna_path,
+            params.alphafold3_rfam_path,
             params.alphafold3_small_bfd_link,
             params.alphafold3_mgnify_link,
             params.alphafold3_pdb_mmcif_link,
             params.alphafold3_uniref90_link,
             params.alphafold3_pdb_seqres_link,
-            params.alphafold3_uniprot_link
+            params.alphafold3_uniprot_link,
+            params.alphafold3_rnacentral_link,
+            params.alphafold3_nt_rna_link,
+            params.alphafold3_rfam_link
         )
         ch_versions = ch_versions.mix(PREPARE_ALPHAFOLD3_DBS.out.versions)
 
@@ -624,6 +630,9 @@ workflow {
         params.outdir,
         params.input,
         params.interactions
+        params.help,
+        params.help_full,
+        params.show_hidden
     )
 
     //

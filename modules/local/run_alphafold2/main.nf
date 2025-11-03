@@ -57,14 +57,11 @@ process RUN_ALPHAFOLD2 {
         extra_dbs = " --pdb70_database_path=./pdb70/pdb70 "
     }
     """
-    if [ -f pdb_seqres/pdb_seqres.txt ]
-        then sed -i "/^\\w*0/d" pdb_seqres/pdb_seqres.txt
-    fi
-
     fix_obsolete.py pdb_mmcif/obsolete.dat > clean_obsolete.dat
 
-    if [ -d params/alphafold_params_* ]; then ln -r -s params/alphafold_params_*/* params/; fi
+    ## Handles multiple versions of mgnify database and selects the latest version
     mgnify_db_path=\$(ls -v ./mgnify/mgy_clusters*.fa | tail -n 1)
+
     python3 /app/alphafold/run_alphafold.py \
         --fasta_paths=${fasta} \
         --model_preset=${alphafold2_model_preset}${extra_dbs} \
@@ -88,6 +85,11 @@ process RUN_ALPHAFOLD2 {
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         python: \$(python3 --version | sed 's/Python //g')
+        alphafold2: \$(cd /app/alphafold && git rev-parse HEAD 2>/dev/null || echo "unknown")
+        jax: \$(python3 -c "import jax; print(jax.__version__)" 2>/dev/null || echo "unknown")
+        jaxlib: \$(python3 -c "import jaxlib; print(jaxlib.__version__)" 2>/dev/null || echo "unknown")
+        numpy: \$(python3 -c "import numpy; print(numpy.__version__)" 2>/dev/null || echo "unknown")
+        biopython: \$(python3 -c "import Bio; print(Bio.__version__)" 2>/dev/null || echo "unknown")
     END_VERSIONS
     """
 
@@ -109,6 +111,11 @@ process RUN_ALPHAFOLD2 {
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         python: \$(python3 --version | sed 's/Python //g')
+        alphafold2: \$(cd /app/alphafold && git rev-parse HEAD 2>/dev/null || echo "unknown")
+        jax: \$(python3 -c "import jax; print(jax.__version__)" 2>/dev/null || echo "unknown")
+        jaxlib: \$(python3 -c "import jaxlib; print(jaxlib.__version__)" 2>/dev/null || echo "unknown")
+        numpy: \$(python3 -c "import numpy; print(numpy.__version__)" 2>/dev/null || echo "unknown")
+        biopython: \$(python3 -c "import Bio; print(Bio.__version__)" 2>/dev/null || echo "unknown")
     END_VERSIONS
     """
 }

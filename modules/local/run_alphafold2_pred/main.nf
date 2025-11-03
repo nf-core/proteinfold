@@ -22,7 +22,6 @@ process RUN_ALPHAFOLD2_PRED {
     path ('uniref90/*')
     path ('pdb_seqres/*')
     path ('uniprot/*')
-    // TODO: do we ever really want to be dragging arounda  meta2? Can't we just augment meta fields for tracebility?
     tuple val(meta), path(features)
 
     output:
@@ -44,13 +43,11 @@ process RUN_ALPHAFOLD2_PRED {
 
     script:
     // Exit if running this module with -profile conda / -profile mamba
-    // Note: --pkls ${fasta.baseName}/*.pkl redundantly processes the features.pkl file. The use of input: features makes the conceptural separation clear
     if (workflow.profile.tokenize(',').intersect(['conda', 'mamba']).size() >= 1) {
         error("Local RUN_ALPHAFOLD2_PRED module does not support Conda. Please use Docker / Singularity / Podman instead.")
     }
     def args = task.ext.args ?: ''
     """
-    if [ -d params/alphafold_params_* ]; then ln -r -s params/alphafold_params_*/* params/; fi
     python3 /app/alphafold/run_predict.py \\
         --fasta_paths=${fasta} \\
         --model_preset=${alphafold2_model_preset} \\
@@ -69,6 +66,11 @@ process RUN_ALPHAFOLD2_PRED {
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         python: \$(python3 --version | sed 's/Python //g')
+        alphafold2: \$(cd /app/alphafold && git rev-parse HEAD 2>/dev/null || echo "unknown")
+        jax: \$(python3 -c "import jax; print(jax.__version__)" 2>/dev/null || echo "unknown")
+        jaxlib: \$(python3 -c "import jaxlib; print(jaxlib.__version__)" 2>/dev/null || echo "unknown")
+        numpy: \$(python3 -c "import numpy; print(numpy.__version__)" 2>/dev/null || echo "unknown")
+        biopython: \$(python3 -c "import Bio; print(Bio.__version__)" 2>/dev/null || echo "unknown")
     END_VERSIONS
     """
 
@@ -88,6 +90,11 @@ process RUN_ALPHAFOLD2_PRED {
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         python: \$(python3 --version | sed 's/Python //g')
+        alphafold2: \$(cd /app/alphafold && git rev-parse HEAD 2>/dev/null || echo "unknown")
+        jax: \$(python3 -c "import jax; print(jax.__version__)" 2>/dev/null || echo "unknown")
+        jaxlib: \$(python3 -c "import jaxlib; print(jaxlib.__version__)" 2>/dev/null || echo "unknown")
+        numpy: \$(python3 -c "import numpy; print(numpy.__version__)" 2>/dev/null || echo "unknown")
+        biopython: \$(python3 -c "import Bio; print(Bio.__version__)" 2>/dev/null || echo "unknown")
     END_VERSIONS
     """
 }

@@ -599,6 +599,24 @@
                     "default": "https://storage.googleapis.com/alphafold-databases/v3.0/uniprot_all_2021_04.fa.zst",
                     "description": "Link to the UniProt database",
                     "fa_icon": "fas fa-link"
+                },
+                "alphafold3_rnacentral_link": {
+                    "type": "string",
+                    "default": "https://storage.googleapis.com/alphafold-databases/v3.0/rnacentral_active_seq_id_90_cov_80_linclust.fasta.zst",
+                    "description": "Link to the RNAcentral database",
+                    "fa_icon": "fas fa-link"
+                },
+                "alphafold3_nt_rna_link": {
+                    "type": "string",
+                    "default": "https://storage.googleapis.com/alphafold-databases/v3.0/nt_rna_2023_02_23_clust_seq_id_90_cov_80_rep_seq.fasta.zst",
+                    "description": "Link to the nt_rna database",
+                    "fa_icon": "fas fa-link"
+                },
+                "alphafold3_rfam_link": {
+                    "type": "string",
+                    "default": "https://storage.googleapis.com/alphafold-databases/v3.0/rfam_14_9_clust_seq_id_90_cov_80_rep_seq.fasta.zst",
+                    "description": "Link to the Rfam database",
+                    "fa_icon": "fas fa-link"
                 }
             }
         },
@@ -630,7 +648,7 @@
                     "type": "string",
                     "description": "Path to the PDB mmCIF database",
                     "fa_icon": "fas fa-folder-open",
-                    "default": "null/mmcif_files"
+                    "default": "null/pdb_mmcif/mmcif_files"
                 },
                 "alphafold3_uniref90_path": {
                     "type": "string",
@@ -649,6 +667,24 @@
                     "description": "Path to UniProt database containing the SwissProt and the TrEMBL databases",
                     "fa_icon": "fas fa-folder-open",
                     "default": "null/uniprot/*"
+                },
+                "alphafold3_rnacentral_path": {
+                    "type": "string",
+                    "description": "Path to the RNAcentral database",
+                    "fa_icon": "fas fa-folder-open",
+                    "default": "null/rnacentral/*"
+                },
+                "alphafold3_nt_rna_path": {
+                    "type": "string",
+                    "description": "Path to the nt_rna database",
+                    "fa_icon": "fas fa-folder-open",
+                    "default": "null/nt_rna/*"
+                },
+                "alphafold3_rfam_path": {
+                    "type": "string",
+                    "description": "Path to the Rfam database",
+                    "fa_icon": "fas fa-folder-open",
+                    "default": "null/rfam/*"
                 }
             }
         },
@@ -660,13 +696,13 @@
             "properties": {
                 "colabfold_db_link": {
                     "type": "string",
-                    "default": "http://wwwuser.gwdg.de/~compbiol/colabfold/colabfold_envdb_202108.tar.gz",
+                    "default": "https://opendata.mmseqs.org/colabfold/colabfold_envdb_202108.db.tar.gz",
                     "description": "Link to the ColabFold database",
                     "fa_icon": "fas fa-link"
                 },
                 "colabfold_uniref30_link": {
                     "type": "string",
-                    "default": "https://wwwuser.gwdg.de/~compbiol/colabfold/uniref30_2302.tar.gz",
+                    "default": "https://opendata.mmseqs.org/colabfold/uniref30_2302.db.tar.gz",
                     "description": "Link to the UniRef30 database",
                     "fa_icon": "fas fa-link"
                 },
@@ -1017,6 +1053,18 @@
                     "fa_icon": "far calendar",
                     "description": "Suffix to add to the trace report filename. Default is the date and time in the format yyyy-MM-dd_HH-mm-ss.",
                     "hidden": true
+                },
+                "help": {
+                    "type": ["boolean", "string"],
+                    "description": "Display the help message."
+                },
+                "help_full": {
+                    "type": "boolean",
+                    "description": "Display the full detailed help message."
+                },
+                "show_hidden": {
+                    "type": "boolean",
+                    "description": "Display hidden parameters in the help message (only works when --help or --help_full are provided)."
                 }
             }
         },

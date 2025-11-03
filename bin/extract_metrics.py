@@ -297,10 +297,50 @@ def read_json(name, json_files):
             data = json.load(f)
             if json_file.endswith("_data.json"): #AF3 output with MSA info
                 # Can't just used format_msa_rows since there's FASTA headers in the json content
-                unpaired_MSAs = data['sequences'][0]['protein']['unpairedMsa']
-                msa_lines = [''.join(c for c in line if not c.islower()) for line in unpaired_MSAs.split("\n") if line.strip() and not line.startswith(">")]
-                msa_rows = [[str(AA_to_int.get(residue, 20)) for residue in line] for line in msa_lines]
-                write_tsv(f"{name}_msa.tsv", msa_rows)
+                paired_msa_rows = []
+                unpaired_msa_rows = []
+                for chain in data['sequences']:
+                    unpaired_MSA = chain['protein']['unpairedMsa']
+                    unpaired_msa_lines = [''.join(c for c in line if not c.islower()) for line in unpaired_MSA.split("\n") if line.strip() and not line.startswith(">")]
+                    unpaired_msa_rows.append([[str(AA_to_int.get(residue, 20)) for residue in line] for line in unpaired_msa_lines])
+                    paired_MSA = chain['protein']['pairedMsa']
+                    paired_msa_lines = [''.join(c for c in line if not c.islower()) for line in paired_MSA.split("\n") if line.strip() and not line.startswith(">")]
+                    paired_msa_rows.append([[str(AA_to_int.get(residue, 20)) for residue in line] for line in paired_msa_lines])
+
+                chains = len(data['sequences'])
+                final_rows = []
+                # Paired
+                for i in range(len(paired_msa_rows[0])): #The number of paired lines is common to all MSAs
+                    temp_row = []
+                    #This needs to be fixed if inference is batched in future.
+                    for j in range(chains):
+                        temp_row.extend(paired_msa_rows[j][i])
+                    final_rows.append(temp_row)
+
+                # Un-paired
+                msa_widths = [len(paired_msa_rows[chain][0]) for chain in range(chains)]
+                msa_heights = [len(unpaired_msa_rows[chain]) for chain in range(chains)]
+
+                cum_total_rows = np.cumsum(msa_heights)
+
+                for row_idx in range(cum_total_rows[-1]):
+                    temp_row = []
+
+                    for i in range(chains):
+                        msa = unpaired_msa_rows[i]
+                        width = msa_widths[i]
+                        if i == 0:
+                            minrow = 0
+                        else:
+                            minrow = cum_total_rows[i-1]
+                        maxrow = cum_total_rows[i]
+                        if minrow <= row_idx < maxrow:
+                            msa_row_idx = row_idx - minrow
+                            temp_row.extend(msa[msa_row_idx])
+                        else:
+                            temp_row.extend(["21"] * width) #gap
+                    final_rows.append(temp_row)
+                write_tsv(f"{name}_msa.tsv", final_rows)
             #AF3 output with PAE info, or HF3 PAE data. TODO: Need to make sure the workflow points to [protein]/[protein]_rank1/all_results.json
 
             # TODO: I think I need to capture model_id and inference_id  -- MUST FIX since this is so fragile and will be different for different programs.
@@ -313,8 +353,10 @@ def read_json(name, json_files):
             if 'predictions' in json_file: # Boltz-1 confidences in predictions/[protein]/confidence_[protein]_model_*.json
             # TODO: haven't tested this for multiple models with --diffusion_samples
                 model_id = os.path.basename(json_file).split('_model_')[-1].split('.json')[0]
-            if 'summary_confidences' in json_file: #Prevent crash when model_id is not defined
-                model_id = os.path.basename(json_file).split('summary_confidences_')[-1].split('.json')[0]
+            #TODO: Fix this for AF3 - the top-ranked files are in the top-level directory
+            if 'confidences' in json_file: #Prevent crash when model_id is not defined
+                #model_id = os.path.basename(json_file).split('confidences_')[-1].split('.json')[0]
+                model_id = 0
 
             if "pae" not in data.keys():
                 print(f"No PAE output in {json_file}, it was likely a monomer calculation")
@@ -330,7 +372,8 @@ def read_json(name, json_files):
             if 'iptm' not in data.keys():
                 print(f"No pTM/iPTM output in {json_file}, it was likely a monomer calculation")
             else:
-                iptm_data[model_id] = f"{np.round(data['iptm'],3)}\n"
+                if data['iptm']: #ie not null
+                    iptm_data[model_id] = f"{np.round(data['iptm'],3)}\n"
 
             if 'chain_pair_iptm' not in data.keys() and 'pair_chains_iptm' not in data.keys():
                 print(f"No chain-wise iPTM output in {json_file}, it was likely a monomer calculation")

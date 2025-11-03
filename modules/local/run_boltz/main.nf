@@ -35,7 +35,6 @@ process RUN_BOLTZ {
     tuple val(meta), path ("${meta.id}_iptm.tsv")                               , optional: true, emit: iptm_raw
     tuple val(meta), path ("${meta.id}_chainwise_ptm.tsv")                      , emit: summary_chainwise_ptm_raw
     tuple val(meta), path ("${meta.id}_chainwise_iptm.tsv")                     , optional: true, emit: chainwise_iptm_raw
-
     path "versions.yml", emit: versions
 
     when:
@@ -53,12 +52,11 @@ process RUN_BOLTZ {
     if (workflow.profile.tokenize(',').intersect(['conda', 'mamba']).size() >= 1) {
         error("Local RUN_BOLTZ module does not support Conda. Please use Docker / Singularity / Podman instead.")
     }
-    def version = "2.0.3"
     def args = task.ext.args ?: ''
 
     """
-    export NUMBA_CACHE_DIR=/tmp
-    export HOME=/tmp
+    mkdir -p ./home
+    export HOME=./home
 
     boltz predict "${fasta}" --output_format "pdb" ${args} --cache ./
     cp boltz_results_*/predictions/${meta.id}/*_0.pdb ./${meta.id}_boltz.pdb
@@ -76,13 +74,15 @@ process RUN_BOLTZ {
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        boltz: $version
+        boltz: \$(pip list | grep -i boltz | awk '{print \$2}' 2>/dev/null || echo "unknown")
     END_VERSIONS
     """
 
     stub:
-    def version = "2.0.3"
     """
+    mkdir -p ./home
+    export HOME=./home
+
     mkdir -p boltz_results_${meta.id}/processed/msa/
     mkdir -p boltz_results_${meta.id}/processed/structures/
     mkdir -p boltz_results_${meta.id}/predictions/${meta.id}/
@@ -98,14 +98,14 @@ process RUN_BOLTZ {
     touch "${meta.id}_plddt.tsv"
     touch "${meta.id}_boltz_msa.tsv"
     touch "${meta.id}_0_pae.tsv"
-    touch "${meta.id}_0_ptm.tsv"
-    touch "${meta.id}_0_iptm.tsv"
+    touch "${meta.id}_ptm.tsv"
+    touch "${meta.id}_iptm.tsv"
     touch "${meta.id}_chainwise_ptm.tsv"
     touch "${meta.id}_chainwise_iptm.tsv"
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        boltz: $version
+        boltz: \$(pip list | grep -i boltz | awk '{print \$2}' 2>/dev/null || echo "unknown")
     END_VERSIONS
     """
 }
