@@ -58,6 +58,11 @@ RUN git clone --depth 1 https://github.com/uw-ipd/RoseTTAFold2NA.git /app/RoseTT
         python setup.py install" && \
     /conda/bin/mamba clean --all --force-pkgs-dirs -y
 
+# Install pip packages for extract_metrics.py
+RUN pip install --upgrade pip --no-cache-dir \
+    && pip install --no-cache-dir \
+        numpy
+
 # ########################################################################
 # # 3. Final clean-up: remove build tools and caches
 # ########################################################################
