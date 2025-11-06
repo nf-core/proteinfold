@@ -86,3 +86,6 @@ ENV PYTHONPATH="/app/RoseTTAFold2NA" \
     LD_LIBRARY_PATH="/usr/local/cuda-$(cut -f1,2 -d. <<< ${CUDA})/lib64:$LD_LIBRARY_PATH" \
     LANG=en_US.UTF-8 \
     LC_ALL=en_US.UTF-8
+
+# Make curl available where update_blastdbp.pl expects it
+RUN ln -s /conda/envs/RF2NA/bin/curl /usr/bin/curl
