@@ -45,7 +45,6 @@ workflow ALPHAFOLD2 {
     ch_uniprot              // channel: path(uniprot)
 
     main:
-    ch_multiqc_files  = Channel.empty()
     ch_pdb            = Channel.empty()
     ch_top_ranked_pdb = Channel.empty()
     ch_msa            = Channel.empty()
@@ -127,8 +126,8 @@ workflow ALPHAFOLD2 {
         )
         .set { ch_synched }
 
-        def ch_samplesheet2 = ch_synched.map{meta, seq, msa -> [meta, seq]}
-        def ch_features = ch_synched.map{meta, seq, msa -> [meta, msa]}
+        def ch_samplesheet2 = ch_synched.map{ meta, seq, msa -> [meta, seq] }
+        def ch_features = ch_synched.map{ meta, seq, msa -> [meta, msa] }
 
         RUN_ALPHAFOLD2_PRED (
             ch_samplesheet2,

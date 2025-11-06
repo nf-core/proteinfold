@@ -33,8 +33,6 @@ workflow ROSETTAFOLD_ALL_ATOM {
     ch_rfaa_paper_weights   // channel: path(rfaa_paper_weightsch_dummy_file           // channel: path(NO_file)
 
     main:
-    ch_multiqc_files  = Channel.empty()
-    ch_top_ranked_pdb = Channel.empty()
     ch_multiqc_report = Channel.empty()
 
     ch_samplesheet.branch {
@@ -82,9 +80,9 @@ workflow ROSETTAFOLD_ALL_ATOM {
     rosettafold_all_atomChannel(RUN_ROSETTAFOLD_ALL_ATOM.out.pae).set { ch_pae_final }
 
     emit:
-    pdb            = ch_pdb_final   // channel: [ id, /path/to/*.pdb ]
-    msa            = ch_msa_final   // channel: [ id, /path/to/*_msa.tsv ]
-    pae            = ch_pae_final   // channel: [ id, /path/to/*_pae.tsv ]
+    pdb            = ch_pdb_final      // channel: [ id, /path/to/*.pdb ]
+    msa            = ch_msa_final      // channel: [ id, /path/to/*_msa.tsv ]
+    pae            = ch_pae_final      // channel: [ id, /path/to/*_pae.tsv ]
     multiqc_report = ch_multiqc_report // channel: /path/to/multiqc_report.html
     versions       = ch_versions       // channel: [ path(versions.yml) ]
 }
