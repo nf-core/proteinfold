@@ -76,7 +76,10 @@ workflow PREPARE_ROSETTAFOLD2NA_DBS {
         ch_versions = ch_versions.mix(DOWNLOAD_RNA_DATABASES.out.versions)
 
         ARIA2_WEIGHTS(rosettafold2na_weights_link)
-        ch_weights = ARIA2_WEIGHTS.out.db
+        ch_weights = ARIA2_WEIGHTS
+			.out
+			.db
+			.map { dir -> dir.listFiles().findAll { it.isFile() } }
         ch_versions = ch_versions.mix(ARIA2_WEIGHTS.out.versions)
 
     }
