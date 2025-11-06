@@ -2,20 +2,18 @@
 // Download all the required AlphaFold 2 databases and parameters
 //
 
-include {
-    ARIA2_UNCOMPRESS as ARIA2_UNICLUST30
-    ARIA2_UNCOMPRESS as ARIA2_CCD_PREPROCESSED
-    ARIA2_UNCOMPRESS as ARIA2_RFAM
-    ARIA2_UNCOMPRESS as ARIA2_BFD
-    ARIA2_UNCOMPRESS as ARIA2_SMALL_BFD
-    ARIA2_UNCOMPRESS as ARIA2_UNIPROT_SPROT
-    ARIA2_UNCOMPRESS as ARIA2_UNIPROT_TREMBL
-    ARIA2_UNCOMPRESS as ARIA2_OBSOLETE
-    ARIA2_UNCOMPRESS as ARIA2_UNIREF90
-    ARIA2_UNCOMPRESS as ARIA2_MGNIFY
-    ARIA2_UNCOMPRESS as ARIA2_INIT_MODELS
-    ARIA2_UNCOMPRESS as ARIA2_MAXIT
-} from './aria2_uncompress'
+include { ARIA2_UNCOMPRESS as ARIA2_UNICLUST30       } from './aria2_uncompress'
+include { ARIA2_UNCOMPRESS as ARIA2_CCD_PREPROCESSED } from './aria2_uncompress'
+include { ARIA2_UNCOMPRESS as ARIA2_RFAM             } from './aria2_uncompress'
+include { ARIA2_UNCOMPRESS as ARIA2_BFD              } from './aria2_uncompress'
+include { ARIA2_UNCOMPRESS as ARIA2_SMALL_BFD        } from './aria2_uncompress'
+include { ARIA2_UNCOMPRESS as ARIA2_UNIPROT_SPROT    } from './aria2_uncompress'
+include { ARIA2_UNCOMPRESS as ARIA2_UNIPROT_TREMBL   } from './aria2_uncompress'
+include { ARIA2_UNCOMPRESS as ARIA2_OBSOLETE         } from './aria2_uncompress'
+include { ARIA2_UNCOMPRESS as ARIA2_UNIREF90         } from './aria2_uncompress'
+include { ARIA2_UNCOMPRESS as ARIA2_MGNIFY           } from './aria2_uncompress'
+include { ARIA2_UNCOMPRESS as ARIA2_INIT_MODELS      } from './aria2_uncompress'
+include { ARIA2_UNCOMPRESS as ARIA2_MAXIT            } from './aria2_uncompress'       
 
 include { ARIA2 as ARIA2_PDB_SEQRES } from '../../modules/nf-core/aria2/main'
 include { COMBINE_UNIPROT           } from '../../modules/local/combine_uniprot'
