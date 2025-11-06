@@ -26,24 +26,23 @@ workflow HELIXFOLD3 {
 
     take:
     ch_samplesheet
-    ch_versions             // channel: [ path(versions.yml) ]
-    uniref30_prefix         //  string: Prefix for uniref30 database files
-    ch_helixfold3_uniclust30
-    ch_helixfold3_ccd_preprocessed
-    ch_helixfold3_rfam
-    ch_helixfold3_bfd
-    ch_helixfold3_small_bfd
-    ch_helixfold3_uniprot
-    ch_helixfold3_pdb_seqres
-    ch_helixfold3_uniref90
-    ch_helixfold3_mgnify
-    ch_helixfold3_mmcif_files
-    ch_helixfold3_obsolete
-    ch_helixfold3_init_models
-    ch_helixfold3_maxit_src
+    ch_versions                    // channel: [ path(versions.yml) ]
+    uniref30_prefix                //  string: Prefix for uniref30 database files
+    ch_helixfold3_uniclust30       // channel: path(uniclust30)
+    ch_helixfold3_ccd_preprocessed // channel: path(ccd_preprocessed)
+    ch_helixfold3_rfam             // channel: path(rfam)
+    ch_helixfold3_bfd              // channel: path(bfd)
+    ch_helixfold3_small_bfd        // channel: path(small_bfd)
+    ch_helixfold3_uniprot          // channel: path(uniprot)
+    ch_helixfold3_pdb_seqres       // channel: path(pdb_seqres)
+    ch_helixfold3_uniref90         // channel: path(uniref90)
+    ch_helixfold3_mgnify           // channel: path(mgnify)
+    ch_helixfold3_mmcif_files      // channel: path(pdb_mmcif)
+    ch_helixfold3_obsolete         // channel: path(pdb_obsolete)
+    ch_helixfold3_init_models      // channel: path(init_models)
+    ch_helixfold3_maxit_src        // channel: path(maxit_src)
 
     main:
-    ch_multiqc_files  = Channel.empty()
     ch_pdb            = Channel.empty()
     ch_top_ranked_pdb = Channel.empty()
     ch_multiqc_report = Channel.empty()
