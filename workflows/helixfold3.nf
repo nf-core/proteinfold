@@ -8,7 +8,7 @@
 // MODULE: Loaded from modules/local/
 //
 include { RUN_HELIXFOLD3 } from '../modules/local/run_helixfold3'
-include { FASTA2JSON } from '../modules/local/data_convertor/fasta2json'
+include { FASTA2JSON } from '../modules/local/fasta2json'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

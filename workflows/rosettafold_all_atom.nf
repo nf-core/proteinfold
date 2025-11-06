@@ -8,7 +8,7 @@
 // MODULE: Loaded from modules/local/
 //
 include { RUN_ROSETTAFOLD_ALL_ATOM } from '../modules/local/run_rosettafold_all_atom'
-include { FASTA2YAML } from '../modules/local/data_convertor/fasta2yaml'
+include { FASTA2YAML } from '../modules/local/fasta2yaml'
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     IMPORT NF-CORE MODULES/SUBWORKFLOWS
