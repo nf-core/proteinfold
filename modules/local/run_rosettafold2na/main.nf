@@ -57,7 +57,7 @@ np.savetxt(out, d["pae"], fmt="%.3f", delimiter="\t")
 PY
 
     A3M_ARGS="${'$'}(find "${meta.id}_rf2na_output" -maxdepth 1 -name "*.a3m" -print | sed 's/^/ --a3ms /' | tr -d '\n')"
-    /conda/bin/mamba run --name RF2NA extract_metrics.py --name ${meta.id} \
+    extract_metrics.py --name ${meta.id} \
         --structs "${meta.id}_rf2na_output/models/model_00.pdb" ${'$'}A3M_ARGS
 
     mv "${meta.id}_plddt.tsv" "${meta.id}_plddt_mqc.tsv"
