@@ -2,7 +2,7 @@ process MMSEQS_COLABFOLDSEARCH {
     tag "$meta.id"
     label 'process_high_memory'
 
-    container "nf-core/proteinfold_mmseqs_colabfoldsearch:dev"
+    container "nf-core/proteinfold_colabfold:dev"
 
     input:
     tuple val(meta), path(fasta)

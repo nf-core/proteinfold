@@ -12,6 +12,7 @@ process RUN_ALPHAFOLD2 {
     tuple val(meta), path(fasta)
     val   db_preset
     val   alphafold2_model_preset
+    val   uniref30_prefix
     path ('params/*')
     path ('bfd/*')
     path ('small_bfd/*')
@@ -48,7 +49,7 @@ process RUN_ALPHAFOLD2 {
         error("Local RUN_ALPHAFOLD2 module does not support Conda. Please use Docker / Singularity / Podman instead.")
     }
     def args = task.ext.args ?: ''
-    def db_preset_cmd = db_preset ? "full_dbs --bfd_database_path=./bfd/bfd_metaclust_clu_complete_id30_c90_final_seq.sorted_opt --uniref30_database_path=./uniref30/${params.uniref30_prefix}" :
+    def db_preset_cmd = db_preset ? "full_dbs --bfd_database_path=./bfd/bfd_metaclust_clu_complete_id30_c90_final_seq.sorted_opt --uniref30_database_path=./uniref30/${uniref30_prefix}" :
         "reduced_dbs --small_bfd_database_path=./small_bfd/bfd-first_non_consensus_sequences.fasta"
     def extra_dbs = ""
     if (alphafold2_model_preset == 'multimer') {

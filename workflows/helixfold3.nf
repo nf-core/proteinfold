@@ -27,6 +27,7 @@ workflow HELIXFOLD3 {
     take:
     ch_samplesheet
     ch_versions             // channel: [ path(versions.yml) ]
+    uniref30_prefix         //  string: Prefix for uniref30 database files
     ch_helixfold3_uniclust30
     ch_helixfold3_ccd_preprocessed
     ch_helixfold3_rfam
@@ -61,6 +62,7 @@ workflow HELIXFOLD3 {
 
     RUN_HELIXFOLD3 (
         ch_input.json.mix(FASTA2JSON.out.json),
+        uniref30_prefix,
         ch_helixfold3_uniclust30,
         ch_helixfold3_ccd_preprocessed,
         ch_helixfold3_rfam,

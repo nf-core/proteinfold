@@ -26,6 +26,7 @@ workflow ROSETTAFOLD_ALL_ATOM {
     take:
     ch_samplesheet          // channel: samplesheet read in from --input
     ch_versions             // channel: [ path(versions.yml) ]
+    uniref30_prefix         //  string: Prefix for uniref30 database files
     ch_bfd                  // channel: path(bfd)
     ch_uniref30             // channel: path(uniref30)
     ch_pdb100               // channel: path(pdb100)
@@ -51,6 +52,7 @@ workflow ROSETTAFOLD_ALL_ATOM {
 
     RUN_ROSETTAFOLD_ALL_ATOM (
         ch_rosetta_all_atom_in.map{[it[0], it[1]]},
+        uniref30_prefix,
         ch_bfd,
         ch_uniref30,
         ch_pdb100,
