@@ -2,12 +2,10 @@
 // Prepare RoseTTAFold2NA databases
 //
 
-include {
-    ARIA2_UNCOMPRESS as ARIA2_UNIREF30
-    ARIA2_UNCOMPRESS as ARIA2_BFD
-    ARIA2_UNCOMPRESS as ARIA2_PDB100
-    ARIA2_UNCOMPRESS as ARIA2_WEIGHTS
-} from './aria2_uncompress'
+include { ARIA2_UNCOMPRESS as ARIA2_UNIREF30 } from './aria2_uncompress'
+include { ARIA2_UNCOMPRESS as ARIA2_BFD      } from './aria2_uncompress'
+include { ARIA2_UNCOMPRESS as ARIA2_PDB100   } from './aria2_uncompress'
+include { ARIA2_UNCOMPRESS as ARIA2_WEIGHTS  } from './aria2_uncompress'
 
 include { ARIA2 as ARIA2_PDB_SEQRES } from '../../modules/nf-core/aria2/main'
 include { DOWNLOAD_RNA_DATABASES } from '../../modules/local/download_rna_rf2na'
