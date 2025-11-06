@@ -934,7 +934,7 @@
                 },
                 "rosettafold2na_pdb100_path": {
                     "type": "string",
-                    "default": "null/pdb100_2021Mar03/*"
+                    "default": "null/pdb100/*"
                 },
                 "rosettafold2na_weights_path": {
                     "type": "string",
