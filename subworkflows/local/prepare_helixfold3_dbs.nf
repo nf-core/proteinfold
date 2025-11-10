@@ -13,7 +13,7 @@ include { ARIA2_UNCOMPRESS as ARIA2_OBSOLETE         } from './aria2_uncompress'
 include { ARIA2_UNCOMPRESS as ARIA2_UNIREF90         } from './aria2_uncompress'
 include { ARIA2_UNCOMPRESS as ARIA2_MGNIFY           } from './aria2_uncompress'
 include { ARIA2_UNCOMPRESS as ARIA2_INIT_MODELS      } from './aria2_uncompress'
-include { ARIA2_UNCOMPRESS as ARIA2_MAXIT            } from './aria2_uncompress'       
+include { ARIA2_UNCOMPRESS as ARIA2_MAXIT            } from './aria2_uncompress'
 
 include { ARIA2 as ARIA2_PDB_SEQRES } from '../../modules/nf-core/aria2/main'
 include { COMBINE_UNIPROT           } from '../../modules/local/combine_uniprot'

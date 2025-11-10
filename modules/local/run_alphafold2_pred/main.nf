@@ -22,7 +22,7 @@ process RUN_ALPHAFOLD2_PRED {
     path ('uniref90/*')
     path ('pdb_seqres/*')
     path ('uniprot/*')
-    tuple val(meta), path(features)
+    tuple val(meta2), path(features)
 
     output:
     path ("${fasta.baseName}*")
