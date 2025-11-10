@@ -134,7 +134,7 @@ workflow NFCORE_PROTEINFOLD {
             params.alphafold2_full_dbs,
             params.alphafold2_mode,
             params.alphafold2_model_preset,
-            params.uniref30_prefix
+            params.uniref30_prefix,
             PREPARE_ALPHAFOLD2_DBS.out.params,
             PREPARE_ALPHAFOLD2_DBS.out.bfd,
             PREPARE_ALPHAFOLD2_DBS.out.small_bfd,
