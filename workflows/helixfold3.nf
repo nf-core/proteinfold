@@ -95,6 +95,17 @@ workflow HELIXFOLD3 {
     }
     .set { ch_top_ranked_pdb }
 
+    RUN_HELIXFOLD3
+        .out
+        .pdb
+        .map{
+            meta = it[0].clone();
+            meta.model = "helixfold3";
+            def files = (it[1] instanceof List) ? it[1] : [ it[1] ]
+            [ meta, files ]
+        }
+        .set { ch_pdb_final }
+
     def helixfold3Channel = { ch ->
         ch.map { meta, value ->
             meta = meta.clone()
@@ -103,7 +114,6 @@ workflow HELIXFOLD3 {
         }
     }
 
-    helixfold3Channel(RUN_HELIXFOLD3.out.pdb).set { ch_pdb_final }
     helixfold3Channel(RUN_HELIXFOLD3.out.msa).set { ch_msa_final }
     helixfold3Channel(RUN_HELIXFOLD3.out.pae).set { ch_pae_final }
 

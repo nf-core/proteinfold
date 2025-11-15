@@ -119,6 +119,17 @@ workflow COLABFOLD {
         }
         .set { ch_top_ranked_pdb }
 
+    COLABFOLD_BATCH
+        .out
+        .pdb
+        .map{
+            meta = it[0].clone();
+            meta.model = "colabfold";
+            def files = (it[1] instanceof List) ? it[1] : [ it[1] ]
+            [ meta, files ]
+        }
+        .set { ch_pdb_final }
+
     def colabfoldChannel = { ch ->
         ch.map { meta, value ->
             meta = meta.clone()
@@ -127,7 +138,6 @@ workflow COLABFOLD {
         }
     }
 
-    colabfoldChannel(COLABFOLD_BATCH.out.pdb).set { ch_pdb_final }
     colabfoldChannel(COLABFOLD_BATCH.out.msa).set { ch_msa_final }
     colabfoldChannel(COLABFOLD_BATCH.out.pae).set { ch_pae_final }
 
