@@ -134,6 +134,7 @@ workflow NFCORE_PROTEINFOLD {
             params.alphafold2_full_dbs,
             params.alphafold2_mode,
             params.alphafold2_model_preset,
+            params.uniref30_prefix,
             PREPARE_ALPHAFOLD2_DBS.out.params,
             PREPARE_ALPHAFOLD2_DBS.out.bfd,
             PREPARE_ALPHAFOLD2_DBS.out.small_bfd,
@@ -357,6 +358,7 @@ workflow NFCORE_PROTEINFOLD {
         ROSETTAFOLD_ALL_ATOM (
             ch_samplesheet,
             ch_versions,
+            params.uniref30_prefix,
             PREPARE_ROSETTAFOLD_ALL_ATOM_DBS.out.bfd,
             PREPARE_ROSETTAFOLD_ALL_ATOM_DBS.out.uniref30,
             PREPARE_ROSETTAFOLD_ALL_ATOM_DBS.out.pdb100,
@@ -416,6 +418,7 @@ workflow NFCORE_PROTEINFOLD {
         HELIXFOLD3 (
             ch_samplesheet,
             ch_versions,
+            params.uniref30_prefix,
             PREPARE_HELIXFOLD3_DBS.out.helixfold3_uniclust30,
             PREPARE_HELIXFOLD3_DBS.out.helixfold3_ccd_preprocessed,
             PREPARE_HELIXFOLD3_DBS.out.helixfold3_rfam,

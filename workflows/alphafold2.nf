@@ -31,6 +31,7 @@ workflow ALPHAFOLD2 {
     alphafold2_full_dbs     // boolean: Use full databases (otherwise reduced version)
     alphafold2_mode         //  string: Mode to run Alphafold2 in
     alphafold2_model_preset //  string: Specifies the model preset to use for Alphafold2
+    uniref30_prefix         //  string: Prefix for uniref30 database files
     ch_alphafold2_params    // channel: path(alphafold2_params)
     ch_bfd                  // channel: path(bfd)
     ch_small_bfd            // channel: path(small_bfd)
@@ -44,7 +45,6 @@ workflow ALPHAFOLD2 {
     ch_uniprot              // channel: path(uniprot)
 
     main:
-    ch_multiqc_files  = Channel.empty()
     ch_pdb            = Channel.empty()
     ch_top_ranked_pdb = Channel.empty()
     ch_msa            = Channel.empty()
@@ -69,6 +69,7 @@ workflow ALPHAFOLD2 {
             ch_samplesheet,
             alphafold2_full_dbs,
             alphafold2_model_preset,
+            uniref30_prefix,
             ch_alphafold2_params,
             ch_bfd,
             ch_small_bfd,
@@ -104,6 +105,7 @@ workflow ALPHAFOLD2 {
             ch_samplesheet,
             alphafold2_full_dbs,
             alphafold2_model_preset,
+            uniref30_prefix,
             ch_alphafold2_params,
             ch_bfd,
             ch_small_bfd,
@@ -124,8 +126,8 @@ workflow ALPHAFOLD2 {
         )
         .set { ch_synched }
 
-        def ch_samplesheet2 = ch_synched.map{meta, seq, msa -> [meta, seq]}
-        def ch_features = ch_synched.map{meta, seq, msa -> [meta, msa]}
+        def ch_samplesheet2 = ch_synched.map{ meta, seq, msa -> [meta, seq] }
+        def ch_features = ch_synched.map{ meta, seq, msa -> [meta, msa] }
 
         RUN_ALPHAFOLD2_PRED (
             ch_samplesheet2,

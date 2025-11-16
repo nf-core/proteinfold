@@ -31,8 +31,6 @@ workflow ESMFOLD {
     ch_num_recycles   // int: Number of recycles for esmfold
 
     main:
-    ch_multiqc_files = Channel.empty()
-
     //
     // MODULE: Run esmfold
     //
