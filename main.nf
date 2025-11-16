@@ -159,7 +159,7 @@ workflow NFCORE_PROTEINFOLD {
                                                                 } else {
                                                                     return 0  // fallback if no match
                                                                 }
-                                                            }.subList(0, Math.min(5, it[1].size()))
+                                                            }.subList(0, Math.min(5, it[1].size() as int))
                                                     ]}
                                                     .join(ALPHAFOLD2.out.msa)
                                                     .join(ALPHAFOLD2.out.pae)
@@ -233,7 +233,7 @@ workflow NFCORE_PROTEINFOLD {
                                                 } else {
                                                     return 0  // fallback if no match
                                                 }
-                                            }.subList(0, Math.min(5, it[1].size()))
+                                            }.subList(0, Math.min(5, it[1].size() as int))
                                         ]
                                     }
                                 .join(ALPHAFOLD3.out.msa)
@@ -287,7 +287,7 @@ workflow NFCORE_PROTEINFOLD {
                                                         } else {
                                                             return 0  // fallback if no match
                                                         }
-                                                    }.subList(0, Math.min(5, it[1].size()))
+                                                    }.subList(0, Math.min(5, it[1].size() as int))
                                             ]}
                                             .join(COLABFOLD.out.msa)
                                             .join(COLABFOLD.out.pae)
@@ -445,7 +445,7 @@ workflow NFCORE_PROTEINFOLD {
                                                                 } else {
                                                                     return 0  // fallback if no match
                                                                 }
-                                                            }.subList(0, Math.min(5, it[1].size()))
+                                                            }.subList(0, Math.min(5, it[1].size() as int))
                                                     ]}
                                                     .join(HELIXFOLD3.out.msa)
                                                     .join(HELIXFOLD3.out.pae)

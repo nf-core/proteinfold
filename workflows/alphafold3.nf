@@ -91,7 +91,8 @@ workflow ALPHAFOLD3 {
         .map {
             def meta   = it[0].clone();
             meta.model = "alphafold3";
-            [ meta, it[1] ]
+            def files = (it[1] instanceof List) ? it[1] : [ it[1] ]
+            [ meta, files ]
         }
         .set { ch_pdb_final }
 

@@ -77,6 +77,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[PR #404](https://github.com/nf-core/proteinfold/pulls/404)] - Boltz cache files moved to workdir, fixed version checks and Boltz stubRun.
 - [[#401](https://github.com/nf-core/proteinfold/issues/401)] - Get rid of symlinking in the prediction tools processes when using "PREPARE_DBS" subworkflows
 - [[PR #407](https://github.com/nf-core/proteinfold/pulls/407)] - Several changes to meet nf-core standards.
+- [[PR #409](https://github.com/nf-core/proteinfold/pulls/409)] - Force single pdb workflow outputs to return as a list
 
 ### Parameters
 
