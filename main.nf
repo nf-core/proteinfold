@@ -417,8 +417,8 @@ workflow NFCORE_PROTEINFOLD {
         //
         HELIXFOLD3 (
             ch_samplesheet,
-            params.uniref30_prefix,
             ch_versions,
+            params.uniref30_prefix,
             PREPARE_HELIXFOLD3_DBS.out.helixfold3_uniclust30,
             PREPARE_HELIXFOLD3_DBS.out.helixfold3_ccd_preprocessed,
             PREPARE_HELIXFOLD3_DBS.out.helixfold3_rfam,
