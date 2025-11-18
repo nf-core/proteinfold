@@ -46,6 +46,11 @@ if (params.mode.toLowerCase().split(",").contains("colabfold") || params.mode.to
     include { PREPARE_COLABFOLD_DBS } from './subworkflows/local/prepare_colabfold_dbs'
 }
 
+if (params.mode.toLowerCase().split(",").contains("rosettafold2na")) {
+    include { PREPARE_ROSETTAFOLD2NA_DBS } from './subworkflows/local/prepare_rosettafold2na_dbs'
+    include { ROSETTAFOLD2NA             } from './workflows/rosettafold2na'
+}
+
 include { PIPELINE_INITIALISATION          } from './subworkflows/local/utils_nfcore_proteinfold_pipeline'
 include { PIPELINE_COMPLETION              } from './subworkflows/local/utils_nfcore_proteinfold_pipeline'
 include { getColabfoldAlphafold2Params     } from './subworkflows/local/utils_nfcore_proteinfold_pipeline'
@@ -74,10 +79,12 @@ params.colabfold_alphafold2_params_path = getColabfoldAlphafold2ParamsPath()
 workflow NFCORE_PROTEINFOLD {
 
     take:
-    samplesheet // channel: samplesheet read in from --input
+    samplesheet  // channel: samplesheet read in from --input
+    interactions // channel: interactions read in from --interactions
 
     main:
     ch_samplesheet                          = samplesheet
+    ch_interactions                         = interactions
     ch_multiqc                              = Channel.empty()
     ch_versions                             = Channel.empty()
     ch_report_input                         = Channel.empty()
@@ -333,6 +340,7 @@ workflow NFCORE_PROTEINFOLD {
     }
 
     //
+
     // WORKFLOW: Run rosettafold_all_atom
     //
     if(requested_modes.contains("rosettafold_all_atom")) {
@@ -454,6 +462,58 @@ workflow NFCORE_PROTEINFOLD {
     }
 
     //
+    // WORKFLOW: Run rosettafold2na
+    //
+    if(requested_modes.contains("rosettafold2na")) {
+        //
+        // SUBWORKFLOW: Prepare RosettaFold2NA DBs
+        //
+        PREPARE_ROSETTAFOLD2NA_DBS (
+            params.rosettafold2na_db,
+            params.rosettafold2na_bfd_path,
+            params.rosettafold2na_uniref30_path,
+            params.rosettafold2na_pdb100_path,
+            params.rosettafold2na_rna_path,
+            params.rosettafold2na_weights_path,
+            params.rosettafold2na_bfd_link,
+            params.rosettafold2na_uniref30_link,
+            params.rosettafold2na_pdb100_link,
+            params.rosettafold2na_weights_link,
+            params.rfam_full_region_link,
+            params.rfam_cm_link,
+            params.rnacentral_rfam_annotations_link,
+            params.rnacentral_id_mapping_link,
+            params.rnacentral_sequences_link
+        )
+        ch_versions = ch_versions.mix(PREPARE_ROSETTAFOLD2NA_DBS.out.versions)
+
+        //
+        // WORKFLOW: Run nf-core/rosettafold2na workflow
+        //
+        ROSETTAFOLD2NA (
+            ch_samplesheet,
+            ch_interactions,
+            ch_versions,
+            PREPARE_ROSETTAFOLD2NA_DBS.out.bfd,
+            PREPARE_ROSETTAFOLD2NA_DBS.out.uniref30,
+            PREPARE_ROSETTAFOLD2NA_DBS.out.pdb100,
+            PREPARE_ROSETTAFOLD2NA_DBS.out.rna,
+            PREPARE_ROSETTAFOLD2NA_DBS.out.rosettafold2na_weights,
+            ch_dummy_file
+        )
+        ch_multiqc                              = ch_multiqc.mix(ROSETTAFOLD2NA.out.multiqc_report.collect())
+        ch_versions                             = ch_versions.mix(ROSETTAFOLD2NA.out.versions)
+        ch_report_input                         = ch_report_input.mix(
+                                                    ROSETTAFOLD2NA
+                                                        .out
+                                                        .pdb
+                                                        .map { meta, pdb -> [ meta, [ pdb ] ] }
+                                                        .join(ROSETTAFOLD2NA.out.msa)
+                                                        .join(ROSETTAFOLD2NA.out.pae)
+                                                )
+        ch_top_ranked_model                     = ch_top_ranked_model.mix(ROSETTAFOLD2NA.out.pdb)
+    }
+
     // WORKFLOW: Run Boltz
     //
     if (params.mode.toLowerCase().split(",").contains("boltz")) {
@@ -572,6 +632,7 @@ workflow {
         args,
         params.outdir,
         params.input,
+        params.interactions,
         params.help,
         params.help_full,
         params.show_hidden
@@ -581,7 +642,8 @@ workflow {
     // WORKFLOW: Run main workflow
     //
     NFCORE_PROTEINFOLD (
-        PIPELINE_INITIALISATION.out.samplesheet
+        PIPELINE_INITIALISATION.out.samplesheet,
+        PIPELINE_INITIALISATION.out.interactions
     )
 
     //

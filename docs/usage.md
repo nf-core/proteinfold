@@ -415,6 +415,18 @@ nextflow run nf-core/proteinfold \
       -profile <docker/singularity/.../institute>
 ```
 
+RosettaFold2NA can be run using this command:
+
+```bash
+nextflow run nf-core/proteinfold \
+      --input samplesheet.csv \
+      --outdir <OUTDIR> \
+      --mode rosettafold2na \
+      --rosettafold2na_db <null (default) | DB_PATH> \
+      --use_gpu <true/false> \
+      -profile <docker/singularity/.../institute>
+```
+
 Note that the pipeline will create the following files in your working directory:
 
 ```bash

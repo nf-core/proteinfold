@@ -377,6 +377,7 @@ model_name = {
     "colabfold": "ColabFold",
     "rosettafold_all_atom": "RosettaFold All-Atom",
     "helixfold3": "HelixFold3",
+    "rosettafold2na": "RoseTTAFold2NA",
     "boltz": "Boltz"
 }
 

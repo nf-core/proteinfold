@@ -31,12 +31,23 @@
                     "fa_icon": "fas fa-folder-open",
                     "errorMessage": "Output directory path must be specified"
                 },
+                "interactions": {
+                    "type": "string",
+                    "format": "file-path",
+                    "exists": true,
+                    "schema": "assets/schema_interactions.json",
+                    "mimetype": "text/csv",
+                    "pattern": "^\\S+\\.csv$",
+                    "description": "Path to comma-separated file containing information about the samples interactions for rosettafold2dna mode.",
+                    "help_text": "You will need to create a design file with information about the interactions of your samples samples in your experiment before running the pipeline. Use this parameter to specify its location. It has to be a comma-separated file with 3 columns, and a header row. See [usage docs](https://nf-co.re/proteinfold/usage#samplesheet-input).",
+                    "fa_icon": "fas fa-file-csv"
+                },
                 "mode": {
                     "type": "string",
                     "default": "alphafold2",
-                    "description": "Specifies the mode in which the pipeline will be run. mode can be any combination of ['alphafold2', 'alphafold3', 'colabfold', 'esmfold', 'rosettafold_all_atom', 'boltz', 'helixfold3'] separated by a comma (',') with no spaces.",
+                    "description": "Specifies the mode in which the pipeline will be run. mode can be any combination of ['alphafold2', 'alphafold3', 'colabfold', 'esmfold', 'rosettafold_all_atom', 'boltz', 'helixfold3', 'rosettafold2na'] separated by a comma (',') with no spaces.",
                     "fa_icon": "fas fa-cogs",
-                    "pattern": "^(alphafold2|alphafold3|colabfold|esmfold|rosettafold_all_atom|helixfold3|boltz|)(,(alphafold2|alphafold3|colabfold|esmfold|rosettafold_all_atom|helixfold3|boltz)?,?)*(?<!,)$",
+                    "pattern": "^(alphafold2|alphafold3|colabfold|esmfold|rosettafold_all_atom|helixfold3|boltz|rosettafold2na|)(,(alphafold2|alphafold3|colabfold|esmfold|rosettafold_all_atom|helixfold3|boltz|rosettafold2na)?,?)*(?<!,)$",
                     "errorMessage": "Mode must be a comma-separated list containing any combination of 'alphafold2', 'alphafold3', 'colabfold', 'esmfold', 'rosettafold_all_atom', 'boltz', or 'helixfold3' with no spaces."
                 },
                 "use_gpu": {
@@ -221,6 +232,21 @@
                     "enum": ["monomer", "multimer"],
                     "fa_icon": "fas fa-stream",
                     "default": "monomer"
+                }
+            }
+        },
+        "rosettafold2na_options": {
+            "title": "RosettaFold2NA options",
+            "type": "object",
+            "fa_icon": "fas fa-dna",
+            "description": "RosettaFold2NA options.",
+            "properties": {
+                "rosettafold2na_db": {
+                    "type": "string",
+                    "format": "path",
+                    "exists": true,
+                    "description": "Specifies the DB and PARAMS path used by 'RosettaFold2NA' mode",
+                    "fa_icon": "fas fa-database"
                 }
             }
         },
@@ -848,6 +874,80 @@
                 }
             }
         },
+        "rosettafold2na_dbs_and_parameters_link_options": {
+            "title": "RosettaFold2NA DBs and parameters links options",
+            "type": "object",
+            "fa_icon": "fas fa-database",
+            "description": "Parameters used to provide the links to the DBs and parameters public resources to RosettaFold2NA.",
+            "properties": {
+                "rosettafold2na_uniref30_link": {
+                    "type": "string",
+                    "default": "http://wwwuser.gwdg.de/~compbiol/uniclust/2020_06/UniRef30_2020_06_hhsuite.tar.gz"
+                },
+                "rosettafold2na_bfd_link": {
+                    "type": "string",
+                    "default": "https://bfd.mmseqs.com/bfd_metaclust_clu_complete_id30_c90_final_seq.sorted_opt.tar.gz"
+                },
+                "rosettafold2na_pdb100_link": {
+                    "type": "string",
+                    "default": "https://files.ipd.uw.edu/pub/RoseTTAFold/pdb100_2021Mar03.tar.gz"
+                },
+                "rosettafold2na_weights_link": {
+                    "type": "string",
+                    "default": "https://files.ipd.uw.edu/dimaio/RF2NA_apr23.tgz"
+                },
+                "rfam_full_region_link": {
+                    "type": "string",
+                    "default": "ftp://ftp.ebi.ac.uk/pub/databases/Rfam/CURRENT/Rfam.full_region.gz"
+                },
+                "rfam_cm_link": {
+                    "type": "string",
+                    "default": "ftp://ftp.ebi.ac.uk/pub/databases/Rfam/CURRENT/Rfam.cm.gz"
+                },
+                "rnacentral_rfam_annotations_link": {
+                    "type": "string",
+                    "default": "ftp://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/rfam/rfam_annotations.tsv.gz"
+                },
+                "rnacentral_id_mapping_link": {
+                    "type": "string",
+                    "default": "ftp://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/id_mapping/id_mapping.tsv.gz"
+                },
+                "rnacentral_sequences_link": {
+                    "type": "string",
+                    "default": "ftp://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/sequences/rnacentral_species_specific_ids.fasta.gz"
+                }
+            }
+        },
+        "rosettafold2na_dbs_and_parameters_path_options": {
+            "title": "RosettaFold2NA DBs and parameters paths options",
+            "type": "object",
+            "description": "Parameters used to provide the paths to the DBs and parameters for RosettaFold2NA.",
+            "default": "",
+            "properties": {
+                "rosettafold2na_uniref30_path": {
+                    "type": "string",
+                    "default": "null/UniRef30_2020_06/*"
+                },
+                "rosettafold2na_bfd_path": {
+                    "type": "string",
+                    "default": "null/bfd/*"
+                },
+                "rosettafold2na_pdb100_path": {
+                    "type": "string",
+                    "default": "null/pdb100/*"
+                },
+                "rosettafold2na_weights_path": {
+                    "type": "string",
+                    "default": "null/params/network/weights/RF2NA_apr23.pt"
+                },
+                "rosettafold2na_rna_path": {
+                    "type": "string",
+                    "description": "Path to the RNA folder containing all necessary RNA databases for RF2NA",
+                    "default": "null/RNA/*"
+                }
+            }
+        },
+
         "generic_options": {
             "title": "Generic options",
             "type": "object",
@@ -1252,10 +1352,19 @@
             "$ref": "#/$defs/rosettafold_all_atom_dbs_and_parameters_paths_options"
         },
         {
-            "$ref": "#/$defs/helixfold3_dbs_and_parameters_paths_options"
+            "$ref": "#/$defs/rosettafold2na_options"
+        },
+        {
+            "$ref": "#/$defs/rosettafold2na_dbs_and_parameters_link_options"
+        },
+        {
+            "$ref": "#/$defs/rosettafold2na_dbs_and_parameters_path_options"
         },
         {
             "$ref": "#/$defs/helixfold3_dbs_and_parameters_link_options"
+        },
+        {
+            "$ref": "#/$defs/helixfold3_dbs_and_parameters_paths_options"
         }
     ]
 }

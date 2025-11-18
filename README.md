@@ -50,6 +50,8 @@ On release, automated continuous integration tests run the pipeline on a full-si
 
    ix. [Boltz](https://github.com/jwohlwend/boltz/) - Regular Boltz-1
 
+   x. [RosettaFold2NA](https://github.com/uw-ipd/RoseTTAFold2NA) - Regular RF2NA
+
 ## Usage
 
 > [!NOTE]
@@ -64,7 +66,7 @@ nextflow run nf-core/proteinfold \
    --outdir <OUTDIR>
 ```
 
-The pipeline takes care of downloading the databases and parameters required by AlphaFold2, Colabfold, ESMFold or RoseTTAFold-All-Atom. In case you have already downloaded the required files, you can skip this step by providing the path to the databases using the corresponding parameter [`--alphafold2_db`], [`--colabfold_db`], [`--esmfold_db`] or ['--rosettafold_all_atom_db']. Please refer to the [usage documentation](https://nf-co.re/proteinfold/usage) to check the directory structure you must provide for each database.
+The pipeline takes care of downloading the databases and parameters required by AlphaFold2, Colabfold, ESMFold RoseTTAFold-All-Atom or RosettaFold2NA. In case you have already downloaded the required files, you can skip this step by providing the path to the databases using the corresponding parameter [`--alphafold2_db`], [`--colabfold_db`], [`--esmfold_db`] or ['--rosettafold_all_atom_db']. Please refer to the [usage documentation](https://nf-co.re/proteinfold/usage) to check the directory structure you must provide for each database.
 
 - The typical command to run AlphaFold2 mode is shown below:
 
@@ -180,6 +182,18 @@ The pipeline takes care of downloading the databases and parameters required by 
       --outdir <OUTDIR> \
       --mode helixfold3 \
       --helixfold3_db <null (default) | PATH> \
+      --use_gpu <true/false> \
+      -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
+  ```
+
+  - The RosettaFold2NA mode can be run using the command below:
+
+  ```console
+  nextflow run nf-core/proteinfold \
+      --input samplesheet.csv \
+      --outdir <OUTDIR> \
+      --mode rosettafold2na \
+      --rosettafold2na_db <null (default) | DB_PATH> \
       --use_gpu <true/false> \
       -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
   ```

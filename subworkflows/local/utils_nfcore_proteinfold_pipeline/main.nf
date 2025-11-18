@@ -33,6 +33,7 @@ workflow PIPELINE_INITIALISATION {
     nextflow_cli_args //   array: List of positional nextflow CLI args
     outdir            //  string: The output directory where the results will be saved
     input             //  string: Path to input samplesheet
+    interactions      //  string: Path to input interactions
     help              // boolean: Display help message and exit
     help_full         // boolean: Show the full help message
     show_hidden       // boolean: Show hidden parameters in the help message
@@ -92,12 +93,7 @@ workflow PIPELINE_INITIALISATION {
     )
 
     //
-    // Custom validation for pipeline parameters
-    //
-    validateInputParameters()
-
-    //
-    // Create channel from input file provided through params.input
+    // Create channel from input file provided through params.input and params.interactions
     //
     ch_samplesheet = Channel.fromList(samplesheetToList(params.input, "assets/schema_input.json"))
 
@@ -108,6 +104,46 @@ workflow PIPELINE_INITIALISATION {
             def identifier = meta.id ? meta.id : meta.sequence
             return [[id: identifier], fasta]
         }
+
+    if (params.interactions) {
+        if (!params.mode.toLowerCase().split(",").contains("rosettafold2na")) {
+            log.info "WARNING: The --interactions parameter is only supported in the ROSETTAFOLD2NA mode."
+        }
+
+        //
+        // Create channel from input file provided through params.interactions
+        //
+        ch_interactions = Channel.fromList(samplesheetToList(params.interactions, "assets/schema_interactions.json"))
+
+        sample_ids = ch_samplesheet
+                        .map { meta, file ->
+                            meta.id
+                        }
+                        .collect()
+                        .toList()
+
+        ch_interactions
+            .combine(sample_ids)
+            .branch {
+                meta, ids ->
+                    valid: ids.contains(meta.protein_id) && ids.contains(meta.interaction_id) ? meta.protein_id : null
+                    invalid: !(ids.contains(meta.protein_id) && ids.contains(meta.interaction_id)) ? meta.protein_id : null
+            }
+            .set { ch_interactions_validated }
+
+        ch_interactions_validated.invalid
+            .subscribe { meta, samples_ids ->
+                log.info "WARNING: Row \"${meta.protein_id},${meta.interaction_id},${meta.interaction_type}\", in interactions is not valid (check the IDs correspond to those in samplesheet)."
+            }
+
+        ch_interactions_validated.valid
+            .ifEmpty { log.error "No valid interactions found in the interactions file. Please check the IDs correspond to those in samplesheet." }
+            .map {
+                meta, samples_ids ->
+                    meta
+            }
+            .set { interactions }
+    }
 
     if (params.split_fasta) {
         // TODO: here we have to validate that the ids are unique and valid as an extra step
@@ -130,8 +166,9 @@ workflow PIPELINE_INITIALISATION {
     }
 
     emit:
-    samplesheet = ch_samplesheet
-    versions    = ch_versions
+    samplesheet  = ch_samplesheet
+    interactions = interactions
+    versions     = ch_versions
 }
 
 /*

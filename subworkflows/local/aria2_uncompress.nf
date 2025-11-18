@@ -22,7 +22,10 @@ workflow ARIA2_UNCOMPRESS {
 
     if (source_url.toString().endsWith('.pkl.gz')) {
         ch_db = ARIA2.out.downloaded_file.map { it[1] }
-    } else if (source_url.toString().endsWith('.tar') || source_url.toString().endsWith('.tar.gz') || source_url.toString().endsWith('.tar.zst')) {
+    } else if (source_url.toString().endsWith('.tar') ||
+               source_url.toString().endsWith('.tar.gz') ||
+               source_url.toString().endsWith('.tar.zst')||
+               source_url.toString().endsWith('.tgz')) {
         ch_db = UNTAR (ARIA2.out.downloaded_file).untar.map{ it[1] }
     } else if (source_url.toString().endsWith('.gz')) {
         ch_db = GUNZIP (ARIA2.out.downloaded_file).gunzip.map { it[1] }
