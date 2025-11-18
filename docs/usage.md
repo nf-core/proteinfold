@@ -21,7 +21,7 @@ You will need to create a samplesheet with information about the sequences you w
 A sample of the final samplesheet file for two sequences is shown below:
 
 ```csv title="samplesheet.csv"
-sequence,fasta
+id,fasta
 T1024,https://raw.githubusercontent.com/nf-core/test-datasets/proteinfold/testdata/sequences/T1024.fasta
 T1026,https://raw.githubusercontent.com/nf-core/test-datasets/proteinfold/testdata/sequences/T1026.fasta
 ```

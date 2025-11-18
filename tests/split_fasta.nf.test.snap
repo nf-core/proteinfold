@@ -4,15 +4,15 @@
             7,
             {
                 "COLABFOLD_BATCH": {
-                    "colabfold_batch": null
+                    "alphafold_colabfold": "unknown",
+                    "colabfold_batch": "unknown"
                 },
                 "GENERATE_REPORT": {
                     "python": "3.12.7",
                     "generate_report.py": "Python 3.12.7"
                 },
                 "MMSEQS_COLABFOLDSEARCH": {
-                    "colabfold_search": null,
-                    "alphafold_colabfold": null,
+                    "colabfold_search": "unknown",
                     "mmseqs": null
                 },
                 "Workflow": {
@@ -71,6 +71,6 @@
             "nf-test": "0.9.2",
             "nextflow": "25.04.7"
         },
-        "timestamp": "2025-10-17T17:07:38.728295584"
+        "timestamp": "2025-10-17T17:28:17.716057027"
     }
 }

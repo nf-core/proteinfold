@@ -1,8 +1,9 @@
 process MMSEQS_COLABFOLDSEARCH {
     tag "$meta.id"
     label 'process_high_memory'
+    label 'process_high'
 
-    container "nf-core/proteinfold_colabfold:dev"
+    container "nf-core/proteinfold_mmseqs_colabfoldsearch:dev"
 
     input:
     tuple val(meta), path(fasta)
@@ -28,12 +29,12 @@ process MMSEQS_COLABFOLDSEARCH {
         $args \\
         --threads $task.cpus ${fasta} \\
         ./db \\
-        "result/"
+        --af3-json \\
+        "results/"
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        colabfold_search: \$(conda run -n colabfold pip list | grep "^colabfold" | awk '{print \$2}')
-        alphafold_colabfold: \$(conda run -n colabfold pip list | grep "^alphafold-colabfold" | awk '{print \$2}')
+        colabfold_search: \$(pip list | grep "^colabfold" | awk '{print \$2}' 2>/dev/null || echo "unknown")
         mmseqs: \$(mmseqs version)
     END_VERSIONS
     """
@@ -45,8 +46,7 @@ process MMSEQS_COLABFOLDSEARCH {
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        colabfold_search: \$(conda run -n colabfold pip list | grep "^colabfold" | awk '{print \$2}')
-        alphafold_colabfold: \$(conda run -n colabfold pip list | grep "^alphafold-colabfold" | awk '{print \$2}')
+        colabfold_search: \$(pip list | grep "^colabfold" | awk '{print \$2}' 2>/dev/null || echo "unknown")
         mmseqs: \$(mmseqs version)
     END_VERSIONS
     """

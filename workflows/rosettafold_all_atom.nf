@@ -8,7 +8,7 @@
 // MODULE: Loaded from modules/local/
 //
 include { RUN_ROSETTAFOLD_ALL_ATOM } from '../modules/local/run_rosettafold_all_atom'
-include { FASTA2YAML } from '../modules/local/data_convertor/fasta2yaml'
+include { FASTA2YAML } from '../modules/local/fasta2yaml'
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     IMPORT NF-CORE MODULES/SUBWORKFLOWS
@@ -26,14 +26,13 @@ workflow ROSETTAFOLD_ALL_ATOM {
     take:
     ch_samplesheet          // channel: samplesheet read in from --input
     ch_versions             // channel: [ path(versions.yml) ]
+    uniref30_prefix         //  string: Prefix for uniref30 database files
     ch_bfd                  // channel: path(bfd)
     ch_uniref30             // channel: path(uniref30)
     ch_pdb100               // channel: path(pdb100)
     ch_rfaa_paper_weights   // channel: path(rfaa_paper_weightsch_dummy_file           // channel: path(NO_file)
 
     main:
-    ch_multiqc_files  = Channel.empty()
-    ch_top_ranked_pdb = Channel.empty()
     ch_multiqc_report = Channel.empty()
 
     ch_samplesheet.branch {
@@ -51,6 +50,7 @@ workflow ROSETTAFOLD_ALL_ATOM {
 
     RUN_ROSETTAFOLD_ALL_ATOM (
         ch_rosetta_all_atom_in.map{[it[0], it[1]]},
+        uniref30_prefix,
         ch_bfd,
         ch_uniref30,
         ch_pdb100,
@@ -80,9 +80,9 @@ workflow ROSETTAFOLD_ALL_ATOM {
     rosettafold_all_atomChannel(RUN_ROSETTAFOLD_ALL_ATOM.out.pae).set { ch_pae_final }
 
     emit:
-    pdb            = ch_pdb_final   // channel: [ id, /path/to/*.pdb ]
-    msa            = ch_msa_final   // channel: [ id, /path/to/*_msa.tsv ]
-    pae            = ch_pae_final   // channel: [ id, /path/to/*_pae.tsv ]
+    pdb            = ch_pdb_final      // channel: [ id, /path/to/*.pdb ]
+    msa            = ch_msa_final      // channel: [ id, /path/to/*_msa.tsv ]
+    pae            = ch_pae_final      // channel: [ id, /path/to/*_pae.tsv ]
     multiqc_report = ch_multiqc_report // channel: /path/to/multiqc_report.html
     versions       = ch_versions       // channel: [ path(versions.yml) ]
 }
