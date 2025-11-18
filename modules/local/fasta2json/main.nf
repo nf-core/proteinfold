@@ -10,17 +10,17 @@ process FASTA2JSON {
     input:
     tuple val(meta), path(fasta)
     output:
+
     tuple val(meta), path ("*.json"), emit: json
-    path "versions.yml"        , emit: versions
+    path "versions.yml"             , emit: versions
 
     when:
     task.ext.when == null || task.ext.when
 
     script:
-    def args = task.ext.args ?: ''
-
     """
     #!/usr/bin/env python3
+
     import os, sys
     import json
     import copy

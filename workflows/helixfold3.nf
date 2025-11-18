@@ -85,16 +85,18 @@ workflow HELIXFOLD3 {
         .map { [ [ "model": "helixfold3" ], it.flatten() ] }
         .set { ch_multiqc_report }
 
-    ch_pdb            = ch_pdb.mix(RUN_HELIXFOLD3.out.pdb)
-    ch_versions       = ch_versions.mix(RUN_HELIXFOLD3.out.versions)
+    ch_pdb      = ch_pdb.mix(RUN_HELIXFOLD3.out.pdb)
+    ch_versions = ch_versions.mix(RUN_HELIXFOLD3.out.versions)
 
-    RUN_HELIXFOLD3.out.top_ranked_pdb
-    .map{
-        meta = it[0].clone();
-        meta.model = "helixfold3";
-        [meta, it[1]]
-    }
-    .set { ch_top_ranked_pdb }
+    RUN_HELIXFOLD3
+        .out
+        .top_ranked_pdb
+        .map{
+            def meta = it[0].clone();
+            meta.model = "helixfold3";
+            [ meta, it[1] ]
+        }
+        .set { ch_top_ranked_pdb }
 
     RUN_HELIXFOLD3
         .out
@@ -109,9 +111,9 @@ workflow HELIXFOLD3 {
 
     def helixfold3Channel = { ch ->
         ch.map { meta, value ->
-            meta = meta.clone()
-            meta.model = "helixfold3"
-            [meta, value]
+            def meta_clone = meta.clone()
+            meta_clone.model = "helixfold3"
+            [ meta_clone, value ]
         }
     }
 
@@ -119,10 +121,10 @@ workflow HELIXFOLD3 {
     helixfold3Channel(RUN_HELIXFOLD3.out.pae).set { ch_pae_final }
 
     emit:
-    top_ranked_pdb = ch_top_ranked_pdb
-    pdb            = ch_pdb_final   // channel: [ id, /path/to/*.pdb ]
-    msa            = ch_msa_final   // channel: [ id, /path/to/*_msa.tsv ]
-    pae            = ch_pae_final   // channel: [ id, /path/to/*_pae.tsv ]
+    top_ranked_pdb = ch_top_ranked_pdb // channel: [ meta, /path/to/*.pdb ]
+    pdb            = ch_pdb_final      // channel: [ id, /path/to/*.pdb ]
+    msa            = ch_msa_final      // channel: [ id, /path/to/*_msa.tsv ]
+    pae            = ch_pae_final      // channel: [ id, /path/to/*_pae.tsv ]
     multiqc_report = ch_multiqc_report // channel: /path/to/multiqc_report.html
     versions       = ch_versions       // channel: [ path(versions.yml) ]
 }

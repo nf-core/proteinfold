@@ -64,19 +64,18 @@ workflow ESMFOLD {
 
     def esmfoldChannel = { ch ->
         ch.map { meta, value ->
-            meta = meta.clone()
-            meta.model = "esmfold"
-            [meta, value]
+            def meta_clone = meta.clone()
+            meta_clone.model = "esmfold"
+            [ meta_clone, value ]
         }
     }
 
     esmfoldChannel(RUN_ESMFOLD.out.pdb).set { ch_pdb_final }
 
-
     emit:
-    pdb            = ch_pdb_final   // channel: [ id, /path/to/*.pdb ]
-    multiqc_report = ch_multiqc_report   // channel: /path/to/multiqc_report.html
-    versions       = ch_versions         // channel: [ path(versions.yml) ]
+    pdb            = ch_pdb_final      // channel: [ id, /path/to/*.pdb ]
+    multiqc_report = ch_multiqc_report // channel: /path/to/multiqc_report.html
+    versions       = ch_versions       // channel: [ path(versions.yml) ]
 }
 
 /*

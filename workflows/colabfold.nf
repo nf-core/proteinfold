@@ -47,6 +47,7 @@ workflow COLABFOLD {
                 ch_samplesheet
             )
             ch_versions = ch_versions.mix(MULTIFASTA_TO_CSV.out.versions)
+
             COLABFOLD_BATCH(
                 MULTIFASTA_TO_CSV.out.input_csv,
                 colabfold_model_preset,
@@ -113,9 +114,9 @@ workflow COLABFOLD {
         .out
         .top_ranked_pdb
         .map{
-            meta = it[0].clone();
-            meta.model = "colabfold";
-            [meta, it[1]]
+            def meta_clone = it[0].clone();
+            meta_clone.model = "colabfold";
+            [ meta_clone, it[1] ]
         }
         .set { ch_top_ranked_pdb }
 
@@ -132,9 +133,9 @@ workflow COLABFOLD {
 
     def colabfoldChannel = { ch ->
         ch.map { meta, value ->
-            meta = meta.clone()
-            meta.model = "colabfold"
-            [meta, value]
+            def meta_clone = meta.clone()
+            meta_clone.model = "colabfold"
+            [ meta_clone, value ]
         }
     }
 
@@ -148,13 +149,14 @@ workflow COLABFOLD {
         .toSortedList()
         .map { [ [ "model":"colabfold"], it.flatten() ] }
         .set { ch_multiqc_report  }
-
+    
+    ch_top_ranked_pdb.view()
 
     emit:
-    top_ranked_pdb = ch_top_ranked_pdb
-    pdb            = ch_pdb_final // channel: [ id, /path/to/*.pdb ]
-    msa            = ch_msa_final       // channel: [ meta, /path/to/*.pdb, /path/to/*_coverage.png ]
-    pae            = ch_pae_final   // channel: [ id, /path/to/*_pae.tsv ]
+    top_ranked_pdb = ch_top_ranked_pdb // channel: [ meta, /path/to/*.pdb ]
+    pdb            = ch_pdb_final      // channel: [ id, /path/to/*.pdb ]
+    msa            = ch_msa_final      // channel: [ meta, /path/to/*.pdb, /path/to/*_coverage.png ]
+    pae            = ch_pae_final      // channel: [ id, /path/to/*_pae.tsv ]
     multiqc_report = ch_multiqc_report // channel: /path/to/multiqc_report.html
     versions       = ch_versions       // channel: [ path(versions.yml) ]
 }
