@@ -326,9 +326,9 @@ def methodsDescriptionText(mqc_methods_yaml) {
 def cleanHeader(header) {
     return header
         .replaceAll(" ", "_")
+        .replaceAll("/","_")
         .replaceAll(",", "")
         .replaceAll(";","")
-        .replaceAll("/","")
 }
 
 def validateFasta(fasta) {
