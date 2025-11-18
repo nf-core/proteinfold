@@ -6,7 +6,7 @@ process RUN_ALPHAFOLD2_PRED {
     label 'process_medium'
     label 'process_gpu'
 
-    container "nf-core/proteinfold_alphafold2_pred:dev"
+    container "nf-core/proteinfold_alphafold2_pred:2.0.0"
 
     input:
     tuple val(meta), path(fasta)

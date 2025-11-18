@@ -6,7 +6,7 @@ process RUN_ROSETTAFOLD_ALL_ATOM {
     label 'process_medium'
     label 'process_gpu'
 
-    container "nf-core/proteinfold_rosettafold_all_atom:dev"
+    container "nf-core/proteinfold_rosettafold_all_atom:2.0.0"
 
     input:
     tuple val(meta), path(yaml)
