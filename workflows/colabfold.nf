@@ -35,7 +35,7 @@ workflow COLABFOLD {
     num_recycles           // int: Number of recycles for esmfold
 
     main:
-    ch_multiqc_report = Channel.empty()
+    ch_multiqc_report = channel.empty()
 
     if (params.use_msa_server) {
         //
@@ -149,8 +149,6 @@ workflow COLABFOLD {
         .toSortedList()
         .map { [ [ "model":"colabfold"], it.flatten() ] }
         .set { ch_multiqc_report  }
-    
-    ch_top_ranked_pdb.view()
 
     emit:
     top_ranked_pdb = ch_top_ranked_pdb // channel: [ meta, /path/to/*.pdb ]

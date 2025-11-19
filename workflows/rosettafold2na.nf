@@ -29,10 +29,10 @@ workflow ROSETTAFOLD2NA {
     ch_dummy_file           // channel: path(NO_FILE)
 
     main:
-    ch_multiqc_files  = Channel.empty()
-    ch_top_ranked_pdb = Channel.empty()
-    ch_pdb_msa        = Channel.empty()
-    ch_multiqc_report = Channel.empty()
+    ch_multiqc_files  = channel.empty()
+    ch_top_ranked_pdb = channel.empty()
+    ch_pdb_msa        = channel.empty()
+    ch_multiqc_report = channel.empty()
 
     ch_samplesheet_reshaped = ch_samplesheet.map {
         meta, file -> [ meta.id, file ] }

@@ -33,7 +33,7 @@ workflow ROSETTAFOLD_ALL_ATOM {
     ch_rfaa_paper_weights   // channel: path(rfaa_paper_weightsch_dummy_file           // channel: path(NO_file)
 
     main:
-    ch_multiqc_report = Channel.empty()
+    ch_multiqc_report = channel.empty()
 
     ch_samplesheet.branch {
         fasta: it[1].extension == "fasta" || it[1].extension == "fa"

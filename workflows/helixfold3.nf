@@ -43,9 +43,9 @@ workflow HELIXFOLD3 {
     ch_helixfold3_maxit_src        // channel: path(maxit_src)
 
     main:
-    ch_pdb            = Channel.empty()
-    ch_top_ranked_pdb = Channel.empty()
-    ch_multiqc_report = Channel.empty()
+    ch_pdb            = channel.empty()
+    ch_top_ranked_pdb = channel.empty()
+    ch_multiqc_report = channel.empty()
 
     //
     // SUBWORKFLOW: Run helixfold3

@@ -38,7 +38,7 @@ workflow POST_PROCESSING {
     ch_top_ranked_model
 
     main:
-    ch_comparison_report_files = Channel.empty()
+    ch_comparison_report_files = channel.empty()
 
     if (!skip_visualisation){
         GENERATE_REPORT(
@@ -48,7 +48,7 @@ workflow POST_PROCESSING {
         ch_versions = ch_versions.mix(GENERATE_REPORT.out.versions)
 
         if (requested_modes_size > 1){
-            ch_dummy_file = Channel.fromPath("$projectDir/assets/NO_FILE")
+            ch_dummy_file = channel.fromPath("$projectDir/assets/NO_FILE")
 
             def esm = ch_top_ranked_model.filter{it[0].model == 'esmfold' }
             def not_esm = ch_top_ranked_model.filter{it[0].model != 'esmfold' }
@@ -105,14 +105,14 @@ workflow POST_PROCESSING {
     //
     // MODULE: MultiQC
     //
-    ch_multiqc_report = Channel.empty()
+    ch_multiqc_report = channel.empty()
 
     if (!skip_multiqc) {
         summary_params           = paramsSummaryMap(workflow, parameters_schema: "nextflow_schema.json")
-        ch_workflow_summary      = Channel.value(paramsSummaryMultiqc(summary_params))
-        ch_methods_description   = Channel.value(methodsDescriptionText(ch_multiqc_methods_description))
+        ch_workflow_summary      = channel.value(paramsSummaryMultiqc(summary_params))
+        ch_methods_description   = channel.value(methodsDescriptionText(ch_multiqc_methods_description))
 
-        ch_multiqc_files = Channel.empty()
+        ch_multiqc_files = channel.empty()
         ch_multiqc_files = ch_multiqc_files.mix(ch_workflow_summary.collectFile(name: 'workflow_summary_mqc.yaml'))
         ch_multiqc_files = ch_multiqc_files.mix(ch_methods_description.collectFile(name: 'methods_description_mqc.yaml'))
         ch_multiqc_files = ch_multiqc_files.mix(ch_collated_versions)

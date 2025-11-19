@@ -18,7 +18,7 @@ workflow ARIA2_UNCOMPRESS {
             source_url
         ]
     )
-    ch_db = Channel.empty()
+    ch_db = channel.empty()
 
     if (source_url.toString().endsWith('.pkl.gz')) {
         ch_db = ARIA2.out.downloaded_file.map { it[1] }

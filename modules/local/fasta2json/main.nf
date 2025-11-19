@@ -24,6 +24,7 @@ process FASTA2JSON {
     import os, sys
     import json
     import copy
+
     seq_template = {
             "type": "",
             "sequence": "",
@@ -49,6 +50,7 @@ process FASTA2JSON {
             fasta_data = ""
         else:
             fasta_data += f"{line}"
+
     if len(fasta_data) > 0:
         new_entry = copy.deepcopy(seq_template)
         new_entry["type"] = seq_type

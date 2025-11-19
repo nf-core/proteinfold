@@ -45,11 +45,11 @@ workflow ALPHAFOLD2 {
     ch_uniprot              // channel: path(uniprot)
 
     main:
-    ch_pdb            = Channel.empty()
-    ch_top_ranked_pdb = Channel.empty()
-    ch_msa            = Channel.empty()
-    ch_pae            = Channel.empty()
-    ch_multiqc_report = Channel.empty()
+    ch_pdb            = channel.empty()
+    ch_top_ranked_pdb = channel.empty()
+    ch_msa            = channel.empty()
+    ch_pae            = channel.empty()
+    ch_multiqc_report = channel.empty()
 
     if (alphafold2_model_preset != 'multimer') {
         ch_samplesheet

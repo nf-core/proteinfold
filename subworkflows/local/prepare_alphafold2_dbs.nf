@@ -47,30 +47,30 @@ workflow PREPARE_ALPHAFOLD2_DBS {
     uniprot_trembl_link      //    string: Specifies the link to download uniprot_trembl
 
     main:
-    ch_bfd        = Channel.value([])
-    ch_small_bfd  = Channel.value([])
-    ch_versions   = Channel.empty()
+    ch_bfd        = channel.value([])
+    ch_small_bfd  = channel.value([])
+    ch_versions   = channel.empty()
 
 
     if (alphafold2_db) {
         if (alphafold2_full_dbs) {
-            ch_bfd       = Channel.value(file(bfd_path))
-            ch_small_bfd = Channel.value(file("${projectDir}/assets/dummy_db"))
+            ch_bfd       = channel.value(file(bfd_path))
+            ch_small_bfd = channel.value(file("${projectDir}/assets/dummy_db"))
         }
         else {
-            ch_bfd       = Channel.value(file("${projectDir}/assets/dummy_db"))
-            ch_small_bfd = Channel.value(file(small_bfd_path))
+            ch_bfd       = channel.value(file("${projectDir}/assets/dummy_db"))
+            ch_small_bfd = channel.value(file(small_bfd_path))
         }
 
-        ch_params         = Channel.value(file(alphafold2_params_path))
-        ch_mgnify         = Channel.value(file(mgnify_path))
-        ch_pdb70          = Channel.value(file(pdb70_path))
-        ch_mmcif_files    = Channel.value(file(pdb_mmcif_path))
-        ch_obsolete       = Channel.value(file(pdb_obsolete_path, type: 'file'))
-        ch_uniref30       = Channel.value(file(alphafold2_uniref30_path, type: 'any'))
-        ch_uniref90       = Channel.value(file(uniref90_path))
-        ch_pdb_seqres     = Channel.value(file(pdb_seqres_path))
-        ch_uniprot        = Channel.value(file(uniprot_path))
+        ch_params         = channel.value(file(alphafold2_params_path))
+        ch_mgnify         = channel.value(file(mgnify_path))
+        ch_pdb70          = channel.value(file(pdb70_path))
+        ch_mmcif_files    = channel.value(file(pdb_mmcif_path))
+        ch_obsolete       = channel.value(file(pdb_obsolete_path, type: 'file'))
+        ch_uniref30       = channel.value(file(alphafold2_uniref30_path, type: 'any'))
+        ch_uniref90       = channel.value(file(uniref90_path))
+        ch_pdb_seqres     = channel.value(file(pdb_seqres_path))
+        ch_uniprot        = channel.value(file(uniprot_path))
     }
     else {
         if (alphafold2_full_dbs) {
