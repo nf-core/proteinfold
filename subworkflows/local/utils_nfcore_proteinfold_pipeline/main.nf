@@ -325,7 +325,11 @@ def methodsDescriptionText(mqc_methods_yaml) {
 }
 
 def cleanHeader(header) {
-    return header.replaceAll(" ", "_").replaceAll(",", "").replaceAll(";","")
+    return header
+        .replaceAll(" ", "_")
+        .replaceAll("/","_")
+        .replaceAll(",", "")
+        .replaceAll(";","")
 }
 
 def validateFasta(fasta) {
@@ -337,7 +341,7 @@ def validateFasta(fasta) {
     }
     // check headers that are malformed
     headers.each { header ->
-        if (header =~ /[ \t;,]/) {
+        if (header =~ /[ \t;,\/]/) {
             // warn user that the header contains special characters
             log.warn "The header ${header} contains special characters. They have been automatically removed."
         }
