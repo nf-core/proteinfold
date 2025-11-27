@@ -98,7 +98,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 | `--uniref90_path`              | `--alphafold2_uniref90_path`     |
 | `--pdb_seqres_path`            | `--alphafold2_pdb_seqres_path`   |
 | `--uniprot_path`               | `--alphafold2_uniprot_path`      |
-| `--colabfold_server webserver` | `--use_msa_server`               |
+| `--colabfold_server`           | `--use_msa_server`               |
 | `--host_url`                   | `--msa_server_url`               |
 |                                | `--alphafold2_pdb_obsolete_path` |
 |                                | `--alphafold3_small_bfd_link`    |
