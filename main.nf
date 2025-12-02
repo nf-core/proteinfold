@@ -80,11 +80,9 @@ workflow NFCORE_PROTEINFOLD {
 
     take:
     samplesheet  // channel: samplesheet read in from --input
-    interactions // channel: interactions read in from --interactions
 
     main:
     ch_samplesheet                          = samplesheet
-    ch_interactions                         = interactions
     ch_multiqc                              = Channel.empty()
     ch_versions                             = Channel.empty()
     ch_report_input                         = Channel.empty()
@@ -492,14 +490,12 @@ workflow NFCORE_PROTEINFOLD {
         //
         ROSETTAFOLD2NA (
             ch_samplesheet,
-            ch_interactions,
             ch_versions,
             PREPARE_ROSETTAFOLD2NA_DBS.out.bfd,
             PREPARE_ROSETTAFOLD2NA_DBS.out.uniref30,
             PREPARE_ROSETTAFOLD2NA_DBS.out.pdb100,
             PREPARE_ROSETTAFOLD2NA_DBS.out.rna,
-            PREPARE_ROSETTAFOLD2NA_DBS.out.rosettafold2na_weights,
-            ch_dummy_file
+            PREPARE_ROSETTAFOLD2NA_DBS.out.rosettafold2na_weights
         )
         ch_multiqc                              = ch_multiqc.mix(ROSETTAFOLD2NA.out.multiqc_report.collect())
         ch_versions                             = ch_versions.mix(ROSETTAFOLD2NA.out.versions)
@@ -632,7 +628,6 @@ workflow {
         args,
         params.outdir,
         params.input,
-        params.interactions,
         params.help,
         params.help_full,
         params.show_hidden
@@ -642,8 +637,7 @@ workflow {
     // WORKFLOW: Run main workflow
     //
     NFCORE_PROTEINFOLD (
-        PIPELINE_INITIALISATION.out.samplesheet,
-        PIPELINE_INITIALISATION.out.interactions
+        PIPELINE_INITIALISATION.out.samplesheet
     )
 
     //

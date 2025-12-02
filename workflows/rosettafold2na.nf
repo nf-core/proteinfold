@@ -7,7 +7,8 @@
 //
 // MODULE: Loaded from modules/local/
 //
-include { RUN_ROSETTAFOLD2NA } from '../modules/local/run_rosettafold2na'
+include { ROSETTAFOLD2NA_FASTA } from '../modules/local/rosettafold2na_fasta'
+include { RUN_ROSETTAFOLD2NA   } from '../modules/local/run_rosettafold2na'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -18,15 +19,13 @@ include { RUN_ROSETTAFOLD2NA } from '../modules/local/run_rosettafold2na'
 workflow ROSETTAFOLD2NA {
 
     take:
-    ch_samplesheet          // channel: samplesheet read in from --input
-    ch_interactions         // channel: interactions read in from --interactions
-    ch_versions             // channel: [ path(versions.yml) ]
-    ch_bfd                  // channel: path(bfd)
-    ch_uniref30             // channel: path(uniref30)
-    ch_pdb100               // channel: path(pdb100)
-    ch_rna                  // channel: path(rna)
+    ch_samplesheet            // channel: samplesheet read in from --input
+    ch_versions               // channel: [ path(versions.yml) ]
+    ch_bfd                    // channel: path(bfd)
+    ch_uniref30               // channel: path(uniref30)
+    ch_pdb100                 // channel: path(pdb100)
+    ch_rna                    // channel: path(rna)
     ch_rosettafold2na_weights // channel: path(rosettafold2na_weights)
-    ch_dummy_file           // channel: path(NO_FILE)
 
     main:
     ch_multiqc_files  = Channel.empty()
@@ -34,24 +33,13 @@ workflow ROSETTAFOLD2NA {
     ch_pdb_msa        = Channel.empty()
     ch_multiqc_report = Channel.empty()
 
-    ch_samplesheet_reshaped = ch_samplesheet.map {
-        meta, file -> [ meta.id, file ] }
-
-    ch_protein_interaction = ch_interactions
-                                .map {
-                                    [ it.protein_id, it.interaction_id, it.interaction_type ]
-                                }
-                                .join(ch_samplesheet_reshaped, by: 0)
-                                .map {
-                                    [ it[1], it[0], it[2], it[3] ] // [ protein_id, interaction_id, interaction_type, file ]
-                                }
-                                .join(ch_samplesheet_reshaped, by: 0)
-                                .map {
-                                    [ [ id: it[1], interaction_id: it[0], interaction_type: it[2] ], it[3], it[4] ] // [ protein_id, interaction_id, interaction_type, file ]
-                                }
+    ROSETTAFOLD2NA_FASTA(
+        ch_samplesheet
+    )
+    ch_versions = ch_versions.mix(ROSETTAFOLD2NA_FASTA.out.versions)
 
     RUN_ROSETTAFOLD2NA (
-        ch_protein_interaction,
+        ROSETTAFOLD2NA_FASTA.out.prepared_input,
         ch_bfd,
         ch_uniref30,
         ch_pdb100,
