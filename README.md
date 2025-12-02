@@ -186,7 +186,7 @@ The pipeline takes care of downloading the databases and parameters required by 
       -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
   ```
 
-  - The RosettaFold2NA mode can be run using the command below:
+- The RosettaFold2NA mode can be run using the command below:
 
   ```console
   nextflow run nf-core/proteinfold \
@@ -197,8 +197,6 @@ The pipeline takes care of downloading the databases and parameters required by 
       --use_gpu <true/false> \
       -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
   ```
-
-  Each samplesheet row must reference a multi-chain FASTA that already contains all molecules in the complex. Annotate headers with `type=protein`, `type=rna`, `type=double_dna`, or `type=single_dna` so the pipeline tags chains as `P/R/D`. If no hint is present, the adaptor infers the type from the sequence alphabet (pure `ACUGN` → RNA, pure `ACTGN` → DNA → tagged as `D`, otherwise protein). At least one protein chain is required; multiple protein and nucleic-acid chains can be listed to model larger complexes.
 
 - The boltz mode can be run using the command below:
 
