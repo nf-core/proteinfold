@@ -163,7 +163,7 @@ workflow ALPHAFOLD2 {
 
     ch_pdb
         .map{
-            meta = it[0].clone();
+            def meta = it[0].clone();
             meta.model = "alphafold2";
             def files = (it[1] instanceof List) ? it[1] : [ it[1] ]
             [ meta, files ]
@@ -172,7 +172,7 @@ workflow ALPHAFOLD2 {
 
     ch_msa
         .map{
-            meta = it[0].clone();
+            def meta = it[0].clone();
             meta.model = "alphafold2";
             [ meta, it[1] ]
         }
@@ -180,7 +180,7 @@ workflow ALPHAFOLD2 {
 
     ch_pae
         .map{
-            meta = it[0].clone();
+            def meta = it[0].clone();
             meta.model = "alphafold2";
             [ meta, it[1] ]
         }
@@ -188,7 +188,7 @@ workflow ALPHAFOLD2 {
 
     ch_top_ranked_pdb_final = ch_top_ranked_pdb
                                 .map{
-                                    meta = it[0].clone();
+                                    def meta = it[0].clone();
                                     meta.model = "alphafold2";
                                     [ meta, it[1] ]
                                 }

@@ -102,7 +102,7 @@ workflow HELIXFOLD3 {
         .out
         .pdb
         .map{
-            meta = it[0].clone();
+            def meta = it[0].clone();
             meta.model = "helixfold3";
             def files = (it[1] instanceof List) ? it[1] : [ it[1] ]
             [ meta, files ]
