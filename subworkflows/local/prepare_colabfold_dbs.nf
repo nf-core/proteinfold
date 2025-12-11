@@ -53,7 +53,7 @@ workflow PREPARE_COLABFOLD_DBS {
 
             ch_colabfold_db = ARIA2_COLABFOLD_DB.out.db
 
-            if (params.colabfold_create_index) {
+            if (colabfold_create_index) {
                 MMSEQS_CREATEINDEX_COLABFOLDDB (
                     ch_colabfold_db
                         .map { path_str ->
