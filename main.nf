@@ -15,41 +15,23 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-// if (params.mode.toLowerCase().split(",").contains("alphafold2")) {
-include { PREPARE_ALPHAFOLD2_DBS } from './subworkflows/local/prepare_alphafold2_dbs'
-include { ALPHAFOLD2             } from './workflows/alphafold2'
-// }
-// if (params.mode.toLowerCase().split(",").contains("alphafold3")) {
-    include { PREPARE_ALPHAFOLD3_DBS } from './subworkflows/local/prepare_alphafold3_dbs'
-    include { ALPHAFOLD3             } from './workflows/alphafold3'
-// }
-// if (params.mode.toLowerCase().split(",").contains("colabfold")) {
-    include { COLABFOLD             } from './workflows/colabfold'
-// }
-// if (params.mode.toLowerCase().split(",").contains("esmfold")) {
-    include { PREPARE_ESMFOLD_DBS } from './subworkflows/local/prepare_esmfold_dbs'
-    include { ESMFOLD             } from './workflows/esmfold'
-// }
-// if (params.mode.toLowerCase().split(",").contains("rosettafold_all_atom")) {
-    include { PREPARE_ROSETTAFOLD_ALL_ATOM_DBS  } from './subworkflows/local/prepare_rosettafold_all_atom_dbs'
-    include { ROSETTAFOLD_ALL_ATOM              } from './workflows/rosettafold_all_atom'
-// }
-// if (params.mode.toLowerCase().split(",").contains("helixfold3")) {
-    include { PREPARE_HELIXFOLD3_DBS    } from './subworkflows/local/prepare_helixfold3_dbs'
-    include { HELIXFOLD3                } from './workflows/helixfold3'
-// }
-// if (params.mode.toLowerCase().split(",").contains("boltz")) {
-    include { PREPARE_BOLTZ_DBS } from './subworkflows/local/prepare_boltz_dbs'
-    include { BOLTZ             } from './workflows/boltz'
-// }
-// if (params.mode.toLowerCase().split(",").contains("colabfold") || params.mode.toLowerCase().split(",").contains("boltz")) {
-    include { PREPARE_COLABFOLD_DBS } from './subworkflows/local/prepare_colabfold_dbs'
-// }
+include { PREPARE_ALPHAFOLD2_DBS           } from './subworkflows/local/prepare_alphafold2_dbs'
+include { PREPARE_ALPHAFOLD3_DBS           } from './subworkflows/local/prepare_alphafold3_dbs'
+include { PREPARE_ESMFOLD_DBS              } from './subworkflows/local/prepare_esmfold_dbs'
+include { PREPARE_ROSETTAFOLD_ALL_ATOM_DBS } from './subworkflows/local/prepare_rosettafold_all_atom_dbs'
+include { PREPARE_HELIXFOLD3_DBS           } from './subworkflows/local/prepare_helixfold3_dbs'
+include { PREPARE_BOLTZ_DBS                } from './subworkflows/local/prepare_boltz_dbs'
+include { PREPARE_COLABFOLD_DBS            } from './subworkflows/local/prepare_colabfold_dbs'
+include { PREPARE_ROSETTAFOLD2NA_DBS       } from './subworkflows/local/prepare_rosettafold2na_dbs'
 
-// if (params.mode.toLowerCase().split(",").contains("rosettafold2na")) {
-    include { PREPARE_ROSETTAFOLD2NA_DBS } from './subworkflows/local/prepare_rosettafold2na_dbs'
-    include { ROSETTAFOLD2NA             } from './workflows/rosettafold2na'
-// }
+include { ALPHAFOLD2                       } from './workflows/alphafold2'
+include { ALPHAFOLD3                       } from './workflows/alphafold3'
+include { COLABFOLD                        } from './workflows/colabfold'
+include { ESMFOLD                          } from './workflows/esmfold'
+include { ROSETTAFOLD_ALL_ATOM             } from './workflows/rosettafold_all_atom'
+include { HELIXFOLD3                       } from './workflows/helixfold3'
+include { BOLTZ                            } from './workflows/boltz'
+include { ROSETTAFOLD2NA                   } from './workflows/rosettafold2na'
 
 include { PIPELINE_INITIALISATION          } from './subworkflows/local/utils_nfcore_proteinfold_pipeline'
 include { PIPELINE_COMPLETION              } from './subworkflows/local/utils_nfcore_proteinfold_pipeline'
@@ -83,15 +65,15 @@ workflow NFCORE_PROTEINFOLD {
     interactions // channel: interactions read in from --interactions
 
     main:
-    ch_samplesheet                          = samplesheet
-    ch_interactions                         = interactions
-    ch_multiqc                              = Channel.empty()
-    ch_versions                             = Channel.empty()
-    ch_report_input                         = Channel.empty()
-    ch_foldseek_db                          = Channel.empty()
-    ch_top_ranked_model                     = Channel.empty()
-    requested_modes                         = params.mode.toLowerCase().split(",")
-    requested_modes_size                    = requested_modes.size()
+    ch_samplesheet       = samplesheet
+    ch_interactions      = interactions
+    ch_multiqc           = Channel.empty()
+    ch_versions          = Channel.empty()
+    ch_report_input      = Channel.empty()
+    ch_foldseek_db       = Channel.empty()
+    ch_top_ranked_model  = Channel.empty()
+    requested_modes      = params.mode.toLowerCase().split(",")
+    requested_modes_size = requested_modes.size()
 
     ch_dummy_file = Channel.fromPath("$projectDir/assets/NO_FILE")
     ch_dummy_file_pae = Channel.fromPath("$projectDir/assets/NO_FILE_PAE")
@@ -102,8 +84,8 @@ workflow NFCORE_PROTEINFOLD {
     if(requested_modes.contains("alphafold2")) {
 
         // DBs parameter values
-        params.alphafold2_db = params.alphafold2_db ?: params.db
-        params.alphafold2_full_dbs = params.alphafold2_full_dbs ?: params.full_dbs
+        // params.alphafold2_db = params.alphafold2_db ?: params.db
+        // params.alphafold2_full_dbs = params.alphafold2_full_dbs ?: params.full_dbs
         
         //
         // SUBWORKFLOW: Prepare Alphafold2 DBs
@@ -143,7 +125,7 @@ workflow NFCORE_PROTEINFOLD {
         ALPHAFOLD2 (
             ch_samplesheet,
             ch_versions,
-            params.alphafold2_full_dbs,
+            params.alphafold2_full_dbs,// here
             params.alphafold2_mode,
             params.alphafold2_model_preset,
             params.uniref30_prefix,
@@ -186,8 +168,8 @@ workflow NFCORE_PROTEINFOLD {
     //
     if(requested_modes.contains("alphafold3")) {
         
-        // DBs parameter values
-        params.alphafold3_db = params.alphafold3_db ?: params.db 
+        // // DBs parameter values
+        // params.alphafold3_db = params.alphafold3_db ?: params.db 
         
         //
         // SUBWORKFLOW: Prepare Alphafold3 DBs
@@ -263,8 +245,8 @@ workflow NFCORE_PROTEINFOLD {
     //
     if(requested_modes.contains("colabfold")) {
 
-        // DBs parameter values
-        params.colabfold_db = params.colabfold_db ?: params.db 
+        // // DBs parameter values
+        // params.colabfold_db = params.colabfold_db ?: params.db 
 
         //
         // SUBWORKFLOW: Prepare Colabfold DBs
@@ -321,8 +303,8 @@ workflow NFCORE_PROTEINFOLD {
     //
     if(requested_modes.contains("esmfold")) {
 
-        // DBs parameter values
-        params.esmfold_db = params.esmfold_db ?: params.db 
+        // // DBs parameter values
+        // params.esmfold_db = params.esmfold_db ?: params.db 
 
         //
         // SUBWORKFLOW: Prepare esmfold DBs
@@ -362,8 +344,8 @@ workflow NFCORE_PROTEINFOLD {
     //
     if(requested_modes.contains("rosettafold_all_atom")) {
 
-        // DBs parameter values
-        params.rosettafold_all_atom_db = params.rosettafold_all_atom_db ?: params.db 
+        // // DBs parameter values
+        // params.rosettafold_all_atom_db = params.rosettafold_all_atom_db ?: params.db 
 
         //
         // SUBWORKFLOW: Prepare Rosettafold-all-atom DBs
@@ -407,9 +389,9 @@ workflow NFCORE_PROTEINFOLD {
     //
     if(requested_modes.contains("helixfold3")) {
 
-        // DBs parameter values
-        params.helixfold3_db = params.helixfold3_db ?: params.db
-        // params.helixfold3_full_dbs = params.helixfold3_full_dbs ?: params.full_dbs // Not supported yet
+        // // DBs parameter values
+        // params.helixfold3_db = params.helixfold3_db ?: params.db
+        // // params.helixfold3_full_dbs = params.helixfold3_full_dbs ?: params.full_dbs // Not supported yet
 
         //
         // SUBWORKFLOW: Prepare helixfold3 DBs
@@ -492,8 +474,8 @@ workflow NFCORE_PROTEINFOLD {
     //
     if(requested_modes.contains("rosettafold2na")) {
 
-        // DBs parameter values
-        params.rosettafold2na_db = params.rosettafold2na_db ?: params.db
+        // // DBs parameter values
+        // params.rosettafold2na_db = params.rosettafold2na_db ?: params.db
 
         //
         // SUBWORKFLOW: Prepare RosettaFold2NA DBs
@@ -548,9 +530,9 @@ workflow NFCORE_PROTEINFOLD {
     //
     if (params.mode.toLowerCase().split(",").contains("boltz")) {
 
-        // DBs parameter values
-        params.boltz_db = params.boltz_db ?: params.db
-        params.colabfold_db = params.colabfold_db ?: params.db
+        // // DBs parameter values
+        // params.boltz_db = params.boltz_db ?: params.db
+        // params.colabfold_db = params.colabfold_db ?: params.db
 
         PREPARE_BOLTZ_DBS(
             params.boltz_db,
