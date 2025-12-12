@@ -10,6 +10,8 @@
 include { RUN_ESMFOLD               } from '../modules/local/run_esmfold'
 include { MULTIFASTA_TO_SINGLEFASTA } from '../modules/local/multifasta_to_singlefasta'
 
+include { modeChannel               } from '../subworkflows/local/utils_nfcore_proteinfold_pipeline'
+
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     IMPORT NF-CORE MODULES/SUBWORKFLOWS
@@ -62,15 +64,7 @@ workflow ESMFOLD {
         .map { [ [ "model": "esmfold"], it.flatten() ] }
         .set { ch_multiqc_report  }
 
-    def esmfoldChannel = { ch ->
-        ch.map { meta, value ->
-            def meta_clone = meta.clone()
-            meta_clone.model = "esmfold"
-            [ meta_clone, value ]
-        }
-    }
-
-    esmfoldChannel(RUN_ESMFOLD.out.pdb).set { ch_pdb_final }
+    modeChannel(RUN_ESMFOLD.out.pdb, "esmfold").set { ch_pdb_final }
 
     emit:
     pdb            = ch_pdb_final      // channel: [ id, /path/to/*.pdb ]

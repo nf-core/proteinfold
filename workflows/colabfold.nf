@@ -11,6 +11,8 @@ include { COLABFOLD_BATCH        } from '../modules/local/colabfold_batch'
 include { MMSEQS_COLABFOLDSEARCH } from '../modules/local/mmseqs_colabfoldsearch'
 include { MULTIFASTA_TO_CSV      } from '../modules/local/multifasta_to_csv'
 
+include { modeChannel            } from '../subworkflows/local/utils_nfcore_proteinfold_pipeline'
+
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     IMPORT NF-CORE MODULES/SUBWORKFLOWS
@@ -131,16 +133,8 @@ workflow COLABFOLD {
         }
         .set { ch_pdb_final }
 
-    def colabfoldChannel = { ch ->
-        ch.map { meta, value ->
-            def meta_clone = meta.clone()
-            meta_clone.model = "colabfold"
-            [ meta_clone, value ]
-        }
-    }
-
-    colabfoldChannel(COLABFOLD_BATCH.out.msa).set { ch_msa_final }
-    colabfoldChannel(COLABFOLD_BATCH.out.pae).set { ch_pae_final }
+    modeChannel(COLABFOLD_BATCH.out.msa, "colabfold").set { ch_msa_final }
+    modeChannel(COLABFOLD_BATCH.out.pae, "colabfold").set { ch_pae_final }
 
     COLABFOLD_BATCH
         .out

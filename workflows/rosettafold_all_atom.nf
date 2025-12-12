@@ -8,7 +8,10 @@
 // MODULE: Loaded from modules/local/
 //
 include { RUN_ROSETTAFOLD_ALL_ATOM } from '../modules/local/run_rosettafold_all_atom'
-include { FASTA2YAML } from '../modules/local/fasta2yaml'
+include { FASTA2YAML               } from '../modules/local/fasta2yaml'
+
+include { modeChannel              } from '../subworkflows/local/utils_nfcore_proteinfold_pipeline'
+
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     IMPORT NF-CORE MODULES/SUBWORKFLOWS
@@ -75,9 +78,9 @@ workflow ROSETTAFOLD_ALL_ATOM {
         }
     }
 
-    rosettafold_all_atomChannel(RUN_ROSETTAFOLD_ALL_ATOM.out.pdb).set { ch_pdb_final }
-    rosettafold_all_atomChannel(RUN_ROSETTAFOLD_ALL_ATOM.out.msa).set { ch_msa_final }
-    rosettafold_all_atomChannel(RUN_ROSETTAFOLD_ALL_ATOM.out.pae).set { ch_pae_final }
+    modeChannel(RUN_ROSETTAFOLD_ALL_ATOM.out.pdb, "rosettafold_all_atom").set { ch_pdb_final }
+    modeChannel(RUN_ROSETTAFOLD_ALL_ATOM.out.msa, "rosettafold_all_atom").set { ch_msa_final }
+    modeChannel(RUN_ROSETTAFOLD_ALL_ATOM.out.pae, "rosettafold_all_atom").set { ch_pae_final }
 
     emit:
     pdb            = ch_pdb_final      // channel: [ id, /path/to/*.pdb ]

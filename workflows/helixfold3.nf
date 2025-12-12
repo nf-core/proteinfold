@@ -8,7 +8,9 @@
 // MODULE: Loaded from modules/local/
 //
 include { RUN_HELIXFOLD3 } from '../modules/local/run_helixfold3'
-include { FASTA2JSON } from '../modules/local/fasta2json'
+include { FASTA2JSON     } from '../modules/local/fasta2json'
+
+include { modeChannel    } from '../subworkflows/local/utils_nfcore_proteinfold_pipeline'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -117,8 +119,8 @@ workflow HELIXFOLD3 {
         }
     }
 
-    helixfold3Channel(RUN_HELIXFOLD3.out.msa).set { ch_msa_final }
-    helixfold3Channel(RUN_HELIXFOLD3.out.pae).set { ch_pae_final }
+    modeChannel(RUN_HELIXFOLD3.out.msa, "helixfold3").set { ch_msa_final }
+    modeChannel(RUN_HELIXFOLD3.out.pae, "helixfold3").set { ch_pae_final }
 
     emit:
     top_ranked_pdb = ch_top_ranked_pdb // channel: [ meta, /path/to/*.pdb ]
