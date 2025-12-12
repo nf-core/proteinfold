@@ -67,16 +67,16 @@ workflow NFCORE_PROTEINFOLD {
     main:
     ch_samplesheet       = samplesheet
     ch_interactions      = interactions
-    ch_multiqc           = Channel.empty()
-    ch_versions          = Channel.empty()
-    ch_report_input      = Channel.empty()
-    ch_foldseek_db       = Channel.empty()
-    ch_top_ranked_model  = Channel.empty()
+    ch_multiqc           = channel.empty()
+    ch_versions          = channel.empty()
+    ch_report_input      = channel.empty()
+    ch_foldseek_db       = channel.empty()
+    ch_top_ranked_model  = channel.empty()
     requested_modes      = params.mode.toLowerCase().split(",")
     requested_modes_size = requested_modes.size()
 
-    ch_dummy_file = Channel.fromPath("$projectDir/assets/NO_FILE")
-    ch_dummy_file_pae = Channel.fromPath("$projectDir/assets/NO_FILE_PAE")
+    ch_dummy_file = channel.fromPath("$projectDir/assets/NO_FILE")
+    ch_dummy_file_pae = channel.fromPath("$projectDir/assets/NO_FILE_PAE")
 
     //
     // WORKFLOW: Run alphafold2
