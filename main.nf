@@ -581,12 +581,12 @@ workflow NFCORE_PROTEINFOLD {
         ])
     }
 
-    ch_multiqc_config        = Channel.fromPath("$projectDir/assets/multiqc_config.yml", checkIfExists: true).first()
-    ch_multiqc_custom_config = params.multiqc_config ? Channel.fromPath( params.multiqc_config ).first()  : Channel.empty()
-    ch_multiqc_logo          = params.multiqc_logo   ? Channel.fromPath( params.multiqc_logo ).first()    : Channel.empty()
+    ch_multiqc_config        = channel.fromPath("$projectDir/assets/multiqc_config.yml", checkIfExists: true).first()
+    ch_multiqc_custom_config = params.multiqc_config ? channel.fromPath( params.multiqc_config ).first()  : channel.empty()
+    ch_multiqc_logo          = params.multiqc_logo   ? channel.fromPath( params.multiqc_logo ).first()    : channel.empty()
     ch_multiqc_methods_description = params.multiqc_methods_description ? file(params.multiqc_methods_description, checkIfExists: true) : file("$projectDir/assets/methods_description_template.yml", checkIfExists: true)
-    ch_report_template     = Channel.value(file("$projectDir/assets/report_template.html", checkIfExists: true))
-    ch_comparison_template = Channel.value(file("$projectDir/assets/comparison_template.html", checkIfExists: true))
+    ch_report_template     = channel.value(file("$projectDir/assets/report_template.html", checkIfExists: true))
+    ch_comparison_template = channel.value(file("$projectDir/assets/comparison_template.html", checkIfExists: true))
 
     POST_PROCESSING(
         params.skip_visualisation,
