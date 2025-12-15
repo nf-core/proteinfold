@@ -74,14 +74,6 @@ workflow ROSETTAFOLD_ALL_ATOM {
         }
         .set { ch_multiqc_report }
 
-    def rosettafold_all_atomChannel = { ch ->
-        ch.map { meta, value ->
-            meta = meta.clone()
-            meta.model = "rosettafold_all_atom"
-            [ meta, value ]
-        }
-    }
-
     modeChannel(RUN_ROSETTAFOLD_ALL_ATOM.out.pdb, "rosettafold_all_atom").set { ch_pdb_final }
     modeChannel(RUN_ROSETTAFOLD_ALL_ATOM.out.msa, "rosettafold_all_atom").set { ch_msa_final }
     modeChannel(RUN_ROSETTAFOLD_ALL_ATOM.out.pae, "rosettafold_all_atom").set { ch_pae_final }

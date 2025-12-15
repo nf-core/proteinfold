@@ -111,14 +111,6 @@ workflow HELIXFOLD3 {
         }
         .set { ch_pdb_final }
 
-    def helixfold3Channel = { ch ->
-        ch.map { meta, value ->
-            def meta_clone = meta.clone()
-            meta_clone.model = "helixfold3"
-            [ meta_clone, value ]
-        }
-    }
-
     modeChannel(RUN_HELIXFOLD3.out.msa, "helixfold3").set { ch_msa_final }
     modeChannel(RUN_HELIXFOLD3.out.pae, "helixfold3").set { ch_pae_final }
 
