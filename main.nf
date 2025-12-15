@@ -83,10 +83,6 @@ workflow NFCORE_PROTEINFOLD {
     //
     if(requested_modes.contains("alphafold2")) {
 
-        // DBs parameter values
-        // params.alphafold2_db = params.alphafold2_db ?: params.db
-        // params.alphafold2_full_dbs = params.alphafold2_full_dbs ?: params.full_dbs
-        
         //
         // SUBWORKFLOW: Prepare Alphafold2 DBs
         //
@@ -141,36 +137,37 @@ workflow NFCORE_PROTEINFOLD {
             PREPARE_ALPHAFOLD2_DBS.out.pdb_seqres,
             PREPARE_ALPHAFOLD2_DBS.out.uniprot
         )
-        ch_multiqc                  = ch_multiqc.mix(ALPHAFOLD2.out.multiqc_report.collect())
-        ch_versions                 = ch_versions.mix(ALPHAFOLD2.out.versions)
-        ch_report_input             = ch_report_input.mix(ALPHAFOLD2.out.pdb.map{
-                                                    [it[0],
-                                                    it[1].sort { path ->
-                                                                def filename = path.name
-                                                                def matcher = filename =~ /ranked_(\d+)\.pdb/
-                                                                if (matcher.matches()) {
-                                                                    return matcher[0][1].toInteger()
-                                                                } else {
-                                                                    return 0  // fallback if no match
-                                                                }
-                                                            }.subList(0, Math.min(5, it[1].size() as int))
-                                                    ]}
-                                                    .join(ALPHAFOLD2.out.msa)
-                                                    .join(ALPHAFOLD2.out.pae)
-                                                    )
+        ch_multiqc          = ch_multiqc.mix(ALPHAFOLD2.out.multiqc_report.collect())
+        ch_versions         = ch_versions.mix(ALPHAFOLD2.out.versions)
+        ch_report_input     = ch_report_input
+                                .mix(ALPHAFOLD2
+                                .out
+                                .pdb
+                                .map { it ->
+                                    [ it[0],
+                                        it[1].sort { path ->
+                                            def filename = path.name
+                                            def matcher = filename =~ /ranked_(\d+)\.pdb/
+                                            if (matcher.matches()) {
+                                                return matcher[0][1].toInteger()
+                                            } else {
+                                                return 0  // fallback if no match
+                                            }
+                                        }.subList(0, Math.min(5, it[1].size() as int))
+                                    ]
+                                }
+                                .join(ALPHAFOLD2.out.msa)
+                                .join(ALPHAFOLD2.out.pae)
+                            )
 
-
-        ch_top_ranked_model         = ch_top_ranked_model.mix(ALPHAFOLD2.out.top_ranked_pdb)
+        ch_top_ranked_model = ch_top_ranked_model.mix(ALPHAFOLD2.out.top_ranked_pdb)
     }
 
     //
     // WORKFLOW: Run alphafold3
     //
     if(requested_modes.contains("alphafold3")) {
-        
-        // // DBs parameter values
-        // params.alphafold3_db = params.alphafold3_db ?: params.db 
-        
+
         //
         // SUBWORKFLOW: Prepare Alphafold3 DBs
         //
@@ -220,7 +217,7 @@ workflow NFCORE_PROTEINFOLD {
                                 ALPHAFOLD3
                                     .out
                                     .pdb
-                                    .map {
+                                    .map { it ->
                                         [
                                             it[0],
                                             it[1].sort { path ->
@@ -244,9 +241,6 @@ workflow NFCORE_PROTEINFOLD {
     // WORKFLOW: Run colabfold
     //
     if(requested_modes.contains("colabfold")) {
-
-        // // DBs parameter values
-        // params.colabfold_db = params.colabfold_db ?: params.db 
 
         //
         // SUBWORKFLOW: Prepare Colabfold DBs
@@ -277,34 +271,33 @@ workflow NFCORE_PROTEINFOLD {
             params.colabfold_num_recycles
         )
 
-        ch_multiqc                  = ch_multiqc.mix(COLABFOLD.out.multiqc_report)
-        ch_versions                 = ch_versions.mix(COLABFOLD.out.versions)
-        ch_report_input             = ch_report_input.mix(COLABFOLD.out.pdb.map{
-                                            [it[0],
-                                            it[1].sort { path ->
-                                                        def filename = path.name
-                                                        def matcher = filename =~ /_relaxed_rank_(\d+)\.pdb/
-                                                        if (matcher.matches()) {
-                                                            return matcher[0][1].toInteger()
-                                                        } else {
-                                                            return 0  // fallback if no match
-                                                        }
-                                                    }.subList(0, Math.min(5, it[1].size() as int))
-                                            ]}
-                                            .join(COLABFOLD.out.msa)
-                                            .join(COLABFOLD.out.pae)
-                                            )
+        ch_multiqc          = ch_multiqc.mix(COLABFOLD.out.multiqc_report)
+        ch_versions         = ch_versions.mix(COLABFOLD.out.versions)
+        ch_report_input     = ch_report_input
+                                .mix(COLABFOLD.out.pdb.map { it ->
+                                    [ it[0],
+                                        it[1].sort { path ->
+                                            def filename = path.name
+                                            def matcher = filename =~ /_relaxed_rank_(\d+)\.pdb/
+                                            if (matcher.matches()) {
+                                                return matcher[0][1].toInteger()
+                                            } else {
+                                                return 0  // fallback if no match
+                                            }
+                                        }.subList(0, Math.min(5, it[1].size() as int))
+                                    ]
+                                }
+                                .join(COLABFOLD.out.msa)
+                                .join(COLABFOLD.out.pae)
+                            )
 
-        ch_top_ranked_model         = ch_top_ranked_model.mix(COLABFOLD.out.top_ranked_pdb)
+        ch_top_ranked_model = ch_top_ranked_model.mix(COLABFOLD.out.top_ranked_pdb)
     }
 
     //
     // WORKFLOW: Run esmfold
     //
     if(requested_modes.contains("esmfold")) {
-
-        // // DBs parameter values
-        // params.esmfold_db = params.esmfold_db ?: params.db 
 
         //
         // SUBWORKFLOW: Prepare esmfold DBs
@@ -328,14 +321,14 @@ workflow NFCORE_PROTEINFOLD {
             params.esmfold_num_recycles
         )
 
-        ch_multiqc                = ch_multiqc.mix(ESMFOLD.out.multiqc_report.collect())
-        ch_versions               = ch_versions.mix(ESMFOLD.out.versions)
+        ch_multiqc      = ch_multiqc.mix(ESMFOLD.out.multiqc_report.collect())
+        ch_versions     = ch_versions.mix(ESMFOLD.out.versions)
         ch_report_input = ch_report_input.mix(
             ESMFOLD.out.pdb
                 .combine(ch_dummy_file)
                 .combine(ch_dummy_file_pae)
         )
-        ch_top_ranked_model       = ch_top_ranked_model.mix(ESMFOLD.out.pdb)
+        ch_top_ranked_model = ch_top_ranked_model.mix(ESMFOLD.out.pdb)
     }
 
     //
@@ -343,9 +336,6 @@ workflow NFCORE_PROTEINFOLD {
     // WORKFLOW: Run rosettafold_all_atom
     //
     if(requested_modes.contains("rosettafold_all_atom")) {
-
-        // // DBs parameter values
-        // params.rosettafold_all_atom_db = params.rosettafold_all_atom_db ?: params.db 
 
         //
         // SUBWORKFLOW: Prepare Rosettafold-all-atom DBs
@@ -388,10 +378,6 @@ workflow NFCORE_PROTEINFOLD {
     // WORKFLOW: Run helixfold3
     //
     if(requested_modes.contains("helixfold3")) {
-
-        // // DBs parameter values
-        // params.helixfold3_db = params.helixfold3_db ?: params.db
-        // // params.helixfold3_full_dbs = params.helixfold3_full_dbs ?: params.full_dbs // Not supported yet
 
         //
         // SUBWORKFLOW: Prepare helixfold3 DBs
@@ -449,33 +435,32 @@ workflow NFCORE_PROTEINFOLD {
             PREPARE_HELIXFOLD3_DBS.out.helixfold3_init_models,
             PREPARE_HELIXFOLD3_DBS.out.helixfold3_maxit_src
         )
-        ch_multiqc                   = ch_multiqc.mix(HELIXFOLD3.out.multiqc_report.collect())
-        ch_versions                  = ch_versions.mix(HELIXFOLD3.out.versions)
-        ch_report_input              = ch_report_input.mix(HELIXFOLD3.out.pdb.map{
-                                                    [it[0],
-                                                    it[1].sort { path ->
-                                                                def filename = path.name
-                                                                def matcher = filename =~ /ranked_(\d+)\.pdb/
-                                                                if (matcher.matches()) {
-                                                                    return matcher[0][1].toInteger()
-                                                                } else {
-                                                                    return 0  // fallback if no match
-                                                                }
-                                                            }.subList(0, Math.min(5, it[1].size() as int))
-                                                    ]}
-                                                    .join(HELIXFOLD3.out.msa)
-                                                    .join(HELIXFOLD3.out.pae)
-                                                    )
-        ch_top_ranked_model          = ch_top_ranked_model.mix(HELIXFOLD3.out.top_ranked_pdb)
+        ch_multiqc          = ch_multiqc.mix(HELIXFOLD3.out.multiqc_report.collect())
+        ch_versions         = ch_versions.mix(HELIXFOLD3.out.versions)
+        ch_report_input     = ch_report_input
+                                .mix(HELIXFOLD3.out.pdb.map { it ->
+                                    [ it[0],
+                                        it[1].sort { path ->
+                                            def filename = path.name
+                                            def matcher = filename =~ /ranked_(\d+)\.pdb/
+                                            if (matcher.matches()) {
+                                                return matcher[0][1].toInteger()
+                                            } else {
+                                                return 0  // fallback if no match
+                                            }
+                                        }.subList(0, Math.min(5, it[1].size() as int))
+                                    ]
+                                }
+                                .join(HELIXFOLD3.out.msa)
+                                .join(HELIXFOLD3.out.pae)
+                            )
+        ch_top_ranked_model = ch_top_ranked_model.mix(HELIXFOLD3.out.top_ranked_pdb)
     }
 
     //
     // WORKFLOW: Run rosettafold2na
     //
     if(requested_modes.contains("rosettafold2na")) {
-
-        // // DBs parameter values
-        // params.rosettafold2na_db = params.rosettafold2na_db ?: params.db
 
         //
         // SUBWORKFLOW: Prepare RosettaFold2NA DBs
@@ -515,24 +500,21 @@ workflow NFCORE_PROTEINFOLD {
         )
         ch_multiqc                              = ch_multiqc.mix(ROSETTAFOLD2NA.out.multiqc_report.collect())
         ch_versions                             = ch_versions.mix(ROSETTAFOLD2NA.out.versions)
-        ch_report_input                         = ch_report_input.mix(
-                                                    ROSETTAFOLD2NA
-                                                        .out
-                                                        .pdb
-                                                        .map { meta, pdb -> [ meta, [ pdb ] ] }
-                                                        .join(ROSETTAFOLD2NA.out.msa)
-                                                        .join(ROSETTAFOLD2NA.out.pae)
-                                                )
+        ch_report_input                         = ch_report_input
+                                                    .mix(
+                                                        ROSETTAFOLD2NA
+                                                            .out
+                                                            .pdb
+                                                            .map { meta, pdb -> [ meta, [ pdb ] ] }
+                                                            .join(ROSETTAFOLD2NA.out.msa)
+                                                            .join(ROSETTAFOLD2NA.out.pae)
+                                                    )
         ch_top_ranked_model                     = ch_top_ranked_model.mix(ROSETTAFOLD2NA.out.pdb)
     }
 
     // WORKFLOW: Run Boltz
     //
     if (params.mode.toLowerCase().split(",").contains("boltz")) {
-
-        // // DBs parameter values
-        // params.boltz_db = params.boltz_db ?: params.db
-        // params.colabfold_db = params.colabfold_db ?: params.db
 
         PREPARE_BOLTZ_DBS(
             params.boltz_db,
@@ -580,7 +562,7 @@ workflow NFCORE_PROTEINFOLD {
             BOLTZ.out.pdb
             .join(BOLTZ.out.msa)
             .join(BOLTZ.out.pae)
-            )
+        )
         ch_top_ranked_model         = ch_top_ranked_model.mix(BOLTZ.out.top_ranked_pdb)
     }
     //

@@ -50,19 +50,27 @@ workflow POST_PROCESSING {
         if (requested_modes_size > 1){
             ch_dummy_file = channel.fromPath("$projectDir/assets/NO_FILE")
 
-            def esm = ch_top_ranked_model.filter{it[0].model == 'esmfold' }
-            def not_esm = ch_top_ranked_model.filter{it[0].model != 'esmfold' }
+            def esm = ch_top_ranked_model.filter { it ->it[0].model == 'esmfold' }
+            def not_esm = ch_top_ranked_model.filter { it -> it[0].model != 'esmfold' }
 
-            esm = esm.map{[it[0], it[1]]}.merge(ch_dummy_file)
-            not_esm = not_esm.map{[it[0], it[1]]}.join(GENERATE_REPORT.out.sequence_coverage)
+            esm = esm
+                    .map { it -> 
+                        [it[0], it[1]]
+                    }
+                    .merge(ch_dummy_file)
+
+            not_esm = not_esm
+                        .map { it ->  [it[0], it[1]] }
+                        .join(GENERATE_REPORT.out.sequence_coverage)
+
             not_esm.mix(esm).set{ch_comparison_report_files}
 
             ch_comparison_report_files
-                .map{
+                .map { it ->
                     [["id": it[0].id], it[0], it[1], it[2]]
                 }
                 .groupTuple(by: [0], size: requested_modes_size)
-                .map{
+                .map { it ->
                     it[0].models=it[1].join(',');
                     [it[0], it[2], it[3]]
                 }
@@ -70,14 +78,17 @@ workflow POST_PROCESSING {
 
             COMPARE_STRUCTURES(
                 ch_comparison_report_input
-                    .map {
-                        [it[0], it[1].collect { it.name} ]
+                    .map { it -> 
+                        [it[0], it[1].collect { file -> file.name} ]
                     },
                 ch_comparison_report_input
-                    .map{
-                        [ it[0], it[2].collect { it.name} ]
+                    .map { it ->
+                        [ it[0], it[2].collect { file -> file.name } ]
                     },
-                ch_comparison_report_input.map{(it[1] + it[2]).unique()},
+                ch_comparison_report_input
+                    .map { it -> 
+                        (it[1] + it[2]).unique()
+                    },
                 ch_comparison_template
             )
             ch_versions = ch_versions.mix(COMPARE_STRUCTURES.out.versions)
@@ -121,7 +132,7 @@ workflow POST_PROCESSING {
             .combine(
                 ch_multiqc_files
                     .collect()
-                    .map { [it] }
+                    .map { it -> [it] }
             )
 
         MULTIQC (
@@ -129,9 +140,9 @@ workflow POST_PROCESSING {
                 .combine(
                     ch_multiqc_files
                         .collect()
-                        .map { [it] }
+                        .map { it -> [it] }
                 )
-                .map { [ it[0], it[1] + it[2] ] },
+                .map { it -> [ it[0], it[1] + it[2] ] },
             ch_multiqc_config,
             ch_multiqc_custom_config
                 .collect()

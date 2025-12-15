@@ -38,7 +38,7 @@ workflow ROSETTAFOLD_ALL_ATOM {
     main:
     ch_multiqc_report = channel.empty()
 
-    ch_samplesheet.branch {
+    ch_samplesheet.branch { it ->
         fasta: it[1].extension == "fasta" || it[1].extension == "fa"
         yaml: it[1].extension == "yaml"
     }.set{ch_input}
@@ -47,34 +47,38 @@ workflow ROSETTAFOLD_ALL_ATOM {
         ch_input.fasta
     )
 
-    ch_input.yaml.map{[it[0], it[1], []]}
+    ch_input.yaml.map { it ->
+        [it[0], it[1], []]
+    }
     .mix(FASTA2YAML.out.yaml.join(FASTA2YAML.out.fasta))
     .set{ch_rosetta_all_atom_in}
 
     RUN_ROSETTAFOLD_ALL_ATOM (
-        ch_rosetta_all_atom_in.map{[it[0], it[1]]},
+        ch_rosetta_all_atom_in.map { it -> [it[0], it[1]] },
         uniref30_prefix,
         ch_bfd,
         ch_uniref30,
         ch_pdb100,
         ch_rfaa_paper_weights,
-        ch_rosetta_all_atom_in.map{it[2]}
+        ch_rosetta_all_atom_in.map { it -> it[2] }
     )
     ch_versions = ch_versions.mix(RUN_ROSETTAFOLD_ALL_ATOM.out.versions)
 
     RUN_ROSETTAFOLD_ALL_ATOM
         .out
         .multiqc
-        .map { it[1] }
+        .map { it -> it[1] }
         .toSortedList()
-        .map { [ [ "model": "rosettafold_all_atom" ], it.flatten() ] }
+        .map { it -> 
+            [ [ "model": "rosettafold_all_atom" ], it.flatten() ] 
+        }
         .set { ch_multiqc_report }
 
     def rosettafold_all_atomChannel = { ch ->
         ch.map { meta, value ->
             meta = meta.clone()
             meta.model = "rosettafold_all_atom"
-            [meta, value]
+            [ meta, value ]
         }
     }
 

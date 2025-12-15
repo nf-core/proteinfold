@@ -120,7 +120,7 @@ workflow PREPARE_HELIXFOLD3_DBS {
                 helixfold3_pdb_seqres_link
             ]
         )
-        ch_helixfold3_pdb_seqres = ARIA2_PDB_SEQRES.out.downloaded_file.map{ it[1] }
+        ch_helixfold3_pdb_seqres = ARIA2_PDB_SEQRES.out.downloaded_file.map { it -> it[1] }
         ch_versions = ch_versions.mix(ARIA2_PDB_SEQRES.out.versions)
 
         ARIA2_UNIPROT_SPROT(

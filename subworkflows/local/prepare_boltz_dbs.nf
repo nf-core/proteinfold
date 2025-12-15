@@ -38,7 +38,7 @@ workflow PREPARE_BOLTZ_DBS {
                 boltz_ccd_link
             ]
         )
-        ch_boltz_ccd = ARIA2_BOLTZ_CCD.out.downloaded_file.map{ it[1] }
+        ch_boltz_ccd = ARIA2_BOLTZ_CCD.out.downloaded_file.map { it -> it[1] }
         ch_versions = ch_versions.mix(ARIA2_BOLTZ_CCD.out.versions)
 
         ARIA2_BOLTZ_MODEL(
@@ -47,7 +47,7 @@ workflow PREPARE_BOLTZ_DBS {
                 boltz_model_link
             ]
         )
-        ch_boltz_model = ARIA2_BOLTZ_MODEL.out.downloaded_file.map{ it[1] }
+        ch_boltz_model = ARIA2_BOLTZ_MODEL.out.downloaded_file.map { it ->  it[1] }
         ch_versions = ch_versions.mix(ARIA2_BOLTZ_MODEL.out.versions)
 
         ARIA2_BOLTZ2_AFF(
@@ -56,7 +56,7 @@ workflow PREPARE_BOLTZ_DBS {
                 boltz2_aff_link
             ]
         )
-        ch_boltz2_aff = ARIA2_BOLTZ2_AFF.out.downloaded_file.map{ it[1] }
+        ch_boltz2_aff = ARIA2_BOLTZ2_AFF.out.downloaded_file.map { it -> it[1] }
         ch_versions = ch_versions.mix(ARIA2_BOLTZ2_AFF.out.versions)
 
         ARIA2_BOLTZ2_CONF(
@@ -65,7 +65,7 @@ workflow PREPARE_BOLTZ_DBS {
                 boltz2_conf_link
             ]
         )
-        ch_boltz2_conf = ARIA2_BOLTZ2_CONF.out.downloaded_file.map{ it[1] }
+        ch_boltz2_conf = ARIA2_BOLTZ2_CONF.out.downloaded_file.map { it -> it[1] }
         ch_versions = ch_versions.mix(ARIA2_BOLTZ2_CONF.out.versions)
 
 	ARIA2_UNCOMPRESS(

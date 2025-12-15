@@ -115,7 +115,7 @@ workflow COLABFOLD {
     COLABFOLD_BATCH
         .out
         .top_ranked_pdb
-        .map{
+        .map { it ->
             def meta_clone = it[0].clone();
             meta_clone.model = "colabfold";
             [ meta_clone, it[1] ]
@@ -125,7 +125,7 @@ workflow COLABFOLD {
     COLABFOLD_BATCH
         .out
         .pdb
-        .map{
+        .map { it ->
             def meta = it[0].clone();
             meta.model = "colabfold";
             def files = (it[1] instanceof List) ? it[1] : [ it[1] ]
@@ -139,9 +139,11 @@ workflow COLABFOLD {
     COLABFOLD_BATCH
         .out
         .multiqc
-        .map { it[1] }
+        .map { it -> it[1] }
         .toSortedList()
-        .map { [ [ "model":"colabfold"], it.flatten() ] }
+        .map { it -> 
+            [ [ "model":"colabfold"], it.flatten() ] 
+        }
         .set { ch_multiqc_report  }
 
     emit:

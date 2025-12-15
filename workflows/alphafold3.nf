@@ -88,7 +88,7 @@ workflow ALPHAFOLD3 {
     MMCIF2PDB_MODELS
         .out
         .pdb
-        .map {
+        .map { it ->
             def meta   = it[0].clone();
             meta.model = "alphafold3";
             def files = (it[1] instanceof List) ? it[1] : [ it[1] ]
@@ -107,7 +107,7 @@ workflow ALPHAFOLD3 {
     MMCIF2PDB_TOP_RANKED
         .out
         .pdb
-        .map {
+        .map { it ->
             def meta = it[0].clone();
             meta.model = "alphafold3";
             [ meta, it[1] ]
@@ -118,7 +118,7 @@ workflow ALPHAFOLD3 {
     RUN_ALPHAFOLD3
         .out
         .msa
-        .map {
+        .map { it ->
             def meta = it[0].clone();
             meta.model = "alphafold3";
             [ meta, it[1] ]
@@ -129,16 +129,18 @@ workflow ALPHAFOLD3 {
     RUN_ALPHAFOLD3
         .out
         .multiqc
-        .map { it[1] }
+        .map { it -> it[1] }
         .toSortedList()
-        .map { [ [ "model": "alphafold3" ], it.flatten() ] }
+        .map { it ->
+            [ [ "model": "alphafold3" ], it.flatten() ] 
+        }
         .set { ch_multiqc_report }
 
     // Prepare dummy pae input
     RUN_ALPHAFOLD3
         .out
         .pae
-        .map {
+        .map { it ->
             def meta = it[0].clone();
             meta.model = "alphafold3";
             [ meta, it[1] ]

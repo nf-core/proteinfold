@@ -43,16 +43,16 @@ workflow PREPARE_ESMFOLD_DBS {
         ch_params = ARIA2_ESMFOLD_3B_V1
                         .out
                         .downloaded_file
-                        .map{ it[1] }
+                        .map { it -> it[1] }
                         .mix(
                             ARIA2_ESM2_T36_3B_UR50D
                                 .out
                                 .downloaded_file
-                                .map{ it[1] },
+                                .map { it -> it[1] },
                             ARIA2_ESM2_T36_3B_UR50D_CONTACT_REGRESSION
                                 .out
                                 .downloaded_file
-                                .map{ it[1] })
+                                .map { it -> it[1] })
                         .collect()
 
         ch_versions = ch_versions.mix(ARIA2_ESMFOLD_3B_V1.out.versions)

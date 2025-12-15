@@ -81,7 +81,7 @@ workflow PREPARE_ALPHAFOLD2_DBS {
                         .out
                         .db
                         .map {
-                            dir -> dir.listFiles().findAll { it.isFile() }
+                            dir -> dir.listFiles().findAll { it -> it.isFile() }
                         }
             ch_versions = ch_versions.mix(ARIA2_BFD.out.versions)
         } else {
@@ -99,7 +99,7 @@ workflow PREPARE_ALPHAFOLD2_DBS {
 			.out
             .db
             .map {
-                dir -> dir.listFiles().findAll { it.isFile() }
+                dir -> dir.listFiles().findAll { it -> it.isFile() }
             }
 
         ch_versions = ch_versions.mix(ARIA2_ALPHAFOLD2_PARAMS.out.versions)
@@ -117,7 +117,7 @@ workflow PREPARE_ALPHAFOLD2_DBS {
                     .out
                     .db
                     .map {
-                        dir -> dir.listFiles().findAll { it.isFile() }
+                        dir -> dir.listFiles().findAll { it -> it.isFile() }
                     }
         ch_versions = ch_versions.mix(ARIA2_PDB70.out.versions)
 
@@ -139,7 +139,7 @@ workflow PREPARE_ALPHAFOLD2_DBS {
         ch_uniref30 = ARIA2_UNIREF30
 		      	        .out
 			            .db
-			            .map { dir -> dir.listFiles().findAll { it.isFile() } }
+			            .map { dir -> dir.listFiles().findAll { it -> it.isFile() } }
 	    ch_versions = ch_versions.mix(ARIA2_UNIREF30.out.versions)
 
         ARIA2_UNIREF90(
@@ -154,7 +154,7 @@ workflow PREPARE_ALPHAFOLD2_DBS {
                 pdb_seqres_link
             ]
         )
-        ch_pdb_seqres = ARIA2_PDB_SEQRES.out.downloaded_file.map{ it[1] }
+        ch_pdb_seqres = ARIA2_PDB_SEQRES.out.downloaded_file.map { it -> it[1] }
         ch_versions = ch_versions.mix(ARIA2_PDB_SEQRES.out.versions)
 
         ARIA2_UNIPROT_SPROT(

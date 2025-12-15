@@ -38,7 +38,7 @@ workflow PREPARE_ROSETTAFOLD_ALL_ATOM_DBS {
                     .out
                     .db
                     .map {
-                        dir -> dir.listFiles().findAll { it.isFile() }
+                        dir -> dir.listFiles().findAll { it -> it.isFile() }
                     }
 
         ch_versions = ch_versions.mix(ARIA2_BFD.out.versions)
@@ -48,7 +48,7 @@ workflow PREPARE_ROSETTAFOLD_ALL_ATOM_DBS {
                         .out
                         .db
                         .map {
-                            dir -> dir.listFiles().findAll { it.isFile() }
+                            dir -> dir.listFiles().findAll { it -> it.isFile() }
                         }
         ch_versions = ch_versions.mix(ARIA2_UNIREF30.out.versions)
 
@@ -56,8 +56,8 @@ workflow PREPARE_ROSETTAFOLD_ALL_ATOM_DBS {
         ch_pdb100 = ARIA2_PDB100
                         .out
                         .db
-                        .map {
-                            dir -> dir.listFiles().findAll { it.isFile() }
+                        .map { 
+                            dir -> dir.listFiles().findAll { it -> it.isFile() }
                         }
         ch_versions = ch_versions.mix(ARIA2_PDB100.out.versions)
 

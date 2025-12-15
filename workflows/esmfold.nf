@@ -59,9 +59,11 @@ workflow ESMFOLD {
     RUN_ESMFOLD
         .out
         .multiqc
-        .map { it[1] }
+        .map { it -> it[1] }
         .toSortedList()
-        .map { [ [ "model": "esmfold"], it.flatten() ] }
+        .map { it -> 
+            [ [ "model": "esmfold"], it.flatten() ] 
+        }
         .set { ch_multiqc_report  }
 
     modeChannel(RUN_ESMFOLD.out.pdb, "esmfold").set { ch_pdb_final }
