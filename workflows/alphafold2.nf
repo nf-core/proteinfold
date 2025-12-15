@@ -89,7 +89,7 @@ workflow ALPHAFOLD2 {
             .map { it -> it[1] }
             .toSortedList()
             .map { it ->
-                [ [ "model": "alphafold2" ], it.flatten() ] 
+                [ [ "model": "alphafold2" ], it.flatten() ]
             }
             .set { ch_multiqc_report }
 
@@ -154,7 +154,7 @@ workflow ALPHAFOLD2 {
             .map { it -> it[1] }
             .toSortedList()
             .map { it ->
-                [ [ "model": "alphafold2" ], it.flatten() ] 
+                [ [ "model": "alphafold2" ], it.flatten() ]
             }
             .set { ch_multiqc_report }
 

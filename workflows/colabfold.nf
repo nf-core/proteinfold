@@ -141,8 +141,8 @@ workflow COLABFOLD {
         .multiqc
         .map { it -> it[1] }
         .toSortedList()
-        .map { it -> 
-            [ [ "model":"colabfold"], it.flatten() ] 
+        .map { it ->
+            [ [ "model":"colabfold"], it.flatten() ]
         }
         .set { ch_multiqc_report  }
 

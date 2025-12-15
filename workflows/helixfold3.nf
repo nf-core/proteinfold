@@ -52,7 +52,7 @@ workflow HELIXFOLD3 {
     //
     // SUBWORKFLOW: Run helixfold3
     //
-    ch_samplesheet.branch { it -> 
+    ch_samplesheet.branch { it ->
         fasta: it[1].extension == "fasta" || it[1].extension == "fa"
         json: it[1].extension == "json"
     }.set { ch_input }
@@ -82,8 +82,8 @@ workflow HELIXFOLD3 {
         .multiqc
         .map { it ->  it[1] }
         .toSortedList()
-        .map { it -> 
-            [ [ "model": "helixfold3" ], it.flatten() ] 
+        .map { it ->
+            [ [ "model": "helixfold3" ], it.flatten() ]
         }
         .set { ch_multiqc_report }
 
@@ -93,7 +93,7 @@ workflow HELIXFOLD3 {
     RUN_HELIXFOLD3
         .out
         .top_ranked_pdb
-        .map { it -> 
+        .map { it ->
             def meta = it[0].clone();
             meta.model = "helixfold3";
             [ meta, it[1] ]
@@ -103,7 +103,7 @@ workflow HELIXFOLD3 {
     RUN_HELIXFOLD3
         .out
         .pdb
-        .map { it -> 
+        .map { it ->
             def meta = it[0].clone();
             meta.model = "helixfold3";
             def files = (it[1] instanceof List) ? it[1] : [ it[1] ]

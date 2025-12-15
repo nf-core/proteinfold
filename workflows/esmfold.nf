@@ -61,8 +61,8 @@ workflow ESMFOLD {
         .multiqc
         .map { it -> it[1] }
         .toSortedList()
-        .map { it -> 
-            [ [ "model": "esmfold"], it.flatten() ] 
+        .map { it ->
+            [ [ "model": "esmfold"], it.flatten() ]
         }
         .set { ch_multiqc_report  }
 

@@ -69,8 +69,8 @@ workflow ROSETTAFOLD_ALL_ATOM {
         .multiqc
         .map { it -> it[1] }
         .toSortedList()
-        .map { it -> 
-            [ [ "model": "rosettafold_all_atom" ], it.flatten() ] 
+        .map { it ->
+            [ [ "model": "rosettafold_all_atom" ], it.flatten() ]
         }
         .set { ch_multiqc_report }
 

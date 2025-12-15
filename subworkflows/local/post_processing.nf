@@ -54,7 +54,7 @@ workflow POST_PROCESSING {
             def not_esm = ch_top_ranked_model.filter { it -> it[0].model != 'esmfold' }
 
             esm = esm
-                    .map { it -> 
+                    .map { it ->
                         [it[0], it[1]]
                     }
                     .merge(ch_dummy_file)
@@ -78,7 +78,7 @@ workflow POST_PROCESSING {
 
             COMPARE_STRUCTURES(
                 ch_comparison_report_input
-                    .map { it -> 
+                    .map { it ->
                         [it[0], it[1].collect { file -> file.name} ]
                     },
                 ch_comparison_report_input
@@ -86,7 +86,7 @@ workflow POST_PROCESSING {
                         [ it[0], it[2].collect { file -> file.name } ]
                     },
                 ch_comparison_report_input
-                    .map { it -> 
+                    .map { it ->
                         (it[1] + it[2]).unique()
                     },
                 ch_comparison_template

@@ -112,7 +112,7 @@ workflow BOLTZ {
             .multimer
             .mix(ch_input.monomer)
             .map { it ->
-                [it[0], it[1], []] 
+                [it[0], it[1], []]
             }
             .set{ch_prepare_fasta}
     }
@@ -139,7 +139,7 @@ workflow BOLTZ {
     RUN_BOLTZ
         .out
         .pdb
-        .map { it -> 
+        .map { it ->
             it[0].model = "boltz"
             it
         }
@@ -148,7 +148,7 @@ workflow BOLTZ {
     RUN_BOLTZ
         .out
         .top_ranked_pdb
-        .map { it -> 
+        .map { it ->
             it[0].model = "boltz"
             it
         }
@@ -166,7 +166,7 @@ workflow BOLTZ {
     RUN_BOLTZ
         .out
         .pae_raw
-    .map { it -> 
+    .map { it ->
         it[0].model = "boltz"
         it
     }
