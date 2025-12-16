@@ -1,5 +1,5 @@
-name: metro map generation
-# This workflow generates a metro map for the nf-core/proteinfold pipeline using bioflow-insight
+name: workflow JSON generation
+# This workflow generates a workflow JSON for the nf-core/proteinfold pipeline using bioflow-insight
 on:
   push:
     branches:
@@ -14,7 +14,7 @@ concurrency:
 
 jobs:
   test:
-    name: Create map using bioflow-insight
+    name: Create workflow JSON using bioflow-insight
     # Only run on push if this is the nf-core dev branch (merged PRs)
     if: "${{ github.event_name != 'push' || (github.event_name == 'push' && github.repository == 'nf-core/proteinfold') }}"
     runs-on: ubuntu-latest
@@ -36,16 +36,14 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y graphviz
 
-      - name: Disk space cleanup
-        uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
 
       - name: Run bioflow-insight to generate metro map
         run: |
-          bioflow-insight ${GITHUB_WORKSPACE}/main.nf --analysis metroflow --output-dir metro_map
+          bioflow-insight ${GITHUB_WORKSPACE}/main.nf --analysis metroflow --output-dir ${GITHUB_WORKSPACE}/assets
 
       - name: Upload metro map artifact
         uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
         with:
           name: metro map json file
           path: |
-            ${GITHUB_WORKSPACE}/metro_map/*.json
+            ${GITHUB_WORKSPACE}/assets/*.json
