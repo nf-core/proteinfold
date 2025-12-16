@@ -42,7 +42,7 @@ jobs:
       - name: Run bioflow-insight to generate metro map
         run: |
           bioflow-insight ${GITHUB_WORKSPACE}/main.nf --analysis metroflow --output-dir metro_map
-        
+
       - name: Upload metro map artifact
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
