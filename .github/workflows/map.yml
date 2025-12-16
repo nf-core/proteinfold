@@ -37,12 +37,28 @@ jobs:
           sudo apt-get install -y graphviz
 
       - name: Run bioflow-insight to generate metro map
+        id: generate-json
         run: |
           bioflow-insight ${GITHUB_WORKSPACE}/main.nf --analysis metroflow --output-dir ${GITHUB_WORKSPACE}/assets
 
       - name: Upload workflow  JSON artifact
+        id: upload-artifact
         uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
         with:
           name: workflow JSON file
           path: |
             assets/graphs/*.json
+
+      - name: Commit and push workflow JSON files
+        if: steps.generate-json.outcome == 'success' && steps.upload-artifact.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ secrets.NF_CORE_BOT_AUTH_TOKEN }}
+        run: |
+          git config user.email "core@nf-co.re"
+          git config user.name "nf-core-bot"
+          mkdir -p assets/workflow_jsons
+          mv assets/graphs/*.json assets/workflow_jsons/
+          git add assets/workflow_jsons
+          git status
+          git commit -m "[automated] Add workflow JSON artifacts (metro map)"
+          git push
