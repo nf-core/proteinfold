@@ -58,6 +58,7 @@ jobs:
           git config user.name "nf-core-bot"
           mkdir -p assets/workflow_jsons
           mv assets/graphs/*.json assets/workflow_jsons/
+          git checkout -B "$GITHUB_REF_NAME"
           git add assets/workflow_jsons
           git status
           git commit -m "[automated] Add workflow JSON artifacts (metro map)"
