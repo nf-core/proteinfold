@@ -48,4 +48,4 @@ jobs:
         with:
           name: metro map json file
           path: |
-            ./metro_map/*.json
+            ${GITHUB_WORKSPACE}/metro_map/*.json
