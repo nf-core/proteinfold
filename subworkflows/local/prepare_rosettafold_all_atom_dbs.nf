@@ -24,13 +24,13 @@ workflow PREPARE_ROSETTAFOLD_ALL_ATOM_DBS {
     rosettafold_all_atom_paper_weights_link
 
     main:
-    ch_versions                 = Channel.empty()
+    ch_versions                 = channel.empty()
 
     if (rosettafold_all_atom_db) {
-        ch_bfd                  = Channel.value(file(rosettafold_all_atom_bfd_path))
-        ch_uniref30             = Channel.value(file(rosettafold_all_atom_uniref30_path))
-        ch_pdb100               = Channel.value(file(rosettafold_all_atom_pdb100_path))
-        ch_rfaa_paper_weights   = Channel.value(file(rosettafold_all_atom_paper_weights_path))
+        ch_bfd                  = channel.value(file(rosettafold_all_atom_bfd_path))
+        ch_uniref30             = channel.value(file(rosettafold_all_atom_uniref30_path))
+        ch_pdb100               = channel.value(file(rosettafold_all_atom_pdb100_path))
+        ch_rfaa_paper_weights   = channel.value(file(rosettafold_all_atom_paper_weights_path))
     }
     else {
         ARIA2_BFD(rosettafold_all_atom_bfd_link)
@@ -38,7 +38,7 @@ workflow PREPARE_ROSETTAFOLD_ALL_ATOM_DBS {
                     .out
                     .db
                     .map {
-                        dir -> dir.listFiles().findAll { it.isFile() }
+                        dir -> dir.listFiles().findAll { it -> it.isFile() }
                     }
 
         ch_versions = ch_versions.mix(ARIA2_BFD.out.versions)
@@ -48,7 +48,7 @@ workflow PREPARE_ROSETTAFOLD_ALL_ATOM_DBS {
                         .out
                         .db
                         .map {
-                            dir -> dir.listFiles().findAll { it.isFile() }
+                            dir -> dir.listFiles().findAll { it -> it.isFile() }
                         }
         ch_versions = ch_versions.mix(ARIA2_UNIREF30.out.versions)
 
@@ -57,7 +57,7 @@ workflow PREPARE_ROSETTAFOLD_ALL_ATOM_DBS {
                         .out
                         .db
                         .map {
-                            dir -> dir.listFiles().findAll { it.isFile() }
+                            dir -> dir.listFiles().findAll { it -> it.isFile() }
                         }
         ch_versions = ch_versions.mix(ARIA2_PDB100.out.versions)
 

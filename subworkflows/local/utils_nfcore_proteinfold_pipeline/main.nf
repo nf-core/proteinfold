@@ -39,7 +39,8 @@ workflow PIPELINE_INITIALISATION {
     show_hidden       // boolean: Show hidden parameters in the help message
 
     main:
-    ch_versions = Channel.empty()
+
+    ch_versions = channel.empty()
 
     //
     // Print version and exit if required and dump pipeline parameters to JSON file
@@ -64,7 +65,7 @@ workflow PIPELINE_INITIALISATION {
 \033[0;35m  nf-core/proteinfold ${workflow.manifest.version}\033[0m
 -\033[2m----------------------------------------------------\033[0m-
 """
-    after_text = """${workflow.manifest.doi ? "\n* The pipeline\n" : ""}${workflow.manifest.doi.tokenize(",").collect { "    https://doi.org/${it.trim().replace('https://doi.org/','')}"}.join("\n")}${workflow.manifest.doi ? "\n" : ""}
+    after_text = """${workflow.manifest.doi ? "\n* The pipeline\n" : ""}${workflow.manifest.doi.tokenize(",").collect { doi -> "    https://doi.org/${doi.trim().replace('https://doi.org/','')}"}.join("\n")}${workflow.manifest.doi ? "\n" : ""}
 * The nf-core framework
     https://doi.org/10.1038/s41587-020-0439-x
 
@@ -261,6 +262,14 @@ def getColabfoldAlphafold2ParamsPath() {
     return path
 }
 
+def modeChannel(ch, mode) {
+    return ch.map { meta, value ->
+        def meta_clone = meta.clone()
+        meta_clone.model = mode
+        [ meta_clone, value ]
+    }
+}
+
 //
 // Generate methods description for MultiQC
 //
@@ -324,7 +333,11 @@ def methodsDescriptionText(mqc_methods_yaml) {
 }
 
 def cleanHeader(header) {
-    return header.replaceAll(" ", "_").replaceAll(",", "").replaceAll(";","")
+    return header
+        .replaceAll(" ", "_")
+        .replaceAll("/","_")
+        .replaceAll(",", "")
+        .replaceAll(";","")
 }
 
 def validateFasta(fasta) {
@@ -336,7 +349,7 @@ def validateFasta(fasta) {
     }
     // check headers that are malformed
     headers.each { header ->
-        if (header =~ /[ \t;,]/) {
+        if (header =~ /[ \t;,\/]/) {
             // warn user that the header contains special characters
             log.warn "The header ${header} contains special characters. They have been automatically removed."
         }

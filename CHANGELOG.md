@@ -79,51 +79,53 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[PR #407](https://github.com/nf-core/proteinfold/pulls/407)] - Several changes to meet nf-core standards.
 - [[PR #409](https://github.com/nf-core/proteinfold/pulls/409)] - Force single pdb workflow outputs to return as a list
 - [[PR #396](https://github.com/nf-core/proteinfold/pulls/396)] - Split ColabFold into separate optimised containers with version pinning and significant size reduction.
+- [[#412](https://github.com/nf-core/proteinfold/issues/412)] - Substitute "/" with "\_" from fasta headers used to name files when using "--split_fasta".
+- [[PR #424](https://github.com/nf-core/proteinfold/pulls/424)] - Bump docker image version for release to 2.0.0, make code more friendly with Nextflow language server and other format issues/fixes.
 
 ### Parameters
 
-| Old parameter                  | New parameter                    |
-| ------------------------------ | -------------------------------- |
-| `--small_bfd_link`             | `--alphafold2_small_bfd_link`    |
-| `--mgnify_link`                | `--alphafold2_mgnify_link`       |
-| `--pdb_mmcif_link`             | `--alphafold2_pdb_mmcif_link`    |
-| `--uniref30_alphafold2_link`   | `--alphafold2_uniref30_link`     |
-| `--uniref90_link`              | `--alphafold2_uniref90_link`     |
-| `--pdb_seqres_link`            | `--alphafold2_pdb_seqres_link`   |
-| `--small_bfd_path`             | `--alphafold2_small_bfd_path`    |
-| `--mgnify_path_alphafold2`     | `--alphafold2_mgnify_path`       |
-| `--pdb_mmcif_path`             | `--alphafold2_pdb_mmcif_path`    |
-| `--uniref30_alphafold2_path`   | `--alphafold2_uniref30_path`     |
-| `--uniref90_path`              | `--alphafold2_uniref90_path`     |
-| `--pdb_seqres_path`            | `--alphafold2_pdb_seqres_path`   |
-| `--uniprot_path`               | `--alphafold2_uniprot_path`      |
-| `--colabfold_server webserver` | `--use_msa_server`               |
-| `--host_url`                   | `--msa_server_url`               |
-|                                | `--alphafold2_pdb_obsolete_path` |
-|                                | `--alphafold3_small_bfd_link`    |
-|                                | `--alphafold3_mgnify_link`       |
-|                                | `--alphafold3_uniref90_link`     |
-|                                | `--alphafold3_pdb_seqres_link`   |
-|                                | `--alphafold3_uniprot_link`      |
-|                                | `--alphafold3_small_bfd_path`    |
-|                                | `--alphafold3_params_path`       |
-|                                | `--alphafold3_mgnify_path`       |
-|                                | `--alphafold3_pdb_mmcif_path`    |
-|                                | `--alphafold3_uniref90_path`     |
-|                                | `--alphafold3_pdb_seqres_path`   |
-|                                | `--alphafold3_uniprot_path`      |
-|                                | `--boltz_model`                  |
-|                                | `--boltz2_aff_path`              |
-|                                | `--boltz2_conf_path`             |
-|                                | `--boltz2_mols_path`             |
-|                                | `--boltz_model_path`             |
-|                                | `--boltz_ccd_path`               |
-|                                | `--boltz_db`                     |
-|                                | `--boltz2_aff_link`              |
-|                                | `--boltz2_conf_link`             |
-|                                | `--boltz2_mols_link`             |
-|                                | `--boltz_model_link`             |
-|                                | `--boltz_ccd_link`               |
+| Old parameter                | New parameter                    |
+| ---------------------------- | -------------------------------- |
+| `--small_bfd_link`           | `--alphafold2_small_bfd_link`    |
+| `--mgnify_link`              | `--alphafold2_mgnify_link`       |
+| `--pdb_mmcif_link`           | `--alphafold2_pdb_mmcif_link`    |
+| `--uniref30_alphafold2_link` | `--alphafold2_uniref30_link`     |
+| `--uniref90_link`            | `--alphafold2_uniref90_link`     |
+| `--pdb_seqres_link`          | `--alphafold2_pdb_seqres_link`   |
+| `--small_bfd_path`           | `--alphafold2_small_bfd_path`    |
+| `--mgnify_path_alphafold2`   | `--alphafold2_mgnify_path`       |
+| `--pdb_mmcif_path`           | `--alphafold2_pdb_mmcif_path`    |
+| `--uniref30_alphafold2_path` | `--alphafold2_uniref30_path`     |
+| `--uniref90_path`            | `--alphafold2_uniref90_path`     |
+| `--pdb_seqres_path`          | `--alphafold2_pdb_seqres_path`   |
+| `--uniprot_path`             | `--alphafold2_uniprot_path`      |
+| `--colabfold_server`         | `--use_msa_server`               |
+| `--host_url`                 | `--msa_server_url`               |
+|                              | `--alphafold2_pdb_obsolete_path` |
+|                              | `--alphafold3_small_bfd_link`    |
+|                              | `--alphafold3_mgnify_link`       |
+|                              | `--alphafold3_uniref90_link`     |
+|                              | `--alphafold3_pdb_seqres_link`   |
+|                              | `--alphafold3_uniprot_link`      |
+|                              | `--alphafold3_small_bfd_path`    |
+|                              | `--alphafold3_params_path`       |
+|                              | `--alphafold3_mgnify_path`       |
+|                              | `--alphafold3_pdb_mmcif_path`    |
+|                              | `--alphafold3_uniref90_path`     |
+|                              | `--alphafold3_pdb_seqres_path`   |
+|                              | `--alphafold3_uniprot_path`      |
+|                              | `--boltz_model`                  |
+|                              | `--boltz2_aff_path`              |
+|                              | `--boltz2_conf_path`             |
+|                              | `--boltz2_mols_path`             |
+|                              | `--boltz_model_path`             |
+|                              | `--boltz_ccd_path`               |
+|                              | `--boltz_db`                     |
+|                              | `--boltz2_aff_link`              |
+|                              | `--boltz2_conf_link`             |
+|                              | `--boltz2_mols_link`             |
+|                              | `--boltz_model_link`             |
+|                              | `--boltz_ccd_link`               |
 
 > **NB:** Parameter has been **updated** if both old and new parameter information is present.
 > **NB:** Parameter has been **added** if just the new parameter information is present.
