@@ -3,7 +3,7 @@ process RUN_ESMFOLD {
     label 'process_medium'
     label 'process_gpu'
 
-    container "nf-core/proteinfold_esmfold:dev"
+    container "nf-core/proteinfold_esmfold:2.0.0"
 
     input:
     tuple val(meta), path(fasta)

@@ -5,7 +5,7 @@ process RUN_ALPHAFOLD2_MSA {
     tag   "$meta.id"
     label 'process_medium'
 
-    container "nf-core/proteinfold_alphafold2_msa:dev"
+    container "nf-core/proteinfold_alphafold2_msa:2.0.0"
 
     input:
     tuple val(meta), path(fasta)

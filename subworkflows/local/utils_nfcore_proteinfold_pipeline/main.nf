@@ -262,6 +262,14 @@ def getColabfoldAlphafold2ParamsPath() {
     return path
 }
 
+def modeChannel(ch, mode) {
+    return ch.map { meta, value ->
+        def meta_clone = meta.clone()
+        meta_clone.model = mode
+        [ meta_clone, value ]
+    }
+}
+
 //
 // Generate methods description for MultiQC
 //

@@ -6,7 +6,7 @@ process RUN_HELIXFOLD3 {
     label 'process_medium'
     label 'process_gpu'
 
-    container "nf-core/proteinfold_helixfold3:dev"
+    container "nf-core/proteinfold_helixfold3:2.0.0"
 
     input:
     tuple val(meta), path(fasta)
