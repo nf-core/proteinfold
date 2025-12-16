@@ -36,14 +36,13 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y graphviz
 
-
       - name: Run bioflow-insight to generate metro map
         run: |
           bioflow-insight ${GITHUB_WORKSPACE}/main.nf --analysis metroflow --output-dir ${GITHUB_WORKSPACE}/assets
 
-      - name: Upload metro map artifact
+      - name: Upload workflow  JSON artifact
         uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
         with:
-          name: metro map json file
+          name: workflow JSON file
           path: |
             ${GITHUB_WORKSPACE}/assets/*.json
