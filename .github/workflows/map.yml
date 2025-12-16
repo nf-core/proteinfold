@@ -20,8 +20,22 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check out pipeline code
-        uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b # v4
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
+        with:
+          token: ${{ secrets.NF_CORE_BOT_AUTH_TOKEN }}
+
+      # Action runs on the issue comment, so we don't get the PR by default.
+      # Use the GitHub CLI to check out the PR:
+      - name: Checkout Pull Request
+        env:
+          GH_TOKEN: ${{ secrets.NF_CORE_BOT_AUTH_TOKEN }}
+        run: |
+          if [[ "${{ github.event_name }}" == "issue_comment" ]]; then
+            PR_NUMBER="${{ github.event.issue.number }}"
+          elif [[ "${{ github.event_name }}" == "pull_request_target" ]]; then
+            PR_NUMBER="${{ github.event.pull_request.number }}"
+          fi
+          gh pr checkout $PR_NUMBER
 
       - name: Install dependencies
         run: |
@@ -58,7 +72,6 @@ jobs:
           git config user.name "nf-core-bot"
           mkdir -p assets/workflow_jsons
           mv assets/graphs/*.json assets/workflow_jsons/
-          git checkout -B "$GITHUB_REF_NAME"
           git add assets/workflow_jsons
           git status
           git commit -m "[automated] Add workflow JSON artifacts (metro map)"
