@@ -45,4 +45,4 @@ jobs:
         with:
           name: workflow JSON file
           path: |
-            ${GITHUB_WORKSPACE}/assets/graphs/*.json
+            assets/graphs/*.json
