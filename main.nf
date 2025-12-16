@@ -121,7 +121,7 @@ workflow NFCORE_PROTEINFOLD {
         ALPHAFOLD2 (
             ch_samplesheet,
             ch_versions,
-            params.alphafold2_full_dbs,// here
+            params.alphafold2_full_dbs,
             params.alphafold2_mode,
             params.alphafold2_model_preset,
             params.uniref30_prefix,
