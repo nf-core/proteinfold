@@ -2,11 +2,9 @@ name: workflow JSON generation
 # This workflow generates a workflow JSON for the nf-core/proteinfold pipeline using bioflow-insight
 on:
   push:
-    branches:
-      - dev
-  pull_request:
-  release:
-    types: [published]
+    pull_request_target:
+      branches:
+        - dev
 
 concurrency:
   group: "${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}"
@@ -16,19 +14,23 @@ jobs:
   test:
     name: Create workflow JSON using bioflow-insight
     # Only run on push if this is the nf-core dev branch (merged PRs)
-    if: "${{ github.event_name != 'push' || (github.event_name == 'push' && github.repository == 'nf-core/proteinfold') }}"
+    if: |
+      github.repository_owner == 'nf-core' &&
+        github.event_name == 'pull_request_target'
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
+        with:
+          token: ${{ secrets.nf_core_bot_auth_token }}
 
       # Action runs on the issue comment, so we don't get the PR by default.
       # Use the GitHub CLI to check out the PR:
       - name: Checkout Pull Request
+        env:
+          GH_TOKEN: ${{ secrets.NF_CORE_BOT_AUTH_TOKEN }}
         run: |
-          if [[ "${{ github.event_name }}" == "issue_comment" ]]; then
-            PR_NUMBER="${{ github.event.issue.number }}"
-          elif [[ "${{ github.event_name }}" == "pull_request_target" ]]; then
+          if [[ "${{ github.event_name }}" == "pull_request_target" ]]; then
             PR_NUMBER="${{ github.event.pull_request.number }}"
           fi
           gh pr checkout $PR_NUMBER
