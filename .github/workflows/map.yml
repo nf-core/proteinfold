@@ -4,10 +4,9 @@ on:
   push:
     branches:
       - dev
-  pull_request_target:
-    types: [opened]
-    branches:
-      - dev
+  pull_request:
+  release:
+    types: [published]
 
 concurrency:
   group: "${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}"
