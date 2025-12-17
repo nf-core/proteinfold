@@ -27,8 +27,6 @@ jobs:
       # Action runs on the issue comment, so we don't get the PR by default.
       # Use the GitHub CLI to check out the PR:
       - name: Checkout Pull Request
-        env:
-          GH_TOKEN: ${{ secrets.NF_CORE_BOT_AUTH_TOKEN }}
         run: |
           if [[ "${{ github.event_name }}" == "issue_comment" ]]; then
             PR_NUMBER="${{ github.event.issue.number }}"
@@ -65,8 +63,6 @@ jobs:
 
       - name: Commit and push workflow JSON files
         if: steps.generate-json.outcome == 'success' && steps.upload-artifact.outcome == 'success'
-        env:
-          GH_TOKEN: ${{ secrets.NF_CORE_BOT_AUTH_TOKEN }}
         run: |
           git config user.email "core@nf-co.re"
           git config user.name "nf-core-bot"
