@@ -81,6 +81,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[PR #396](https://github.com/nf-core/proteinfold/pulls/396)] - Split ColabFold into separate optimised containers with version pinning and significant size reduction.
 - [[#412](https://github.com/nf-core/proteinfold/issues/412)] - Substitute "/" with "\_" from fasta headers used to name files when using "--split_fasta".
 - [[PR #424](https://github.com/nf-core/proteinfold/pulls/424)] - Bump docker image version for release to 2.0.0, make code more friendly with Nextflow language server and other format issues/fixes.
+- [[#423](https://github.com/nf-core/proteinfold/issues/423)] - Generate json workflow using bioflow-insight.
 
 ### Parameters
 
