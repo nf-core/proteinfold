@@ -1,9 +1,9 @@
 name: workflow JSON generation
 # This workflow generates a workflow JSON for the nf-core/proteinfold pipeline using bioflow-insight
 on:
-    pull_request_target:
-      branches:
-        - dev
+  pull_request_target:
+    branches:
+      - dev
 
 concurrency:
   group: "${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}"
