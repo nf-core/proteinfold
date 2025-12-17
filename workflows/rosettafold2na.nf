@@ -29,24 +29,24 @@ workflow ROSETTAFOLD2NA {
     ch_dummy_file           // channel: path(NO_FILE)
 
     main:
-    ch_multiqc_files  = Channel.empty()
-    ch_top_ranked_pdb = Channel.empty()
-    ch_pdb_msa        = Channel.empty()
-    ch_multiqc_report = Channel.empty()
+    ch_multiqc_files  = channel.empty()
+    ch_top_ranked_pdb = channel.empty()
+    ch_pdb_msa        = channel.empty()
+    ch_multiqc_report = channel.empty()
 
     ch_samplesheet_reshaped = ch_samplesheet.map {
         meta, file -> [ meta.id, file ] }
 
     ch_protein_interaction = ch_interactions
-                                .map {
+                                .map { it ->
                                     [ it.protein_id, it.interaction_id, it.interaction_type ]
                                 }
                                 .join(ch_samplesheet_reshaped, by: 0)
-                                .map {
+                                .map { it ->
                                     [ it[1], it[0], it[2], it[3] ] // [ protein_id, interaction_id, interaction_type, file ]
                                 }
                                 .join(ch_samplesheet_reshaped, by: 0)
-                                .map {
+                                .map { it ->
                                     [ [ id: it[1], interaction_id: it[0], interaction_type: it[2] ], it[3], it[4] ] // [ protein_id, interaction_id, interaction_type, file ]
                                 }
 
@@ -63,9 +63,9 @@ workflow ROSETTAFOLD2NA {
     RUN_ROSETTAFOLD2NA
         .out
         .multiqc
-        .map { it[1] }
+        .map { it -> it[1] }
         .toSortedList()
-        .map {
+        .map { it ->
             [ [ "model": "rosettafold2na" ], it.flatten() ]
         }
         .set { ch_multiqc_report }
@@ -73,30 +73,30 @@ workflow ROSETTAFOLD2NA {
     RUN_ROSETTAFOLD2NA
         .out
         .pdb
-        .map {
+        .map { it ->
             def meta = it[0].clone();
             meta.model = "rosettafold2na";
-            [meta, it[1]]
+            [ meta, it[1] ]
         }
         .set { ch_pdb_final }
 
     RUN_ROSETTAFOLD2NA
         .out
         .pae
-        .map {
+        .map { it ->
             def meta = it[0].clone();
             meta.model = "rosettafold2na";
-            [meta, it[1]]
+            [ meta, it[1] ]
         }
         .set { ch_pae_final }
 
     RUN_ROSETTAFOLD2NA
         .out
         .msa
-        .map {
+        .map { it ->
             def meta = it[0].clone();
             meta.model = "rosettafold2na";
-            [meta, it[1]]
+            [ meta, it[1] ]
         }
         .set { ch_msa_final }
 

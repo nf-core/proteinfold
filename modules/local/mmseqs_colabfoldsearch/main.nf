@@ -3,7 +3,7 @@ process MMSEQS_COLABFOLDSEARCH {
     label 'process_high_memory'
     label 'process_high'
 
-    container "nf-core/proteinfold_mmseqs_colabfoldsearch:dev"
+    container "nf-core/proteinfold_mmseqs_colabfoldsearch:2.0.0"
 
     input:
     tuple val(meta), path(fasta)
