@@ -125,13 +125,10 @@ workflow ALPHAFOLD2 {
         //synchronize
         ch_samplesheet
             .join(RUN_ALPHAFOLD2_MSA.out.features)
-            .set { ch_synched }
-
-        def ch_samplesheet2 = ch_synched.map { meta, seq, msa }
-        def ch_features = ch_synched.map { meta, seq, msa -> [meta, msa] }
+            .set { ch_fasta_features }
 
         RUN_ALPHAFOLD2_PRED (
-            ch_samplesheet2,
+            ch_fasta_features,
             alphafold2_model_preset,
             ch_alphafold2_params,
             ch_bfd,
