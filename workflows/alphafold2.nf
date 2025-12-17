@@ -123,13 +123,12 @@ workflow ALPHAFOLD2 {
         ch_versions = ch_versions.mix(RUN_ALPHAFOLD2_MSA.out.versions)
 
         //synchronize
-        ch_samplesheet.join(
-            RUN_ALPHAFOLD2_MSA.out.features,
-        )
-        .set { ch_synched }
+        ch_samplesheet
+            .join(RUN_ALPHAFOLD2_MSA.out.features)
+            .set { ch_synched }
 
-        def ch_samplesheet2 = ch_synched.map{ meta, seq, msa -> [meta, seq] }
-        def ch_features = ch_synched.map{ meta, seq, msa -> [meta, msa] }
+        def ch_samplesheet2 = ch_synched.map { meta, seq, msa }
+        def ch_features = ch_synched.map { meta, seq, msa -> [meta, msa] }
 
         RUN_ALPHAFOLD2_PRED (
             ch_samplesheet2,
@@ -144,8 +143,7 @@ workflow ALPHAFOLD2 {
             ch_uniref30,
             ch_uniref90,
             ch_pdb_seqres,
-            ch_uniprot,
-            ch_features
+            ch_uniprot
         )
 
         RUN_ALPHAFOLD2_PRED
