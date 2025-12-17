@@ -11,7 +11,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  test:
+  generate-workflow-json:
     name: Create workflow JSON using bioflow-insight
     # Only run on push if this is the nf-core dev branch (merged PRs)
     if: |
