@@ -18,7 +18,6 @@ jobs:
       github.repository_owner == 'nf-core' &&
         github.event_name == 'pull_request_target'
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
         with:
