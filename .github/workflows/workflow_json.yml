@@ -57,7 +57,7 @@ jobs:
       - name: Run pre-commit rules with prek
         uses: j178/prek-action@91fd7d7cf70ae1dee9f4f44e7dfa5d1073fe6623 # v1
         with:
-          extra-args: --config .pre-commit-config.yaml --files assets/workflow_jsons/*
+          extra-args: --config .pre-commit-config.yaml --files assets/graphs/*.json
 
       - name: Commit and push workflow JSON files
         if: steps.generate-json.outcome == 'success' && steps.upload-artifact.outcome == 'success' && github.event_name == 'pull_request_target'
