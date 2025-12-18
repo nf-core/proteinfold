@@ -4,6 +4,7 @@ on:
   pull_request_target:
     branches:
       - dev
+  workflow_dispatch:
 
 concurrency:
   group: "${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}"
@@ -16,17 +17,16 @@ jobs:
     steps:
       - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
         with:
-          token: ${{ secrets.nf_core_bot_auth_token }}
+          token: ${{ secrets.NF_CORE_BOT_AUTH_TOKEN }}
 
-      # Action runs on the issue comment, so we don't get the PR by default.
+      # pull_request_target runs in the context of the base branch, so we need to checkout the PR branch
       # Use the GitHub CLI to check out the PR:
       - name: Checkout Pull Request
+        if: github.event_name == 'pull_request_target'
         env:
           GH_TOKEN: ${{ secrets.NF_CORE_BOT_AUTH_TOKEN }}
         run: |
-          if [[ "${{ github.event_name }}" == "pull_request_target" ]]; then
-            PR_NUMBER="${{ github.event.pull_request.number }}"
-          fi
+          PR_NUMBER="${{ github.event.pull_request.number }}"
           gh pr checkout $PR_NUMBER
 
       - name: Install dependencies
