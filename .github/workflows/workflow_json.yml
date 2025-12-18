@@ -12,10 +12,6 @@ concurrency:
 jobs:
   generate-workflow-json:
     name: Create workflow JSON using bioflow-insight
-    # Only run on push if this is the nf-core dev branch (merged PRs)
-    if: |
-      github.repository_owner == 'nf-core' &&
-        github.event_name == 'pull_request_target'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
