@@ -18,6 +18,16 @@ jobs:
         with:
           token: ${{ secrets.NF_CORE_BOT_AUTH_TOKEN }}
 
+      - name: Safety check
+        if: |
+          github.event_name != 'pull_request_target' ||
+          github.base_ref == 'dev' ||
+          github.base_ref == 'master' ||
+          github.base_ref == 'TEMPLATE'
+        run: |
+          echo "Safety check failed: stopping workflow because event is not 'pull_request_target' or base branch is dev/master/TEMPLATE."
+          exit 1
+
       # pull_request_target runs in the context of the base branch, so we need to checkout the PR branch
       # Use the GitHub CLI to check out the PR:
       - name: Checkout Pull Request
@@ -54,11 +64,15 @@ jobs:
           path: |
             assets/graphs/*.json
 
+      - name: Stage generated workflow JSON files for prek
+        run: |
+          git add assets/graphs/*.json
+
       - name: Run pre-commit rules with prek
         uses: j178/prek-action@91fd7d7cf70ae1dee9f4f44e7dfa5d1073fe6623 # v1
         continue-on-error: true
         with:
-          extra-args: --config .pre-commit-config.yaml --all-files
+          extra-args: --config .pre-commit-config.yaml --files assets/graphs/*.json
 
       - name: Commit and push workflow JSON files
         if: steps.generate-json.outcome == 'success' && steps.upload-artifact.outcome == 'success' && github.event_name == 'pull_request_target'
