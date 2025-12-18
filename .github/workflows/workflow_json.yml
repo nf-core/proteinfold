@@ -63,6 +63,7 @@ jobs:
           git config user.name "nf-core-bot"
           mkdir -p assets/workflow_jsons
           mv assets/graphs/*.json assets/workflow_jsons/
+          pre-commit run --files assets/workflow_jsons/*
           git add assets/workflow_jsons
           git status
           git commit -m "[automated] Add workflow JSON artifacts (metro map)"
