@@ -1679,10 +1679,7 @@
             "color": "#d4d3fc"
         },
         "NFCORE_PROTEINFOLD.HELIXFOLD3": {
-            "nodes": [
-                "NFCORE_PROTEINFOLD.HELIXFOLD3.FASTA2JSON",
-                "NFCORE_PROTEINFOLD.HELIXFOLD3.RUN_HELIXFOLD3"
-            ],
+            "nodes": ["NFCORE_PROTEINFOLD.HELIXFOLD3.FASTA2JSON", "NFCORE_PROTEINFOLD.HELIXFOLD3.RUN_HELIXFOLD3"],
             "label": "HELIXFOLD3",
             "color": "#fef1f1"
         },
@@ -1710,9 +1707,7 @@
             "color": "#fcecd3"
         },
         "NFCORE_PROTEINFOLD.ROSETTAFOLD2NA": {
-            "nodes": [
-                "NFCORE_PROTEINFOLD.ROSETTAFOLD2NA.RUN_ROSETTAFOLD2NA"
-            ],
+            "nodes": ["NFCORE_PROTEINFOLD.ROSETTAFOLD2NA.RUN_ROSETTAFOLD2NA"],
             "label": "ROSETTAFOLD2NA",
             "color": "#faf1fe"
         },
