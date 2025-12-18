@@ -21,11 +21,13 @@ jobs:
       - name: Safety check
         if: |
           github.event_name != 'pull_request_target' ||
-          github.base_ref == 'dev' ||
-          github.base_ref == 'master' ||
-          github.base_ref == 'TEMPLATE'
+          github.event.pull_request.head.ref == 'dev' ||
+          github.event.pull_request.head.ref == 'master' ||
+          github.event.pull_request.head.ref == 'TEMPLATE'
         run: |
-          echo "Safety check failed: stopping workflow because event is not 'pull_request_target' or base branch is dev/master/TEMPLATE."
+          echo "Safety check failed:"
+          echo "  - github event that triggered the action: ${github.event_name} is not pull_request_target"
+          echo "  - branch of origin: ${github.event.pull_request.head.ref} is either dev, master or TEMPLATE"
           exit 1
 
       # pull_request_target runs in the context of the base branch, so we need to checkout the PR branch
