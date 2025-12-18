@@ -4,7 +4,6 @@ on:
   pull_request_target:
     branches:
       - dev
-  workflow_dispatch:
 
 concurrency:
   group: "${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}"
@@ -15,7 +14,7 @@ jobs:
     name: Create workflow JSON using bioflow-insight
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
         with:
           token: ${{ secrets.NF_CORE_BOT_AUTH_TOKEN }}
 
@@ -56,7 +55,7 @@ jobs:
             assets/graphs/*.json
 
       - name: Commit and push workflow JSON files
-        if: steps.generate-json.outcome == 'success' && steps.upload-artifact.outcome == 'success'
+        if: steps.generate-json.outcome == 'success' && steps.upload-artifact.outcome == 'success' && github.event_name == 'pull_request_target'
         env:
           GH_TOKEN: ${{ secrets.NF_CORE_BOT_AUTH_TOKEN }}
         run: |
@@ -64,6 +63,7 @@ jobs:
           git config user.name "nf-core-bot"
           mkdir -p assets/workflow_jsons
           mv assets/graphs/*.json assets/workflow_jsons/
+          pre-commit run --files assets/workflow_jsons/*
           git add assets/workflow_jsons
           git status
           git commit -m "[automated] Add workflow JSON artifacts (metro map)"
