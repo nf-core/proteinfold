@@ -68,14 +68,9 @@ jobs:
           path: |
             assets/graphs/*.json
 
-      - name: Run pre-commit rules with prek
-        uses: j178/prek-action@91fd7d7cf70ae1dee9f4f44e7dfa5d1073fe6623 # v1
-        continue-on-error: true
-        with:
-          extra-args: --config .pre-commit-config.yaml --files assets/graphs/*.json
-
-      - name: Commit and push workflow JSON files
+      - name: Commit and run prek to workflow JSON files
         if: steps.generate-json.outcome == 'success' && steps.upload-artifact.outcome == 'success'
+        continue-on-error: true
         env:
           GH_TOKEN: ${{ secrets.NF_CORE_BOT_AUTH_TOKEN }}
         run: |
@@ -85,6 +80,13 @@ jobs:
           mv assets/graphs/*.json assets/workflow_jsons/
           git add assets/workflow_jsons
           prek run --config .pre-commit-config.yaml --files assets/workflow_jsons/*
+          git add assets/workflow_jsons
+      
+      - name: Commit and push workflow JSON files
+        if: steps.generate-json.outcome == 'success' && steps.upload-artifact.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ secrets.NF_CORE_BOT_AUTH_TOKEN }}
+        run: |
           git add assets/workflow_jsons
           git status
           git commit -m "[automated] Add workflow JSON artifacts (metro map)"
