@@ -1,5 +1,5 @@
 name: workflow JSON generation
-# This workflow generates a workflow JSON for the nf-core/proteinfold pipeline using bioflow-insight
+# This workflow generates a workflow JSON file for the nf-core/proteinfold pipeline using bioflow-insight
 on:
   pull_request_target:
     branches:
@@ -51,7 +51,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y graphviz
-      
+
       - name: Install prek
         run: curl --proto '=https' --tlsv1.2 -LsSf https://github.com/j178/prek/releases/download/v0.2.22/prek-installer.sh | sh
 
@@ -81,7 +81,7 @@ jobs:
           git add assets/workflow_jsons
           prek run --config .pre-commit-config.yaml --files assets/workflow_jsons/*
           git add assets/workflow_jsons
-      
+
       - name: Commit and push workflow JSON files
         if: steps.generate-json.outcome == 'success' && steps.upload-artifact.outcome == 'success'
         env:

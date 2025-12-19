@@ -9,7 +9,7 @@ process RUN_ALPHAFOLD2_PRED {
     container "nf-core/proteinfold_alphafold2_pred:2.0.0"
 
     input:
-    tuple val(meta), path(fasta)
+    tuple val(meta), path(fasta), path(features)
     val   alphafold2_model_preset
     path ('params/*')
     path ('bfd/*')
@@ -22,7 +22,6 @@ process RUN_ALPHAFOLD2_PRED {
     path ('uniref90/*')
     path ('pdb_seqres/*')
     path ('uniprot/*')
-    tuple val(meta2), path(features)
 
     output:
     path ("${fasta.baseName}*")

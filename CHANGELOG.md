@@ -82,6 +82,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[#412](https://github.com/nf-core/proteinfold/issues/412)] - Substitute "/" with "\_" from fasta headers used to name files when using "--split_fasta".
 - [[PR #424](https://github.com/nf-core/proteinfold/pulls/424)] - Bump docker image version for release to 2.0.0, make code more friendly with Nextflow language server and other format issues/fixes.
 - [[#423](https://github.com/nf-core/proteinfold/issues/423)] - Generate json workflow using bioflow-insight.
+- [[#425](https://github.com/nf-core/proteinfold/issues/425)] - Pass as a single input channel fasta and features to get rid of meta2 in RUN_ALPHAFOLD2_PRED.
 
 ### Parameters
 
