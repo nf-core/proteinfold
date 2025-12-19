@@ -12,25 +12,31 @@ concurrency:
 jobs:
   generate-workflow-json:
     name: Create workflow JSON using bioflow-insight
-    # Only run on push if this is the nf-core dev branch (merged PRs)
-    if: |
-      github.repository_owner == 'nf-core' &&
-        github.event_name == 'pull_request_target'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
         with:
-          token: ${{ secrets.nf_core_bot_auth_token }}
+          token: ${{ secrets.NF_CORE_BOT_AUTH_TOKEN }}
 
-      # Action runs on the issue comment, so we don't get the PR by default.
+      - name: Safety check
+        if: |
+          github.event_name != 'pull_request_target' ||
+          github.event.pull_request.head.ref == 'dev' ||
+          github.event.pull_request.head.ref == 'master' ||
+          github.event.pull_request.head.ref == 'TEMPLATE'
+        run: |
+          echo "Safety check failed:"
+          echo "  - github event that triggered the action: ${github.event_name} is not pull_request_target"
+          echo "  - branch of origin: ${github.event.pull_request.head.ref} is either dev, master or TEMPLATE"
+          exit 1
+
+      # pull_request_target runs in the context of the base branch, so we need to checkout the PR branch
       # Use the GitHub CLI to check out the PR:
       - name: Checkout Pull Request
         env:
           GH_TOKEN: ${{ secrets.NF_CORE_BOT_AUTH_TOKEN }}
         run: |
-          if [[ "${{ github.event_name }}" == "pull_request_target" ]]; then
-            PR_NUMBER="${{ github.event.pull_request.number }}"
-          fi
+          PR_NUMBER="${{ github.event.pull_request.number }}"
           gh pr checkout $PR_NUMBER
 
       - name: Install dependencies
@@ -45,6 +51,9 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y graphviz
+      
+      - name: Install prek
+        run: curl --proto '=https' --tlsv1.2 -LsSf https://github.com/j178/prek/releases/download/v0.2.22/prek-installer.sh | sh
 
       - name: Run bioflow-insight to generate metro map
         id: generate-json
@@ -59,8 +68,9 @@ jobs:
           path: |
             assets/graphs/*.json
 
-      - name: Commit and push workflow JSON files
+      - name: Commit and run prek to workflow JSON files
         if: steps.generate-json.outcome == 'success' && steps.upload-artifact.outcome == 'success'
+        continue-on-error: true
         env:
           GH_TOKEN: ${{ secrets.NF_CORE_BOT_AUTH_TOKEN }}
         run: |
@@ -68,6 +78,15 @@ jobs:
           git config user.name "nf-core-bot"
           mkdir -p assets/workflow_jsons
           mv assets/graphs/*.json assets/workflow_jsons/
+          git add assets/workflow_jsons
+          prek run --config .pre-commit-config.yaml --files assets/workflow_jsons/*
+          git add assets/workflow_jsons
+      
+      - name: Commit and push workflow JSON files
+        if: steps.generate-json.outcome == 'success' && steps.upload-artifact.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ secrets.NF_CORE_BOT_AUTH_TOKEN }}
+        run: |
           git add assets/workflow_jsons
           git status
           git commit -m "[automated] Add workflow JSON artifacts (metro map)"
