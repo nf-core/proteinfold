@@ -39,7 +39,7 @@ workflow ROSETTAFOLD2NA {
     ch_versions = ch_versions.mix(ROSETTAFOLD2NA_FASTA.out.versions)
 
     RUN_ROSETTAFOLD2NA (
-        ROSETTAFOLD2NA_FASTA.out.prepared_input,
+        ROSETTAFOLD2NA_FASTA.out.rf2na_input,
         ch_bfd,
         ch_uniref30,
         ch_pdb100,
