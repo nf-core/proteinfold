@@ -10,20 +10,21 @@ process FASTA2JSON {
     input:
     tuple val(meta), path(fasta)
     output:
+
     tuple val(meta), path ("*.json"), emit: json
-    path "versions.yml"        , emit: versions
+    path "versions.yml"             , emit: versions
 
     when:
     task.ext.when == null || task.ext.when
 
     script:
-    def args = task.ext.args ?: ''
-
     """
     #!/usr/bin/env python3
+
     import os, sys
     import json
     import copy
+
     seq_template = {
             "type": "",
             "sequence": "",
@@ -49,6 +50,7 @@ process FASTA2JSON {
             fasta_data = ""
         else:
             fasta_data += f"{line}"
+
     if len(fasta_data) > 0:
         new_entry = copy.deepcopy(seq_template)
         new_entry["type"] = seq_type

@@ -22,16 +22,16 @@ workflow PREPARE_COLABFOLD_DBS {
     colabfold_create_index           //   boolean: Create index for colabfold db
 
     main:
-    ch_params       = Channel.empty()
-    ch_colabfold_db = Channel.empty()
-    ch_uniref30     = Channel.empty()
-    ch_versions     = Channel.empty()
+    ch_params       = channel.empty()
+    ch_colabfold_db = channel.empty()
+    ch_uniref30     = channel.empty()
+    ch_versions     = channel.empty()
 
     if (colabfold_db) {
-        ch_params = Channel.value(file(colabfold_alphafold2_params_path, type: 'any'))
+        ch_params = channel.value(file(colabfold_alphafold2_params_path, type: 'any'))
         if (!use_msa_server) {
-            ch_colabfold_db = Channel.value(file(colabfold_envdb_path, type: 'any'))
-            ch_uniref30     = Channel.value(file(colabfold_uniref30_path, type: 'any'))
+            ch_colabfold_db = channel.value(file(colabfold_envdb_path, type: 'any'))
+            ch_uniref30     = channel.value(file(colabfold_uniref30_path, type: 'any'))
         }
     }
     else {
@@ -41,7 +41,7 @@ workflow PREPARE_COLABFOLD_DBS {
         ch_params = ARIA2_COLABFOLD_PARAMS
                         .out
                         .db
-                        .map { dir -> dir.listFiles().findAll { it.isFile() } }
+                        .map { dir -> dir.listFiles().findAll { it -> it.isFile() } }
 
         ch_versions = ch_versions.mix(ARIA2_COLABFOLD_PARAMS.out.versions)
 
@@ -53,7 +53,7 @@ workflow PREPARE_COLABFOLD_DBS {
 
             ch_colabfold_db = ARIA2_COLABFOLD_DB.out.db
 
-            if (params.colabfold_create_index) {
+            if (colabfold_create_index) {
                 MMSEQS_CREATEINDEX_COLABFOLDDB (
                     ch_colabfold_db
                         .map { path_str ->

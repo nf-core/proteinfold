@@ -28,10 +28,10 @@ workflow ROSETTAFOLD2NA {
     ch_rosettafold2na_weights // channel: path(rosettafold2na_weights)
 
     main:
-    ch_multiqc_files  = Channel.empty()
-    ch_top_ranked_pdb = Channel.empty()
-    ch_pdb_msa        = Channel.empty()
-    ch_multiqc_report = Channel.empty()
+    ch_multiqc_files  = channel.empty()
+    ch_top_ranked_pdb = channel.empty()
+    ch_pdb_msa        = channel.empty()
+    ch_multiqc_report = channel.empty()
 
     ROSETTAFOLD2NA_FASTA(
         ch_samplesheet
@@ -51,9 +51,9 @@ workflow ROSETTAFOLD2NA {
     RUN_ROSETTAFOLD2NA
         .out
         .multiqc
-        .map { it[1] }
+        .map { it -> it[1] }
         .toSortedList()
-        .map {
+        .map { it ->
             [ [ "model": "rosettafold2na" ], it.flatten() ]
         }
         .set { ch_multiqc_report }
@@ -61,30 +61,30 @@ workflow ROSETTAFOLD2NA {
     RUN_ROSETTAFOLD2NA
         .out
         .pdb
-        .map {
+        .map { it ->
             def meta = it[0].clone();
             meta.model = "rosettafold2na";
-            [meta, it[1]]
+            [ meta, it[1] ]
         }
         .set { ch_pdb_final }
 
     RUN_ROSETTAFOLD2NA
         .out
         .pae
-        .map {
+        .map { it ->
             def meta = it[0].clone();
             meta.model = "rosettafold2na";
-            [meta, it[1]]
+            [ meta, it[1] ]
         }
         .set { ch_pae_final }
 
     RUN_ROSETTAFOLD2NA
         .out
         .msa
-        .map {
+        .map { it ->
             def meta = it[0].clone();
             meta.model = "rosettafold2na";
-            [meta, it[1]]
+            [ meta, it[1] ]
         }
         .set { ch_msa_final }
 

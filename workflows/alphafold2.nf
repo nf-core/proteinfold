@@ -45,11 +45,11 @@ workflow ALPHAFOLD2 {
     ch_uniprot              // channel: path(uniprot)
 
     main:
-    ch_pdb            = Channel.empty()
-    ch_top_ranked_pdb = Channel.empty()
-    ch_msa            = Channel.empty()
-    ch_pae            = Channel.empty()
-    ch_multiqc_report = Channel.empty()
+    ch_pdb            = channel.empty()
+    ch_top_ranked_pdb = channel.empty()
+    ch_msa            = channel.empty()
+    ch_pae            = channel.empty()
+    ch_multiqc_report = channel.empty()
 
     if (alphafold2_model_preset != 'multimer') {
         ch_samplesheet
@@ -86,9 +86,11 @@ workflow ALPHAFOLD2 {
         RUN_ALPHAFOLD2
             .out
             .multiqc
-            .map { it[1] }
+            .map { it -> it[1] }
             .toSortedList()
-            .map { [ [ "model": "alphafold2" ], it.flatten() ] }
+            .map { it ->
+                [ [ "model": "alphafold2" ], it.flatten() ]
+            }
             .set { ch_multiqc_report }
 
         ch_pdb            = ch_pdb.mix(RUN_ALPHAFOLD2.out.pdb)
@@ -121,16 +123,12 @@ workflow ALPHAFOLD2 {
         ch_versions = ch_versions.mix(RUN_ALPHAFOLD2_MSA.out.versions)
 
         //synchronize
-        ch_samplesheet.join(
-            RUN_ALPHAFOLD2_MSA.out.features,
-        )
-        .set { ch_synched }
-
-        def ch_samplesheet2 = ch_synched.map{ meta, seq, msa -> [meta, seq] }
-        def ch_features = ch_synched.map{ meta, seq, msa -> [meta, msa] }
+        ch_samplesheet
+            .join(RUN_ALPHAFOLD2_MSA.out.features)
+            .set { ch_fasta_features }
 
         RUN_ALPHAFOLD2_PRED (
-            ch_samplesheet2,
+            ch_fasta_features,
             alphafold2_model_preset,
             ch_alphafold2_params,
             ch_bfd,
@@ -142,16 +140,17 @@ workflow ALPHAFOLD2 {
             ch_uniref30,
             ch_uniref90,
             ch_pdb_seqres,
-            ch_uniprot,
-            ch_features
+            ch_uniprot
         )
 
         RUN_ALPHAFOLD2_PRED
             .out
             .multiqc
-            .map { it[1] }
+            .map { it -> it[1] }
             .toSortedList()
-            .map { [ [ "model": "alphafold2" ], it.flatten() ] }
+            .map { it ->
+                [ [ "model": "alphafold2" ], it.flatten() ]
+            }
             .set { ch_multiqc_report }
 
         ch_top_ranked_pdb = ch_top_ranked_pdb.mix(RUN_ALPHAFOLD2_PRED.out.top_ranked_pdb)
@@ -162,8 +161,8 @@ workflow ALPHAFOLD2 {
     }
 
     ch_pdb
-        .map{
-            meta = it[0].clone();
+        .map { it ->
+            def meta = it[0].clone();
             meta.model = "alphafold2";
             def files = (it[1] instanceof List) ? it[1] : [ it[1] ]
             [ meta, files ]
@@ -171,24 +170,24 @@ workflow ALPHAFOLD2 {
         .set { ch_pdb_final }
 
     ch_msa
-        .map{
-            meta = it[0].clone();
+        .map { it ->
+            def meta = it[0].clone();
             meta.model = "alphafold2";
             [ meta, it[1] ]
         }
         .set { ch_msa_final }
 
     ch_pae
-        .map{
-            meta = it[0].clone();
+        .map { it ->
+            def meta = it[0].clone();
             meta.model = "alphafold2";
             [ meta, it[1] ]
         }
         .set { ch_pae_final }
 
     ch_top_ranked_pdb_final = ch_top_ranked_pdb
-                                .map{
-                                    meta = it[0].clone();
+                                .map { it ->
+                                    def meta = it[0].clone();
                                     meta.model = "alphafold2";
                                     [ meta, it[1] ]
                                 }

@@ -39,19 +39,19 @@ workflow PREPARE_ALPHAFOLD3_DBS {
     rfam_link                  //    string: Specifies the link to download rfam
 
     main:
-    ch_versions   = Channel.empty()
+    ch_versions   = channel.empty()
 
     if (alphafold3_db) {
-        ch_params         = Channel.value(file(alphafold3_params_path))
-        ch_small_bfd      = Channel.value(file(small_bfd_path))
-        ch_mgnify         = Channel.value(file(mgnify_path))
-        ch_mmcif          = Channel.value(file(pdb_mmcif_path))
-        ch_uniref90       = Channel.value(file(uniref90_path))
-        ch_pdb_seqres     = Channel.value(file(pdb_seqres_path))
-        ch_uniprot        = Channel.value(file(uniprot_path))
-        ch_rnacentral     = Channel.value(file(rnacentral_active_seq_path))
-        ch_nt_rna         = Channel.value(file(nt_rna_2023_02_23_path))
-        ch_rfam           = Channel.value(file(rfam_path))
+        ch_params         = channel.value(file(alphafold3_params_path))
+        ch_small_bfd      = channel.value(file(small_bfd_path))
+        ch_mgnify         = channel.value(file(mgnify_path))
+        ch_mmcif          = channel.value(file(pdb_mmcif_path))
+        ch_uniref90       = channel.value(file(uniref90_path))
+        ch_pdb_seqres     = channel.value(file(pdb_seqres_path))
+        ch_uniprot        = channel.value(file(uniprot_path))
+        ch_rnacentral     = channel.value(file(rnacentral_active_seq_path))
+        ch_nt_rna         = channel.value(file(nt_rna_2023_02_23_path))
+        ch_rfam           = channel.value(file(rfam_path))
     } else {
 
         ARIA2_SMALL_BFD (
@@ -60,7 +60,7 @@ workflow PREPARE_ALPHAFOLD3_DBS {
         ch_small_bfd = ARIA2_SMALL_BFD.out.db
         ch_versions  = ch_versions.mix(ARIA2_SMALL_BFD.out.versions)
 
-        ch_params = Channel.value(file(alphafold3_params_path, checkIfExists: true))
+        ch_params = channel.value(file(alphafold3_params_path, checkIfExists: true))
 
         ARIA2_MGNIFY (
             mgnify_link
