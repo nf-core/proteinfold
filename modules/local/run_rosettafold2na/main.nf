@@ -9,7 +9,7 @@ process RUN_ROSETTAFOLD2NA {
     container "nf-core/proteinfold_rosettafold2na:2.0.0"
 
     input:
-    tuple val(meta), path(protein_fasta), path(interaction_fasta)
+    tuple val(meta), path(rf2na_input)
     path ('bfd/*')
     path ('UniRef30_2020_06/*')
     path ('pdb100_2021Mar03/*')
@@ -44,7 +44,30 @@ process RUN_ROSETTAFOLD2NA {
         ln -s /app/RoseTTAFold2NA/network/* ./network
     fi
 
-    ./run_RF2NA.sh ${meta.id}_rf2na_output $protein_fasta ${meta.interaction_type}:${interaction_fasta}
+    rf2na_input_dir="\${rf2na_input:-rf2na_input}"
+
+    chain_map="\${rf2na_input_dir}/chain_map.tsv"
+    if [ ! -s "\$chain_map" ]; then
+        echo "[ROSETTAFOLD2NA] Missing chain_map.tsv produced by ROSETTAFOLD2NA_FASTA." >&2
+        exit 1
+    fi
+
+    chain_args=()
+    while IFS=\$'\\t' read -r chain_type chain_file _; do
+        [ -z "\$chain_type" ] && continue
+        case "\${chain_type}" in
+            P|R|D|S) ;;
+            *) echo "[ROSETTAFOLD2NA] Unsupported chain type '\${chain_type}'. Allowed types: P, R, D, S." >&2; exit 1 ;;
+        esac
+        chain_args+=( "\${chain_type}:\${rf2na_input_dir}/\${chain_file}" )
+    done < <(tail -n +2 "\$chain_map")
+
+    if [ "\${#chain_args[@]}" -eq 0 ]; then
+        echo "[ROSETTAFOLD2NA] No valid chain specifications found in chain_map.tsv." >&2
+        exit 1
+    fi
+
+    ./run_RF2NA.sh ${meta.id}_rf2na_output "\${chain_args[@]}"
 
     cp ${meta.id}_rf2na_output/models/model_00.pdb ./${meta.id}_rf2na.pdb
 

@@ -427,6 +427,9 @@ nextflow run nf-core/proteinfold \
       -profile <docker/singularity/.../institute>
 ```
 
+> [!NOTE]
+> RosettaFold2NA now expects each samplesheet row to reference a multi-chain FASTA that includes every interacting molecule. Add a `type=` hint to each header (for example `type=protein`, `type=rna`, `type=double_dna`, or `type=single_dna`) so the adaptor can tag chains with the correct RF2NA entity codes (`P`, `R`, `D`, `S`). If no hint is present, the chain type is inferred from sequence composition (pure `ACUGN` → RNA, pure `ACTGN` → DNA which defaults to `D` unless explicitly tagged single-strand, otherwise protein).
+
 Note that the pipeline will create the following files in your working directory:
 
 ```bash

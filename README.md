@@ -186,7 +186,7 @@ The pipeline takes care of downloading the databases and parameters required by 
       -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
   ```
 
-  - The RosettaFold2NA mode can be run using the command below:
+- The RosettaFold2NA mode can be run using the command below:
 
   ```console
   nextflow run nf-core/proteinfold \
