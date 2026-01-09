@@ -23,7 +23,7 @@ process ROSETTAFOLD2NA_FASTA {
 
     cat <<'END_VERSIONS' > versions.yml
 "${task.process}":
-    python: \$(python3 --version | sed 's/Python //g')
+  python: \$(python3 --version | sed 's/Python //g')
 END_VERSIONS
     """
 
@@ -34,7 +34,7 @@ END_VERSIONS
 
     cat <<'END_VERSIONS' > versions.yml
 "${task.process}":
-    python: \$(python3 --version | sed 's/Python //g')
+  python: \$(python3 --version | sed 's/Python //g')
 END_VERSIONS
     """
 }
