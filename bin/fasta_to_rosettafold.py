@@ -36,10 +36,12 @@ def infer_type(header, sequence):
         "p": "P",
         "rna": "R",
         "r": "R",
+        "d": "D",
         "double": "D",
         "ds": "D",
         "dsdna": "D",
         "double_dna": "D",
+        "s": "S",
         "single": "S",
         "ss": "S",
         "ssdna": "S",
@@ -48,12 +50,17 @@ def infer_type(header, sequence):
         "singlestrand": "S",
     }
     header_lower = header.lower()
-    match = re.search(r"(?:type|entity|molecule|mol)[:=]\s*([A-Za-z0-9_-]+)", header_lower)
+    match = re.search(
+        r"(?:^|\s)(?:type|entity|molecule|mol)\s*[:=]\s*([A-Za-z0-9_-]+)",
+        header_lower,
+    )
     if match:
         candidate = match.group(1).lower()
         if candidate in type_aliases:
             return type_aliases[candidate]
     for alias, code in type_aliases.items():
+        if alias in {"p", "r", "d", "s"}:
+            continue
         if re.search(r"\b" + re.escape(alias) + r"\b", header_lower):
             return code
 
