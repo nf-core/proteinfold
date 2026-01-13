@@ -1,19 +1,13 @@
 {
     "-profile test_alphafold2_split": {
         "content": [
-            7,
+            5,
             {
                 "GENERATE_REPORT": {
                     "python": "3.12.7",
                     "generate_report.py": "Python 3.12.7"
                 },
-                "RUN_ALPHAFOLD2_MSA": {
-                    "python": null,
-                    "alphafold2": "unknown",
-                    "numpy": "unknown",
-                    "biopython": "unknown"
-                },
-                "RUN_ALPHAFOLD2_PRED": {
+                "RUN_ALPHAFOLD2": {
                     "python": null,
                     "alphafold2": "unknown",
                     "jax": "unknown",
@@ -27,38 +21,38 @@
             },
             [
                 "alphafold2",
-                "alphafold2/split_msa_prediction",
-                "alphafold2/split_msa_prediction/T1024",
-                "alphafold2/split_msa_prediction/T1024.1",
-                "alphafold2/split_msa_prediction/T1024.1/features.pkl",
-                "alphafold2/split_msa_prediction/T1024/T1024.1",
-                "alphafold2/split_msa_prediction/T1024/T1024.1/ranked_0.pdb",
-                "alphafold2/split_msa_prediction/T1024/T1024.1/ranked_1.pdb",
-                "alphafold2/split_msa_prediction/T1024/T1024.1/ranked_2.pdb",
-                "alphafold2/split_msa_prediction/T1024/T1024.1/ranked_3.pdb",
-                "alphafold2/split_msa_prediction/T1024/T1024.1/ranked_4.pdb",
-                "alphafold2/split_msa_prediction/T1024/T1024_alphafold2.pdb",
-                "alphafold2/split_msa_prediction/T1024/T1024_alphafold2_msa.tsv",
-                "alphafold2/split_msa_prediction/T1024/T1024_plddt.tsv",
-                "alphafold2/split_msa_prediction/T1024/paes",
-                "alphafold2/split_msa_prediction/T1024/paes/T1024_0_pae.tsv",
-                "alphafold2/split_msa_prediction/T1026",
-                "alphafold2/split_msa_prediction/T1026.1",
-                "alphafold2/split_msa_prediction/T1026.1/features.pkl",
-                "alphafold2/split_msa_prediction/T1026/T1026.1",
-                "alphafold2/split_msa_prediction/T1026/T1026.1/ranked_0.pdb",
-                "alphafold2/split_msa_prediction/T1026/T1026.1/ranked_1.pdb",
-                "alphafold2/split_msa_prediction/T1026/T1026.1/ranked_2.pdb",
-                "alphafold2/split_msa_prediction/T1026/T1026.1/ranked_3.pdb",
-                "alphafold2/split_msa_prediction/T1026/T1026.1/ranked_4.pdb",
-                "alphafold2/split_msa_prediction/T1026/T1026_alphafold2.pdb",
-                "alphafold2/split_msa_prediction/T1026/T1026_alphafold2_msa.tsv",
-                "alphafold2/split_msa_prediction/T1026/T1026_plddt.tsv",
-                "alphafold2/split_msa_prediction/T1026/paes",
-                "alphafold2/split_msa_prediction/T1026/paes/T1026_0_pae.tsv",
-                "alphafold2/split_msa_prediction/top_ranked_structures",
-                "alphafold2/split_msa_prediction/top_ranked_structures/T1024.pdb",
-                "alphafold2/split_msa_prediction/top_ranked_structures/T1026.pdb",
+                "alphafold2/standard",
+                "alphafold2/standard/T1024",
+                "alphafold2/standard/T1024/T1024.1",
+                "alphafold2/standard/T1024/T1024.1/ranked_0.pdb",
+                "alphafold2/standard/T1024/T1024.1/ranked_1.pdb",
+                "alphafold2/standard/T1024/T1024.1/ranked_2.pdb",
+                "alphafold2/standard/T1024/T1024.1/ranked_3.pdb",
+                "alphafold2/standard/T1024/T1024.1/ranked_4.pdb",
+                "alphafold2/standard/T1024/T1024_alphafold2.pdb",
+                "alphafold2/standard/T1024/T1024_alphafold2_msa.tsv",
+                "alphafold2/standard/T1024/T1024_iptm.tsv",
+                "alphafold2/standard/T1024/T1024_plddt.tsv",
+                "alphafold2/standard/T1024/T1024_ptm.tsv",
+                "alphafold2/standard/T1024/paes",
+                "alphafold2/standard/T1024/paes/T1024_0_pae.tsv",
+                "alphafold2/standard/T1026",
+                "alphafold2/standard/T1026/T1026.1",
+                "alphafold2/standard/T1026/T1026.1/ranked_0.pdb",
+                "alphafold2/standard/T1026/T1026.1/ranked_1.pdb",
+                "alphafold2/standard/T1026/T1026.1/ranked_2.pdb",
+                "alphafold2/standard/T1026/T1026.1/ranked_3.pdb",
+                "alphafold2/standard/T1026/T1026.1/ranked_4.pdb",
+                "alphafold2/standard/T1026/T1026_alphafold2.pdb",
+                "alphafold2/standard/T1026/T1026_alphafold2_msa.tsv",
+                "alphafold2/standard/T1026/T1026_iptm.tsv",
+                "alphafold2/standard/T1026/T1026_plddt.tsv",
+                "alphafold2/standard/T1026/T1026_ptm.tsv",
+                "alphafold2/standard/T1026/paes",
+                "alphafold2/standard/T1026/paes/T1026_0_pae.tsv",
+                "alphafold2/standard/top_ranked_structures",
+                "alphafold2/standard/top_ranked_structures/T1024.pdb",
+                "alphafold2/standard/top_ranked_structures/T1026.pdb",
                 "generate",
                 "generate/test_LDDT.html",
                 "generate/test_alphafold2_report.html",
@@ -71,7 +65,6 @@
                 "pipeline_info/nf_core_proteinfold_software_mqc_versions.yml"
             ],
             [
-                "features.pkl:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "ranked_0.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "ranked_1.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "ranked_2.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
@@ -79,9 +72,10 @@
                 "ranked_4.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1024_alphafold2.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1024_alphafold2_msa.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1024_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1024_plddt.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1024_ptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1024_0_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "features.pkl:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "ranked_0.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "ranked_1.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "ranked_2.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
@@ -89,7 +83,9 @@
                 "ranked_4.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1026_alphafold2.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1026_alphafold2_msa.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1026_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1026_plddt.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1026_ptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1026_0_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1024.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1026.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
@@ -101,8 +97,8 @@
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "25.04.7"
+            "nextflow": "25.10.2"
         },
-        "timestamp": "2025-10-17T17:48:06.107512745"
+        "timestamp": "2026-01-13T13:07:17.274976"
     }
 }
