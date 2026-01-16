@@ -3,7 +3,7 @@ process COLABFOLD_BATCH {
     label 'process_medium'
     label 'process_gpu'
 
-    container "nf-core/proteinfold_colabfold:dev"
+    container "nf-core/proteinfold_colabfold:2.0.0"
 
     input:
     tuple val(meta), path(fasta)
@@ -18,6 +18,7 @@ process COLABFOLD_BATCH {
     tuple val(meta), path ("*relaxed_rank_*.pdb")     , emit: pdb
     tuple val(meta), path ("*_coverage.png")          , emit: msa
     tuple val(meta), path ("*_mqc.png")               , emit: multiqc
+    tuple val(meta), path ("${meta.id}_0_pae.tsv")    , emit: pae
     path "versions.yml"                               , emit: versions
 
     when:
@@ -31,7 +32,10 @@ process COLABFOLD_BATCH {
     def args = task.ext.args ?: ''
 
     """
-    ln -s \$(realpath params/alphafold_params_*/*) params/
+    if compgen -G "params/alphafold_params_*" >/dev/null; then
+        ln -s \$(realpath params/alphafold_params_*/*) params/
+    fi
+
     touch params/download_finished.txt
 
     colabfold_batch \\
@@ -41,6 +45,7 @@ process COLABFOLD_BATCH {
         --model-type ${colabfold_model_preset} \\
         ${fasta} \\
         \$PWD
+
     for i in `find *.png -maxdepth 0`; do cp \$i \${i%'.png'}_mqc.png; done
     if [ ! -e `find *_relaxed_rank_001_*.pdb` ]; then
         cp *_relaxed_rank_001*.pdb ${meta.id}_colabfold.pdb
@@ -48,9 +53,16 @@ process COLABFOLD_BATCH {
         cp *_unrelaxed_rank_001*.pdb ${meta.id}_colabfold.pdb
     fi
 
+    #Note: only multimer prefix is meta.id
+    extract_metrics.py --name ${meta.id} \\
+        --colabfold_pae *_predicted_aligned_error_v1.json
+
+    mv *_coverage.png ${meta.id}_seq_coverage.png
+
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        colabfold_batch: \$(conda run -n colabfold pip list | grep "^colabfold" | awk '{print \$2}')
+        alphafold_colabfold: \$(pip list | grep "^alphafold-colabfold" | awk '{print \$2}' 2>/dev/null || echo "unknown")
+        colabfold_batch: \$(pip list | grep "^colabfold" | awk '{print \$2}' 2>/dev/null || echo "unknown")
     END_VERSIONS
     """
 
@@ -63,10 +75,12 @@ process COLABFOLD_BATCH {
     touch ./${meta.id}_relaxed_rank_03.pdb
     touch ./${meta.id}_coverage.png
     touch ./${meta.id}_scores_rank.json
+    touch ./${meta.id}_0_pae.tsv
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        colabfold_batch: \$(conda run -n colabfold pip list | grep "^colabfold" | awk '{print \$2}')
+        alphafold_colabfold: \$(pip list | grep "^alphafold-colabfold" | awk '{print \$2}' 2>/dev/null || echo "unknown")
+        colabfold_batch: \$(pip list | grep "^colabfold" | awk '{print \$2}' 2>/dev/null || echo "unknown")
     END_VERSIONS
     """
 }

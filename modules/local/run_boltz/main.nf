@@ -6,7 +6,7 @@ process RUN_BOLTZ {
     label 'process_medium'
     label 'process_gpu'
 
-    container "nf-core/proteinfold_boltz:dev"
+    container "nf-core/proteinfold_boltz:2.0.0"
 
     input:
     tuple val(meta), path(fasta)
@@ -29,13 +29,12 @@ process RUN_BOLTZ {
     tuple val(meta), path ("boltz_results_*/predictions/*/plddt_*model_0.npz")  , emit: plddt
     tuple val(meta), path ("boltz_results_*/predictions/*/pae_*model_0.npz")    , emit: pae
     tuple val(meta), path ("${meta.id}_plddt.tsv")                              , emit: plddt_raw
-    tuple val(meta), path ("${meta.id}_msa.tsv")                                , optional: true, emit: msa_raw
+    tuple val(meta), path ("${meta.id}_boltz_msa.tsv")                          , emit: msa_raw
     tuple val(meta), path ("${meta.id}_*_pae.tsv")                              , emit: pae_raw
     tuple val(meta), path ("${meta.id}_ptm.tsv")                                , emit: ptm_raw
     tuple val(meta), path ("${meta.id}_iptm.tsv")                               , optional: true, emit: iptm_raw
     tuple val(meta), path ("${meta.id}_chainwise_ptm.tsv")                      , emit: summary_chainwise_ptm_raw
     tuple val(meta), path ("${meta.id}_chainwise_iptm.tsv")                     , optional: true, emit: chainwise_iptm_raw
-
     path "versions.yml", emit: versions
 
     when:
@@ -53,31 +52,37 @@ process RUN_BOLTZ {
     if (workflow.profile.tokenize(',').intersect(['conda', 'mamba']).size() >= 1) {
         error("Local RUN_BOLTZ module does not support Conda. Please use Docker / Singularity / Podman instead.")
     }
-    def version = "2.0.3"
     def args = task.ext.args ?: ''
 
     """
-    export NUMBA_CACHE_DIR=/tmp
-    export HOME=/tmp
+    mkdir -p ./home
+    export HOME=./home
 
     boltz predict "${fasta}" --output_format "pdb" ${args} --cache ./
     cp boltz_results_*/predictions/${meta.id}/*_0.pdb ./${meta.id}_boltz.pdb
+    if [ -f boltz_results_*/msa/${meta.id}_0.csv ]; then
+        cp boltz_results_*/msa/${meta.id}_*.csv ./
+    fi
 
     extract_metrics.py --name ${meta.id} \\
         --structs boltz_results_*/predictions/${meta.id}/*.pdb \\
         --jsons boltz_results_*/predictions/${meta.id}/confidence_*_model_*.json \\
         --npzs boltz_results_*/predictions/${meta.id}/pae_*_model_*.npz \\
-        --csvs boltz_results_*/msa/${meta.id}_*.csv
+        --csvs ${meta.id}_*.csv
+
+    mv "${meta.id}_msa.tsv" "${meta.id}_boltz_msa.tsv"
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        boltz: $version
+        boltz: \$(pip list | grep -i boltz | awk '{print \$2}' 2>/dev/null || echo "unknown")
     END_VERSIONS
     """
 
     stub:
-    def version = "2.0.3"
     """
+    mkdir -p ./home
+    export HOME=./home
+
     mkdir -p boltz_results_${meta.id}/processed/msa/
     mkdir -p boltz_results_${meta.id}/processed/structures/
     mkdir -p boltz_results_${meta.id}/predictions/${meta.id}/
@@ -91,16 +96,16 @@ process RUN_BOLTZ {
 
     touch "${meta.id}_boltz.pdb"
     touch "${meta.id}_plddt.tsv"
-    touch "${meta.id}_msa.tsv"
+    touch "${meta.id}_boltz_msa.tsv"
     touch "${meta.id}_0_pae.tsv"
-    touch "${meta.id}_0_ptm.tsv"
-    touch "${meta.id}_0_iptm.tsv"
+    touch "${meta.id}_ptm.tsv"
+    touch "${meta.id}_iptm.tsv"
     touch "${meta.id}_chainwise_ptm.tsv"
     touch "${meta.id}_chainwise_iptm.tsv"
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        boltz: $version
+        boltz: \$(pip list | grep -i boltz | awk '{print \$2}' 2>/dev/null || echo "unknown")
     END_VERSIONS
     """
 }

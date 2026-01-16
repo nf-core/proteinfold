@@ -6,10 +6,11 @@ process RUN_HELIXFOLD3 {
     label 'process_medium'
     label 'process_gpu'
 
-    container "nf-core/proteinfold_helixfold3:dev"
+    container "nf-core/proteinfold_helixfold3:2.0.0"
 
     input:
     tuple val(meta), path(fasta)
+    val uniref30_prefix
     path ('uniref30/*')
     path ('ccd_preprocessed_etkdg.pkl.gz')
     path ('Rfam-14.9_rep_seq.fasta')
@@ -25,16 +26,17 @@ process RUN_HELIXFOLD3 {
     path ('maxit_src')
 
     output:
-    tuple val(meta), path ("${meta.id}_helixfold3.pdb") , emit: top_ranked_pdb
-    tuple val(meta), path ("${meta.id}_helixfold3.cif") , emit: main_cif
-    tuple val(meta), path ("${meta.id}-ranked*.pdb")    , emit: pdb
-    tuple val(meta), path ("${meta.id}_plddt.tsv")      , emit: multiqc
-    tuple val(meta), path ("${meta.id}_msa.tsv")        , emit: msa
+    tuple val(meta), path ("${meta.id}_helixfold3.pdb")     , emit: top_ranked_pdb
+    tuple val(meta), path ("${meta.id}_helixfold3.cif")     , emit: main_cif
+    tuple val(meta), path ("${meta.id}-ranked*.pdb")        , emit: pdb
+    tuple val(meta), path ("${meta.id}_plddt.tsv")          , emit: multiqc
+    tuple val(meta), path ("${meta.id}_helixfold3_msa.tsv") , emit: msa
     // If ${meta.id}-rank*/all_results.json" doesn't have PAE vales in the key, this will be empty
-    tuple val(meta), path ("${meta.id}_*_pae.tsv")      , emit: paes
-    tuple val(meta), path ("${meta.id}_ptm.tsv")        , emit: ptms
-    tuple val(meta), path ("${meta.id}_iptm.tsv")       , optional: true, emit: iptms
-    path ("versions.yml")                               , emit: versions
+    tuple val(meta), path ("${meta.id}_1_pae.tsv")          , emit: pae
+    tuple val(meta), path ("${meta.id}_*_pae.tsv")          , emit: paes
+    tuple val(meta), path ("${meta.id}_ptm.tsv")            , emit: ptms
+    tuple val(meta), path ("${meta.id}_iptm.tsv")           , optional: true, emit: iptms
+    path ("versions.yml")                                   , emit: versions
 
     when:
     task.ext.when == null || task.ext.when
@@ -60,7 +62,7 @@ process RUN_HELIXFOLD3 {
         --nhmmer_binary_path "nhmmer" \\
         --bfd_database_path="./bfd/bfd_metaclust_clu_complete_id30_c90_final_seq.sorted_opt" \\
         --small_bfd_database_path="./small_bfd/bfd-first_non_consensus_sequences.fasta" \\
-        --uniclust30_database_path="./uniref30/${params.uniref30_prefix}" \\
+        --uniclust30_database_path="./uniref30/${uniref30_prefix}" \\
         --uniprot_database_path="./uniprot/uniprot.fasta" \\
         --pdb_seqres_database_path="./pdb_seqres/pdb_seqres.txt" \\
         --rfam_database_path="./Rfam-14.9_rep_seq.fasta" \\
@@ -85,8 +87,9 @@ process RUN_HELIXFOLD3 {
     [ ! -d ${meta.id} ] && mkdir ${meta.id}
     for i in 1 2 3 4 5; do
         cp "${fasta.baseName}/${fasta.baseName}-rank\$i/predicted_structure.pdb" "${meta.id}-ranked_\$i.pdb"
-
     done
+
+    mv "${meta.id}_msa.tsv" "${meta.id}_helixfold3_msa.tsv"
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
@@ -99,7 +102,7 @@ process RUN_HELIXFOLD3 {
     touch "${meta.id}_helixfold3.cif"
     touch "${meta.id}_helixfold3.pdb"
     touch "${meta.id}_plddt.tsv"
-    touch "${meta.id}_msa.tsv"
+    touch "${meta.id}_helixfold3_msa.tsv"
     touch "${meta.id}_ptm.tsv"
     touch "${meta.id}_iptm.tsv"
     touch "${meta.id}_1_pae.tsv"

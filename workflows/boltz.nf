@@ -18,8 +18,8 @@
 // MODULE: Installed directly from nf-core/modules
 //
 include { MULTIQC } from '../modules/nf-core/multiqc/main'
-include { BOLTZ_FASTA } from '../modules/local/data_convertor/boltz_fasta'
-include { SPLIT_MSA } from '../modules/local/msa_manager/split_msa'
+include { BOLTZ_FASTA } from '../modules/local/boltz_fasta'
+include { SPLIT_MSA } from '../modules/local/split_msa'
 include { MMSEQS_COLABFOLDSEARCH } from '../modules/local/mmseqs_colabfoldsearch'
 include { MULTIFASTA_TO_CSV      } from '../modules/local/multifasta_to_csv'
 //
@@ -57,7 +57,7 @@ workflow BOLTZ {
 
     main:
     ch_samplesheet
-        .branch {
+        .branch { it ->
             fasta: it[1].extension == "fasta" || it[1].extension == "fa"
             yaml: it[1].extension == "yaml" || it[1].extension == "yml"
         }
@@ -73,12 +73,12 @@ workflow BOLTZ {
                     ]
                 }
         )
-        .map{
+        .map { it ->
             def meta = it[0].clone()
             meta.cnt = it[2]
             [meta, it[1]]
         }
-        .branch{
+        .branch { it ->
             multimer: it[0].cnt > 1
             monomer: it[0].cnt == 1
         }
@@ -98,22 +98,23 @@ workflow BOLTZ {
         ch_versions = ch_versions.mix(MMSEQS_COLABFOLDSEARCH.out.versions)
 
         SPLIT_MSA(
-            MMSEQS_COLABFOLDSEARCH.out.a3m.filter{it[0].cnt > 1}
+            MMSEQS_COLABFOLDSEARCH.out.a3m
         )
         ch_versions = ch_versions.mix(SPLIT_MSA.out.versions)
         ch_input.monomer
-            .join(MMSEQS_COLABFOLDSEARCH.out.a3m.filter{it[0].cnt == 1})
+            .join(SPLIT_MSA.out.msa_csv)
             .mix(
                 ch_input.multimer.join(SPLIT_MSA.out.msa_csv)
             ).set{ch_prepare_fasta}
 
     }else{
         ch_input
-        .multimer
-        .mix(ch_input
-        .monomer
-        ).map{[it[0], it[1], []]}
-        .set{ch_prepare_fasta}
+            .multimer
+            .mix(ch_input.monomer)
+            .map { it ->
+                [it[0], it[1], []]
+            }
+            .set{ch_prepare_fasta}
     }
 
     BOLTZ_FASTA(
@@ -121,13 +122,13 @@ workflow BOLTZ {
         )
 
     ch_input_by_ext.yaml
-        .map { meta, file -> [meta, file, []] }  // already in YAML
+        .map { meta, file -> [ meta, file, [] ] }  // already in YAML
         .mix(BOLTZ_FASTA.out.formatted_fasta)    // newly converted from FASTA
         .set { ch_boltz_input }
 
     RUN_BOLTZ(
-        ch_boltz_input.map{[it[0], it[1]]},
-        ch_boltz_input.map{it[2]},
+        ch_boltz_input.map { it -> [it[0], it[1]] },
+        ch_boltz_input.map { it -> it[2] },
         ch_boltz_model,
         ch_boltz_ccd,
         ch_boltz2_aff,
@@ -138,22 +139,48 @@ workflow BOLTZ {
     RUN_BOLTZ
         .out
         .pdb
-        .map{it[0].model = "boltz"; it}
+        .map { it ->
+            it[0].model = "boltz"
+            it
+        }
         .set {ch_pdb}
 
     RUN_BOLTZ
         .out
-        .msa
-    .map{it[0].model = "boltz"; it}
+        .top_ranked_pdb
+        .map { it ->
+            it[0].model = "boltz"
+            it
+        }
+        .set {ch_top_ranked_pdb}
+
+    RUN_BOLTZ
+        .out
+        .msa_raw
+    .map { it ->
+        it[0].model = "boltz"
+        it
+    }
     .set {ch_msa}
 
     RUN_BOLTZ
         .out
+        .pae_raw
+    .map { it ->
+        it[0].model = "boltz"
+        it
+    }
+    .set {ch_pae}
+
+    RUN_BOLTZ
+        .out
         .multiqc
-        .map { it[1] }
+        .map { it -> it[1] }
         .collect(sort: true)
-        .map { [ [ "model": "boltz"], it.flatten() ] }
+        .map { it ->  [ [ "model": "boltz"], it.flatten() ] }
         .set { ch_multiqc_report  }
+
+    ch_versions       = ch_versions.mix(RUN_BOLTZ.out.versions)
 
     emit:
     versions        = ch_versions
@@ -161,5 +188,7 @@ workflow BOLTZ {
     structures      = RUN_BOLTZ.out.structures
     confidence      = RUN_BOLTZ.out.confidence
     multiqc_report  = ch_multiqc_report
+    top_ranked_pdb  = ch_top_ranked_pdb
     pdb             = ch_pdb
+    pae             = ch_pae
 }

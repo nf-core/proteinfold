@@ -8,10 +8,18 @@
                     "generate_report.py": "Python 3.12.7"
                 },
                 "RUN_ALPHAFOLD2_MSA": {
-                    "awk": "5.1.0"
+                    "python": null,
+                    "alphafold2": "unknown",
+                    "numpy": "unknown",
+                    "biopython": "unknown"
                 },
                 "RUN_ALPHAFOLD2_PRED": {
-                    "python": null
+                    "python": null,
+                    "alphafold2": "unknown",
+                    "jax": "unknown",
+                    "jaxlib": "unknown",
+                    "numpy": "unknown",
+                    "biopython": "unknown"
                 },
                 "Workflow": {
                     "nf-core/proteinfold": "v1.2.0dev"
@@ -30,7 +38,7 @@
                 "alphafold2/split_msa_prediction/T1024/T1024.1/ranked_3.pdb",
                 "alphafold2/split_msa_prediction/T1024/T1024.1/ranked_4.pdb",
                 "alphafold2/split_msa_prediction/T1024/T1024_alphafold2.pdb",
-                "alphafold2/split_msa_prediction/T1024/T1024_msa.tsv",
+                "alphafold2/split_msa_prediction/T1024/T1024_alphafold2_msa.tsv",
                 "alphafold2/split_msa_prediction/T1024/T1024_plddt.tsv",
                 "alphafold2/split_msa_prediction/T1024/paes",
                 "alphafold2/split_msa_prediction/T1024/paes/T1024_0_pae.tsv",
@@ -44,7 +52,7 @@
                 "alphafold2/split_msa_prediction/T1026/T1026.1/ranked_3.pdb",
                 "alphafold2/split_msa_prediction/T1026/T1026.1/ranked_4.pdb",
                 "alphafold2/split_msa_prediction/T1026/T1026_alphafold2.pdb",
-                "alphafold2/split_msa_prediction/T1026/T1026_msa.tsv",
+                "alphafold2/split_msa_prediction/T1026/T1026_alphafold2_msa.tsv",
                 "alphafold2/split_msa_prediction/T1026/T1026_plddt.tsv",
                 "alphafold2/split_msa_prediction/T1026/paes",
                 "alphafold2/split_msa_prediction/T1026/paes/T1026_0_pae.tsv",
@@ -70,7 +78,7 @@
                 "ranked_3.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "ranked_4.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1024_alphafold2.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "T1024_msa.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1024_alphafold2_msa.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1024_plddt.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1024_0_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "features.pkl:md5,d41d8cd98f00b204e9800998ecf8427e",
@@ -80,7 +88,7 @@
                 "ranked_3.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "ranked_4.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1026_alphafold2.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "T1026_msa.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1026_alphafold2_msa.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1026_plddt.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1026_0_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1024.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
@@ -92,9 +100,9 @@
             ]
         ],
         "meta": {
-            "nf-test": "0.9.2",
-            "nextflow": "24.10.5"
+            "nf-test": "0.9.3",
+            "nextflow": "25.10.2"
         },
-        "timestamp": "2025-07-24T16:54:30.453984448"
+        "timestamp": "2026-01-13T14:34:11.513463"
     }
 }

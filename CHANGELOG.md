@@ -62,12 +62,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[PR #370](https://github.com/nf-core/proteinfold/pull/370)] - Fix extract chain metrics.
 - [[#367](https://github.com/nf-core/proteinfold/issues/367)] - Boltz post-processing crashes.
 - [[#368](https://github.com/nf-core/proteinfold/issues/368)] - Helixfold3 iPTM output missing when dealing with monomers make the process to fail.
+- [[#369](https://github.com/nf-core/proteinfold/issues/369)] - Download all Alphafold3 DBs.
+- [[PR #350](https://github.com/nf-core/proteinfold/pull/350)] - PAE of model 0 in Boltz HTML report, AlphaFold2 to pass the build system
+- [[PR #377](https://github.com/nf-core/proteinfold/pull/377)] - Fix sequence msa synch for af2 split.
+- [[#380](https://github.com/nf-core/proteinfold/issues/380)] - Fixes alphafold2_model_preset bug on retry.
+- [[#382](https://github.com/nf-core/proteinfold/issues/382)] - Readds `--full_dbs` as a global option.
+- [[#378](https://github.com/nf-core/proteinfold/issues/378)] - Fix nested obsolete pdbs from pdb70.
+- [[#388](https://github.com/nf-core/proteinfold/issues/388)] - Fix colabfold prefix handling for output metrics.
+- [[#387](https://github.com/nf-core/proteinfold/issues/387)] - Fix alphafold2_standard obsolete.dat path error.
+- [[#389](https://github.com/nf-core/proteinfold/issues/389)] - Locked version numbers for HelixFold3 image to prevent bug caused by newer mamba versions.
+- [[PR #397](https://github.com/nf-core/proteinfold/pull/397)] - Fix AF2 mgnify handling and improve version reporting for AlphaFold2 containers.
+- [[PR #398](https://github.com/nf-core/proteinfold/pull/398)] - Fix issues with PREPARE_DBS subworkflows.
+- [[PR #399](https://github.com/nf-core/proteinfold/pulls/399)] - Update alphafold2 and alphafold2_pred Dockerfiles.
+- [[PR #404](https://github.com/nf-core/proteinfold/pulls/404)] - Boltz cache files moved to workdir, fixed version checks and Boltz stubRun.
+- [[#401](https://github.com/nf-core/proteinfold/issues/401)] - Get rid of symlinking in the prediction tools processes when using "PREPARE_DBS" subworkflows
+- [[#410](https://github.com/nf-core/proteinfold/issues/410)] - Switch RosettaFold2NA to Boltz-style multi-chain FASTA inputs and drop the interactions sheet.
+- [[PR #407](https://github.com/nf-core/proteinfold/pulls/407)] - Several changes to meet nf-core standards.
+- [[PR #409](https://github.com/nf-core/proteinfold/pulls/409)] - Force single pdb workflow outputs to return as a list
+- [[PR #396](https://github.com/nf-core/proteinfold/pulls/396)] - Split ColabFold into separate optimised containers with version pinning and significant size reduction.
+- [[#412](https://github.com/nf-core/proteinfold/issues/412)] - Substitute "/" with "\_" from fasta headers used to name files when using "--split_fasta".
+- [[PR #424](https://github.com/nf-core/proteinfold/pulls/424)] - Bump docker image version for release to 2.0.0, make code more friendly with Nextflow language server and other format issues/fixes.
+- [[#423](https://github.com/nf-core/proteinfold/issues/423)] - Generate json workflow using bioflow-insight.
+- [[#425](https://github.com/nf-core/proteinfold/issues/425)] - Pass as a single input channel fasta and features to get rid of meta2 in RUN_ALPHAFOLD2_PRED.
+- [[#440](https://github.com/nf-core/proteinfold/issues/440)] - Support single-letter RF2NA type tags (`type=P/R/D/S`) in ROSETTAFOLD2NA FASTA headers.
+- [[PR #442](https://github.com/nf-core/proteinfold/pulls/442)] - Bump version 2.6.1 of nf-schema, Nextflow minimum version to 25.10.2 and update utils_nfschema_plugin subworkflow.
 
 ### Parameters
 
 | Old parameter                | New parameter                    |
 | ---------------------------- | -------------------------------- |
-|                              | `--alphafold2_pdb_obsolete_path` |
 | `--small_bfd_link`           | `--alphafold2_small_bfd_link`    |
 | `--mgnify_link`              | `--alphafold2_mgnify_link`       |
 | `--pdb_mmcif_link`           | `--alphafold2_pdb_mmcif_link`    |
@@ -81,6 +104,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 | `--uniref90_path`            | `--alphafold2_uniref90_path`     |
 | `--pdb_seqres_path`          | `--alphafold2_pdb_seqres_path`   |
 | `--uniprot_path`             | `--alphafold2_uniprot_path`      |
+| `--colabfold_server`         | `--use_msa_server`               |
+| `--host_url`                 | `--msa_server_url`               |
+|                              | `--alphafold2_pdb_obsolete_path` |
 |                              | `--alphafold3_small_bfd_link`    |
 |                              | `--alphafold3_mgnify_link`       |
 |                              | `--alphafold3_uniref90_link`     |
@@ -94,12 +120,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 |                              | `--alphafold3_pdb_seqres_path`   |
 |                              | `--alphafold3_uniprot_path`      |
 |                              | `--boltz_model`                  |
-|                              | `--boltz_out_dir`                |
-|                              | `--boltz_output_format`          |
-|                              | `--boltz_use_msa_server`         |
-|                              | `--boltz_msa_server_url`         |
-|                              | `--boltz_use_potentials`         |
-|                              | `--boltz_write_full_pae`         |
 |                              | `--boltz2_aff_path`              |
 |                              | `--boltz2_conf_path`             |
 |                              | `--boltz2_mols_path`             |

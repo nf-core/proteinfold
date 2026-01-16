@@ -5,8 +5,7 @@ process RUN_ALPHAFOLD3 {
     tag "$meta.id"
     label 'process_medium'
     label 'process_gpu'
-
-    container "nf-core/proteinfold_alphafold3_standard:1.2.0dev"
+    container "nf-core/proteinfold_alphafold3_standard:2.0.0"
 
     input:
     tuple val(meta), path(json)
@@ -19,11 +18,12 @@ process RUN_ALPHAFOLD3 {
     path "uniprot/*"
 
     output:
-    tuple val(meta), path ("publish/*top_ranked.cif"), emit: top_ranked_cif
-    tuple val(meta), path ("publish/*ranked_*.cif")  , emit: cif
-    tuple val(meta), path ("${meta.id}_plddt.tsv")   , emit: multiqc
-    tuple val(meta), path ("${meta.id}_msa.tsv")     , emit: msa
-    path "versions.yml"                              , emit: versions
+    tuple val(meta), path ("publish/*alphafold3.cif")       , emit: top_ranked_cif
+    tuple val(meta), path ("publish/*ranked_*.cif")         , emit: cif
+    tuple val(meta), path ("${meta.id}_plddt.tsv")          , emit: multiqc
+    tuple val(meta), path ("${meta.id}_alphafold3_msa.tsv") , emit: msa
+    tuple val(meta), path ("${meta.id}_0_pae.tsv")          , emit: pae
+    path "versions.yml"                                     , emit: versions
 
     when:
     task.ext.when == null || task.ext.when
@@ -38,20 +38,43 @@ process RUN_ALPHAFOLD3 {
     def prefix = task.ext.prefix ?: "${meta.id}"
     def af3_id = meta.id.toLowerCase()
     """
-    if [ -f pdb_seqres/pdb_seqres.txt ]
-    then
-        sed -i "/^\\w*0/d" pdb_seqres/pdb_seqres.txt
-    fi
+    for f in ./pdb_seqres/pdb_seqres.txt ./pdb_seqres/pdb_seqres_2022_09_28.fasta; do
+	    if [[ -f \$f ]]; then
+            pdb_seqres=\$f
+            break
+        fi
+    done
+
+    for f in ./uniref90/uniref90*.fa ./uniref90/uniref90*.fasta; do
+    	if [[ -f \$f ]]; then
+            uniref90=\$f
+            break
+    	fi
+    done
+
+    for f in ./mgnify/mgy_clusters*.fa ./mgnify/mgnify_clusters*.fasta; do
+        if [[ -f \$f ]]; then
+            mgnify=\$f
+            break
+        fi
+    done
+
+    for f in ./uniprot/uniprot.fasta ./uniprot/uniprot*.fa; do
+        if [[ -f \$f ]]; then
+            uniprot=\$f
+            break
+        fi
+    done
 
     python3 /app/alphafold/run_alphafold.py \\
         --json_path=${json} \\
         --model_dir=./params \\
-        --uniref90_database_path=./uniref90/uniref90_2022_05.fa \\
-        --mgnify_database_path=./mgnify/mgy_clusters_2022_05.fa \\
+        --uniref90_database_path=\$uniref90 \\
+        --mgnify_database_path=\$mgnify \\
         --pdb_database_path=./mmcif_files \\
         --small_bfd_database_path=./small_bfd/bfd-first_non_consensus_sequences.fasta \\
-        --uniprot_cluster_annot_database_path=./uniprot/uniprot_all_2021_04.fa \\
-        --seqres_database_path=./pdb_seqres/pdb_seqres_2022_09_28.fasta \\
+        --uniprot_cluster_annot_database_path=\$uniprot \\
+        --seqres_database_path=\$pdb_seqres \\
         --output_dir=\$PWD \\
         $args
 
@@ -62,23 +85,24 @@ process RUN_ALPHAFOLD3 {
 
     ## Move the rest of the models and rename them according to their rank
     name=\$(jq -r '.name' ${json})
-    cp -n "\${name}/\${name}_model.cif" "publish/${prefix}_top_ranked.cif"
+    cp -n "\${name}/\${name}_model.cif" "publish/${prefix}_alphafold3.cif"
 
-    # Sort the rows by ranking_score in descending order
+    ## Sort the rows by ranking_score in descending order
     sorted_csv=\$(head -n 1 "\${name}/ranking_scores.csv"; tail -n +2 "\${name}/ranking_scores.csv" | sort -t, -k3 -nr)
-
     rank=0
     touch publish/combined_plddt_mqc.tsv
 
-    # Generate files with rank tag
+    ## Generate files with rank tag
     echo "\$sorted_csv" | tail -n +2 | while IFS=',' read -r seed sample ranking_score; do
     cp -n "\${name}/seed-\${seed}_sample-\${sample}/model.cif" "publish/seed_\${seed}_sample_\${sample}_ranked_\${rank}.cif"
     rank=\$((rank + 1))
     done
 
     extract_metrics.py --name ${prefix} \\
-        --jsons ${af3_id}/${af3_id}_data.json \\
+        --jsons ${af3_id}/${af3_id}_data.json ${af3_id}/${af3_id}_summary_confidences.json ${af3_id}/${af3_id}_confidences.json \\
         --structs publish/*ranked_*.cif
+
+    mv "${prefix}_msa.tsv" "${meta.id}_alphafold3_msa.tsv"
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
@@ -90,14 +114,15 @@ process RUN_ALPHAFOLD3 {
     def prefix = task.ext.prefix ?: "${meta.id}"
     """
     mkdir publish
-    touch publish/${prefix}_top_ranked.cif
+    touch publish/${prefix}_alphafold3.cif
     touch publish/${prefix}_ranked_1.cif
     touch publish/${prefix}_ranked_2.cif
     touch publish/${prefix}_ranked_3.cif
     touch publish/${prefix}_ranked_4.cif
     touch publish/${prefix}_ranked_5.cif
     touch ${prefix}_plddt.tsv
-    touch ${prefix}_msa.tsv
+    touch ${prefix}_alphafold3_msa.tsv
+    touch ${prefix}_0_pae.tsv
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

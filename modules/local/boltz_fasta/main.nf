@@ -5,7 +5,7 @@ process BOLTZ_FASTA {
     conda "${moduleDir}/environment.yml"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'https://depot.galaxyproject.org/singularity/python:3.8.3' :
-        'quay.io/biocontainers/python:3.8.3' }"
+        'biocontainers/python:3.8.3' }"
 
     input:
     tuple val(meta), path(fasta), path(msa)
@@ -56,6 +56,7 @@ process BOLTZ_FASTA {
 
     os.makedirs("output_fasta", exist_ok=True)
     counter = 0
+    msa_counter = 0
     with open("${fasta}", "r") as f:
         lines = f.readlines()
 
@@ -64,6 +65,7 @@ process BOLTZ_FASTA {
     seq_lines = []
     header = None
 
+    unique_proteins = {}
     for line in lines:
         line = line.strip()
         if line.startswith(">"):
@@ -72,11 +74,16 @@ process BOLTZ_FASTA {
                 sequence = "".join(seq_lines)
                 entity_type = infer_entity_type(header, sequence)
                 msa = ""
-                if len(msa_files) > 0:
-                    msa = f"|{os.path.basename(msa_files[counter])}"
-                    if msa[1:] not in msa_files:
-                        print(f"Can not find msa file {os.path.basename(msa_files[counter])}")
-                        exit(1)
+                if entity_type == 'protein':
+                    if len(msa_files) > 0:
+                        if not sequence in unique_proteins:
+                            unique_proteins[sequence] = msa_counter
+                            msa_counter += 1
+                        this_msa = unique_proteins[sequence]
+                        msa = f"|{os.path.basename(msa_files[this_msa])}"
+                        if msa[1:] not in msa_files:
+                            print(f"Can not find msa file {os.path.basename(msa_files[counter])}")
+                            exit(1)
                 fasta_data += f">{all_combinations[counter]}|{entity_type}{msa}\\n{sequence}\\n"
                 counter += 1
             header = line
@@ -88,11 +95,16 @@ process BOLTZ_FASTA {
         sequence = "".join(seq_lines)
         entity_type = infer_entity_type(header, sequence)
         msa = ""
-        if len(msa_files) > 0:
-            msa = f"|{os.path.basename(msa_files[counter])}"
-            if msa[1:] not in msa_files:
-                print(f"Can not find msa file {os.path.basename(msa_files[counter])}")
-                exit(1)
+        if entity_type == 'protein':
+            if len(msa_files) > 0:
+                if not sequence in unique_proteins:
+                    unique_proteins[sequence] = msa_counter
+                    msa_counter += 1
+                this_msa = unique_proteins[sequence]
+                msa = f"|{os.path.basename(msa_files[this_msa])}"
+                if msa[1:] not in msa_files:
+                    print(f"Can not find msa file {os.path.basename(msa_files[counter])}")
+                    exit(1)
         fasta_data += f">{all_combinations[counter]}|{entity_type}{msa}\\n{sequence}\\n"
 
     if len(fasta_data) > 0:

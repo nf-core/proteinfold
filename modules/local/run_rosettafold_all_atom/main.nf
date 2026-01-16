@@ -6,10 +6,11 @@ process RUN_ROSETTAFOLD_ALL_ATOM {
     label 'process_medium'
     label 'process_gpu'
 
-    container "nf-core/proteinfold_rosettafold_all_atom:dev"
+    container "nf-core/proteinfold_rosettafold_all_atom:2.0.0"
 
     input:
     tuple val(meta), path(yaml)
+    val uniref30_prefix
     path ('bfd/*')
     path ('uniref30/*')
     path ('pdb100_2021Mar03/*')
@@ -17,12 +18,13 @@ process RUN_ROSETTAFOLD_ALL_ATOM {
     path (fasta_files)
 
     output:
-    tuple val(meta), path ("${meta.id}_rosettafold_all_atom.pdb"), emit: pdb
-    tuple val(meta), path ("${meta.id}_plddt.tsv")               , emit: multiqc
-    tuple val(meta), path ("${meta.id}_msa.tsv")                 , emit: msa
+    tuple val(meta), path ("${meta.id}_rosettafold_all_atom.pdb")       , emit: pdb
+    tuple val(meta), path ("${meta.id}_plddt.tsv")                      , emit: multiqc
+    tuple val(meta), path ("${meta.id}_rosettafold_all_atom_msa.tsv")   , emit: msa
     // I think there should always be PAE from the .pt PyTorch model. extract_metrics.py has condition import torch to handle this
-    tuple val(meta), path ("${meta.id}_pae.tsv")                 , emit: paes
-    path "versions.yml"                                          , emit: versions
+    tuple val(meta), path ("${meta.id}_*_pae.tsv")                      , emit: paes
+    tuple val(meta), path ("${meta.id}_0_pae.tsv")                      , emit: pae
+    path "versions.yml"                                                 , emit: versions
 
     when:
     task.ext.when == null || task.ext.when
@@ -36,7 +38,7 @@ process RUN_ROSETTAFOLD_ALL_ATOM {
     }
     def args = task.ext.args ?: ''
     """
-    export DB_UR30="uniref30/${params.uniref30_prefix}"
+    export DB_UR30="uniref30/${uniref30_prefix}"
     mamba run --name RFAA python /app/RoseTTAFold-All-Atom/rf2aa/run_inference.py \\
         --config-dir /app/RoseTTAFold-All-Atom/rf2aa/config/inference \\
         --config-name "${yaml}" $args
@@ -48,8 +50,10 @@ process RUN_ROSETTAFOLD_ALL_ATOM {
 
     mamba run --name RFAA extract_metrics.py --name ${meta.id} \\
         --structs "${meta.id}_rosettafold_all_atom.pdb" \\
-        --a3ms "\$yaml_name"/A/t000_.msa0.a3m \\
+        --a3ms "\$yaml_name"/*/t000_.msa0.a3m \\
         --pts "\$yaml_name"_aux.pt
+
+    mv "${meta.id}_msa.tsv" "${meta.id}_rosettafold_all_atom_msa.tsv"
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
@@ -63,8 +67,8 @@ process RUN_ROSETTAFOLD_ALL_ATOM {
     touch "${meta.id}.pdb"
     touch "${meta.id}_aux.pt"
     touch "${meta.id}_plddt.tsv"
-    touch "${meta.id}_msa.tsv"
-    touch "${meta.id}_pae.tsv"
+    touch "${meta.id}_rosettafold_all_atom_msa.tsv"
+    touch "${meta.id}_0_pae.tsv"
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

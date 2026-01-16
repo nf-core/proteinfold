@@ -5,12 +5,13 @@ process RUN_ALPHAFOLD2_MSA {
     tag   "$meta.id"
     label 'process_medium'
 
-    container "nf-core/proteinfold_alphafold2_msa:dev"
+    container "nf-core/proteinfold_alphafold2_msa:2.0.0"
 
     input:
     tuple val(meta), path(fasta)
     val   db_preset
     val   alphafold2_model_preset
+    val   uniref30_prefix
     path ('params/*')
     path ('bfd/*')
     path ('small_bfd/*')
@@ -37,33 +38,38 @@ process RUN_ALPHAFOLD2_MSA {
         error("Local RUN_ALPHAFOLD2_MSA module does not support Conda. Please use Docker / Singularity / Podman instead.")
     }
     def args = task.ext.args ?: ''
-    def db_preset_cmd = db_preset ? "full_dbs --bfd_database_path=./bfd/bfd_metaclust_clu_complete_id30_c90_final_seq.sorted_opt --uniref30_database_path=./uniref30/${params.uniref30_prefix}" :
+    def db_preset_cmd = db_preset ? "full_dbs --bfd_database_path=./bfd/bfd_metaclust_clu_complete_id30_c90_final_seq.sorted_opt --uniref30_database_path=./uniref30/${uniref30_prefix}" :
         "reduced_dbs --small_bfd_database_path=./small_bfd/bfd-first_non_consensus_sequences.fasta"
+    def extra_dbs = ""
     if (alphafold2_model_preset == 'multimer') {
-        alphafold2_model_preset += " --pdb_seqres_database_path=./pdb_seqres/pdb_seqres.txt --uniprot_database_path=./uniprot/uniprot.fasta "
-    }
-    else {
-        alphafold2_model_preset += " --pdb70_database_path=./pdb70/pdb70 "
+        extra_dbs = " --pdb_seqres_database_path=./pdb_seqres/pdb_seqres.txt --uniprot_database_path=./uniprot/uniprot.fasta "
+    } else {
+        extra_dbs = " --pdb70_database_path=./pdb70/pdb70 "
     }
     """
-    if [ -f pdb_seqres/pdb_seqres.txt ]
-        then sed -i "/^\\w*0/d" pdb_seqres/pdb_seqres.txt
-    fi
+    fix_obsolete.py pdb_mmcif/obsolete.dat > clean_obsolete.dat
+
+    ## Handles multiple versions of mgnify database and selects the latest version
+    mgnify_db_path=\$(ls -v ./mgnify/mgy_clusters*.fa | tail -n 1)
+
     python3 /app/alphafold/run_msa.py \
         --fasta_paths=${fasta} \
-        --model_preset=${alphafold2_model_preset} \
+        --model_preset=${alphafold2_model_preset}${extra_dbs} \
         --db_preset=${db_preset_cmd} \
         --output_dir=\$PWD \
         --data_dir=\$PWD \
         --uniref90_database_path=./uniref90/uniref90.fasta \
-        --mgnify_database_path=./mgnify/mgy_clusters.fa \
+        --mgnify_database_path=\$mgnify_db_path \
         --template_mmcif_dir=./pdb_mmcif/mmcif_files \
-        --obsolete_pdbs_path=./pdb_mmcif/obsolete.dat  \
+        --obsolete_pdbs_path=./clean_obsolete.dat \
         $args
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         python: \$(python3 --version | sed 's/Python //g')
+        alphafold2: \$(cd /app/alphafold && git rev-parse HEAD 2>/dev/null || echo "unknown")
+        numpy: \$(python3 -c "import numpy; print(numpy.__version__)" 2>/dev/null || echo "unknown")
+        biopython: \$(python3 -c "import Bio; print(Bio.__version__)" 2>/dev/null || echo "unknown")
     END_VERSIONS
     """
 
@@ -74,7 +80,10 @@ process RUN_ALPHAFOLD2_MSA {
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        awk: \$(gawk --version| head -1 | sed 's/GNU Awk //; s/, API:.*//')
+        python: \$(python3 --version | sed 's/Python //g')
+        alphafold2: \$(cd /app/alphafold && git rev-parse HEAD 2>/dev/null || echo "unknown")
+        numpy: \$(python3 -c "import numpy; print(numpy.__version__)" 2>/dev/null || echo "unknown")
+        biopython: \$(python3 -c "import Bio; print(Bio.__version__)" 2>/dev/null || echo "unknown")
     END_VERSIONS
     """
 }

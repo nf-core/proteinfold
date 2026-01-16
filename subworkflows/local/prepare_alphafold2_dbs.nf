@@ -2,19 +2,17 @@
 // Download all the required AlphaFold 2 databases and parameters
 //
 
-include {
-    ARIA2_UNCOMPRESS as ARIA2_ALPHAFOLD2_PARAMS
-    ARIA2_UNCOMPRESS as ARIA2_BFD
-    ARIA2_UNCOMPRESS as ARIA2_SMALL_BFD
-    ARIA2_UNCOMPRESS as ARIA2_MGNIFY
-    ARIA2_UNCOMPRESS as ARIA2_PDB70
-    ARIA2_UNCOMPRESS as ARIA2_OBSOLETE
-    ARIA2_UNCOMPRESS as ARIA2_UNIREF30
-    ARIA2_UNCOMPRESS as ARIA2_UNIREF90
-    ARIA2_UNCOMPRESS as ARIA2_UNIPROT_SPROT
-    ARIA2_UNCOMPRESS as ARIA2_UNIPROT_TREMBL } from './aria2_uncompress'
-
-include { ARIA2 as ARIA2_PDB_SEQRES } from '../../modules/nf-core/aria2/main'
+include { ARIA2_UNCOMPRESS as ARIA2_ALPHAFOLD2_PARAMS } from './aria2_uncompress'
+include { ARIA2_UNCOMPRESS as ARIA2_BFD               } from './aria2_uncompress'
+include { ARIA2_UNCOMPRESS as ARIA2_SMALL_BFD         } from './aria2_uncompress'
+include { ARIA2_UNCOMPRESS as ARIA2_MGNIFY            } from './aria2_uncompress'
+include { ARIA2_UNCOMPRESS as ARIA2_PDB70             } from './aria2_uncompress'
+include { ARIA2_UNCOMPRESS as ARIA2_OBSOLETE          } from './aria2_uncompress'
+include { ARIA2_UNCOMPRESS as ARIA2_UNIREF30          } from './aria2_uncompress'
+include { ARIA2_UNCOMPRESS as ARIA2_UNIREF90          } from './aria2_uncompress'
+include { ARIA2_UNCOMPRESS as ARIA2_UNIPROT_SPROT     } from './aria2_uncompress'
+include { ARIA2_UNCOMPRESS as ARIA2_UNIPROT_TREMBL    } from './aria2_uncompress'
+include { ARIA2 as ARIA2_PDB_SEQRES                   } from '../../modules/nf-core/aria2/main'
 
 include { COMBINE_UNIPROT   } from '../../modules/local/combine_uniprot'
 include { DOWNLOAD_PDBMMCIF } from '../../modules/local/download_pdbmmcif'
@@ -49,37 +47,42 @@ workflow PREPARE_ALPHAFOLD2_DBS {
     uniprot_trembl_link      //    string: Specifies the link to download uniprot_trembl
 
     main:
-    ch_bfd        = Channel.empty()
-    ch_small_bfd  = Channel.empty()
-    ch_versions   = Channel.empty()
+    ch_bfd        = channel.value([])
+    ch_small_bfd  = channel.value([])
+    ch_versions   = channel.empty()
 
 
     if (alphafold2_db) {
         if (alphafold2_full_dbs) {
-            ch_bfd       = Channel.value(file(bfd_path))
-            ch_small_bfd = Channel.value(file("${projectDir}/assets/dummy_db"))
+            ch_bfd       = channel.value(file(bfd_path))
+            ch_small_bfd = channel.value(file("${projectDir}/assets/dummy_db"))
         }
         else {
-            ch_bfd       = Channel.value(file("${projectDir}/assets/dummy_db"))
-            ch_small_bfd = Channel.value(file(small_bfd_path))
+            ch_bfd       = channel.value(file("${projectDir}/assets/dummy_db"))
+            ch_small_bfd = channel.value(file(small_bfd_path))
         }
 
-        ch_params         = Channel.value(file(alphafold2_params_path))
-        ch_mgnify         = Channel.value(file(mgnify_path))
-        ch_pdb70          = Channel.value(file(pdb70_path))
-        ch_mmcif_files    = Channel.value(file(pdb_mmcif_path))
-        ch_obsolete       = Channel.value(file(pdb_obsolete_path, type: 'file'))
-        ch_uniref30       = Channel.value(file(alphafold2_uniref30_path, type: 'any'))
-        ch_uniref90       = Channel.value(file(uniref90_path))
-        ch_pdb_seqres     = Channel.value(file(pdb_seqres_path))
-        ch_uniprot        = Channel.value(file(uniprot_path))
+        ch_params         = channel.value(file(alphafold2_params_path))
+        ch_mgnify         = channel.value(file(mgnify_path))
+        ch_pdb70          = channel.value(file(pdb70_path))
+        ch_mmcif_files    = channel.value(file(pdb_mmcif_path))
+        ch_obsolete       = channel.value(file(pdb_obsolete_path, type: 'file'))
+        ch_uniref30       = channel.value(file(alphafold2_uniref30_path, type: 'any'))
+        ch_uniref90       = channel.value(file(uniref90_path))
+        ch_pdb_seqres     = channel.value(file(pdb_seqres_path))
+        ch_uniprot        = channel.value(file(uniprot_path))
     }
     else {
         if (alphafold2_full_dbs) {
             ARIA2_BFD(
                 bfd_link
             )
-            ch_bfd =  ARIA2_BFD.out.db
+            ch_bfd =  ARIA2_BFD
+                        .out
+                        .db
+                        .map {
+                            dir -> dir.listFiles().findAll { it -> it.isFile() }
+                        }
             ch_versions = ch_versions.mix(ARIA2_BFD.out.versions)
         } else {
             ARIA2_SMALL_BFD(
@@ -92,7 +95,13 @@ workflow PREPARE_ALPHAFOLD2_DBS {
         ARIA2_ALPHAFOLD2_PARAMS(
             alphafold2_params_link
         )
-        ch_params = ARIA2_ALPHAFOLD2_PARAMS.out.db
+        ch_params = ARIA2_ALPHAFOLD2_PARAMS
+			.out
+            .db
+            .map {
+                dir -> dir.listFiles().findAll { it -> it.isFile() }
+            }
+
         ch_versions = ch_versions.mix(ARIA2_ALPHAFOLD2_PARAMS.out.versions)
 
         ARIA2_MGNIFY(
@@ -104,7 +113,12 @@ workflow PREPARE_ALPHAFOLD2_DBS {
         ARIA2_PDB70(
             pdb70_link
         )
-        ch_pdb70 = ARIA2_PDB70.out.db
+        ch_pdb70 = ARIA2_PDB70
+                    .out
+                    .db
+                    .map {
+                        dir -> dir.listFiles().findAll { it -> it.isFile() }
+                    }
         ch_versions = ch_versions.mix(ARIA2_PDB70.out.versions)
 
         DOWNLOAD_PDBMMCIF(
@@ -122,8 +136,11 @@ workflow PREPARE_ALPHAFOLD2_DBS {
         ARIA2_UNIREF30(
             alphafold2_uniref30_link
         )
-        ch_uniref30 = ARIA2_UNIREF30.out.db
-        ch_versions = ch_versions.mix(ARIA2_UNIREF30.out.versions)
+        ch_uniref30 = ARIA2_UNIREF30
+		      	        .out
+			            .db
+			            .map { dir -> dir.listFiles().findAll { it -> it.isFile() } }
+	    ch_versions = ch_versions.mix(ARIA2_UNIREF30.out.versions)
 
         ARIA2_UNIREF90(
             uniref90_link
@@ -137,7 +154,7 @@ workflow PREPARE_ALPHAFOLD2_DBS {
                 pdb_seqres_link
             ]
         )
-        ch_pdb_seqres = ARIA2_PDB_SEQRES.out.downloaded_file.map{ it[1] }
+        ch_pdb_seqres = ARIA2_PDB_SEQRES.out.downloaded_file.map { it -> it[1] }
         ch_versions = ch_versions.mix(ARIA2_PDB_SEQRES.out.versions)
 
         ARIA2_UNIPROT_SPROT(

@@ -10,6 +10,8 @@
 include { RUN_ESMFOLD               } from '../modules/local/run_esmfold'
 include { MULTIFASTA_TO_SINGLEFASTA } from '../modules/local/multifasta_to_singlefasta'
 
+include { modeChannel               } from '../subworkflows/local/utils_nfcore_proteinfold_pipeline'
+
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     IMPORT NF-CORE MODULES/SUBWORKFLOWS
@@ -31,8 +33,6 @@ workflow ESMFOLD {
     ch_num_recycles   // int: Number of recycles for esmfold
 
     main:
-    ch_multiqc_files = Channel.empty()
-
     //
     // MODULE: Run esmfold
     //
@@ -58,26 +58,20 @@ workflow ESMFOLD {
 
     RUN_ESMFOLD
         .out
-        .pdb
-        .map{
-            meta = it[0].clone();
-            meta.model = "esmfold";
-            [meta, it[1]]
-        }
-        .set{ch_pdb_final}
-
-    RUN_ESMFOLD
-        .out
         .multiqc
-        .map { it[1] }
+        .map { it -> it[1] }
         .toSortedList()
-        .map { [ [ "model": "esmfold"], it.flatten() ] }
+        .map { it ->
+            [ [ "model": "esmfold"], it.flatten() ]
+        }
         .set { ch_multiqc_report  }
 
+    modeChannel(RUN_ESMFOLD.out.pdb, "esmfold").set { ch_pdb_final }
+
     emit:
-    pdb            = ch_pdb_final   // channel: [ id, /path/to/*.pdb ]
-    multiqc_report = ch_multiqc_report   // channel: /path/to/multiqc_report.html
-    versions       = ch_versions         // channel: [ path(versions.yml) ]
+    pdb            = ch_pdb_final      // channel: [ id, /path/to/*.pdb ]
+    multiqc_report = ch_multiqc_report // channel: /path/to/multiqc_report.html
+    versions       = ch_versions       // channel: [ path(versions.yml) ]
 }
 
 /*

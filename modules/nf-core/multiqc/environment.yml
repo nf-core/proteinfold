@@ -4,6 +4,6 @@ channels:
   - conda-forge
   - bioconda
 dependencies:
-  - bioconda::multiqc=1.29
+  - bioconda::multiqc=1.32
   - pip
     - ${projectDir} # Install proteinfold_multiqc as a local plugi   

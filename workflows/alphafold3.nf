@@ -38,11 +38,11 @@ workflow ALPHAFOLD3 {
     ch_uniprot           // channel: path(uniprot)
 
     main:
-    ch_pdb_final      = Channel.empty()
-    ch_top_ranked_pdb = Channel.empty()
-    ch_msa_final      = Channel.empty()
-    ch_multiqc_report = Channel.empty()
-    ch_versions       = Channel.empty()
+    ch_pdb_final      = channel.empty()
+    ch_top_ranked_pdb = channel.empty()
+    ch_msa_final      = channel.empty()
+    ch_multiqc_report = channel.empty()
+    ch_versions       = channel.empty()
 
     FASTA_TO_ALPHAFOLD3_JSON(ch_samplesheet)
     ch_versions       = ch_versions.mix(FASTA_TO_ALPHAFOLD3_JSON.out.versions)
@@ -88,10 +88,11 @@ workflow ALPHAFOLD3 {
     MMCIF2PDB_MODELS
         .out
         .pdb
-        .map {
+        .map { it ->
             def meta   = it[0].clone();
             meta.model = "alphafold3";
-            [ meta, it[1] ]
+            def files = (it[1] instanceof List) ? it[1] : [ it[1] ]
+            [ meta, files ]
         }
         .set { ch_pdb_final }
 
@@ -106,7 +107,7 @@ workflow ALPHAFOLD3 {
     MMCIF2PDB_TOP_RANKED
         .out
         .pdb
-        .map {
+        .map { it ->
             def meta = it[0].clone();
             meta.model = "alphafold3";
             [ meta, it[1] ]
@@ -117,7 +118,7 @@ workflow ALPHAFOLD3 {
     RUN_ALPHAFOLD3
         .out
         .msa
-        .map {
+        .map { it ->
             def meta = it[0].clone();
             meta.model = "alphafold3";
             [ meta, it[1] ]
@@ -128,15 +129,29 @@ workflow ALPHAFOLD3 {
     RUN_ALPHAFOLD3
         .out
         .multiqc
-        .map { it[1] }
+        .map { it -> it[1] }
         .toSortedList()
-        .map { [ [ "model": "alphafold3" ], it.flatten() ] }
+        .map { it ->
+            [ [ "model": "alphafold3" ], it.flatten() ]
+        }
         .set { ch_multiqc_report }
+
+    // Prepare dummy pae input
+    RUN_ALPHAFOLD3
+        .out
+        .pae
+        .map { it ->
+            def meta = it[0].clone();
+            meta.model = "alphafold3";
+            [ meta, it[1] ]
+        }
+        .set { ch_pae_final }
 
     emit:
     top_ranked_pdb = ch_top_ranked_pdb // channel: [ id, /path/to/*.pdb ]
     pdb            = ch_pdb_final      // channel: [ meta, /path/to/*.pdb, ...,/path/to/*.pdb ]
     msa            = ch_msa_final      // channel: [ meta, /path/to/*.pdb, /path/to/*_coverage.png ]
+    pae            = ch_pae_final      // channel: [ meta, path/to/*_pae.tsv ]
     multiqc_report = ch_multiqc_report // channel: /path/to/multiqc_report.html
     versions       = ch_versions       // channel: [ path(versions.yml) ]
 }

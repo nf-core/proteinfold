@@ -4,7 +4,8 @@
             5,
             {
                 "COLABFOLD_BATCH": {
-                    "colabfold_batch": null
+                    "alphafold_colabfold": "unknown",
+                    "colabfold_batch": "unknown"
                 },
                 "GENERATE_REPORT": {
                     "python": "3.12.7",
@@ -16,12 +17,14 @@
             },
             [
                 "colabfold",
+                "colabfold/T1024_0_pae.tsv",
                 "colabfold/T1024_colabfold.pdb",
                 "colabfold/T1024_coverage.png",
                 "colabfold/T1024_mqc.png",
                 "colabfold/T1024_relaxed_rank_01.pdb",
                 "colabfold/T1024_relaxed_rank_02.pdb",
                 "colabfold/T1024_relaxed_rank_03.pdb",
+                "colabfold/T1026_0_pae.tsv",
                 "colabfold/T1026_colabfold.pdb",
                 "colabfold/T1026_coverage.png",
                 "colabfold/T1026_mqc.png",
@@ -41,12 +44,14 @@
                 "pipeline_info/nf_core_proteinfold_software_mqc_versions.yml"
             ],
             [
+                "T1024_0_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1024_colabfold.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1024_coverage.png:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1024_mqc.png:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1024_relaxed_rank_01.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1024_relaxed_rank_02.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1024_relaxed_rank_03.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1026_0_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1026_colabfold.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1026_coverage.png:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1026_mqc.png:md5,d41d8cd98f00b204e9800998ecf8427e",
@@ -59,9 +64,9 @@
             ]
         ],
         "meta": {
-            "nf-test": "0.9.2",
-            "nextflow": "25.04.6"
+            "nf-test": "0.9.3",
+            "nextflow": "25.10.2"
         },
-        "timestamp": "2025-08-07T11:02:35.349046908"
+        "timestamp": "2026-01-13T14:38:07.818121"
     }
 }
