@@ -1,42 +1,45 @@
 ## Guidance on how to add a new --mode (i.e. structure prediction software) to ProteinFold
 
 ### Contributing
+
 One of the great advantages of an `nf-core` pipeline is the community can add new protein structure prediction modules as they are released, while still leveraging the workflow infrastructure and reports developed for `proteinfold`.
 
-Please consider writing some code to become a [nf-core contributor](https://nf-co.re/contributors) and expand the pipeline! Reach out to a maintainer of contributor for guidance :)  
+Please consider writing some code to become a [nf-core contributor](https://nf-co.re/contributors) and expand the pipeline! Reach out to a maintainer of contributor for guidance :)
 
 ### Locating pipeline sections
-- `main.nf`: This kicks off each `--mode`'s workflow once the databases have been prepared on the deployment infrastructure. Relevant parameters are passed from `params.[mode_name]` (largely populated from global `nextflow.config` `params` which inherits `dbs.config` database locations) through to the `[MODE_NAME]()` workflow. The channels returned contain the relevant `report_input` metrics, the `top_rank_model` (*i.e.* the best structure from all inference runs), and standard software versioning info. 
-- `subworkflows`: largely used for  mode-specific smaller set-up worklows, except for the `post_processing` subworkflow which will be detailed later.
-- `workflows/[mode_name].nf`: the `--mode`'s  workflow handles input channels of relevant databases, passes them to the local module that does the prediction work (`RUN_[MODE_NAME]()`) and maps the output from the underlying structure prediction to emitted channels ingested by the reporting modules.
-- `modules/local/run_[MODE_NAME]`: this is where the bulk of the compute work is done. Each underlying structure prediction module is bundled with its own Dockerfile to setup the software in a container, and a `/modules/local/run_[MODE_NAME]/main.nf` to execute the container from nextflow. 
-  - input: 
+
+- `main.nf`: This kicks off each `--mode`'s workflow once the databases have been prepared on the deployment infrastructure. Relevant parameters are passed from `params.[mode_name]` (largely populated from global `nextflow.config` `params` which inherits `dbs.config` database locations) through to the `[MODE_NAME]()` workflow. The channels returned contain the relevant `report_input` metrics, the `top_rank_model` (_i.e._ the best structure from all inference runs), and standard software versioning info.
+- `subworkflows`: largely used for mode-specific smaller set-up worklows, except for the `post_processing` subworkflow which will be detailed later.
+- `workflows/[mode_name].nf`: the `--mode`'s workflow handles input channels of relevant databases, passes them to the local module that does the prediction work (`RUN_[MODE_NAME]()`) and maps the output from the underlying structure prediction to emitted channels ingested by the reporting modules.
+- `modules/local/run_[MODE_NAME]`: this is where the bulk of the compute work is done. Each underlying structure prediction module is bundled with its own Dockerfile to setup the software in a container, and a `/modules/local/run_[MODE_NAME]/main.nf` to execute the container from nextflow.
+  - input:
     - `meta` contains the metadata info of this sub-job, including the `id` column from the `samplesheet.csv` accessed by `{meta.id}`.
-    - `path(fasta)` (or more flexible yaml or json) locates the biomolecular input sequence file, where `fasta.baseName` gives the underlying input file name (not the `id` label). 
+    - `path(fasta)` (or more flexible yaml or json) locates the biomolecular input sequence file, where `fasta.baseName` gives the underlying input file name (not the `id` label).
     - `path(features)` is used to pass through multiple sequence alignment (MSA) data, in line with AlphaFold2's [features.pkl](https://github.com/google-deepmind/alphafold?tab=readme-ov-file#alphafold-output) file.
-    - Other `path()`s largely locate the core [AlphaFold sequence databases](https://github.com/google-deepmind/alphafold?tab=readme-ov-file#genetic-databases) (or module specific variants thereof).  
-  - output: 
-   - Outputs are structured as a bundled `tuple` of two objects, the first is always `meta` containing the metadata labels, and then `path()` to various output data files useful to the end-user. The prediction module is called in a way that return files to the process's current directory (`.`). 
+    - Other `path()`s largely locate the core [AlphaFold sequence databases](https://github.com/google-deepmind/alphafold?tab=readme-ov-file#genetic-databases) (or module specific variants thereof).
+  - output:
+  - Outputs are structured as a bundled `tuple` of two objects, the first is always `meta` containing the metadata labels, and then `path()` to various output data files useful to the end-user. The prediction module is called in a way that return files to the process's current directory (`.`).
   - `"""script block"""`:
-   - `program`: the script block calls the program from the Nextflow shell with the programs typical `--flags`, in whatever form (`binary` or `script.py`) the program is distributed from its codebase repository.
-   - `extract_metrics.py`: accesses the canonical data output formats from the structure prediction program and returns a core set of plain text `.tsv` metric files.
+  - `program`: the script block calls the program from the Nextflow shell with the programs typical `--flags`, in whatever form (`binary` or `script.py`) the program is distributed from its codebase repository.
+  - `extract_metrics.py`: accesses the canonical data output formats from the structure prediction program and returns a core set of plain text `.tsv` metric files.
 - `bin/extract_metrics.py`: a globally accessible program to go from serialised data -> `.tsv` plaintext. Currently runs particular extraction logic functions based upon file format (`.pkl`, `.json`, `.npz`). However, as the commnity adds more `--mode`s to the pipeline, different programs could use the same compressed output format. In which case `extract_metrics.py` should be refactored to match based on the passing the `--mode` to `extract_metrics.py`.
 - `subworkflows/local/post_processing.nf`: the `POST_PROCESSING{}` process sits after all possible `[MODE_NAME]()` workflows in the `main.nf`. It passes along visualisation options, metrics data files, and report templates (`single` or `comparison`). Those reports are created with the `GENERATE_REPORT()` or `COMPARE_STRUCTURES()` `/module/local/` modules, respectively.
 - `bin/generate_[comparison]_report.py` takes the HTML templates at `assets/[report|comparison]_template.html` and populates them with plots created inside these python scripts.
- 
 
-### Process labelling 
+### Process labelling
+
 At the top of a module's `RUN_[MODE_NAME]`{} process there are a series of labels that allow the `nextflow.config` to pass the job to the approriate resources on the compute cluster. `label 'process_gpu'` is very useful to specify this is the AI inference stage requiring GP-GPU grunt -- whereas other processes can have default labels that request CPU resources and, once finished, will naturally cascade onto GPUs due to Nextflow's dataflow paradigm.
 
+### Processable structure prediction metrics
 
-### Processable structure prediction metrics 
 Metrics from AlphaFold-inspired protein strucutre prediction programs are structured in two ways: tabular or as a matrix (PAE values)
- 
+
 When contributing a new mode to `proteinfold`, functionality should be added to `extract_metrics.py` to access the canonical ouput files of the new program, and extract data into compliant `.tsv` files that can be easily processed by downstream plotting and MultiQC functions.
 
 Metrics files are **0 indexed**.
 
 #### pLDDT (`{meta.id}_plddt.tsv`)
+
 Confidence values per residue, rounded to 2 decimal places. Each ranked result gets its own column. [For all-atom modules, atomic token confidences are processed to a naive mean value across the residue]
 
 ```
@@ -52,7 +55,8 @@ Positions	rank_0	rank_1	rank_2	rank_3	rank_4
 ```
 
 #### MSA (`{meta.id}_{meta.mode}_msa.tsv`)
-The amino acid characters are converted to integers `0-19`, unknown as 20,  **integer `21`** represents the gap character.
+
+The amino acid characters are converted to integers `0-19`, unknown as 20, **integer `21`** represents the gap character.
 
 ```
 19	5	5	4	10	16	15	3	8	15	13	16	12	9	17	16	9	4	8	11	0	7	7	8	11	0	19	8	8	5	3
@@ -66,7 +70,8 @@ The amino acid characters are converted to integers `0-19`, unknown as 20,  **in
 This allows easy sequence indentity calculation when processing as a `numpy` array.
 
 #### (i)pTM (`{meta.id}_[i]ptm.tsv`)
-(i)pTM scores, rounded to 3 decimal places, listed by the rank number.  [Currently unsorted]
+
+(i)pTM scores, rounded to 3 decimal places, listed by the rank number. [Currently unsorted]
 
 ```
 17  0.552
@@ -96,7 +101,8 @@ This allows easy sequence indentity calculation when processing as a `numpy` arr
 8 0.595
 ```
 
-#### chain-wise (i)pTM  (`{meta.id}_chainwise_[i]ptm.tsv`)
+#### chain-wise (i)pTM (`{meta.id}_chainwise_[i]ptm.tsv`)
+
 (Symmetrical) ipTM scores, rounded to 4 decimal places, with chain pair lettering as the row (`X:Y`), and the rank number as the column. A pTM value is a chain's own predicted Template Modelling score so lettering will be `X:X`.
 
 ```
