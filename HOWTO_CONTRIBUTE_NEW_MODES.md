@@ -18,10 +18,10 @@ Please consider writing some code to become a [nf-core contributor](https://nf-c
     - `path(features)` is used to pass through multiple sequence alignment (MSA) data, in line with AlphaFold2's [features.pkl](https://github.com/google-deepmind/alphafold?tab=readme-ov-file#alphafold-output) file.
     - Other `path()`s largely locate the core [AlphaFold sequence databases](https://github.com/google-deepmind/alphafold?tab=readme-ov-file#genetic-databases) (or module specific variants thereof).
   - output:
-  - Outputs are structured as a bundled `tuple` of two objects, the first is always `meta` containing the metadata labels, and then `path()` to various output data files useful to the end-user. The prediction module is called in a way that return files to the process's current directory (`.`).
-  - `"""script block"""`:
-  - `program`: the script block calls the program from the Nextflow shell with the programs typical `--flags`, in whatever form (`binary` or `script.py`) the program is distributed from its codebase repository.
-  - `extract_metrics.py`: accesses the canonical data output formats from the structure prediction program and returns a core set of plain text `.tsv` metric files.
+    - Outputs are structured as a bundled `tuple` of two objects, the first is always `meta` containing the metadata labels, and then `path()` to various output data files useful to the end-user. The prediction module is called in a way that return files to the process's current directory (`.`).
+    - `"""script block"""`:
+    - `program`: the script block calls the program from the Nextflow shell with the programs typical `--flags`, in whatever form (`binary` or `script.py`) the program is distributed from its codebase repository.
+    - `extract_metrics.py`: accesses the canonical data output formats from the structure prediction program and returns a core set of plain text `.tsv` metric files.
 - `bin/extract_metrics.py`: a globally accessible program to go from serialised data -> `.tsv` plaintext. Currently runs particular extraction logic functions based upon file format (`.pkl`, `.json`, `.npz`). However, as the commnity adds more `--mode`s to the pipeline, different programs could use the same compressed output format. In which case `extract_metrics.py` should be refactored to match based on the passing the `--mode` to `extract_metrics.py`.
 - `subworkflows/local/post_processing.nf`: the `POST_PROCESSING{}` process sits after all possible `[MODE_NAME]()` workflows in the `main.nf`. It passes along visualisation options, metrics data files, and report templates (`single` or `comparison`). Those reports are created with the `GENERATE_REPORT()` or `COMPARE_STRUCTURES()` `/module/local/` modules, respectively.
 - `bin/generate_[comparison]_report.py` takes the HTML templates at `assets/[report|comparison]_template.html` and populates them with plots created inside these python scripts.
