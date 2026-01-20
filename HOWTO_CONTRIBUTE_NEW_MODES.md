@@ -74,7 +74,7 @@ This allows easy sequence indentity calculation when processing as a `numpy` arr
 
 #### (i)pTM (`{meta.id}_[i]ptm.tsv`)
 
-(i)pTM scores, rounded to 3 decimal places, listed by the rank number. [Currently unsorted]
+(i)pTM scores, rounded to 3 decimal places, listed by the rank number (currently unsorted).
 
 ```
 17  0.552
