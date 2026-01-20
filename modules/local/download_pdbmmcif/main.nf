@@ -15,8 +15,8 @@ process DOWNLOAD_PDBMMCIF {
     val source_url_pdb_mmcif
 
     output:
-    path ('*')         , emit: ch_db
-    path "versions.yml", emit: versions
+    path ('mmcif_files'), emit: ch_db
+    path "versions.yml" , emit: versions
 
     when:
     task.ext.when == null || task.ext.when

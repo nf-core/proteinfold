@@ -3,7 +3,7 @@ process COLABFOLD_BATCH {
     label 'process_medium'
     label 'process_gpu'
 
-    container "nf-core/proteinfold_colabfold:dev"
+    container "nf-core/proteinfold_colabfold:2.0.0"
 
     input:
     tuple val(meta), path(fasta)
@@ -32,7 +32,10 @@ process COLABFOLD_BATCH {
     def args = task.ext.args ?: ''
 
     """
-    ln -s \$(realpath params/alphafold_params_*/*) params/
+    if compgen -G "params/alphafold_params_*" >/dev/null; then
+        ln -s \$(realpath params/alphafold_params_*/*) params/
+    fi
+
     touch params/download_finished.txt
 
     colabfold_batch \\
@@ -42,6 +45,7 @@ process COLABFOLD_BATCH {
         --model-type ${colabfold_model_preset} \\
         ${fasta} \\
         \$PWD
+
     for i in `find *.png -maxdepth 0`; do cp \$i \${i%'.png'}_mqc.png; done
     if [ ! -e `find *_relaxed_rank_001_*.pdb` ]; then
         cp *_relaxed_rank_001*.pdb ${meta.id}_colabfold.pdb
@@ -57,7 +61,8 @@ process COLABFOLD_BATCH {
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        colabfold_batch: \$(conda run -n colabfold pip list | grep "^colabfold" | awk '{print \$2}')
+        alphafold_colabfold: \$(pip list | grep "^alphafold-colabfold" | awk '{print \$2}' 2>/dev/null || echo "unknown")
+        colabfold_batch: \$(pip list | grep "^colabfold" | awk '{print \$2}' 2>/dev/null || echo "unknown")
     END_VERSIONS
     """
 
@@ -74,7 +79,8 @@ process COLABFOLD_BATCH {
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        colabfold_batch: \$(conda run -n colabfold pip list | grep "^colabfold" | awk '{print \$2}')
+        alphafold_colabfold: \$(pip list | grep "^alphafold-colabfold" | awk '{print \$2}' 2>/dev/null || echo "unknown")
+        colabfold_batch: \$(pip list | grep "^colabfold" | awk '{print \$2}' 2>/dev/null || echo "unknown")
     END_VERSIONS
     """
 }

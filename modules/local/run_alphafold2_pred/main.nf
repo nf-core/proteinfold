@@ -6,10 +6,10 @@ process RUN_ALPHAFOLD2_PRED {
     label 'process_medium'
     label 'process_gpu'
 
-    container "nf-core/proteinfold_alphafold2_pred:dev"
+    container "nf-core/proteinfold_alphafold2_pred:2.0.0"
 
     input:
-    tuple val(meta), path(fasta)
+    tuple val(meta), path(fasta), path(features)
     val   alphafold2_model_preset
     path ('params/*')
     path ('bfd/*')
@@ -22,7 +22,6 @@ process RUN_ALPHAFOLD2_PRED {
     path ('uniref90/*')
     path ('pdb_seqres/*')
     path ('uniprot/*')
-    tuple val(meta), path(features)
 
     output:
     path ("${fasta.baseName}*")
@@ -48,7 +47,6 @@ process RUN_ALPHAFOLD2_PRED {
     }
     def args = task.ext.args ?: ''
     """
-    if [ -d params/alphafold_params_* ]; then ln -r -s params/alphafold_params_*/* params/; fi
     python3 /app/alphafold/run_predict.py \\
         --fasta_paths=${fasta} \\
         --model_preset=${alphafold2_model_preset} \\

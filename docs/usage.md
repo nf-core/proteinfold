@@ -21,7 +21,7 @@ You will need to create a samplesheet with information about the sequences you w
 A sample of the final samplesheet file for two sequences is shown below:
 
 ```csv title="samplesheet.csv"
-sequence,fasta
+id,fasta
 T1024,https://raw.githubusercontent.com/nf-core/test-datasets/proteinfold/testdata/sequences/T1024.fasta
 T1026,https://raw.githubusercontent.com/nf-core/test-datasets/proteinfold/testdata/sequences/T1026.fasta
 ```
@@ -415,6 +415,21 @@ nextflow run nf-core/proteinfold \
       -profile <docker/singularity/.../institute>
 ```
 
+RosettaFold2NA can be run using this command:
+
+```bash
+nextflow run nf-core/proteinfold \
+      --input samplesheet.csv \
+      --outdir <OUTDIR> \
+      --mode rosettafold2na \
+      --rosettafold2na_db <null (default) | DB_PATH> \
+      --use_gpu <true/false> \
+      -profile <docker/singularity/.../institute>
+```
+
+> [!NOTE]
+> RosettaFold2NA now expects each samplesheet row to reference a multi-chain FASTA that includes every interacting molecule. Add a `type=` hint to each header (for example `type=protein`, `type=rna`, `type=double_dna`, or `type=single_dna`) so the adaptor can tag chains with the correct RF2NA entity codes (`P`, `R`, `D`, `S`). If no hint is present, the chain type is inferred from sequence composition (pure `ACUGN` → RNA, pure `ACTGN` → DNA which defaults to `D` unless explicitly tagged single-strand, otherwise protein).
+
 Note that the pipeline will create the following files in your working directory:
 
 ```bash
@@ -501,7 +516,7 @@ If `-profile` is not specified, the pipeline will run locally and expect all sof
 - `shifter`
   - A generic configuration profile to be used with [Shifter](https://nersc.gitlab.io/development/shifter/how-to-use/)
 - `charliecloud`
-  - A generic configuration profile to be used with [Charliecloud](https://hpc.github.io/charliecloud/)
+  - A generic configuration profile to be used with [Charliecloud](https://charliecloud.io/)
 - `apptainer`
   - A generic configuration profile to be used with [Apptainer](https://apptainer.org/)
 - `wave`

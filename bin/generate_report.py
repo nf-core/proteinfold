@@ -57,6 +57,12 @@ def generate_output_images(msa_path, plddt_data, name, out_dir, in_type, generat
             for line in in_file:
                 msa.append([int(x) for x in line.strip().split()])
 
+        # Pad jagged MSAs to avoid shape errors in downstream plotting
+        if msa:
+            max_len = max(len(row) for row in msa)
+            if any(len(row) != max_len for row in msa):
+                msa = [row + [21] * (max_len - len(row)) for row in msa]
+
         seqid = []
         for sequence in msa:
             matches = [
@@ -377,6 +383,7 @@ model_name = {
     "colabfold": "ColabFold",
     "rosettafold_all_atom": "RosettaFold All-Atom",
     "helixfold3": "HelixFold3",
+    "rosettafold2na": "RoseTTAFold2NA",
     "boltz": "Boltz"
 }
 

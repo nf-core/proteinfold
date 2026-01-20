@@ -6,12 +6,13 @@ process RUN_ALPHAFOLD2 {
     label 'process_medium'
     label 'process_gpu'
 
-    container "nf-core/proteinfold_alphafold2_standard:dev"
+    container "nf-core/proteinfold_alphafold2_standard:2.0.0"
 
     input:
     tuple val(meta), path(fasta)
     val   db_preset
     val   alphafold2_model_preset
+    val   uniref30_prefix
     path ('params/*')
     path ('bfd/*')
     path ('small_bfd/*')
@@ -48,7 +49,7 @@ process RUN_ALPHAFOLD2 {
         error("Local RUN_ALPHAFOLD2 module does not support Conda. Please use Docker / Singularity / Podman instead.")
     }
     def args = task.ext.args ?: ''
-    def db_preset_cmd = db_preset ? "full_dbs --bfd_database_path=./bfd/bfd_metaclust_clu_complete_id30_c90_final_seq.sorted_opt --uniref30_database_path=./uniref30/${params.uniref30_prefix}" :
+    def db_preset_cmd = db_preset ? "full_dbs --bfd_database_path=./bfd/bfd_metaclust_clu_complete_id30_c90_final_seq.sorted_opt --uniref30_database_path=./uniref30/${uniref30_prefix}" :
         "reduced_dbs --small_bfd_database_path=./small_bfd/bfd-first_non_consensus_sequences.fasta"
     def extra_dbs = ""
     if (alphafold2_model_preset == 'multimer') {
@@ -58,8 +59,6 @@ process RUN_ALPHAFOLD2 {
     }
     """
     fix_obsolete.py pdb_mmcif/obsolete.dat > clean_obsolete.dat
-
-    if [ -d params/alphafold_params_* ]; then ln -r -s params/alphafold_params_*/* params/; fi
 
     ## Handles multiple versions of mgnify database and selects the latest version
     mgnify_db_path=\$(ls -v ./mgnify/mgy_clusters*.fa | tail -n 1)

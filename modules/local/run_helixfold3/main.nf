@@ -6,10 +6,11 @@ process RUN_HELIXFOLD3 {
     label 'process_medium'
     label 'process_gpu'
 
-    container "nf-core/proteinfold_helixfold3:dev"
+    container "nf-core/proteinfold_helixfold3:2.0.0"
 
     input:
     tuple val(meta), path(fasta)
+    val uniref30_prefix
     path ('uniref30/*')
     path ('ccd_preprocessed_etkdg.pkl.gz')
     path ('Rfam-14.9_rep_seq.fasta')
@@ -61,7 +62,7 @@ process RUN_HELIXFOLD3 {
         --nhmmer_binary_path "nhmmer" \\
         --bfd_database_path="./bfd/bfd_metaclust_clu_complete_id30_c90_final_seq.sorted_opt" \\
         --small_bfd_database_path="./small_bfd/bfd-first_non_consensus_sequences.fasta" \\
-        --uniclust30_database_path="./uniref30/${params.uniref30_prefix}" \\
+        --uniclust30_database_path="./uniref30/${uniref30_prefix}" \\
         --uniprot_database_path="./uniprot/uniprot.fasta" \\
         --pdb_seqres_database_path="./pdb_seqres/pdb_seqres.txt" \\
         --rfam_database_path="./Rfam-14.9_rep_seq.fasta" \\
