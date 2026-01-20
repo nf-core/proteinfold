@@ -4,7 +4,7 @@ This section provides guidance on adding new structure prediction modes, impleme
 
 ### Contributing
 
-One of the great advantages of an `nf-core` pipeline is the community can add new protein structure prediction modules as they are released, while still leveraging the workflow infrastructure and reports developed for `proteinfold`.
+One of the great advantages of an `nf-core` pipeline is that the community can extend workflows to add new functionalities. In nf-core/proteinfold, this allows adding new protein structure prediction modules as they are released, while still leveraging the existing workflow infrastructure and reporting.
 
 Please consider writing some code to become a [nf-core contributor](https://nf-co.re/contributors) and expand the pipeline! Reach out to a maintainer of contributor for guidance :)
 
