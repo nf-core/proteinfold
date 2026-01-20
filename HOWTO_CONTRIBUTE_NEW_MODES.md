@@ -30,7 +30,7 @@ Please consider writing some code to become a [nf-core contributor](https://nf-c
 
 ### Process labelling
 
-At the top of a module's `RUN_[MODE_NAME]`{} process there are a series of labels that allow the `nextflow.config` to pass the job to the approriate resources on the compute cluster. `label 'process_gpu'` is very useful to specify this is the AI inference stage requiring GP-GPU grunt -- whereas other processes can have default labels that request CPU resources and, once finished, will naturally cascade onto GPUs due to Nextflow's dataflow paradigm.
+At the top of a module's `RUN_[MODE_NAME]`{} process, there are a series of labels that allow the `nextflow.config` to pass the job to the appropriate resources on the compute cluster. `label 'process_gpu'` is very useful to specify the AI inference stages requiring GPU-intensive computation. Other processes can use default labels that request CPU resources and, once finished, will naturally cascade onto GPU-enabled steps due to Nextflow's dataflow paradigm.
 
 ### Processable structure prediction metrics
 
