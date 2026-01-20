@@ -8,6 +8,8 @@ One of the great advantages of an `nf-core` pipeline is that the community can e
 
 Please consider writing some code to become a [nf-core contributor](https://nf-co.re/contributors) and expand the pipeline! Reach out to a maintainer of contributor for guidance :)
 
+We are all contactable at the [#proteinfold_dev](https://nfcore.slack.com/archives/C08THK11CHX) nf-core Slack channel. That's the best place for person-to-person discussions over new additions to implement into the pipeline.
+
 ### Locating pipeline sections
 
 - `main.nf`: This kicks off each `--mode`'s workflow once the databases have been prepared on the deployment infrastructure. Relevant parameters are passed from `params.[mode_name]` (largely populated from global `nextflow.config` `params` which inherits `dbs.config` database locations) through to the `[MODE_NAME]()` workflow. The channels returned contain the relevant `report_input` metrics, the `top_rank_model` (_i.e._ the best structure from all inference runs), and standard software versioning info.
