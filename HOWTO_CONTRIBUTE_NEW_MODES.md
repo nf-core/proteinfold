@@ -34,7 +34,7 @@ At the top of a module's `RUN_[MODE_NAME]`{} process, there are a series of labe
 
 ### Processable structure prediction metrics
 
-Metrics from AlphaFold-inspired protein strucutre prediction programs are structured in two ways: tabular or as a matrix (PAE values)
+Metrics from AlphaFold-inspired protein structure prediction programs are structured in two ways: tabular or as a matrix (PAE values)
 
 When contributing a new mode to `proteinfold`, functionality should be added to `extract_metrics.py` to access the canonical ouput files of the new program, and extract data into compliant `.tsv` files that can be easily processed by downstream plotting and MultiQC functions.
 
