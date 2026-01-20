@@ -43,7 +43,7 @@ When contributing a new mode to `proteinfold`, functionality should be added to 
 
 #### pLDDT (`{meta.id}_plddt.tsv`)
 
-Confidence values per residue, rounded to 2 decimal places. Each ranked result gets its own column. [For all-atom modules, atomic token confidences are processed to a naive mean value across the residue]
+Confidence values per residue, rounded to 2 decimal places. Each ranked result gets its own column (for all-atom modules, atomic token confidences are processed to a naive mean value across the residue).
 
 ```
 Positions	rank_0	rank_1	rank_2	rank_3	rank_4
