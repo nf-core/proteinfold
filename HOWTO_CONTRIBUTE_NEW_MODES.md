@@ -1,4 +1,6 @@
-## Guidance on how to add a new --mode (i.e. structure prediction software) to ProteinFold
+## Adding structure prediction modes to nf-core/proteinfold
+
+This section provides guidance on adding new structure prediction modes, implemented via the `--mode` option, to nf-core/proteinfold.
 
 ### Contributing
 
