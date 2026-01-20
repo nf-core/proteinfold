@@ -38,7 +38,8 @@ Metrics from AlphaFold-inspired protein structure prediction programs are struct
 
 When contributing a new mode to `proteinfold`, functionality should be added to `extract_metrics.py` to access the canonical ouput files of the new program, and extract data into compliant `.tsv` files that can be easily processed by downstream plotting and MultiQC functions.
 
-Metrics files are **0 indexed**.
+> [!WARNING]
+> Metrics files are **0 indexed**.
 
 #### pLDDT (`{meta.id}_plddt.tsv`)
 
