@@ -76,12 +76,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[PR #399](https://github.com/nf-core/proteinfold/pulls/399)] - Update alphafold2 and alphafold2_pred Dockerfiles.
 - [[PR #404](https://github.com/nf-core/proteinfold/pulls/404)] - Boltz cache files moved to workdir, fixed version checks and Boltz stubRun.
 - [[#401](https://github.com/nf-core/proteinfold/issues/401)] - Get rid of symlinking in the prediction tools processes when using "PREPARE_DBS" subworkflows
+- [[#410](https://github.com/nf-core/proteinfold/issues/410)] - Switch RosettaFold2NA to Boltz-style multi-chain FASTA inputs and drop the interactions sheet.
 - [[PR #407](https://github.com/nf-core/proteinfold/pulls/407)] - Several changes to meet nf-core standards.
 - [[PR #409](https://github.com/nf-core/proteinfold/pulls/409)] - Force single pdb workflow outputs to return as a list
 - [[PR #396](https://github.com/nf-core/proteinfold/pulls/396)] - Split ColabFold into separate optimised containers with version pinning and significant size reduction.
 - [[#412](https://github.com/nf-core/proteinfold/issues/412)] - Substitute "/" with "\_" from fasta headers used to name files when using "--split_fasta".
 - [[PR #424](https://github.com/nf-core/proteinfold/pulls/424)] - Bump docker image version for release to 2.0.0, make code more friendly with Nextflow language server and other format issues/fixes.
 - [[#423](https://github.com/nf-core/proteinfold/issues/423)] - Generate json workflow using bioflow-insight.
+- [[#425](https://github.com/nf-core/proteinfold/issues/425)] - Pass as a single input channel fasta and features to get rid of meta2 in RUN_ALPHAFOLD2_PRED.
+- [[#440](https://github.com/nf-core/proteinfold/issues/440)] - Support single-letter RF2NA type tags (`type=P/R/D/S`) in ROSETTAFOLD2NA FASTA headers.
+- [[PR #442](https://github.com/nf-core/proteinfold/pulls/442)] - Bump version 2.6.1 of nf-schema, Nextflow minimum version to 25.10.2 and update utils_nfschema_plugin subworkflow.
 
 ### Parameters
 

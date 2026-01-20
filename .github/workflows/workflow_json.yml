@@ -18,10 +18,21 @@ jobs:
         with:
           token: ${{ secrets.NF_CORE_BOT_AUTH_TOKEN }}
 
+      - name: Safety check
+        if: |
+          github.event_name != 'pull_request_target' ||
+          github.event.pull_request.head.ref == 'dev' ||
+          github.event.pull_request.head.ref == 'master' ||
+          github.event.pull_request.head.ref == 'TEMPLATE'
+        run: |
+          echo "Safety check failed:"
+          echo "  - github event that triggered the action: ${github.event_name} is not pull_request_target"
+          echo "  - branch of origin: ${github.event.pull_request.head.ref} is either dev, master or TEMPLATE"
+          exit 1
+
       # pull_request_target runs in the context of the base branch, so we need to checkout the PR branch
       # Use the GitHub CLI to check out the PR:
       - name: Checkout Pull Request
-        if: github.event_name == 'pull_request_target'
         env:
           GH_TOKEN: ${{ secrets.NF_CORE_BOT_AUTH_TOKEN }}
         run: |
@@ -41,6 +52,9 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y graphviz
 
+      - name: Install prek
+        run: curl --proto '=https' --tlsv1.2 -LsSf https://github.com/j178/prek/releases/download/v0.2.22/prek-installer.sh | sh
+
       - name: Run bioflow-insight to generate metro map
         id: generate-json
         run: |
@@ -54,8 +68,9 @@ jobs:
           path: |
             assets/graphs/*.json
 
-      - name: Commit and push workflow JSON files
-        if: steps.generate-json.outcome == 'success' && steps.upload-artifact.outcome == 'success' && github.event_name == 'pull_request_target'
+      - name: Commit and run prek to workflow JSON files
+        if: steps.generate-json.outcome == 'success' && steps.upload-artifact.outcome == 'success'
+        continue-on-error: true
         env:
           GH_TOKEN: ${{ secrets.NF_CORE_BOT_AUTH_TOKEN }}
         run: |
@@ -63,7 +78,15 @@ jobs:
           git config user.name "nf-core-bot"
           mkdir -p assets/workflow_jsons
           mv assets/graphs/*.json assets/workflow_jsons/
-          pre-commit run --files assets/workflow_jsons/*
+          git add assets/workflow_jsons
+          prek run --config .pre-commit-config.yaml --files assets/workflow_jsons/*
+          git add assets/workflow_jsons
+
+      - name: Commit and push workflow JSON files
+        if: steps.generate-json.outcome == 'success' && steps.upload-artifact.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ secrets.NF_CORE_BOT_AUTH_TOKEN }}
+        run: |
           git add assets/workflow_jsons
           git status
           git commit -m "[automated] Add workflow JSON artifacts (metro map)"
