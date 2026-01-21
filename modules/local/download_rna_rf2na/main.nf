@@ -24,7 +24,6 @@ process DOWNLOAD_RNA_DATABASES {
         error("DOWNLOAD_RNA_DATABASES module does not support Conda. Please use Docker / Singularity / Podman instead.")
     }
 
-    def args = task.ext.args ?: ''
     """
     mkdir -p RNA
     cd RNA

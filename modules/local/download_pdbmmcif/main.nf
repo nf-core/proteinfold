@@ -22,8 +22,6 @@ process DOWNLOAD_PDBMMCIF {
     task.ext.when == null || task.ext.when
 
     script:
-    def args = task.ext.args ?: ''
-
     """
     set -euo pipefail
 
