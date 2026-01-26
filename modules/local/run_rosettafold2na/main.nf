@@ -89,7 +89,7 @@ PY
     printf '"%s":\n  python: %s\n' \
         "${task.process}" \
         "\$(/conda/envs/RF2NA/bin/python3 --version | sed 's/Python //g')" > versions.yml
-    
+
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         rosettafold2na: $VERSION
@@ -107,7 +107,7 @@ PY
     printf '"%s":\n  python: %s\n' \
         "${task.process}" \
         "\$(/conda/envs/RF2NA/bin/python3 --version | sed 's/Python //g')" > versions.yml
-    
+
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         rosettafold2na: $VERSION
