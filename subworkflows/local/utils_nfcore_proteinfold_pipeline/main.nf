@@ -17,6 +17,7 @@ include { completionSummary         } from '../../nf-core/utils_nfcore_pipeline'
 include { imNotification            } from '../../nf-core/utils_nfcore_pipeline'
 include { UTILS_NFCORE_PIPELINE     } from '../../nf-core/utils_nfcore_pipeline'
 include { UTILS_NEXTFLOW_PIPELINE   } from '../../nf-core/utils_nextflow_pipeline'
+include { logColours                } from '../../nf-core/utils_nfcore_pipeline'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -32,7 +33,7 @@ workflow PIPELINE_INITIALISATION {
     monochrome_logs   // boolean: Do not use coloured log outputs
     nextflow_cli_args //   array: List of positional nextflow CLI args
     outdir            //  string: The output directory where the results will be saved
-    input             //  string: Path to input samplesheet
+    _input             //  string: Path to input samplesheet
     help              // boolean: Display help message and exit
     help_full         // boolean: Show the full help message
     show_hidden       // boolean: Show hidden parameters in the help message
@@ -54,15 +55,16 @@ workflow PIPELINE_INITIALISATION {
     //
     // Validate parameters and generate parameter summary to stdout
     //
+    def colors = logColours(monochrome_logs)
     before_text = """
--\033[2m----------------------------------------------------\033[0m-
-                                        \033[0;32m,--.\033[0;30m/\033[0;32m,-.\033[0m
-\033[0;34m        ___     __   __   __   ___     \033[0;32m/,-._.--~\'\033[0m
-\033[0;34m  |\\ | |__  __ /  ` /  \\ |__) |__         \033[0;33m}  {\033[0m
-\033[0;34m  | \\| |       \\__, \\__/ |  \\ |___     \033[0;32m\\`-._,-`-,\033[0m
-                                        \033[0;32m`._,._,\'\033[0m
-\033[0;35m  nf-core/proteinfold ${workflow.manifest.version}\033[0m
--\033[2m----------------------------------------------------\033[0m-
+-${colors.dim}----------------------------------------------------${colors.reset}-
+                                        ${colors.green},--.${colors.black}/${colors.green},-.${colors.reset}
+${colors.blue}        ___     __   __   __   ___     ${colors.green}/,-._.--~\'${colors.reset}
+${colors.blue}  |\\ | |__  __ /  ` /  \\ |__) |__         ${colors.yellow}}  {${colors.reset}
+${colors.blue}  | \\| |       \\__, \\__/ |  \\ |___     ${colors.green}\\`-._,-`-,${colors.reset}
+                                        ${colors.green}`._,._,\'${colors.reset}
+${colors.purple}  nf-core/rnaseq ${workflow.manifest.version}${colors.reset}
+-${colors.dim}----------------------------------------------------${colors.reset}-
 """
     after_text = """${workflow.manifest.doi ? "\n* The pipeline\n" : ""}${workflow.manifest.doi.tokenize(",").collect { doi -> "    https://doi.org/${doi.trim().replace('https://doi.org/','')}"}.join("\n")}${workflow.manifest.doi ? "\n" : ""}
 * The nf-core framework
@@ -95,7 +97,7 @@ workflow PIPELINE_INITIALISATION {
     //
     // Create channel from input file provided through params.input
     //
-    ch_samplesheet = Channel.fromList(samplesheetToList(params.input, "assets/schema_input.json"))
+    ch_samplesheet = channel.fromList(samplesheetToList(params.input, "assets/schema_input.json"))
 
     ch_samplesheet
         .map { meta, fasta ->
@@ -108,13 +110,13 @@ workflow PIPELINE_INITIALISATION {
     if (params.split_fasta) {
         // TODO: here we have to validate that the ids are unique and valid as an extra step
         // since it is not done with the samplesheet schema (they are all in the same file)
-        ch_samplesheet.map { meta, fasta ->
+        ch_samplesheet.map { _meta, fasta ->
             validateFasta(fasta)
         }
 
         // Split the fasta file into individual files for each sequence
         ch_samplesheet
-            .map { meta,fasta -> fasta }
+            .map { _meta,fasta -> fasta }
             .splitFasta( record: [header: true, sequence: true] )
             .collectFile { item ->
                 [ "${cleanHeader(item["header"])}.fa", ">" + cleanHeader(item["header"]) + '\n' +item["sequence"] ]
@@ -300,7 +302,7 @@ def cleanHeader(header) {
 
 def validateFasta(fasta) {
     // extract headers
-    def headers = fasta.findAll { it.startsWith('>') }
+    def headers = fasta.findAll { it -> it.startsWith('>') }
     // if headers are not unique, throw an error
     if (headers.size() != headers.unique().size()) {
         throw new Exception("Invalid FASTA file. The headers are not unique.")
