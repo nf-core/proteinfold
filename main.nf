@@ -586,7 +586,6 @@ workflow NFCORE_PROTEINFOLD {
 
     POST_PROCESSING(
         params.skip_visualisation,
-        params.mode,
         requested_modes_size,
         ch_report_input,
         ch_report_template,
