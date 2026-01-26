@@ -1,8 +1,8 @@
-## Adding structure prediction modes to nf-core/proteinfold
+# Adding structure prediction modes to nf-core/proteinfold
 
 This section provides guidance on adding new structure prediction modes, implemented via the `--mode` option, to nf-core/proteinfold.
 
-### Contributing
+## Contributing
 
 One of the great advantages of an `nf-core` pipeline is that the community can extend workflows to add new functionalities. In nf-core/proteinfold, this allows adding new protein structure prediction modules as they are released, while still leveraging the existing workflow infrastructure and reporting.
 
@@ -10,7 +10,7 @@ Please consider writing some code to become a [nf-core contributor](https://nf-c
 
 We are all contactable at the [#proteinfold_dev](https://nfcore.slack.com/archives/C08THK11CHX) nf-core Slack channel. That's the best place for person-to-person discussions over new additions to implement into the pipeline.
 
-### Locating pipeline sections
+## Locating pipeline sections
 
 - `main.nf`: This kicks off each `--mode`'s workflow once the databases have been prepared on the deployment infrastructure. Relevant parameters are passed from `params.[mode_name]` (largely populated from global `nextflow.config` `params` which inherits `dbs.config` database locations) through to the `[MODE_NAME]()` workflow. The channels returned contain the relevant `report_input` metrics, the `top_rank_model` (_i.e._ the best structure from all inference runs), and standard software versioning info.
 - `subworkflows`: largely used for mode-specific smaller set-up worklows, except for the `post_processing` subworkflow which will be detailed later.
@@ -30,11 +30,11 @@ We are all contactable at the [#proteinfold_dev](https://nfcore.slack.com/archiv
 - `subworkflows/local/post_processing.nf`: the `POST_PROCESSING{}` process sits after all possible `[MODE_NAME]()` workflows in the `main.nf`. It passes along visualisation options, metrics data files, and report templates (`single` or `comparison`). Those reports are created with the `GENERATE_REPORT()` or `COMPARE_STRUCTURES()` `/module/local/` modules, respectively.
 - `bin/generate_[comparison]_report.py` takes the HTML templates at `assets/[report|comparison]_template.html` and populates them with plots created inside these python scripts.
 
-### Process labelling
+## Process labelling
 
 At the top of a module's `RUN_[MODE_NAME]`{} process, there are a series of labels that allow the `nextflow.config` to pass the job to the appropriate resources on the compute cluster. `label 'process_gpu'` is very useful to specify the AI inference stages requiring GPU-intensive computation. Other processes can use default labels that request CPU resources and, once finished, will naturally cascade onto GPU-enabled steps due to Nextflow's dataflow paradigm.
 
-### Processable structure prediction metrics
+## Processable structure prediction metrics
 
 Metrics from AlphaFold-inspired protein structure prediction programs are structured in two ways: tabular or as a matrix (PAE values)
 
@@ -43,7 +43,7 @@ When contributing a new mode to `proteinfold`, functionality should be added to 
 > [!WARNING]
 > Metrics files are **0 indexed**.
 
-#### pLDDT (`{meta.id}_plddt.tsv`)
+### pLDDT (`{meta.id}_plddt.tsv`)
 
 Confidence values per residue, rounded to 2 decimal places. Each ranked result gets its own column (for all-atom modules, atomic token confidences are processed to a naive mean value across the residue).
 
@@ -59,7 +59,7 @@ Positions	rank_0	rank_1	rank_2	rank_3	rank_4
 ...
 ```
 
-#### MSA (`{meta.id}_{meta.mode}_msa.tsv`)
+### MSA (`{meta.id}_{meta.mode}_msa.tsv`)
 
 The amino acid characters are converted to integers `0-19`, unknown as 20, **integer `21`** represents the gap character.
 
@@ -74,7 +74,7 @@ The amino acid characters are converted to integers `0-19`, unknown as 20, **int
 
 This allows easy sequence indentity calculation when processing as a `numpy` array.
 
-#### (i)pTM (`{meta.id}_[i]ptm.tsv`)
+### (i)pTM (`{meta.id}_[i]ptm.tsv`)
 
 (i)pTM scores, rounded to 3 decimal places, listed by the rank number (currently unsorted).
 
@@ -106,7 +106,7 @@ This allows easy sequence indentity calculation when processing as a `numpy` arr
 8 0.595
 ```
 
-#### chain-wise (i)pTM (`{meta.id}_chainwise_[i]ptm.tsv`)
+### chain-wise (i)pTM (`{meta.id}_chainwise_[i]ptm.tsv`)
 
 (Symmetrical) ipTM scores, rounded to 4 decimal places, with chain pair lettering as the row (`X:Y`), and the rank number as the column. A pTM value is a chain's own predicted Template Modelling score so lettering will be `X:X`.
 
@@ -116,7 +116,7 @@ A:B	0.2880	0.2750	0.2900
 B:A	0.2904	0.2801	0.2915
 ```
 
-#### PAE (`{meta.id}_{rank_number}_pae.tsv`)
+### PAE (`{meta.id}_{rank_number}_pae.tsv`)
 
 Predicted alignment error from residue `i` aligned to residue `j`, rounded to 4 decimal places.
 The row number gives you the index of residue `i` and the column value within the row gives the index of residue `j` for the 2D PAE matrix.
