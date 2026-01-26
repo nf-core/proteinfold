@@ -28,9 +28,6 @@ workflow ROSETTAFOLD2NA {
     ch_rosettafold2na_weights // channel: path(rosettafold2na_weights)
 
     main:
-    ch_multiqc_files  = channel.empty()
-    ch_top_ranked_pdb = channel.empty()
-    ch_pdb_msa        = channel.empty()
     ch_multiqc_report = channel.empty()
 
     ROSETTAFOLD2NA_FASTA(
