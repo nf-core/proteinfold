@@ -32,9 +32,7 @@ process RUN_ROSETTAFOLD2NA {
         error("Local RUN_RF2NA module does not support Conda. Please use Docker / Singularity / Podman instead.")
     }
 
-    def args = task.ext.args ?: ''
     def VERSION = 'dev' // WARN: Version information not provided by tool on CLI. Please update this string when bumping container versions.
-
     """
     # Otherwise will through error when running .command.{sh,run} for debugging
     if [ ! -e "\$PWD/run_RF2NA.sh" ]; then

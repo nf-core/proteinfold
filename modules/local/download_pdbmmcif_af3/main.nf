@@ -22,7 +22,6 @@ process DOWNLOAD_PDBMMCIF_AF3 {
     task.ext.when == null || task.ext.when
 
     script:
-    def args = task.ext.args ?: ''
     """
     mkdir mmcif_files
 
