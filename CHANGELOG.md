@@ -86,6 +86,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[#425](https://github.com/nf-core/proteinfold/issues/425)] - Pass as a single input channel fasta and features to get rid of meta2 in RUN_ALPHAFOLD2_PRED.
 - [[#440](https://github.com/nf-core/proteinfold/issues/440)] - Support single-letter RF2NA type tags (`type=P/R/D/S`) in ROSETTAFOLD2NA FASTA headers.
 - [[PR #442](https://github.com/nf-core/proteinfold/pulls/442)] - Bump version 2.6.1 of nf-schema, Nextflow minimum version to 25.10.2 and update utils_nfschema_plugin subworkflow.
+- [[PR #446](https://github.com/nf-core/proteinfold/pulls/446)] - Fix warnings from Nextflow lint.
 
 ### Parameters
 
