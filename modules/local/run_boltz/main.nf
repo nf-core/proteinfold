@@ -1,6 +1,14 @@
 /*
  * Run Boltz
  */
+ def getErrorStrategy(task) {
+    if (task.exitStatus == 77) {
+        log.warn "Boltz crashed due to incompatible GPU kernels, will retry with --use_kernels false. See https://github.com/nf-core/proteinfold/issues/417"
+        return 'retry'
+    }
+    return 'terminate'
+}
+
 process RUN_BOLTZ {
     tag "$meta.id"
     label 'process_medium'
@@ -8,6 +16,10 @@ process RUN_BOLTZ {
 
     container "nf-core/proteinfold_boltz:2.0.0"
 
+    // Retry once if Boltz crashes due to incompatible GPU kernels
+    errorStrategy getErrorStrategy(task)
+    maxRetries 1
+    
     input:
     tuple val(meta), path(fasta)
     path (files)
@@ -53,12 +65,26 @@ process RUN_BOLTZ {
         error("Local RUN_BOLTZ module does not support Conda. Please use Docker / Singularity / Podman instead.")
     }
     def args = task.ext.args ?: ''
-
+    def retry_args = task.attempt > 1 ? '--use_kernels false' : ''
     """
     mkdir -p ./home
     export HOME=./home
 
-    boltz predict "${fasta}" --output_format "pdb" ${args} --cache ./
+    error_handler() {
+        exit_code=\$?
+        if [ \$exit_code -ne 0 ]; then
+            if grep -q "NVMLError_Unknown" /dev/stderr 2>/dev/null; then
+                exit 77
+            fi
+            exit \$exit_code
+        fi
+        trap - ERR
+        return \$exit_code
+    }
+
+    trap 'error_handler' ERR
+
+    boltz predict "${fasta}" --output_format "pdb" ${args} ${retry_args} --cache ./
     cp boltz_results_*/predictions/${meta.id}/*_0.pdb ./${meta.id}_boltz.pdb
     if [ -f boltz_results_*/msa/${meta.id}_0.csv ]; then
         cp boltz_results_*/msa/${meta.id}_*.csv ./
