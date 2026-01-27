@@ -13,7 +13,7 @@
                     },
                     "foldseek/easysearch": {
                         "branch": "master",
-                        "git_sha": "666652151335353eef2fcd58880bcef5bc2928e1",
+                        "git_sha": "a02efd7783000a416d5d2f1b2bc86b8d41b9f439",
                         "installed_by": ["modules"],
                         "patch": "modules/nf-core/foldseek/easysearch/foldseek-easysearch.diff"
                     },
@@ -24,7 +24,7 @@
                     },
                     "mmseqs/createindex": {
                         "branch": "master",
-                        "git_sha": "7b9b39e83fb1b8d7fd4bbcd65f937f35ef1884cc",
+                        "git_sha": "38697a933bef7041bb935c9b8374d9948ce6c794",
                         "installed_by": ["modules"]
                     },
                     "mmseqs/tsv2exprofiledb": {
@@ -46,7 +46,7 @@
                     },
                     "unzip": {
                         "branch": "master",
-                        "git_sha": "41dfa3f7c0ffabb96a6a813fe321c6d1cc5b6e46",
+                        "git_sha": "4dd9d8439a429c7ee566e0e2347f76ddeef27e66",
                         "installed_by": ["modules"]
                     }
                 }

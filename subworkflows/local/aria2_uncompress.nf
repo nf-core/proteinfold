@@ -34,7 +34,7 @@ workflow ARIA2_UNCOMPRESS {
     } else if (source_url.toString().endsWith('.zip')) {
         ch_db = UNZIP (ARIA2.out.downloaded_file)
                     .unzipped_archive
-                    .map { meta, dir ->
+                    .map { _meta, dir ->
                         def nestedDir = dir.listFiles()[0]
                         // Find the .pdparams file
                         def pdparamsFile = nestedDir.listFiles().find { it -> it.getName().endsWith('.pdparams') }

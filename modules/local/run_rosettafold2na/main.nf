@@ -32,9 +32,7 @@ process RUN_ROSETTAFOLD2NA {
         error("Local RUN_RF2NA module does not support Conda. Please use Docker / Singularity / Podman instead.")
     }
 
-    def args = task.ext.args ?: ''
-    def VERSION = 'dev' // WARN: Version information not provided by tool on CLI. Please update this string when bumping container versions.
-
+    def VERSION = 'v0.2' // WARN: Version information not provided by tool on CLI. Please update this string when bumping container versions.
     """
     # Otherwise will through error when running .command.{sh,run} for debugging
     if [ ! -e "\$PWD/run_RF2NA.sh" ]; then
@@ -91,9 +89,15 @@ PY
     printf '"%s":\n  python: %s\n' \
         "${task.process}" \
         "\$(/conda/envs/RF2NA/bin/python3 --version | sed 's/Python //g')" > versions.yml
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        rosettafold2na: $VERSION
+    END_VERSIONS
     """
 
     stub:
+    def VERSION = 'v0.2' // WARN: Version information not provided by tool on CLI. Please update this string when bumping container versions.
     """
     touch "${meta.id}_rf2na.pdb"
     touch "${meta.id}_plddt_mqc.tsv"
@@ -103,5 +107,10 @@ PY
     printf '"%s":\n  python: %s\n' \
         "${task.process}" \
         "\$(/conda/envs/RF2NA/bin/python3 --version | sed 's/Python //g')" > versions.yml
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        rosettafold2na: $VERSION
+    END_VERSIONS
     """
 }

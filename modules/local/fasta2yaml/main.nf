@@ -19,8 +19,6 @@ process FASTA2YAML {
     task.ext.when == null || task.ext.when
 
     script:
-    def args = task.ext.args ?: ''
-
     """
     #!/usr/bin/env python3
     import os, sys

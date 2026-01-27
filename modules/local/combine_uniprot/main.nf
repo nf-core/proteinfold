@@ -18,8 +18,6 @@ process COMBINE_UNIPROT {
     task.ext.when == null || task.ext.when
 
     script:
-    def args = task.ext.args ?: ''
-
     """
     set -e
 

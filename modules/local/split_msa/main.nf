@@ -17,8 +17,6 @@ process SPLIT_MSA {
     task.ext.when == null || task.ext.when
 
     script:
-    def args = task.ext.args ?: ''
-
     """
     msa_manager.py ${msa} -o output_msa --meta_id ${meta.id}
 
