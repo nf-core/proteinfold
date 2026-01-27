@@ -20,7 +20,6 @@ workflow POST_PROCESSING {
 
     take:
     skip_visualisation
-    requested_modes
     requested_modes_size
     ch_report_input
     ch_report_template
