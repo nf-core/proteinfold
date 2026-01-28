@@ -88,6 +88,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[PR #442](https://github.com/nf-core/proteinfold/pulls/442)] - Bump version 2.6.1 of nf-schema, Nextflow minimum version to 25.10.2 and update utils_nfschema_plugin subworkflow.
 - [[PR #443](https://github.com/nf-core/proteinfold/pull/443)] - Add documentation guide for contributing new prediction modes.
 - [[PR #446](https://github.com/nf-core/proteinfold/pulls/446)] - Fix warnings from Nextflow lint.
+- [[PR #451](https://github.com/nf-core/proteinfold/pulls/451)] - Remove af2 multimer padding from msa plots.
 
 ### Parameters
 
