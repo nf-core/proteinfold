@@ -73,7 +73,7 @@ process RUN_BOLTZ {
     touch boltz_error.log
 
     error_handler() {
-        exit_code=$?
+        exit_code=\$?
 
         if [ "$exit_code" -eq 1 ]; then
             if grep -q "triangle_multiplicative_update" boltz_error.log; then
@@ -81,7 +81,7 @@ process RUN_BOLTZ {
             fi
         fi
 
-        exit "$exit_code"
+        exit "\$exit_code"
     }
 
     trap 'error_handler' ERR
