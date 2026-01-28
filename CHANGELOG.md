@@ -88,6 +88,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[PR #442](https://github.com/nf-core/proteinfold/pulls/442)] - Bump version 2.6.1 of nf-schema, Nextflow minimum version to 25.10.2 and update utils_nfschema_plugin subworkflow.
 - [[PR #443](https://github.com/nf-core/proteinfold/pull/443)] - Add documentation guide for contributing new prediction modes.
 - [[PR #446](https://github.com/nf-core/proteinfold/pulls/446)] - Fix warnings from Nextflow lint.
+- [[#417](https://github.com/nf-core/proteinfold/issues/417)] - Add `boltz_use_kernels` parameter to enable/disable using optimized Triton-based CUDA kernels CUDA kernels for Boltz inference.
 - [[#285](https://github.com/nf-core/proteinfold/issues/285)] - Adding contributors to manifest.
 
 ### Parameters

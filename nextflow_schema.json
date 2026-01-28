@@ -249,6 +249,11 @@
                     "type": "boolean",
                     "description": "run Boltz-2 using inference time potentials"
                 },
+                "boltz_use_kernels": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Use optimized Triton-based CUDA kernels for Boltz inference"
+                },
                 "boltz_model": {
                     "type": "string",
                     "description": "Sets the model to use for prediction. Default is boltz2"
