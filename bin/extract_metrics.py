@@ -144,9 +144,12 @@ def read_pkl(name, pkl_files):
         if pkl_file.endswith("final_features.pkl"): # HelixFold3 - This one must be first
             write_tsv(f"{name}_msa.tsv", format_msa_rows(data["feat"]["msa"]))
         elif pkl_file.endswith("features.pkl"): # AlphaFold2.3
-            # TODO: AlphaFold2.3 fills end rows with 0s in AlpahFold muliter for an alanine  nf-core/proteinfold Issue #300
-            write_tsv(f"{name}_msa.tsv", format_msa_rows(data["msa"]))
-    # AlphaFold2.3 non-summary, for each pkl. TODO: Need to either read in ranking_debug.json to get the ranking order, or do it later in the workflow.
+            #data["msa"][:data["num_alignments"]]
+            try:
+                N = data["num_alignments"][0] #monomer
+            except:
+                N = data["num_alignments"] #multimer
+            write_tsv(f"{name}_msa.tsv", format_msa_rows(data["msa"][:N]))
         else:
             model_info = os.path.basename(pkl_file).replace("result_", "").replace(".pkl", "")
             #TODO: Make this explicit input
