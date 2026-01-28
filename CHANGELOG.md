@@ -89,7 +89,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[PR #443](https://github.com/nf-core/proteinfold/pull/443)] - Add documentation guide for contributing new prediction modes.
 - [[PR #446](https://github.com/nf-core/proteinfold/pulls/446)] - Fix warnings from Nextflow lint.
 - [[#417](https://github.com/nf-core/proteinfold/issues/417)] - Add `boltz_use_kernels` parameter to enable/disable using optimized Triton-based CUDA kernels CUDA kernels for Boltz inference.
-- [[#417](https://github.com/nf-core/proteinfold/issues/417)] - Handle incompatible CUDA kernel errors in Boltz by automatically retrying with `--use_kernels` false.
+- [[#417](https://github.com/nf-core/proteinfold/issues/417)] - Handle incompatible CUDA kernel errors in Boltz by automatically retrying with `--no_kernels` false.
 
 ### Parameters
 
