@@ -14,8 +14,7 @@ RUN apt-get update && \
 
 RUN pip install --no-cache-dir boltz==2.2.1
 
-# To update to version 2.2.1, uncomment the following lines, though still was complaining
-# about triton version, thought the error msg state to be sure of using 3.3.0
+# The update to 2.2.1, was complaining about this missing dependencies
 RUN pip install --no-cache-dir \
     cuequivariance_ops_cu12==0.5.1\
     cuequivariance_ops_torch_cu12==0.5.1 \

@@ -57,7 +57,7 @@ process RUN_BOLTZ {
     """
     mkdir -p ./home
     export HOME=./home
-    
+
     error_handler() {
         exit_code=\$?
 
