@@ -1,14 +1,6 @@
 /*
  * Run Boltz
  */
- def getErrorStrategy(task) {
-    if (task.exitStatus == 77) {
-        log.warn "Boltz crashed due to incompatible GPU kernels, will retry with --use_kernels false. See https://github.com/nf-core/proteinfold/issues/417"
-        return 'retry'
-    }
-    return 'terminate'
-}
-
 process RUN_BOLTZ {
     tag "$meta.id"
     label 'process_medium'
@@ -77,7 +69,8 @@ process RUN_BOLTZ {
 
         if [ "$exit_code" -eq 1 ]; then
             if grep -q "triangle_multiplicative_update" boltz_error.log; then
-            exit 77
+                echo "Boltz crashed due to incompatible GPU kernels, will retry with --no_kernels. See https://github.com/nf-core/proteinfold/issues/417" >&2
+                exit 77
             fi
         fi
 
