@@ -65,26 +65,30 @@ process RUN_BOLTZ {
         error("Local RUN_BOLTZ module does not support Conda. Please use Docker / Singularity / Podman instead.")
     }
     def args = task.ext.args ?: ''
-    def retry_args = task.attempt > 1 ? '--use_kernels false' : ''
+    def retry_args = task.attempt > 1 ? '--no_kernels' : ''
     """
     mkdir -p ./home
     export HOME=./home
+    
+    touch boltz_error.log
 
     error_handler() {
-        exit_code=\$?
-        if [ \$exit_code -ne 0 ]; then
-            if grep -q "NVMLError_Unknown" /dev/stderr 2>/dev/null; then
-                exit 77
+        exit_code=$?
+
+        if [ "$exit_code" -eq 1 ]; then
+            if grep -q "triangle_multiplicative_update" boltz_error.log; then
+            exit 77
             fi
-            exit \$exit_code
         fi
-        trap - ERR
-        return \$exit_code
+
+        exit "$exit_code"
     }
 
     trap 'error_handler' ERR
 
-    boltz predict "${fasta}" --output_format "pdb" ${args} ${retry_args} --cache ./
+    boltz predict "${fasta}" --output_format "pdb" ${args} ${retry_args} --cache ./ \
+        2> boltz_error.log
+
     cp boltz_results_*/predictions/${meta.id}/*_0.pdb ./${meta.id}_boltz.pdb
     if [ -f boltz_results_*/msa/${meta.id}_0.csv ]; then
         cp boltz_results_*/msa/${meta.id}_*.csv ./
