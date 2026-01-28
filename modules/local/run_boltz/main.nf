@@ -8,10 +8,6 @@ process RUN_BOLTZ {
 
     container "nf-core/proteinfold_boltz:2.0.0"
 
-    // Retry once if Boltz crashes due to incompatible GPU kernels
-    errorStrategy getErrorStrategy(task)
-    maxRetries 1
-    
     input:
     tuple val(meta), path(fasta)
     path (files)
@@ -62,25 +58,21 @@ process RUN_BOLTZ {
     mkdir -p ./home
     export HOME=./home
     
-    touch boltz_error.log
-
     error_handler() {
         exit_code=\$?
 
-        if [ "$exit_code" -eq 1 ]; then
-            if grep -q "triangle_multiplicative_update" boltz_error.log; then
-                echo "Boltz crashed due to incompatible GPU kernels, will retry with --no_kernels. See https://github.com/nf-core/proteinfold/issues/417" >&2
-                exit 77
-            fi
+        if grep -q "triangle_multiplicative_update" boltz_error.log; then
+            echo "Boltz crashed due to incompatible GPU kernels, will retry with --no_kernels. See https://github.com/nf-core/proteinfold/issues/417" >&2
+            exit 77
         fi
 
-        exit "\$exit_code"
+        exit \$exit_code
     }
 
     trap 'error_handler' ERR
 
     boltz predict "${fasta}" --output_format "pdb" ${args} ${retry_args} --cache ./ \
-        2> boltz_error.log
+        2>> boltz_error.log
 
     cp boltz_results_*/predictions/${meta.id}/*_0.pdb ./${meta.id}_boltz.pdb
     if [ -f boltz_results_*/msa/${meta.id}_0.csv ]; then
