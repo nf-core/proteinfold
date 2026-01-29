@@ -53,26 +53,18 @@ process RUN_BOLTZ {
         error("Local RUN_BOLTZ module does not support Conda. Please use Docker / Singularity / Podman instead.")
     }
     def args = task.ext.args ?: ''
-    def retry_args = task.attempt > 1 ? '--no_kernels' : ''
     """
     mkdir -p ./home
     export HOME=./home
 
-    error_handler() {
-        exit_code=\$?
-
-        if grep -q "triangle_multiplicative_update" boltz_error.log; then
-            echo "Boltz crashed due to incompatible GPU kernels, will retry with --no_kernels. See https://github.com/nf-core/proteinfold/issues/417" >&2
-            exit 77
+    if command -v nvidia-smi >/dev/null 2>&1; then
+        if nvidia-smi -L | grep -q "MIG"; then
+            echo -e "MIG mode detected. Mocking pynvml.nvmlDeviceGetNumGpuCores to avoid errors in Boltz.\nSee https://github.com/nf-core/proteinfold/issues/417"
+            export PYTHONSTARTUP=boltz_mig_patch.py
         fi
+    fi
 
-        exit \$exit_code
-    }
-
-    trap 'error_handler' ERR
-
-    boltz predict "${fasta}" --output_format "pdb" ${args} ${retry_args} --cache ./ \
-        2>> boltz_error.log
+    boltz predict "${fasta}" --output_format "pdb" ${args} --cache ./
 
     cp boltz_results_*/predictions/${meta.id}/*_0.pdb ./${meta.id}_boltz.pdb
     if [ -f boltz_results_*/msa/${meta.id}_0.csv ]; then
