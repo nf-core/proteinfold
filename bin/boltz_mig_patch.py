@@ -2,8 +2,8 @@
 
 # Written by Jose Espinosa-Carrasco, released under the MIT license
 # See https://opensource.org/license/mit for details
-
-# Created on January 29th 2026 see #  See https://github.com/nf-core/proteinfold/issues/417 for context
+# Created on January 29th 2026 
+# See https://github.com/nf-core/proteinfold/issues/417 for context
 # Script to get the number of CUDA cores in a GPU instance profile, as pynvml.nvmlDeviceGetNumGpuCores fails in MIG mode
 # Inspired by https://github.com/Australian-Protein-Design-Initiative/nf-binder-design/blob/9e7fb3001722899715aa01ab130d0572edbd0915/modules/boltzgen/boltzgen_design.nf#L54
 
