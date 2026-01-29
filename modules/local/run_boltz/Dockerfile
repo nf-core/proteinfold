@@ -16,9 +16,9 @@ RUN pip install --no-cache-dir boltz==2.2.1
 
 # The update to 2.2.1, was complaining about this missing dependencies
 RUN pip install --no-cache-dir \
-    cuequivariance_ops_cu12==0.5.1\
-    cuequivariance_ops_torch_cu12==0.5.1 \
-    cuequivariance_torch==0.5.1 \
+    cuequivariance_ops_cu12==0.8.1\
+    cuequivariance_ops_torch_cu12==0.8.1 \
+    cuequivariance_torch==0.8.1 \
     triton==3.3.0
 
 CMD ["boltz"]
