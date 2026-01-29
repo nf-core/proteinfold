@@ -59,7 +59,7 @@ process RUN_BOLTZ {
 
     if command -v nvidia-smi >/dev/null 2>&1; then
         if nvidia-smi -L | grep -q "MIG"; then
-            echo -e "MIG mode detected. Mocking pynvml.nvmlDeviceGetNumGpuCores to avoid errors in Boltz.\nSee https://github.com/nf-core/proteinfold/issues/417"
+            echo "MIG mode detected. Mocking pynvml.nvmlDeviceGetNumGpuCores to avoid errors in Boltz. See https://github.com/nf-core/proteinfold/issues/417"
             export PYTHONSTARTUP=boltz_mig_patch.py
         fi
     fi
