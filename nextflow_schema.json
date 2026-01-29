@@ -44,6 +44,11 @@
                     "description": "Run on CPUs (default) or GPUs",
                     "fa_icon": "fas fa-microchip"
                 },
+                "keep_raw": {
+                    "type": "boolean",
+                    "description": "Keep raw intermediate files",
+                    "fa_icon": "fas fa-microchip"
+                },
                 "split_fasta": {
                     "type": "boolean",
                     "description": "Split input multi-fasta file in separated fasta files each of them containing one sequence to be folded",
