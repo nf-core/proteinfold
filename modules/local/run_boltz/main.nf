@@ -57,14 +57,12 @@ process RUN_BOLTZ {
     mkdir -p ./home
     export HOME=./home
 
-    if command -v nvidia-smi >/dev/null 2>&1; then
-        if nvidia-smi -L | grep -q "MIG"; then
-            echo "MIG mode detected. Mocking pynvml.nvmlDeviceGetNumGpuCores to avoid errors in Boltz. See https://github.com/nf-core/proteinfold/issues/417"
-            export PYTHONSTARTUP=boltz_mig_patch.py
-        fi
+    if command -v nvidia-smi >/dev/null 2>&1 && nvidia-smi -L | grep -q "MIG"; then
+        echo "MIG mode detected. Mocking pynvml.nvmlDeviceGetNumGpuCores to avoid errors in Boltz. See https://github.com/nf-core/proteinfold/issues/417"
+        boltz_wrapper.py predict "${fasta}" --output_format "pdb" ${args} --cache ./
+    else
+        boltz predict "${fasta}" --output_format "pdb" ${args} --cache ./
     fi
-
-    boltz predict "${fasta}" --output_format "pdb" ${args} --cache ./
 
     cp boltz_results_*/predictions/${meta.id}/*_0.pdb ./${meta.id}_boltz.pdb
     if [ -f boltz_results_*/msa/${meta.id}_0.csv ]; then
