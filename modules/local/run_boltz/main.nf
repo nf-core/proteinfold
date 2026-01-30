@@ -53,12 +53,17 @@ process RUN_BOLTZ {
         error("Local RUN_BOLTZ module does not support Conda. Please use Docker / Singularity / Podman instead.")
     }
     def args = task.ext.args ?: ''
-
     """
     mkdir -p ./home
     export HOME=./home
 
-    boltz predict "${fasta}" --output_format "pdb" ${args} --cache ./
+    if command -v nvidia-smi >/dev/null 2>&1 && nvidia-smi -L | grep -q "MIG"; then
+        echo "MIG mode detected. Mocking pynvml.nvmlDeviceGetNumGpuCores to avoid errors in Boltz. See https://github.com/nf-core/proteinfold/issues/417"
+        boltz_wrapper.py predict "${fasta}" --output_format "pdb" ${args} --cache ./
+    else
+        boltz predict "${fasta}" --output_format "pdb" ${args} --cache ./
+    fi
+
     cp boltz_results_*/predictions/${meta.id}/*_0.pdb ./${meta.id}_boltz.pdb
     if [ -f boltz_results_*/msa/${meta.id}_0.csv ]; then
         cp boltz_results_*/msa/${meta.id}_*.csv ./
