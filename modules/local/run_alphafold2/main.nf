@@ -82,6 +82,8 @@ process RUN_ALPHAFOLD2 {
         --structs ${fasta.baseName}/ranked*.pdb
 
     mv "${meta.id}_msa.tsv" "${meta.id}_alphafold2_msa.tsv"
+
+    # Can't use fasta.baseName to batch outputs in publishDir
     mv "${fasta.baseName}" raw/
 
     cat <<-END_VERSIONS > versions.yml

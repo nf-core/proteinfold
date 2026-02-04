@@ -44,7 +44,7 @@
                     "description": "Run on CPUs (default) or GPUs",
                     "fa_icon": "fas fa-microchip"
                 },
-                "keep_raw": {
+                "save_intermediates": {
                     "type": "boolean",
                     "description": "Keep raw intermediate files",
                     "fa_icon": "fas fa-microchip"
