@@ -8,6 +8,7 @@
 
 import sys
 import pynvml
+import os
 
 # Cores per SM by architecture
 CORES_PER_SM = {
@@ -22,12 +23,9 @@ CORES_PER_SM = {
 }
 
 # Get number of CUDA cores for a MIG GPU instance
-def get_cuda_cores(handle, profile_id):
+def get_cuda_cores(sm_count):
     """Get CUDA cores for a MIG GPU instance profile."""
-    profile_info = pynvml.nvmlDeviceGetGpuInstanceProfileInfo(handle, profile_id)
-    sm_count = profile_info.multiprocessorCount
-    name = pynvml.nvmlDeviceGetName(handle)
-
+    
     if "B100" in name or "B200" in name:
         arch = "Blackwell"
     elif "H100" in name or "H200" in name:
@@ -46,10 +44,8 @@ def get_cuda_cores(handle, profile_id):
 # Apply the monkey patch to "nvmlDeviceGetNumGpuCores" pynvml function
 def apply_mig_patch():
     """Monkey-patch pynvml.nvmlDeviceGetNumGpuCores for MIG mode."""
-    pynvml.nvmlInit()
-    handle = pynvml.nvmlDeviceGetHandleByIndex(0)
-    profile_id = pynvml.NVML_GPU_INSTANCE_PROFILE_1_SLICE
-    n_cores = get_cuda_cores(handle, profile_id)
+    sm_count = int(os.environ["SM_COUNT"])
+    n_cores = get_cuda_cores(sm_count)
     pynvml.nvmlDeviceGetNumGpuCores = lambda h: n_cores
     print(">>> MIG PATCH: Successfully mocked nvmlDeviceGetNumGpuCores", file=sys.stderr)
 
