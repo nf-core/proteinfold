@@ -23,9 +23,12 @@ CORES_PER_SM = {
 }
 
 # Get number of CUDA cores for a MIG GPU instance
-def get_cuda_cores(sm_count):
+def get_cuda_cores(handle, sm_count):
     """Get CUDA cores for a MIG GPU instance profile."""
-    
+    pynvml.nvmlInit()
+    handle = pynvml.nvmlDeviceGetHandleByIndex(0)
+    name = pynvml.nvmlDeviceGetName(handle)
+
     if "B100" in name or "B200" in name:
         arch = "Blackwell"
     elif "H100" in name or "H200" in name:
