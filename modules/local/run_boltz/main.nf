@@ -59,7 +59,7 @@ process RUN_BOLTZ {
 
     if command -v nvidia-smi >/dev/null 2>&1 && nvidia-smi -L | grep -q "MIG"; then
         echo "MIG mode detected. Mocking pynvml.nvmlDeviceGetNumGpuCores to avoid errors in Boltz. See https://github.com/nf-core/proteinfold/issues/417"
-        sm_count=$(nvidia-smi -q 2>/dev/null | grep -im1 "Multiprocessor count" | tr -cd '0-9')
+        sm_count=\$(nvidia-smi -q 2>/dev/null | grep -im1 "Multiprocessor count" | tr -cd '0-9')
         SM_COUNT="\$sm_count" boltz_wrapper.py predict "${fasta}" --output_format "pdb" ${args} --cache ./
     else
         boltz predict "${fasta}" --output_format "pdb" ${args} --cache ./
