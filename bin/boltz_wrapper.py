@@ -25,7 +25,7 @@ CORES_PER_SM = {
 # Get number of CUDA cores for a MIG GPU instance
 def get_cuda_cores(sm_count):
     """Get CUDA cores for a MIG GPU instance profile."""
-    
+
     pynvml.nvmlInit()
     handle = pynvml.nvmlDeviceGetHandleByIndex(0)
     name = pynvml.nvmlDeviceGetName(handle)
@@ -42,10 +42,10 @@ def get_cuda_cores(sm_count):
         arch = "Pascal"
     else:
         raise RuntimeError(f"Unknown GPU architecture for device: {name}")
-    
+
     n_cores = sm_count * CORES_PER_SM[arch]
     print(f">>> Detected GPU: {name}, Architecture: {arch}, SM Count: {sm_count},  Total CUDA Cores: {n_cores}")
-    
+
     return sm_count * CORES_PER_SM[arch]
 
 # Apply the monkey patch to "nvmlDeviceGetNumGpuCores" pynvml function
