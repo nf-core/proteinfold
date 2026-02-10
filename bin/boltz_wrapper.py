@@ -62,7 +62,7 @@ def get_multiprocessor_count(device_index: int) -> int:
         properties = torch.cuda.get_device_properties(device_index)
         return int(properties.multi_processor_count)
 
-# Get the number of visible GPU devices and their multiprocessor counts, return the minimum 
+# Get the number of visible GPU devices and their multiprocessor counts, return the minimum
 # multiprocessor count across all visible devices (to handle mixed MIG slice sizes)
 def get_mig_devices_and_sm_counts() -> int:
 
@@ -82,15 +82,15 @@ def get_mig_devices_and_sm_counts() -> int:
                 f"(counts per device: {all_counts}). This is expected if you have mixed MIG slice sizes. "
                 "If you expected identical slices, check your allocation and device isolation."
             )
-    
+
     print (f">>> Visible GPU devices: {visible_device_count}, Current device index: {current_device_index}, current device multiprocessor_count: {current_count}, all device multiprocessor_counts: {all_counts}, minimal multiprocessor_count: {min_count}", file=sys.stderr)
-    
+
     return min_count
 
 # Main execution
 if __name__ == "__main__":
     apply_mig_patch()
-    
+
     from boltz.main import cli
     sys.argv[0] = 'boltz'
     sys.exit(cli())
