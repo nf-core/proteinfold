@@ -18,8 +18,9 @@ process RUN_ALPHAFOLD3 {
     path "uniprot/*"
 
     output:
-    tuple val(meta), path ("publish/*alphafold3.cif")       , emit: top_ranked_cif
-    tuple val(meta), path ("publish/*ranked_*.cif")         , emit: cif
+    path ("raw/**")                                         , emit: raw
+    tuple val(meta), path ("${meta.id}_alphafold3.cif")     , emit: top_ranked_cif
+    tuple val(meta), path ("raw/*ranked_*.cif")             , emit: cif
     tuple val(meta), path ("${meta.id}_plddt.tsv")          , emit: multiqc
     tuple val(meta), path ("${meta.id}_alphafold3_msa.tsv") , emit: msa
     tuple val(meta), path ("${meta.id}_0_pae.tsv")          , emit: pae
@@ -78,31 +79,33 @@ process RUN_ALPHAFOLD3 {
         --output_dir=\$PWD \\
         $args
 
-    ## Rename the top ranked model
-    if [ ! -d publish ]; then
-        mkdir -p publish
-    fi
+    ## Create raw directory for intermediate files
+    mkdir -p raw
 
-    ## Move the rest of the models and rename them according to their rank
+    ### Move the rest of the models and rename them according to their rank
     name=\$(jq -r '.name' ${json})
-    cp -n "\${name}/\${name}_model.cif" "publish/${prefix}_alphafold3.cif"
+
+    ## Copy top ranked model to root
+    cp -n "\${name}/\${name}_model.cif" "${prefix}_alphafold3.cif"
 
     ## Sort the rows by ranking_score in descending order
     sorted_csv=\$(head -n 1 "\${name}/ranking_scores.csv"; tail -n +2 "\${name}/ranking_scores.csv" | sort -t, -k3 -nr)
     rank=0
-    touch publish/combined_plddt_mqc.tsv
 
-    ## Generate files with rank tag
+    ## Generate files with rank tag in raw directory
     echo "\$sorted_csv" | tail -n +2 | while IFS=',' read -r seed sample ranking_score; do
-    cp -n "\${name}/seed-\${seed}_sample-\${sample}/model.cif" "publish/seed_\${seed}_sample_\${sample}_ranked_\${rank}.cif"
+    cp -n "\${name}/seed-\${seed}_sample-\${sample}/model.cif" "raw/seed_\${seed}_sample_\${sample}_ranked_\${rank}.cif"
     rank=\$((rank + 1))
     done
 
     extract_metrics.py --name ${prefix} \\
         --jsons ${af3_id}/${af3_id}_data.json ${af3_id}/${af3_id}_summary_confidences.json ${af3_id}/${af3_id}_confidences.json \\
-        --structs publish/*ranked_*.cif
+        --structs raw/*ranked_*.cif
 
     mv "${prefix}_msa.tsv" "${meta.id}_alphafold3_msa.tsv"
+
+    ## Move alphafold3 output directory to raw for save_intermediates
+    mv "\${name}" raw/
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
@@ -113,13 +116,13 @@ process RUN_ALPHAFOLD3 {
     stub:
     def prefix = task.ext.prefix ?: "${meta.id}"
     """
-    mkdir publish
-    touch publish/${prefix}_alphafold3.cif
-    touch publish/${prefix}_ranked_1.cif
-    touch publish/${prefix}_ranked_2.cif
-    touch publish/${prefix}_ranked_3.cif
-    touch publish/${prefix}_ranked_4.cif
-    touch publish/${prefix}_ranked_5.cif
+    mkdir -p raw
+    touch raw/${prefix}_alphafold3.cif
+    touch raw/${prefix}_ranked_1.cif
+    touch raw/${prefix}_ranked_2.cif
+    touch raw/${prefix}_ranked_3.cif
+    touch raw/${prefix}_ranked_4.cif
+    touch raw/${prefix}_ranked_5.cif
     touch ${prefix}_plddt.tsv
     touch ${prefix}_alphafold3_msa.tsv
     touch ${prefix}_0_pae.tsv
