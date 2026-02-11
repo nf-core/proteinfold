@@ -18,6 +18,7 @@ process RUN_BOLTZ {
     path ('mols')
 
     output:
+    tuple val(meta), path ("boltz_results_${meta.id}")                          , optional: true, emit: intermediates
     // TODO: rename npz into different emit channels as to not conflict with raw (.tsv) PAE etc. As in PR #306
     tuple val(meta), path ("boltz_results_*/processed/msa/*.npz")               , emit: msa
     tuple val(meta), path ("boltz_results_*/processed/structures/*.npz")        , emit: structures
