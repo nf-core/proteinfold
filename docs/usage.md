@@ -601,7 +601,7 @@ nextflow run nf-core/proteinfold \
       --input samplesheet.csv \
       --outdir <OUTDIR> \
       --mode boltz \
-      --boltz_use_msa_server \
+      --use_msa_server \
       --use_gpu <true/false> \
       -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
 ```
