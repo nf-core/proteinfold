@@ -99,6 +99,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[#455](https://github.com/nf-core/proteinfold/issues/455)] - Fix colabfold monomer inheriting id from fasta header.
 - [[#457](https://github.com/nf-core/proteinfold/issues/457)] - Fix colabfold multimer always downloading model weights.
 - [[PR #464](https://github.com/nf-core/proteinfold/pulls/454)] - Update publishdir patterns for Boltz module
+- [[PR #469](https://github.com/nf-core/proteinfold/pulls/454)] - HTML reports now in /reports output directory 
 
 ### Parameters
 
