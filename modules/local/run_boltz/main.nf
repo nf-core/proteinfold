@@ -18,6 +18,7 @@ process RUN_BOLTZ {
     path ('mols')
 
     output:
+    tuple val(meta), path ("boltz_results_${meta.id}")                          , optional: true, emit: intermediates
     // TODO: rename npz into different emit channels as to not conflict with raw (.tsv) PAE etc. As in PR #306
     tuple val(meta), path ("boltz_results_*/processed/msa/*.npz")               , emit: msa
     tuple val(meta), path ("boltz_results_*/processed/structures/*.npz")        , emit: structures
@@ -58,7 +59,7 @@ process RUN_BOLTZ {
     export HOME=./home
 
     if command -v nvidia-smi >/dev/null 2>&1 && nvidia-smi -L | grep -q "MIG"; then
-        echo "MIG mode detected. Mocking pynvml.nvmlDeviceGetNumGpuCores to avoid errors in Boltz. See https://github.com/nf-core/proteinfold/issues/417"
+        echo ">>> MIG mode detected. Mocking pynvml.nvmlDeviceGetNumGpuCores to avoid errors in Boltz. See https://github.com/nf-core/proteinfold/issues/417"
         boltz_wrapper.py predict "${fasta}" --output_format "pdb" ${args} --cache ./
     else
         boltz predict "${fasta}" --output_format "pdb" ${args} --cache ./
