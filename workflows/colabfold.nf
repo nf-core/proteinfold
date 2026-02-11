@@ -43,60 +43,37 @@ workflow COLABFOLD {
         //
         // MODULE: Run colabfold
         //
-        if (colabfold_model_preset != 'alphafold2_ptm' && colabfold_model_preset != 'alphafold2') {
-            //Multimer mode
-            MULTIFASTA_TO_CSV(
-                ch_samplesheet
-            )
-            ch_versions = ch_versions.mix(MULTIFASTA_TO_CSV.out.versions)
 
-            COLABFOLD_BATCH(
-                MULTIFASTA_TO_CSV.out.input_csv,
-                colabfold_model_preset,
-                ch_colabfold_params,
-                [],
-                [],
-                num_recycles
-            )
-            ch_versions = ch_versions.mix(COLABFOLD_BATCH.out.versions)
+        MULTIFASTA_TO_CSV(
+            ch_samplesheet
+        )
+        ch_versions = ch_versions.mix(MULTIFASTA_TO_CSV.out.versions)
 
-        } else {
-            COLABFOLD_BATCH(
-                ch_samplesheet,
-                colabfold_model_preset,
-                ch_colabfold_params,
-                [],
-                [],
-                num_recycles
-            )
-            ch_versions = ch_versions.mix(COLABFOLD_BATCH.out.versions)
-        }
+        COLABFOLD_BATCH(
+            MULTIFASTA_TO_CSV.out.input_csv,
+            colabfold_model_preset,
+            ch_colabfold_params,
+            [],
+            [],
+            num_recycles
+        )
+        ch_versions = ch_versions.mix(COLABFOLD_BATCH.out.versions)
 
     } else {
         //
         // MODULE: Run mmseqs
         //
-        if (params.colabfold_model_preset != 'alphafold2_ptm' && params.colabfold_model_preset != 'alphafold2') {
-            //Multimer mode
-            MULTIFASTA_TO_CSV(
-                ch_samplesheet
-            )
-            ch_versions = ch_versions.mix(MULTIFASTA_TO_CSV.out.versions)
-            MMSEQS_COLABFOLDSEARCH (
-                MULTIFASTA_TO_CSV.out.input_csv,
-                ch_colabfold_db,
-                ch_uniref30
-            )
-            ch_versions = ch_versions.mix(MMSEQS_COLABFOLDSEARCH.out.versions)
-
-        } else {
-            MMSEQS_COLABFOLDSEARCH (
-                ch_samplesheet,
-                ch_colabfold_db,
-                ch_uniref30
-            )
-            ch_versions = ch_versions.mix(MMSEQS_COLABFOLDSEARCH.out.versions)
-        }
+        //Multimer mode
+        MULTIFASTA_TO_CSV(
+            ch_samplesheet
+        )
+        ch_versions = ch_versions.mix(MULTIFASTA_TO_CSV.out.versions)
+        MMSEQS_COLABFOLDSEARCH (
+            MULTIFASTA_TO_CSV.out.input_csv,
+            ch_colabfold_db,
+            ch_uniref30
+        )
+        ch_versions = ch_versions.mix(MMSEQS_COLABFOLDSEARCH.out.versions)
 
         //
         // MODULE: Run colabfold
