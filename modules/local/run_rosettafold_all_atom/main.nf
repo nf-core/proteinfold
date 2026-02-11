@@ -18,6 +18,7 @@ process RUN_ROSETTAFOLD_ALL_ATOM {
     path (fasta_files)
 
     output:
+    path ("raw/**")                                                     , emit: raw
     tuple val(meta), path ("${meta.id}_rosettafold_all_atom.pdb")       , emit: pdb
     tuple val(meta), path ("${meta.id}_plddt.tsv")                      , emit: multiqc
     tuple val(meta), path ("${meta.id}_rosettafold_all_atom_msa.tsv")   , emit: msa
@@ -55,6 +56,14 @@ process RUN_ROSETTAFOLD_ALL_ATOM {
 
     mv "${meta.id}_msa.tsv" "${meta.id}_rosettafold_all_atom_msa.tsv"
 
+    mkdir -p raw
+    if [[ -d "\$yaml_name" ]]; then
+        mv "\$yaml_name" raw/
+    fi
+    if [[ -f "\${yaml_name}_aux.pt" ]]; then
+        mv "\${yaml_name}_aux.pt" raw/
+    fi
+
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         python: \$(python3 --version | sed 's/Python //g')
@@ -65,10 +74,11 @@ process RUN_ROSETTAFOLD_ALL_ATOM {
     """
     touch "${meta.id}_rosettafold_all_atom.pdb"
     touch "${meta.id}.pdb"
-    touch "${meta.id}_aux.pt"
     touch "${meta.id}_plddt.tsv"
     touch "${meta.id}_rosettafold_all_atom_msa.tsv"
     touch "${meta.id}_0_pae.tsv"
+    mkdir -p raw/${meta.id}
+    touch raw/${meta.id}_aux.pt
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
