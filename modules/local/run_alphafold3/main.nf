@@ -24,6 +24,8 @@ process RUN_ALPHAFOLD3 {
     tuple val(meta), path ("${meta.id}_plddt.tsv")          , emit: multiqc
     tuple val(meta), path ("${meta.id}_alphafold3_msa.tsv") , emit: msa
     tuple val(meta), path ("${meta.id}_0_pae.tsv")          , emit: pae
+    tuple val(meta), path ("${meta.id}_ptm.tsv")            , emit: ptms
+    tuple val(meta), path ("${meta.id}_iptm.tsv")           , optional: true, emit: iptms
     path "versions.yml"                                     , emit: versions
 
     when:
@@ -79,9 +81,6 @@ process RUN_ALPHAFOLD3 {
         --output_dir=\$PWD \\
         $args
 
-    ## Create raw directory for intermediate files
-    mkdir -p raw
-
     ### Move the rest of the models and rename them according to their rank
     name=\$(jq -r '.name' ${json})
 
@@ -91,6 +90,9 @@ process RUN_ALPHAFOLD3 {
     ## Sort the rows by ranking_score in descending order
     sorted_csv=\$(head -n 1 "\${name}/ranking_scores.csv"; tail -n +2 "\${name}/ranking_scores.csv" | sort -t, -k3 -nr)
     rank=0
+
+    ## Create raw directory for intermediate files
+    mkdir -p raw
 
     ## Generate files with rank tag in raw directory
     echo "\$sorted_csv" | tail -n +2 | while IFS=',' read -r seed sample ranking_score; do
@@ -105,7 +107,7 @@ process RUN_ALPHAFOLD3 {
     mv "${prefix}_msa.tsv" "${meta.id}_alphafold3_msa.tsv"
 
     ## Move alphafold3 output directory to raw for save_intermediates
-    mv "\${name}" raw/
+    cp -r \${name}/* raw/
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
