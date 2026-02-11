@@ -34,8 +34,6 @@ process GENERATE_REPORT {
         --name ${meta.id} \\
         $args \\
 
-    [ -f ${meta.id}_seq_coverage.png ] && mv ${meta.id}_seq_coverage.png ${meta.id}_colabfold_seq_coverage.png
-
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         python: \$(python3 --version | sed 's/Python //g')

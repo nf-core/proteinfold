@@ -52,7 +52,7 @@ def generate_pae_plot(pae_path, out_dir, name, save_image=False):
 
 def generate_output_images(msa_path, plddt_data, name, out_dir, in_type, generate_tsv, pdb):
     msa = []
-    if in_type.lower() != "colabfold" and not msa_path.endswith("NO_FILE"):
+    if not msa_path.endswith("NO_FILE"):
         with open(msa_path, "r") as in_file:
             for line in in_file:
                 msa.append([int(x) for x in line.strip().split()])
@@ -448,11 +448,7 @@ for structure in aligned_structures:
     i += 1
 
 if not args.msa.endswith("NO_FILE"):
-    image_path = (
-        f"{args.output_dir}/{args.msa}"
-        if args.in_type.lower() == "colabfold"
-        else f"{args.output_dir}/{args.name}_{args.in_type}_seq_coverage.png"
-    )
+    image_path = f"{args.output_dir}/{args.name}_{args.in_type}_seq_coverage.png"
     with open(image_path, "rb") as in_file:
         proteinfold_template = proteinfold_template.replace(
             "seq_coverage.png",
