@@ -77,7 +77,7 @@ process RUN_ROSETTAFOLD_ALL_ATOM {
     touch "${meta.id}_plddt.tsv"
     touch "${meta.id}_rosettafold_all_atom_msa.tsv"
     touch "${meta.id}_0_pae.tsv"
-    mkdir -p raw/${meta.id}
+    mkdir -p raw
     touch raw/${meta.id}_aux.pt
 
     cat <<-END_VERSIONS > versions.yml
