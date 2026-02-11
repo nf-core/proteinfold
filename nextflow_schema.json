@@ -194,7 +194,7 @@
                 },
                 "colabfold_use_templates": {
                     "type": "boolean",
-                    "default": true,
+                    "default": false,
                     "description": "Use PDB templates",
                     "fa_icon": "fas fa-paste"
                 },
