@@ -2,6 +2,8 @@
  * Run Alphafold3
  */
 process RUN_ALPHAFOLD3 {
+    cache 'lenient'
+
     tag "$meta.id"
     label 'process_medium'
     label 'process_gpu'
@@ -107,7 +109,7 @@ process RUN_ALPHAFOLD3 {
     mv "${prefix}_msa.tsv" "${meta.id}_alphafold3_msa.tsv"
 
     ## Move alphafold3 output directory to raw for save_intermediates
-    cp -r \${name}/* raw/
+    mv \${name}/* raw/
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
