@@ -92,6 +92,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[#417](https://github.com/nf-core/proteinfold/issues/417)] - Add `boltz_use_kernels` parameter to enable/disable using optimized Triton-based CUDA kernels CUDA kernels for Boltz inference.
 - [[#417](https://github.com/nf-core/proteinfold/issues/417)] - Handle incompatible CUDA kernel errors in Boltz by automatically retrying with `--no_kernels` false.
 - [[PR #454](https://github.com/nf-core/proteinfold/pulls/454)] - Update publishdir patterns for alphafold2 modules
+- [[PR #464](https://github.com/nf-core/proteinfold/pulls/454)] - Update publishdir patterns for Boltz module
 
 ### Parameters
 
