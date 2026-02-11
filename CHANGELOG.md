@@ -91,6 +91,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[PR #451](https://github.com/nf-core/proteinfold/pulls/451)] - Remove af2 multimer padding from msa plots.
 - [[#417](https://github.com/nf-core/proteinfold/issues/417)] - Add `boltz_use_kernels` parameter to enable/disable using optimized Triton-based CUDA kernels CUDA kernels for Boltz inference.
 - [[#285](https://github.com/nf-core/proteinfold/issues/285)] - Adding contributors to manifest.
+- [[PR #460](https://github.com/nf-core/proteinfold/pulls/460)] - Use `nvidia-smi` to obtaion number of SM.
 - [[#417](https://github.com/nf-core/proteinfold/issues/417)] - Handle incompatible CUDA kernel errors in Boltz by automatically retrying with `--use_kernels` false.
 - [[PR #454](https://github.com/nf-core/proteinfold/pulls/454)] - Update publishdir patterns for alphafold2 modules.
 - [[PR #458](https://github.com/nf-core/proteinfold/pulls/458)] - Update publishdir patterns for colabfold module.
