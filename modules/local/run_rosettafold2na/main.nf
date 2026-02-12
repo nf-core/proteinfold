@@ -17,11 +17,13 @@ process RUN_ROSETTAFOLD2NA {
     path ('network/weights/*')
 
     output:
-    tuple val(meta), path("${meta.id}_rf2na.pdb"), emit: pdb
-    tuple val(meta), path("${meta.id}_plddt_mqc.tsv"), emit: multiqc
-    tuple val(meta), path("${meta.id}_rosettafold2na_msa.tsv"), emit: msa
-    tuple val(meta), path("${meta.id}_0_pae.tsv"), emit: pae
-    path "versions.yml", emit: versions
+    path ("raw/**")                                            , emit: raw
+    tuple val(meta), path("${meta.id}_rosettafold2na.pdb")     , emit: top_ranked_pdb
+    tuple val(meta), path("raw/*.pdb")                         , emit: pdb
+    tuple val(meta), path("${meta.id}_plddt.tsv")              , emit: multiqc
+    tuple val(meta), path("${meta.id}_rosettafold2na_msa.tsv") , emit: msa
+    tuple val(meta), path("${meta.id}_0_pae.tsv")              , emit: pae
+    path "versions.yml"                                        , emit: versions
 
     when:
     task.ext.when == null || task.ext.when
@@ -67,7 +69,12 @@ process RUN_ROSETTAFOLD2NA {
 
     ./run_RF2NA.sh ${meta.id}_rf2na_output "\${chain_args[@]}"
 
-    cp ${meta.id}_rf2na_output/models/model_00.pdb ./${meta.id}_rf2na.pdb
+    ## Create raw directory for intermediate files
+    mkdir -p raw
+
+    ## Copy top ranked model to root and raw
+    cp ${meta.id}_rf2na_output/models/model_00.pdb ./${meta.id}_rosettafold2na.pdb
+    cp ${meta.id}_rf2na_output/models/*.pdb raw/ # TODO check other raw files
 
     # Extract PAE matrix from NPZ and save as TSV for reporting
     /conda/envs/RF2NA/bin/python3 - <<'PY' "${meta.id}_rf2na_output/models/model_00.npz" "${meta.id}_0_pae.tsv"
@@ -81,36 +88,33 @@ PY
     extract_metrics.py --name ${meta.id} \
         --structs "${meta.id}_rf2na_output/models/model_00.pdb" ${'$'}A3M_ARGS
 
-    mv "${meta.id}_plddt.tsv" "${meta.id}_plddt_mqc.tsv"
-    if [ -f "${meta.id}_msa.tsv" ]; then
-        mv "${meta.id}_msa.tsv" "${meta.id}_rosettafold2na_msa.tsv"
-    fi
 
-    printf '"%s":\n  python: %s\n' \
-        "${task.process}" \
-        "\$(/conda/envs/RF2NA/bin/python3 --version | sed 's/Python //g')" > versions.yml
+    mv "${meta.id}_msa.tsv" "${meta.id}_rosettafold2na_msa.tsv"
+
+    ## Move rf2na output directory to raw for save_intermediates
+    mv ${meta.id}_rf2na_output/* raw/
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        rosettafold2na: $VERSION
+        python: \$(python3 --version | sed 's/Python //g')
+        rosettafold2na: "${VERSION}"
     END_VERSIONS
     """
 
     stub:
     def VERSION = 'v0.2' // WARN: Version information not provided by tool on CLI. Please update this string when bumping container versions.
     """
-    touch "${meta.id}_rf2na.pdb"
-    touch "${meta.id}_plddt_mqc.tsv"
+    mkdir -p raw
+    touch "${meta.id}_rosettafold2na.pdb"
+    touch raw/model_00.pdb
+    touch "${meta.id}_plddt.tsv"
     touch "${meta.id}_0_pae.tsv"
     touch "${meta.id}_rosettafold2na_msa.tsv"
 
-    printf '"%s":\n  python: %s\n' \
-        "${task.process}" \
-        "\$(/conda/envs/RF2NA/bin/python3 --version | sed 's/Python //g')" > versions.yml
-
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        rosettafold2na: $VERSION
+        python: \$(python3 --version | sed 's/Python //g')
+        rosettafold2na: "${VERSION}"
     END_VERSIONS
     """
 }
