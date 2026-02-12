@@ -20,7 +20,7 @@ process MMCIF2PDB {
     """
     for mmcif in *.cif
     do
-        pdb_out=\$(basename "\$mmcif")
+        pdb_out=\$(basename "\$mmcif" .cif)
         mmcif_to_pdb.py \${mmcif} --pdb_out "\${pdb_out}.pdb"
     done
 

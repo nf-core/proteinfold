@@ -18,11 +18,14 @@ process RUN_ALPHAFOLD3 {
     path "uniprot/*"
 
     output:
-    tuple val(meta), path ("publish/*alphafold3.cif")       , emit: top_ranked_cif
-    tuple val(meta), path ("publish/*ranked_*.cif")         , emit: cif
+    path ("raw/**")                                         , emit: raw
+    tuple val(meta), path ("${meta.id}_alphafold3.cif")     , emit: top_ranked_cif
+    tuple val(meta), path ("raw/*ranked_*.cif")             , emit: cif
     tuple val(meta), path ("${meta.id}_plddt.tsv")          , emit: multiqc
     tuple val(meta), path ("${meta.id}_alphafold3_msa.tsv") , emit: msa
     tuple val(meta), path ("${meta.id}_0_pae.tsv")          , emit: pae
+    tuple val(meta), path ("${meta.id}_ptm.tsv")            , emit: ptms
+    tuple val(meta), path ("${meta.id}_iptm.tsv")           , optional: true, emit: iptms
     path "versions.yml"                                     , emit: versions
 
     when:
@@ -38,33 +41,30 @@ process RUN_ALPHAFOLD3 {
     def prefix = task.ext.prefix ?: "${meta.id}"
     def af3_id = meta.id.toLowerCase()
     """
-    for f in ./pdb_seqres/pdb_seqres.txt ./pdb_seqres/pdb_seqres_2022_09_28.fasta; do
-	    if [[ -f \$f ]]; then
-            pdb_seqres=\$f
-            break
-        fi
-    done
+    # Check database files exist and set variables
+    pdb_seqres=\$(ls -v ./pdb_seqres/pdb_seqres.txt ./pdb_seqres/pdb_seqres_2022_09_28.fasta 2>/dev/null | tail -n 1 || echo "")
+    if [[ -z "\$pdb_seqres" ]]; then
+        echo "ERROR: No pdb_seqres file found"
+        exit 1
+    fi
 
-    for f in ./uniref90/uniref90*.fa ./uniref90/uniref90*.fasta; do
-    	if [[ -f \$f ]]; then
-            uniref90=\$f
-            break
-    	fi
-    done
+    uniref90=\$(ls -v ./uniref90/uniref90*.fa ./uniref90/uniref90*.fasta 2>/dev/null | tail -n 1 || echo "")
+    if [[ -z "\$uniref90" ]]; then
+        echo "ERROR: No uniref90 file found"
+        exit 1
+    fi
 
-    for f in ./mgnify/mgy_clusters*.fa ./mgnify/mgnify_clusters*.fasta; do
-        if [[ -f \$f ]]; then
-            mgnify=\$f
-            break
-        fi
-    done
+    mgnify=\$(ls -v ./mgnify/mgy_clusters*.fa ./mgnify/mgnify_clusters*.fasta 2>/dev/null | tail -n 1 || echo "")
+    if [[ -z "\$mgnify" ]]; then
+        echo "ERROR: No mgnify file found"
+        exit 1
+    fi
 
-    for f in ./uniprot/uniprot.fasta ./uniprot/uniprot*.fa; do
-        if [[ -f \$f ]]; then
-            uniprot=\$f
-            break
-        fi
-    done
+    uniprot=\$(ls -v ./uniprot/uniprot.fasta ./uniprot/uniprot*.fa 2>/dev/null | tail -n 1 || echo "")
+    if [[ -z "\$uniprot" ]]; then
+        echo "ERROR: No uniprot file found"
+        exit 1
+    fi
 
     python3 /app/alphafold/run_alphafold.py \\
         --json_path=${json} \\
@@ -78,31 +78,33 @@ process RUN_ALPHAFOLD3 {
         --output_dir=\$PWD \\
         $args
 
-    ## Rename the top ranked model
-    if [ ! -d publish ]; then
-        mkdir -p publish
-    fi
-
-    ## Move the rest of the models and rename them according to their rank
+    ### Move the rest of the models and rename them according to their rank
     name=\$(jq -r '.name' ${json})
-    cp -n "\${name}/\${name}_model.cif" "publish/${prefix}_alphafold3.cif"
+
+    ## Copy top ranked model to root
+    cp -n "\${name}/\${name}_model.cif" "${prefix}_alphafold3.cif"
 
     ## Sort the rows by ranking_score in descending order
     sorted_csv=\$(head -n 1 "\${name}/ranking_scores.csv"; tail -n +2 "\${name}/ranking_scores.csv" | sort -t, -k3 -nr)
     rank=0
-    touch publish/combined_plddt_mqc.tsv
 
-    ## Generate files with rank tag
+    ## Create raw directory for intermediate files
+    mkdir -p raw
+
+    ## Generate files with rank tag in raw directory
     echo "\$sorted_csv" | tail -n +2 | while IFS=',' read -r seed sample ranking_score; do
-    cp -n "\${name}/seed-\${seed}_sample-\${sample}/model.cif" "publish/seed_\${seed}_sample_\${sample}_ranked_\${rank}.cif"
+    cp -n "\${name}/seed-\${seed}_sample-\${sample}/model.cif" "raw/seed_\${seed}_sample_\${sample}_ranked_\${rank}.cif"
     rank=\$((rank + 1))
     done
 
     extract_metrics.py --name ${prefix} \\
         --jsons ${af3_id}/${af3_id}_data.json ${af3_id}/${af3_id}_summary_confidences.json ${af3_id}/${af3_id}_confidences.json \\
-        --structs publish/*ranked_*.cif
+        --structs raw/*ranked_*.cif
 
     mv "${prefix}_msa.tsv" "${meta.id}_alphafold3_msa.tsv"
+
+    ## Move alphafold3 output directory to raw for save_intermediates
+    mv \${name}/* raw/
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
@@ -113,16 +115,18 @@ process RUN_ALPHAFOLD3 {
     stub:
     def prefix = task.ext.prefix ?: "${meta.id}"
     """
-    mkdir publish
-    touch publish/${prefix}_alphafold3.cif
-    touch publish/${prefix}_ranked_1.cif
-    touch publish/${prefix}_ranked_2.cif
-    touch publish/${prefix}_ranked_3.cif
-    touch publish/${prefix}_ranked_4.cif
-    touch publish/${prefix}_ranked_5.cif
+    mkdir -p raw
+    touch ${prefix}_alphafold3.cif
+    touch raw/${prefix}_ranked_1.cif
+    touch raw/${prefix}_ranked_2.cif
+    touch raw/${prefix}_ranked_3.cif
+    touch raw/${prefix}_ranked_4.cif
+    touch raw/${prefix}_ranked_5.cif
     touch ${prefix}_plddt.tsv
     touch ${prefix}_alphafold3_msa.tsv
     touch ${prefix}_0_pae.tsv
+    touch ${prefix}_ptm.tsv
+    touch ${prefix}_iptm.tsv
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
