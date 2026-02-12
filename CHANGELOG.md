@@ -102,6 +102,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[PR #462](https://github.com/nf-core/proteinfold/pulls/462)] - Update publishdir patterns for RoseTTAFold-All-Atom modules
 - [[PR #464](https://github.com/nf-core/proteinfold/pulls/454)] - Update publishdir patterns for Boltz module
 - [[PR #469](https://github.com/nf-core/proteinfold/pulls/454)] - HTML reports now in /reports output directory
+- [[PR #468](https://github.com/nf-core/proteinfold/pulls/468)] - Update publishdir patterns for Alphafold3 module
 
 ### Parameters
 
