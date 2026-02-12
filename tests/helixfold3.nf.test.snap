@@ -4,11 +4,11 @@
             7,
             {
                 "GENERATE_REPORT": {
-                    "python": "3.12.2",
-                    "generate_report.py": "Python 3.12.2"
+                    "python": "3.12.7",
+                    "generate_report.py": "Python 3.12.7"
                 },
                 "RUN_HELIXFOLD3": {
-                    "python": "3.12.2"
+                    "python": null
                 },
                 "Workflow": {
                     "nf-core/proteinfold": "v1.2.0dev"
@@ -87,6 +87,6 @@
             "nf-test": "0.9.3",
             "nextflow": "25.10.3"
         },
-        "timestamp": "2026-02-12T15:17:27.545209"
+        "timestamp": "2026-02-12T18:32:43.920079"
     }
 }
