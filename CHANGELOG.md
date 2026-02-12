@@ -90,9 +90,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[PR #446](https://github.com/nf-core/proteinfold/pulls/446)] - Fix warnings from Nextflow lint.
 - [[PR #451](https://github.com/nf-core/proteinfold/pulls/451)] - Remove af2 multimer padding from msa plots.
 - [[#417](https://github.com/nf-core/proteinfold/issues/417)] - Add `boltz_use_kernels` parameter to enable/disable using optimized Triton-based CUDA kernels CUDA kernels for Boltz inference.
-- [[#285](https://github.com/nf-core/proteinfold/issues/285)] - Adding contributors to manifest.
-- [[PR #460](https://github.com/nf-core/proteinfold/pulls/460)] - Use `nvidia-smi` to obtaion number of SM.
 - [[#417](https://github.com/nf-core/proteinfold/issues/417)] - Handle incompatible CUDA kernel errors in Boltz by automatically retrying with `--use_kernels` false.
+- [[#285](https://github.com/nf-core/proteinfold/issues/285)] - Adding contributors to manifest.
+- [[PR #460](https://github.com/nf-core/proteinfold/pulls/460)] - Use `nvidia-smi` to obtain number of SM.
 - [[PR #454](https://github.com/nf-core/proteinfold/pulls/454)] - Update publishdir patterns for alphafold2 modules.
 - [[PR #458](https://github.com/nf-core/proteinfold/pulls/458)] - Update publishdir patterns for colabfold module.
 - [[#313](https://github.com/nf-core/proteinfold/issues/313)] - Harmonize colabfold metrics extraction with other modes.
@@ -101,6 +101,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[PR #461](https://github.com/nf-core/proteinfold/pulls/461)] - Update publishdir patterns for HelixFold3 module
 - [[PR #462](https://github.com/nf-core/proteinfold/pulls/462)] - Update publishdir patterns for RoseTTAFold-All-Atom modules
 - [[PR #464](https://github.com/nf-core/proteinfold/pulls/454)] - Update publishdir patterns for Boltz module
+- [[PR #466](https://github.com/nf-core/proteinfold/pulls/464)] - Update module conf and publishdir patterns for ESMFold, pass through container args
 - [[PR #469](https://github.com/nf-core/proteinfold/pulls/454)] - HTML reports now in /reports output directory
 - [[PR #468](https://github.com/nf-core/proteinfold/pulls/468)] - Update publishdir patterns for Alphafold3 module
 - [[PR #471](https://github.com/nf-core/proteinfold/pulls/471)] - Update publishdir patterns for Rosettafold2na module
