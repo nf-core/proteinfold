@@ -88,12 +88,11 @@ PY
     extract_metrics.py --name ${meta.id} \
         --structs "${meta.id}_rf2na_output/models/model_00.pdb" ${'$'}A3M_ARGS
 
-
     mv "${meta.id}_msa.tsv" "${meta.id}_rosettafold2na_msa.tsv"
 
     ## Move rf2na output directory to raw for save_intermediates
     mv ${meta.id}_rf2na_output/* raw/
-
+    
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         python: \$(python3 --version | sed 's/Python //g')
