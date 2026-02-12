@@ -98,7 +98,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[#313](https://github.com/nf-core/proteinfold/issues/313)] - Harmonize colabfold metrics extraction with other modes.
 - [[#455](https://github.com/nf-core/proteinfold/issues/455)] - Fix colabfold monomer inheriting id from fasta header.
 - [[#457](https://github.com/nf-core/proteinfold/issues/457)] - Fix colabfold multimer always downloading model weights.
+- [[PR #461](https://github.com/nf-core/proteinfold/pulls/461)] - Update publishdir patterns for HelixFold3 module
+- [[PR #462](https://github.com/nf-core/proteinfold/pulls/462)] - Update publishdir patterns for RoseTTAFold-All-Atom modules
 - [[PR #464](https://github.com/nf-core/proteinfold/pulls/454)] - Update publishdir patterns for Boltz module
+- [[PR #469](https://github.com/nf-core/proteinfold/pulls/454)] - HTML reports now in /reports output directory
 
 ### Parameters
 

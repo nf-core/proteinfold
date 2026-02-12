@@ -26,9 +26,10 @@ process RUN_HELIXFOLD3 {
     path ('maxit_src')
 
     output:
+    path ("raw/**")                                         , emit: raw
     tuple val(meta), path ("${meta.id}_helixfold3.pdb")     , emit: top_ranked_pdb
     tuple val(meta), path ("${meta.id}_helixfold3.cif")     , emit: main_cif
-    tuple val(meta), path ("${meta.id}-ranked*.pdb")        , emit: pdb
+    tuple val(meta), path ("raw/${meta.id}-ranked*.pdb")    , emit: pdb
     tuple val(meta), path ("${meta.id}_plddt.tsv")          , emit: multiqc
     tuple val(meta), path ("${meta.id}_helixfold3_msa.tsv") , emit: msa
     // If ${meta.id}-rank*/all_results.json" doesn't have PAE vales in the key, this will be empty
@@ -84,12 +85,13 @@ process RUN_HELIXFOLD3 {
         --pkls "${fasta.baseName}/final_features.pkl" \\
         --jsons ${fasta.baseName}/${fasta.baseName}-rank*/all_results.json
 
-    [ ! -d ${meta.id} ] && mkdir ${meta.id}
+    mkdir -p raw
     for i in 1 2 3 4 5; do
-        cp "${fasta.baseName}/${fasta.baseName}-rank\$i/predicted_structure.pdb" "${meta.id}-ranked_\$i.pdb"
+        cp "${fasta.baseName}/${fasta.baseName}-rank\$i/predicted_structure.pdb" "raw/ranked_\$i.pdb"
     done
 
     mv "${meta.id}_msa.tsv" "${meta.id}_helixfold3_msa.tsv"
+    mv "${fasta.baseName}" raw/
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
@@ -110,12 +112,12 @@ process RUN_HELIXFOLD3 {
     touch "${meta.id}_3_pae.tsv"
     touch "${meta.id}_4_pae.tsv"
     touch "${meta.id}_5_pae.tsv"
-    mkdir "${meta.id}"
-    touch "${meta.id}-ranked_1.pdb"
-    touch "${meta.id}-ranked_2.pdb"
-    touch "${meta.id}-ranked_3.pdb"
-    touch "${meta.id}-ranked_4.pdb"
-    touch "${meta.id}-ranked_5.pdb"
+    mkdir -p raw
+    touch "raw/${meta.id}-ranked_1.pdb"
+    touch "raw/${meta.id}-ranked_2.pdb"
+    touch "raw/${meta.id}-ranked_3.pdb"
+    touch "raw/${meta.id}-ranked_4.pdb"
+    touch "raw/${meta.id}-ranked_5.pdb"
 
 
     cat <<-END_VERSIONS > versions.yml
