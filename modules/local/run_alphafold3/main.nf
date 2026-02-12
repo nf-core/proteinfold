@@ -2,7 +2,6 @@
  * Run Alphafold3
  */
 process RUN_ALPHAFOLD3 {
-    cache 'lenient'
 
     tag "$meta.id"
     label 'process_medium'
@@ -43,33 +42,13 @@ process RUN_ALPHAFOLD3 {
     def prefix = task.ext.prefix ?: "${meta.id}"
     def af3_id = meta.id.toLowerCase()
     """
-    for f in ./pdb_seqres/pdb_seqres.txt ./pdb_seqres/pdb_seqres_2022_09_28.fasta; do
-	    if [[ -f \$f ]]; then
-            pdb_seqres=\$f
-            break
-        fi
-    done
+    pdb_seqres=\$(ls -v ./pdb_seqres/pdb_seqres.txt ./pdb_seqres/pdb_seqres_2022_09_28.fasta 2>/dev/null | tail -n 1)
 
-    for f in ./uniref90/uniref90*.fa ./uniref90/uniref90*.fasta; do
-    	if [[ -f \$f ]]; then
-            uniref90=\$f
-            break
-    	fi
-    done
+    uniref90=\$(ls -v ./uniref90/uniref90*.fa ./uniref90/uniref90*.fasta 2>/dev/null | tail -n 1)
 
-    for f in ./mgnify/mgy_clusters*.fa ./mgnify/mgnify_clusters*.fasta; do
-        if [[ -f \$f ]]; then
-            mgnify=\$f
-            break
-        fi
-    done
+    mgnify=\$(ls -v ./mgnify/mgy_clusters*.fa ./mgnify/mgnify_clusters*.fasta 2>/dev/null | tail -n 1)
 
-    for f in ./uniprot/uniprot.fasta ./uniprot/uniprot*.fa; do
-        if [[ -f \$f ]]; then
-            uniprot=\$f
-            break
-        fi
-    done
+    uniprot=\$(ls -v ./uniprot/uniprot.fasta ./uniprot/uniprot*.fa 2>/dev/null | tail -n 1)
 
     python3 /app/alphafold/run_alphafold.py \\
         --json_path=${json} \\
