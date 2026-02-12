@@ -1,26 +1,11 @@
 {
     "-profile test_boltz": {
         "content": [
-            17,
+            11,
             {
-                "ARIA2": {
-                    "aria2": null
-                },
-                "ARIA2_BOLTZ2_AFF": {
-                    "aria2": null
-                },
-                "ARIA2_BOLTZ2_CONF": {
-                    "aria2": null
-                },
-                "ARIA2_BOLTZ_CCD": {
-                    "aria2": null
-                },
-                "ARIA2_BOLTZ_MODEL": {
-                    "aria2": null
-                },
                 "GENERATE_REPORT": {
-                    "python": "3.12.2",
-                    "generate_report.py": "Python 3.12.2"
+                    "python": "3.12.7",
+                    "generate_report.py": "Python 3.12.7"
                 },
                 "MMSEQS_COLABFOLDSEARCH": {
                     "colabfold_search": "unknown",
@@ -30,16 +15,13 @@
                     "boltz": "unknown"
                 },
                 "SPLIT_MSA": {
-                    "python": "3.12.2"
+                    "python": "3.8.3"
                 },
                 "Workflow": {
                     "nf-core/proteinfold": "v1.2.0dev"
                 }
             },
             [
-                "DBs",
-                "DBs/boltz",
-                "DBs/boltz/mols",
                 "boltz",
                 "boltz/A.csv",
                 "boltz/B.csv",
@@ -85,9 +67,6 @@
                 "split/output_msa/B.csv"
             ],
             [
-                [
-                    "file.txt:md5,d41d8cd98f00b204e9800998ecf8427e"
-                ],
                 "A.csv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "B.csv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1024_boltz_msa.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
@@ -119,6 +98,6 @@
             "nf-test": "0.9.3",
             "nextflow": "25.10.3"
         },
-        "timestamp": "2026-02-12T15:40:44.405948"
+        "timestamp": "2026-02-12T23:06:14.501479"
     }
 }
