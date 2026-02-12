@@ -121,7 +121,7 @@ process RUN_ALPHAFOLD3 {
     def prefix = task.ext.prefix ?: "${meta.id}"
     """
     mkdir -p raw
-    touch raw/${prefix}_alphafold3.cif
+    touch ${prefix}_alphafold3.cif
     touch raw/${prefix}_ranked_1.cif
     touch raw/${prefix}_ranked_2.cif
     touch raw/${prefix}_ranked_3.cif
@@ -130,6 +130,8 @@ process RUN_ALPHAFOLD3 {
     touch ${prefix}_plddt.tsv
     touch ${prefix}_alphafold3_msa.tsv
     touch ${prefix}_0_pae.tsv
+    touch ${prefix}_ptm.tsv
+    touch ${prefix}_iptm.tsv
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
