@@ -105,6 +105,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[PR #469](https://github.com/nf-core/proteinfold/pulls/454)] - HTML reports now in /reports output directory
 - [[PR #468](https://github.com/nf-core/proteinfold/pulls/468)] - Update publishdir patterns for Alphafold3 module
 - [[PR #471](https://github.com/nf-core/proteinfold/pulls/471)] - Update publishdir patterns for Rosettafold2na module
+- [[#473](https://github.com/nf-core/proteinfold/issues/473)] - Add nf-test for `rosettafold-aa`, `rosettafold2na`, `helixfold3` and `boltz` modes.
 
 ### Parameters
 
