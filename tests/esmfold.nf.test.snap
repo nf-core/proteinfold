@@ -4,8 +4,8 @@
             5,
             {
                 "GENERATE_REPORT": {
-                    "python": "3.13.9",
-                    "generate_report.py": "Python 3.13.9"
+                    "python": "3.12.7",
+                    "generate_report.py": "Python 3.12.7"
                 },
                 "RUN_ESMFOLD": {
                     "esm-fold": "1.0.3"
@@ -44,6 +44,6 @@
             "nf-test": "0.9.3",
             "nextflow": "25.10.3"
         },
-        "timestamp": "2026-02-12T17:36:25.324453"
+        "timestamp": "2026-02-12T18:09:13.544553"
     }
 }
