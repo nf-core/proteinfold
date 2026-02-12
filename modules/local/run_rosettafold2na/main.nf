@@ -74,7 +74,7 @@ process RUN_ROSETTAFOLD2NA {
 
     ## Copy top ranked model to root and raw
     cp ${meta.id}_rf2na_output/models/model_00.pdb ./${meta.id}_rosettafold2na.pdb
-    cp ${meta.id}_rf2na_output/models/*.pdb raw/ # TODO check other raw files
+    cp ${meta.id}_rf2na_output/models/*.pdb raw/
 
     # Extract PAE matrix from NPZ and save as TSV for reporting
     /conda/envs/RF2NA/bin/python3 - <<'PY' "${meta.id}_rf2na_output/models/model_00.npz" "${meta.id}_0_pae.tsv"
