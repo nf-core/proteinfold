@@ -93,11 +93,11 @@ PY
     ## Move rf2na output directory to raw for save_intermediates
     mv ${meta.id}_rf2na_output/* raw/
     
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        python: \$(python3 --version | sed 's/Python //g')
-        rosettafold2na: "${VERSION}"
-    END_VERSIONS
+cat <<-END_VERSIONS > versions.yml
+"${task.process}":
+    python: \$(python3 --version | sed 's/Python //g')
+    rosettafold2na: "${VERSION}"
+END_VERSIONS
     """
 
     stub:
