@@ -2,7 +2,6 @@
  * Run Alphafold3
  */
 process RUN_ALPHAFOLD3 {
-
     tag "$meta.id"
     label 'process_medium'
     label 'process_gpu'
