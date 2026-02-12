@@ -1,0 +1,69 @@
+{
+    "-profile test_rosettafold_all_atom": {
+        "content": [
+            7,
+            {
+                "GENERATE_REPORT": {
+                    "python": "3.12.2",
+                    "generate_report.py": "Python 3.12.2"
+                },
+                "RUN_ROSETTAFOLD_ALL_ATOM": {
+                    "python": "3.12.2"
+                },
+                "Workflow": {
+                    "nf-core/proteinfold": "v1.2.0dev"
+                }
+            },
+            [
+                "fasta2yaml",
+                "fasta2yaml/T1024.yaml",
+                "fasta2yaml/T1026.yaml",
+                "fasta2yaml/out_fasta",
+                "fasta2yaml/out_fasta/A.fasta",
+                "fasta2yaml/out_fasta/B.fasta",
+                "multiqc",
+                "multiqc/multiqc_data",
+                "multiqc/multiqc_plots",
+                "multiqc/multiqc_report.html",
+                "pipeline_info",
+                "pipeline_info/nf_core_proteinfold_software_mqc_versions.yml",
+                "reports",
+                "reports/test_alphafold2_report.html",
+                "rosettafold_all_atom",
+                "rosettafold_all_atom/T1024",
+                "rosettafold_all_atom/T1024/T1024_plddt.tsv",
+                "rosettafold_all_atom/T1024/T1024_rosettafold_all_atom_msa.tsv",
+                "rosettafold_all_atom/T1024/paes",
+                "rosettafold_all_atom/T1024/paes/T1024_0_pae.tsv",
+                "rosettafold_all_atom/T1026",
+                "rosettafold_all_atom/T1026/T1026_plddt.tsv",
+                "rosettafold_all_atom/T1026/T1026_rosettafold_all_atom_msa.tsv",
+                "rosettafold_all_atom/T1026/paes",
+                "rosettafold_all_atom/T1026/paes/T1026_0_pae.tsv",
+                "rosettafold_all_atom/top_ranked_structures",
+                "rosettafold_all_atom/top_ranked_structures/T1024.pdb",
+                "rosettafold_all_atom/top_ranked_structures/T1026.pdb"
+            ],
+            [
+                "T1024.yaml:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1026.yaml:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "A.fasta:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "B.fasta:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "test_alphafold2_report.html:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1024_plddt.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1024_rosettafold_all_atom_msa.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1024_0_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1026_plddt.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1026_rosettafold_all_atom_msa.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1026_0_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1024.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1026.pdb:md5,d41d8cd98f00b204e9800998ecf8427e"
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.3",
+            "nextflow": "25.10.3"
+        },
+        "timestamp": "2026-02-12T15:30:06.576975"
+    }
+}
