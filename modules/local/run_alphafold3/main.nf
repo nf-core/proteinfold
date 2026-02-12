@@ -42,13 +42,30 @@ process RUN_ALPHAFOLD3 {
     def prefix = task.ext.prefix ?: "${meta.id}"
     def af3_id = meta.id.toLowerCase()
     """
-    pdb_seqres=\$(ls -v ./pdb_seqres/pdb_seqres.txt ./pdb_seqres/pdb_seqres_2022_09_28.fasta 2>/dev/null | tail -n 1)
+    # Check database files exist and set variables
+    pdb_seqres=\$(ls -v ./pdb_seqres/pdb_seqres.txt ./pdb_seqres/pdb_seqres_2022_09_28.fasta 2>/dev/null | tail -n 1 || echo "")
+    if [[ -z "\$pdb_seqres" ]]; then
+        echo "ERROR: No pdb_seqres file found"
+        exit 1
+    fi
 
-    uniref90=\$(ls -v ./uniref90/uniref90*.fa ./uniref90/uniref90*.fasta 2>/dev/null | tail -n 1)
+    uniref90=\$(ls -v ./uniref90/uniref90*.fa ./uniref90/uniref90*.fasta 2>/dev/null | tail -n 1 || echo "")
+    if [[ -z "\$uniref90" ]]; then
+        echo "ERROR: No uniref90 file found"
+        exit 1
+    fi
 
-    mgnify=\$(ls -v ./mgnify/mgy_clusters*.fa ./mgnify/mgnify_clusters*.fasta 2>/dev/null | tail -n 1)
+    mgnify=\$(ls -v ./mgnify/mgy_clusters*.fa ./mgnify/mgnify_clusters*.fasta 2>/dev/null | tail -n 1 || echo "")
+    if [[ -z "\$mgnify" ]]; then
+        echo "ERROR: No mgnify file found"
+        exit 1
+    fi
 
-    uniprot=\$(ls -v ./uniprot/uniprot.fasta ./uniprot/uniprot*.fa 2>/dev/null | tail -n 1)
+    uniprot=\$(ls -v ./uniprot/uniprot.fasta ./uniprot/uniprot*.fa 2>/dev/null | tail -n 1 || echo "")
+    if [[ -z "\$uniprot" ]]; then
+        echo "ERROR: No uniprot file found"
+        exit 1
+    fi
 
     python3 /app/alphafold/run_alphafold.py \\
         --json_path=${json} \\
