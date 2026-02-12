@@ -74,7 +74,7 @@ process RUN_ROSETTAFOLD2NA {
 
     ## Copy top ranked model to root and raw
     cp ${meta.id}_rf2na_output/models/model_00.pdb ./${meta.id}_rosettafold2na.pdb
-    cp ${meta.id}_rf2na_output/models/*.pdb raw/ # TODO check other raw files
+    cp ${meta.id}_rf2na_output/models/*.pdb raw/
 
     # Extract PAE matrix from NPZ and save as TSV for reporting
     /conda/envs/RF2NA/bin/python3 - <<'PY' "${meta.id}_rf2na_output/models/model_00.npz" "${meta.id}_0_pae.tsv"
@@ -88,17 +88,16 @@ PY
     extract_metrics.py --name ${meta.id} \
         --structs "${meta.id}_rf2na_output/models/model_00.pdb" ${'$'}A3M_ARGS
 
-
     mv "${meta.id}_msa.tsv" "${meta.id}_rosettafold2na_msa.tsv"
 
     ## Move rf2na output directory to raw for save_intermediates
     mv ${meta.id}_rf2na_output/* raw/
 
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        python: \$(python3 --version | sed 's/Python //g')
-        rosettafold2na: "${VERSION}"
-    END_VERSIONS
+cat <<-END_VERSIONS > versions.yml
+"${task.process}":
+    python: \$(python3 --version | sed 's/Python //g')
+    rosettafold2na: "${VERSION}"
+END_VERSIONS
     """
 
     stub:
