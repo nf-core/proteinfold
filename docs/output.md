@@ -21,14 +21,21 @@ See main [README.md](https://github.com/nf-core/proteinfold/blob/master/README.m
 
 The directories listed below will be created in the output directory after the pipeline has finished. All paths are relative to the top-level results directory.
 
+Exact subdirectories depend on the selected mode(s). In a multi-mode run (for example `alphafold2,boltz,rosettafold_all_atom`) you will typically see top-level directories such as `alphafold2/`, `boltz/`, `rosettafold_all_atom/`, `multiqc/`, `reports/`, `compare/`, and `pipeline_info/`.
+
 ### AlphaFold2
 
 <details markdown="1">
 <summary>Output files</summary>
 
-- `alphafold2/standard/` or `alphafold2/split_msa_prediction/` based on the selected mode. It contains the computed MSAs, unrelaxed structures, relaxed structures, ranked structures, raw model outputs, prediction metadata, and section timings. Specifically, `<SEQUENCE NAME>_plddt.tsv` presents the pLDDT scores per residue for each of the 5 predicted models.
-  - `top_ranked_structures/<SEQUENCE NAME>.pdb` that is the structure with the highest pLDDT score per input (ranked first)
-- `DBs/` that contains symbolic links to the downloaded database and parameter files
+- `alphafold2/standard/` or `alphafold2/split_msa_prediction/` based on the selected mode.
+  - `<SEQUENCE NAME>/msa/features.pkl` and `<SEQUENCE NAME>/msa/timings.json` (MSA + timings metadata)
+  - `<SEQUENCE NAME>/<SEQUENCE NAME>_alphafold2_msa.tsv`
+  - `<SEQUENCE NAME>/<SEQUENCE NAME>_plddt.tsv`
+  - `<SEQUENCE NAME>/<SEQUENCE NAME>_ptm.tsv`
+  - `<SEQUENCE NAME>/paes/<SEQUENCE NAME>_<RANK>_pae.tsv`
+  - `top_ranked_structures/<SEQUENCE NAME>.pdb` (ranked first model)
+- `DBs/` may be present and contain symbolic links to downloaded database and parameter files
 
 </details>
 
@@ -92,9 +99,13 @@ Below you can find an indicative example of the TSV file with the pLDDT scores p
 <details markdown="1">
 <summary>Output files</summary>
 
-- `colabfold/webserver/` or `colabfold/local/` based on the selected mode. It contains the computed MSAs, unrelaxed structures, relaxed structures, ranked structures, raw model outputs, prediction metadata, and section timings. Specifically, `<SEQUENCE NAME>_plddt.tsv` presents the pLDDT scores per residue for each of the 5 predicted models.
-  - `top_ranked_structures/<SEQUENCE NAME>.pdb` that is the structure with the highest pLDDT score per input (ranked first)
-- `DBs/` that contains symbolic links to the downloaded database and parameter files
+- `colabfold/<SEQUENCE NAME>/`
+  - `<SEQUENCE NAME>_plddt.tsv`
+  - `<SEQUENCE NAME>_colabfold_msa.tsv`
+  - `paes/<SEQUENCE NAME>_<RANK>_pae.tsv`
+  - `raw/` may be present with additional intermediate files when `--save_intermediates` is used
+- `colabfold/top_ranked_structures/<SEQUENCE NAME>.pdb`
+- `DBs/` may be present and contain symbolic links to downloaded database and parameter files
 
 </details>
 
@@ -111,6 +122,23 @@ Below you can find some indicative examples of the output images produced by Col
 #### Predicted Aligned Error (PAE)
 
 ![Alt text](../docs/images/T1024_LmrP____408_residues__PAE_mqc.png?raw=true "T1024_coverage")
+
+### Boltz
+
+<details markdown="1">
+<summary>Output files</summary>
+
+- `boltz/`
+  - `output_fasta/<SEQUENCE NAME>.fasta`
+  - `<SEQUENCE NAME>/<SEQUENCE NAME>_boltz_msa.tsv`
+  - `<SEQUENCE NAME>/<SEQUENCE NAME>_plddt.tsv`
+  - `<SEQUENCE NAME>/<SEQUENCE NAME>_ptm.tsv`
+  - `<SEQUENCE NAME>/<SEQUENCE NAME>_chainwise_ptm.tsv`
+  - `<SEQUENCE NAME>/<SEQUENCE NAME>_chainwise_iptm.tsv` (when applicable)
+  - `<SEQUENCE NAME>/paes/<SEQUENCE NAME>_0_pae.tsv`
+  - `top_ranked_structures/<SEQUENCE NAME>.pdb`
+
+</details>
 
 ### ESMFold
 
@@ -184,11 +212,12 @@ Below you can find an indicative example of the TSV file with the pLDDT scores p
 <details markdown="1">
 <summary>Output files</summary>
 
-- `run/`
-  - `<SEQUENCE NAME>_rosettafold_all_atom.pdb` that is the structure with the highest pLDDT score (ranked first)
-  - `<SEQUENCE NAME>_plddt.tsv` that presents the pLDDT scores per residue for the predicted model
-  - `<SEQUENCE NAME>_aux.pt` pytorch file with confidence metrics stored (can load with torch.load(file, map_location="cpu"))
-  - `<SEQUENCE NAME>/` that contains the computed MSAs, prediction metadata
+- `rosettafold_all_atom/`
+  - `<SEQUENCE NAME>/<SEQUENCE NAME>_rosettafold_all_atom_msa.tsv`
+  - `<SEQUENCE NAME>/<SEQUENCE NAME>_plddt.tsv`
+  - `<SEQUENCE NAME>/paes/<SEQUENCE NAME>_0_pae.tsv`
+  - `top_ranked_structures/<SEQUENCE NAME>.pdb`
+  - `<SEQUENCE NAME>/raw/` may be present with additional intermediate files when `--save_intermediates` is used
 
 </details>
 
@@ -228,23 +257,32 @@ RosettaFold2NA produces the following key outputs:
 
    Where L is the length of the complex.
 
+### Per-mode reports and comparisons
+
+<details markdown="1">
+<summary>Output files</summary>
+
+- `reports/`
+  - `<SEQUENCE NAME>_<MODE>_report.html` (single-mode report per sequence/mode)
+- `compare/`
+  - `<SEQUENCE NAME>_comparison_report.html` (present when running multiple modes)
+
+</details>
+
 ### MultiQC report
 
 <details markdown="1">
 <summary>Output files</summary>
 
 - `multiqc`
-  - `<MODE>_multiqc_report.html`: A standalone HTML file that can be viewed in your web browser.
-  - `<MODE>_multiqc_data/`: Directory containing parsed statistics from the different tools used in the pipeline.
-  - `<MODE>_multiqc_plots/`: Directory containing static images from the report in various formats.
+  - `*_multiqc_report.html`: Standalone HTML report(s) that can be viewed in your web browser.
+  - `*_multiqc_report_data/`: Parsed report data for each corresponding MultiQC report.
 
 </details>
 
-[MultiQC](https://multiqc.info/docs/) is a visualisation tool that generates a single HTML report summarising all samples in your project. Most of the pipeline QC results are visualised in the report and further statistics are available within the report data directory.
+[MultiQC](https://multiqc.info/docs/) is a visualisation tool that generates HTML report(s) summarising samples in your project. Most QC results are visualised in the report and further statistics are available within each corresponding `*_multiqc_report_data/` directory.
 
-Results generated by MultiQC collate pipeline QC from AlphaFold2 or ColabFold.
-
-Results generated by MultiQC collate pipeline QC from supported tools e.g. FastQC. The pipeline has special steps which also allow the software versions to be reported in the MultiQC output for future traceability. For more information about how to use MultiQC reports, see <http://multiqc.info>.
+Results generated by MultiQC collate QC metrics from the selected structure-prediction mode(s), and the pipeline also includes software versions for traceability. For more information about how to use MultiQC reports, see <http://multiqc.info>.
 
 ### Pipeline information
 
@@ -260,3 +298,25 @@ Results generated by MultiQC collate pipeline QC from supported tools e.g. FastQ
 </details>
 
 [Nextflow](https://www.nextflow.io/docs/latest/tracing.html) provides excellent functionality for generating various reports relevant to the running and execution of the pipeline. This will allow you to troubleshoot errors with the running of the pipeline, and also provide you with other information such as launch commands, run times and resource usage.
+
+### Additional intermediate outputs
+
+Depending on the selected mode(s) and options, additional top-level directories may be present, for example:
+
+- `fasta2yaml/` (for YAML conversion inputs/outputs)
+- `mmseqs/results/` (for MMseqs2 outputs such as `.a3m` files)
+- `split/output_msa/` (for split-MSA intermediate CSV outputs)
+
+### `--save_intermediates`
+
+If `--save_intermediates` is enabled, extra raw intermediate files are published in mode-specific `raw/` directories.
+
+Examples include:
+
+- `alphafold2/<MODE>/<SEQUENCE NAME>/raw/`
+- `colabfold/<SEQUENCE NAME>/raw/`
+- `boltz/<SEQUENCE NAME>/boltz_results_*/`
+- `rosettafold_all_atom/<SEQUENCE NAME>/raw/`
+- `alphafold3/<SEQUENCE NAME>/raw/`
+- `helixfold3/<SEQUENCE NAME>/raw/`
+- `rosettafold2na/<SEQUENCE NAME>/raw/`
