@@ -38,6 +38,8 @@ User-facing outputs are largely consistent across modes.
 
 </details>
 
+Canonical `.tsv` metric formats (including pLDDT, MSA, (i)pTM, chain-wise (i)pTM and PAE) are defined in the contributor documentation: [Processable structure prediction metrics](usage/HOWTO_CONTRIBUTE_NEW_MODES.md#processable-structure-prediction-metrics).
+
 Mode-specific internals can still differ. For detailed, canonical tool-specific output semantics, see:
 
 - [AlphaFold2](https://github.com/deepmind/alphafold)
@@ -46,6 +48,22 @@ Mode-specific internals can still differ. For detailed, canonical tool-specific 
 - [RoseTTAFold-All-Atom](https://github.com/baker-laboratory/RoseTTAFold-All-Atom/)
 - [HelixFold3](https://github.com/PaddlePaddle/PaddleHelix/tree/dev/apps/protein_folding/helixfold3)
 - [RosettaFold2NA](https://github.com/uw-ipd/RoseTTAFold2NA)
+
+#### Example report plots
+
+The report exports include key visualisations such as sequence coverage, predicted Local Distance Difference Test (pLDDT), and Predicted Aligned Error (PAE).
+
+##### Sequence coverage
+
+![Sequence coverage](images/T1024_LmrP____408_residues__coverage_mqc.png?raw=true "Example sequence coverage plot")
+
+##### predicted Local Distance Difference Test (pLDDT)
+
+![pLDDT](images/T1024_LmrP____408_residues__plddt_mqc.png?raw=true "Example pLDDT plot")
+
+##### Predicted Aligned Error (PAE)
+
+![PAE](images/T1024_LmrP____408_residues__PAE_mqc.png?raw=true "Example PAE plot")
 
 ### Per-mode reports and comparisons
 
