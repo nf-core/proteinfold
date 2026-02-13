@@ -55,15 +55,15 @@ The report exports include key visualisations such as sequence coverage, predict
 
 ##### Sequence coverage
 
-![Sequence coverage](images/T1024_LmrP____408_residues__coverage_mqc.png?raw=true "Example sequence coverage plot")
+![Sequence coverage](images/sequence_coverage_proteinfold-v2.png?raw=true "Example sequence coverage plot")
 
 ##### predicted Local Distance Difference Test (pLDDT)
 
-![pLDDT](images/T1024_LmrP____408_residues__plddt_mqc.png?raw=true "Example pLDDT plot")
+![pLDDT](images/plddt_proteinfold-v2.png?raw=true "Example pLDDT plot")
 
 ##### Predicted Aligned Error (PAE)
 
-![PAE](images/T1024_LmrP____408_residues__PAE_mqc.png?raw=true "Example PAE plot")
+![PAE](images/pae_proteinfold-v2.png?raw=true "Example PAE plot")
 
 ### Per-mode reports and comparisons
 
