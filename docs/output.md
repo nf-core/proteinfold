@@ -40,17 +40,6 @@ User-facing outputs are largely consistent across modes.
 
 Canonical `.tsv` metric formats (including pLDDT, MSA, (i)pTM, chain-wise (i)pTM and PAE) are defined in the contributor documentation: [Processable structure prediction metrics](usage/HOWTO_CONTRIBUTE_NEW_MODES.md#processable-structure-prediction-metrics).
 
-Mode-specific internals can still differ. For detailed, canonical tool-specific output specifications, see:
-
-- [AlphaFold2](https://github.com/google-deepmind/alphafold?tab=readme-ov-file#alphafold-output)
-- [AlphaFold3](https://github.com/google-deepmind/alphafold3/blob/main/docs/output.md)
-- [Boltz](https://github.com/jwohlwend/boltz/blob/main/docs/prediction.md#output)
-- [ColabFold](https://www.ebi.ac.uk/training/online/courses/alphafold/advanced-modeling-and-applications-of-predicted-protein-structures/customising-alphafold-structure-predictions/outputs-from-colabfold/)
-- [ESMFold](https://github.com/facebookresearch/esm)
-- [RosettaFold2NA](https://github.com/uw-ipd/RoseTTAFold2NA?tab=readme-ov-file#expected-outputs)
-- [RoseTTAFold-All-Atom](https://github.com/baker-laboratory/RoseTTAFold-All-Atom/?tab=readme-ov-file#understanding-model-outputs)
-- [HelixFold3](https://github.com/PaddlePaddle/PaddleHelix/tree/dev/apps/protein_folding/helixfold3#-understanding-model-output)
-
 #### Example report plots
 
 The report exports include key visualisations such as sequence coverage, predicted Local Distance Difference Test (pLDDT), and Predicted Aligned Error (PAE).
@@ -131,4 +120,13 @@ Examples include:
 - `helixfold3/<SEQUENCE NAME>/raw/`
 - `rosettafold2na/<SEQUENCE NAME>/raw/`
 
-These raw outputs are intended for advanced debugging, reproducibility and method-specific downstream analyses. For interpretation of raw files, refer to each tool's canonical documentation linked above.
+These raw outputs are intended for advanced debugging, reproducibility and method-specific downstream analyses. For detailed, canonical tool-specific native output specifications, see:
+
+- [AlphaFold2](https://github.com/google-deepmind/alphafold?tab=readme-ov-file#alphafold-output)
+- [AlphaFold3](https://github.com/google-deepmind/alphafold3/blob/main/docs/output.md)
+- [Boltz](https://github.com/jwohlwend/boltz/blob/main/docs/prediction.md#output)
+- [ColabFold](https://www.ebi.ac.uk/training/online/courses/alphafold/advanced-modeling-and-applications-of-predicted-protein-structures/customising-alphafold-structure-predictions/outputs-from-colabfold/)
+- [ESMFold](https://github.com/facebookresearch/esm)
+- [RosettaFold2NA](https://github.com/uw-ipd/RoseTTAFold2NA?tab=readme-ov-file#expected-outputs)
+- [RoseTTAFold-All-Atom](https://github.com/baker-laboratory/RoseTTAFold-All-Atom/?tab=readme-ov-file#understanding-model-outputs)
+- [HelixFold3](https://github.com/PaddlePaddle/PaddleHelix/tree/dev/apps/protein_folding/helixfold3#-understanding-model-output)
