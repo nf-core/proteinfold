@@ -50,10 +50,7 @@ process FASTA2YAML {
 
     with open("${meta.id}.yaml", "w") as yaml_file:
         yaml_file.write(yaml_template)
-
-    with open ("versions.yml", "w") as version_file:
-        version_file.write("\\"${task.process}\\":\\n    python: {}\\n".format(sys.version.split()[0].strip()))
-    
+   
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         python: \$(python3 --version | sed 's/Python //g')
