@@ -96,6 +96,10 @@ process RUN_HELIXFOLD3 {
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         python: \$(python3 --version | sed 's/Python //g')
+        helixfold3: \$(cd /app/helixfold3 && git rev-parse HEAD 2>/dev/null || echo "unknown")
+        hmmer: \$(hmmsearch -h | grep -o '^# HMMER [0-9.]*' | sed 's/^# HMMER //' || echo "unknown")
+        hhsuite: \$(hhblits -h 2>&1| head -1 | sed -E 's/.*HHblits *|:$//g' || echo "unknown")
+        kalign: \$(kalign -h 2>&1 | head -1 | grep -o 'Version [0-9.]*' | sed 's/Version //' || echo "unknown")
     END_VERSIONS
     """
 
@@ -123,6 +127,10 @@ process RUN_HELIXFOLD3 {
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         python: \$(python3 --version | sed 's/Python //g')
+        helixfold3: \$(cd /app/helixfold3 && git rev-parse HEAD 2>/dev/null || echo "unknown")
+        hmmer: \$(hmmsearch -h | grep -o '^# HMMER [0-9.]*' | sed 's/^# HMMER //' || echo "unknown")
+        hhsuite: \$(hhblits -h 2>&1| head -1 | sed -E 's/.*HHblits *|:$//g' || echo "unknown")
+        kalign: \$(kalign -h 2>&1 | head -1 | grep -o 'Version [0-9.]*' | sed 's/Version //' || echo "unknown")
     END_VERSIONS
     """
 }
