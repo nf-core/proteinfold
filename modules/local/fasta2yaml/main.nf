@@ -20,37 +20,8 @@ process FASTA2YAML {
 
     script:
     """
-    #!/usr/bin/env python3
-    import os, sys
-    import string
-    yaml_template = "defaults:\\n - base\\njob_name: \\"${meta.id}\\"\\nprotein_inputs:\\n"
-    seq_type = "protein"
-    counter = 0
-    fasta_data = ""
-    os.makedirs("out_fasta", exist_ok=True)
-    all_combinations = list(string.ascii_uppercase) + list(string.ascii_lowercase) + [str(x) for x in range(0, 10)]
-    with open("${fasta}", "r") as f:
-        lines = f.readlines()
+    fasta_to_yaml.py ${fasta} ${meta.id}
 
-    for line in lines:
-        line = line.strip()
-        if line.startswith(">"):
-            if len(fasta_data) > 0:
-                with open(f"out_fasta/{all_combinations[counter]}.fasta", "w") as fasta_file:
-                    fasta_file.write(fasta_data + "\\n")
-                yaml_template += f" {all_combinations[counter]}:\\n  fasta_file: {all_combinations[counter]}.fasta\\n"
-                counter += 1
-            fasta_data = f"{line}\\n"
-        else:
-            fasta_data += f"{line}"
-    if len(fasta_data) > 0:
-        with open(f"out_fasta/{all_combinations[counter]}.fasta", "w") as fasta_file:
-            fasta_file.write(fasta_data + "\\n")
-        yaml_template += f" {all_combinations[counter]}:\\n  fasta_file: {all_combinations[counter]}.fasta\\n"
-
-    with open("${meta.id}.yaml", "w") as yaml_file:
-        yaml_file.write(yaml_template)
-   
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         python: \$(python3 --version | sed 's/Python //g')
