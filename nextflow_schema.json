@@ -635,7 +635,7 @@
                     "type": "string",
                     "description": "Path to the Alphafold3 parameters",
                     "fa_icon": "fas fa-folder-open",
-                    "default": "null/params/*"
+                    "default": "null"
                 },
                 "alphafold3_mgnify_path": {
                     "type": "string",
