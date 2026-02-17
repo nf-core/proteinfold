@@ -118,18 +118,15 @@ process RUN_HELIXFOLD3 {
     touch "${meta.id}_4_pae.tsv"
     touch "${meta.id}_5_pae.tsv"
     mkdir -p raw
-    touch "raw/${meta.id}-ranked_1.pdb"
-    touch "raw/${meta.id}-ranked_2.pdb"
-    touch "raw/${meta.id}-ranked_3.pdb"
-    touch "raw/${meta.id}-ranked_4.pdb"
-    touch "raw/${meta.id}-ranked_5.pdb"
+    touch "raw/ranked_1.pdb"
+    touch "raw/ranked_2.pdb"
+    touch "raw/ranked_3.pdb"
+    touch "raw/ranked_4.pdb"
+    touch "raw/ranked_5.pdb"
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        python: \$(python3 --version 2>&1 | sed 's/Python //g')
-        helixfold3: "${VERSION}"
-        hmmer: \$(hmmsearch -h 2>&1 | grep -o 'HMMER [0-9.]*' | sed 's/HMMER //')
-        hhsuite: \$(hhblits -h 2>&1 | head -1 | awk '{print \$2}' | tr -d ':')
+        python: \$(python3 --version | sed 's/Python //g')
     END_VERSIONS
     """
 }

@@ -17,7 +17,14 @@
                     "python": "3.12.7"
                 },
                 "RUN_ALPHAFOLD3": {
-                    "python": null
+                    "python": null,
+                    "alphafold3": "unknown",
+                    "jax": "unknown",
+                    "jaxlib": "unknown",
+                    "numpy": "unknown",
+                    "biopython": "unknown",
+                    "hmmer": null,
+                    "rdkit": "unknown"
                 },
                 "Workflow": {
                     "nf-core/proteinfold": "v1.2.0dev"
@@ -99,8 +106,8 @@
         ],
         "meta": {
             "nf-test": "0.9.3",
-            "nextflow": "25.10.4"
+            "nextflow": "25.10.2"
         },
-        "timestamp": "2026-02-12T10:20:34.770288"
+        "timestamp": "2026-02-18T00:00:21.09951094"
     }
 }

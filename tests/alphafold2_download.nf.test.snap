@@ -10,10 +10,11 @@
                     "aria2": null
                 },
                 "COMBINE_UNIPROT": {
-                    "awk": null
+                    "sed": 4.7
                 },
                 "DOWNLOAD_PDBMMCIF": {
-                    "awk": null
+                    "sed": 4.9,
+                    "rsync": "3.3.0"
                 },
                 "GENERATE_REPORT": {
                     "python": "3.12.7",
@@ -111,8 +112,8 @@
         ],
         "meta": {
             "nf-test": "0.9.3",
-            "nextflow": "25.10.4"
+            "nextflow": "25.10.2"
         },
-        "timestamp": "2026-02-12T10:46:14.365206"
+        "timestamp": "2026-02-18T00:00:57.577126974"
     }
 }

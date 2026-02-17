@@ -8,7 +8,8 @@
                     "generate_report.py": "Python 3.12.7"
                 },
                 "RUN_ROSETTAFOLD_ALL_ATOM": {
-                    "python": null
+                    "python": null,
+                    "rosettafold-all-atom": "unknown"
                 },
                 "Workflow": {
                     "nf-core/proteinfold": "v1.2.0dev"
@@ -62,8 +63,8 @@
         ],
         "meta": {
             "nf-test": "0.9.3",
-            "nextflow": "25.10.3"
+            "nextflow": "25.10.2"
         },
-        "timestamp": "2026-02-12T18:34:10.261117"
+        "timestamp": "2026-02-17T23:59:09.818815615"
     }
 }
