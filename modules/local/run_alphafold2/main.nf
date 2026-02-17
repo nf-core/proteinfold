@@ -28,7 +28,7 @@ process RUN_ALPHAFOLD2 {
     output:
     path ("raw/**")                                         , emit: raw
     tuple val(meta), path ("${meta.id}_alphafold2.pdb")     , emit: top_ranked_pdb
-    tuple val(meta), path ("raw/ranked*.pdb") , emit: pdb
+    tuple val(meta), path ("raw/ranked*.pdb")               , emit: pdb
     // TODO: re-label multiqc -> plddt so multiqc channel can take in all metrics
     tuple val(meta), path ("${meta.id}_plddt.tsv")          , emit: multiqc
     tuple val(meta), path ("${meta.id}_alphafold2_msa.tsv") , emit: msa
