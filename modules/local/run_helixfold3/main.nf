@@ -29,7 +29,7 @@ process RUN_HELIXFOLD3 {
     path ("raw/**")                                         , emit: raw
     tuple val(meta), path ("${meta.id}_helixfold3.pdb")     , emit: top_ranked_pdb
     tuple val(meta), path ("${meta.id}_helixfold3.cif")     , emit: main_cif
-    tuple val(meta), path ("raw/${meta.id}-ranked*.pdb")    , emit: pdb
+    tuple val(meta), path ("raw/ranked*.pdb")    , emit: pdb
     tuple val(meta), path ("${meta.id}_plddt.tsv")          , emit: multiqc
     tuple val(meta), path ("${meta.id}_helixfold3_msa.tsv") , emit: msa
     // If ${meta.id}-rank*/all_results.json" doesn't have PAE vales in the key, this will be empty
@@ -48,6 +48,7 @@ process RUN_HELIXFOLD3 {
         error("Local RUN_HELIXFOLD3 module does not support Conda. Please use Docker / Singularity / Podman / Apptainer instead.")
     }
     def args = task.ext.args ?: ''
+    def VERSION = '705c2974a833cdc3a4420f4e3379da596091c97f'
     """
     init_model_path=\$(ls ./init_models/*.pdparams | head -n 1)
     mgnify_db_path=\$(ls -v ./mgnify/mgy_clusters*.fa | tail -n 1)
@@ -95,15 +96,15 @@ process RUN_HELIXFOLD3 {
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        python: \$(python3 --version | sed 's/Python //g')
-        helixfold3: \$(cd /app/helixfold3 && git rev-parse HEAD 2>/dev/null || echo "unknown")
-        hmmer: \$(hmmsearch -h | grep -o '^# HMMER [0-9.]*' | sed 's/^# HMMER //' || echo "unknown")
-        hhsuite: \$(hhblits -h 2>&1| head -1 | sed -E 's/.*HHblits *|:$//g' || echo "unknown")
-        kalign: \$(kalign -h 2>&1 | head -1 | grep -o 'Version [0-9.]*' | sed 's/Version //' || echo "unknown")
+        python: \$(python3 --version 2>&1 | sed 's/Python //g')
+        helixfold3: "${VERSION}"
+        hmmer: \$(hmmsearch -h 2>&1 | grep -o 'HMMER [0-9.]*' | sed 's/HMMER //')
+        hhsuite: \$(hhblits -h 2>&1 | head -1 | awk '{print \$2}' | tr -d ':')
     END_VERSIONS
     """
 
     stub:
+    def VERSION = '705c2974a833cdc3a4420f4e3379da596091c97f'
     """
     touch "${meta.id}_helixfold3.cif"
     touch "${meta.id}_helixfold3.pdb"
@@ -123,14 +124,12 @@ process RUN_HELIXFOLD3 {
     touch "raw/${meta.id}-ranked_4.pdb"
     touch "raw/${meta.id}-ranked_5.pdb"
 
-
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        python: \$(python3 --version | sed 's/Python //g')
-        helixfold3: \$(cd /app/helixfold3 && git rev-parse HEAD 2>/dev/null || echo "unknown")
-        hmmer: \$(hmmsearch -h | grep -o '^# HMMER [0-9.]*' | sed 's/^# HMMER //' || echo "unknown")
-        hhsuite: \$(hhblits -h 2>&1| head -1 | sed -E 's/.*HHblits *|:$//g' || echo "unknown")
-        kalign: \$(kalign -h 2>&1 | head -1 | grep -o 'Version [0-9.]*' | sed 's/Version //' || echo "unknown")
+        python: \$(python3 --version 2>&1 | sed 's/Python //g')
+        helixfold3: "${VERSION}"
+        hmmer: \$(hmmsearch -h 2>&1 | grep -o 'HMMER [0-9.]*' | sed 's/HMMER //')
+        hhsuite: \$(hhblits -h 2>&1 | head -1 | awk '{print \$2}' | tr -d ':')
     END_VERSIONS
     """
 }
