@@ -45,8 +45,8 @@ process DOWNLOAD_PDBMMCIF_AF3 {
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        wget: \$(echo \$(wget --version 2>&1) | grep 'GNU Wget' | cut -f3 -d ' ')
-        untar: \$(echo \$(tar --version 2>&1) | sed 's/^.*(GNU tar) //; s/ Copyright.*\$//')
+        wget: \$(echo \$(wget --version 2>&1) | grep 'GNU Wget' | cut -f3 -d ' ' || echo "unknown")
+        untar: \$(echo \$(tar --version 2>&1 | sed 's/^.*(GNU tar) //; s/ Copyright.*\$//' | grep -m1 '^[0-9]' || echo unknown)
     END_VERSIONS
     """
 }
