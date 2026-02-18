@@ -11,7 +11,7 @@
                     "python": "$(python3 --version 2>/dev/null | sed 's/Python //g' || echo \"unknown\")"
                 },
                 "RUN_ROSETTAFOLD2NA": {
-                    "python": null,
+                    "python": "unknown",
                     "rosettafold2na": "v0.2"
                 },
                 "Workflow": {
@@ -51,6 +51,6 @@
             "nf-test": "0.9.3",
             "nextflow": "25.10.2"
         },
-        "timestamp": "2026-02-18T10:56:29.155666516"
+        "timestamp": "2026-02-18T11:46:10.990291575"
     }
 }

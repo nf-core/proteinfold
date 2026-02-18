@@ -112,7 +112,7 @@ END_VERSIONS
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        python: \$(python3 --version | sed 's/Python //g')
+        python: \$(python3 --version 2>/dev/null | sed 's/Python //g' || echo "unknown")
         rosettafold2na: "${VERSION}"
     END_VERSIONS
     """

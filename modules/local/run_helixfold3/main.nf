@@ -126,7 +126,7 @@ process RUN_HELIXFOLD3 {
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        python: \$(python3 --version | sed 's/Python //g')
+        python: \$(python3 --version 2>/dev/null | sed 's/Python //g' || echo "unknown")
     END_VERSIONS
     """
 }

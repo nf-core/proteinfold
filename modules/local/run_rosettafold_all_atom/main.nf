@@ -83,7 +83,7 @@ process RUN_ROSETTAFOLD_ALL_ATOM {
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        python: \$(python3 --version | sed 's/Python //g')
+        python: \$(python3 --version 2>/dev/null | sed 's/Python //g' || echo "unknown")
         rosettafold-all-atom: \$(cd /app/RoseTTAFold-All-Atom && git rev-parse HEAD 2>/dev/null || echo "unknown")
     END_VERSIONS
     """

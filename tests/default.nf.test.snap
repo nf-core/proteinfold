@@ -7,7 +7,7 @@
                     "generate_report.py": "Python 3.12.7"
                 },
                 "RUN_ALPHAFOLD2": {
-                    "python": null,
+                    "python": "unknown",
                     "alphafold2": "unknown",
                     "jax": "unknown",
                     "jaxlib": "unknown",
@@ -66,8 +66,8 @@
         ],
         "meta": {
             "nf-test": "0.9.3",
-            "nextflow": "25.10.4"
+            "nextflow": "25.10.2"
         },
-        "timestamp": "2026-02-12T10:52:01.757925"
+        "timestamp": "2026-02-18T11:40:28.371109896"
     }
 }
