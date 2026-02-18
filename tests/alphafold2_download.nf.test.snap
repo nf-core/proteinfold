@@ -10,17 +10,18 @@
                     "aria2": null
                 },
                 "COMBINE_UNIPROT": {
-                    "awk": null
+                    "sed": 4.7
                 },
                 "DOWNLOAD_PDBMMCIF": {
-                    "awk": null
+                    "sed": 4.9,
+                    "rsync": "3.3.0"
                 },
                 "GENERATE_REPORT": {
                     "python": "3.12.7",
                     "generate_report.py": "Python 3.12.7"
                 },
                 "RUN_ALPHAFOLD2": {
-                    "python": null,
+                    "python": "unknown",
                     "alphafold2": "unknown",
                     "jax": "unknown",
                     "jaxlib": "unknown",
@@ -111,8 +112,8 @@
         ],
         "meta": {
             "nf-test": "0.9.3",
-            "nextflow": "25.10.4"
+            "nextflow": "25.10.2"
         },
-        "timestamp": "2026-02-12T10:46:14.365206"
+        "timestamp": "2026-02-18T12:00:00.943247062"
     }
 }

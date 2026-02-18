@@ -19,49 +19,12 @@ process FASTA2JSON {
 
     script:
     """
-    #!/usr/bin/env python3
+    fasta_to_json.py ${fasta} ${meta.id}
 
-    import os, sys
-    import json
-    import copy
-
-    seq_template = {
-            "type": "",
-            "sequence": "",
-            "count": 1
-        }
-    final_res = {"entities": []}
-    seq_type = "protein"
-    counter = 0
-    fasta_data = ""
-
-    with open("${fasta}", "r") as f:
-        lines = f.readlines()
-
-    for line in lines:
-        line = line.strip()
-        if line.startswith(">"):
-            if len(fasta_data) > 0:
-                new_entry = copy.deepcopy(seq_template)
-                new_entry["type"] = seq_type
-                new_entry["sequence"] = fasta_data
-                final_res["entities"].append(new_entry)
-            counter += 1
-            fasta_data = ""
-        else:
-            fasta_data += f"{line}"
-
-    if len(fasta_data) > 0:
-        new_entry = copy.deepcopy(seq_template)
-        new_entry["type"] = seq_type
-        new_entry["sequence"] = fasta_data
-        final_res["entities"].append(new_entry)
-
-    with open("${meta.id}.json", "w") as json_file:
-        json.dump(final_res, json_file, indent=4, sort_keys=True)
-
-    with open ("versions.yml", "w") as version_file:
-        version_file.write("\\"${task.process}\\":\\n    python: {}\\n".format(sys.version.split()[0].strip()))
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        python: \$(python3 --version | sed 's/Python //g')
+    END_VERSIONS
     """
 
     stub:
