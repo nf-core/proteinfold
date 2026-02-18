@@ -8,7 +8,12 @@
                     "generate_report.py": "Python 3.12.7"
                 },
                 "RUN_ESMFOLD": {
-                    "esm-fold": "1.0.3"
+                    "esm-fold": "1.0.3",
+                    "python": "unknown",
+                    "pytorch": "unknown",
+                    "openfold": "unknown",
+                    "numpy": "unknown",
+                    "biopython": "unknown"
                 },
                 "Workflow": {
                     "nf-core/proteinfold": "v1.2.0dev"
@@ -42,8 +47,8 @@
         ],
         "meta": {
             "nf-test": "0.9.3",
-            "nextflow": "25.10.3"
+            "nextflow": "25.10.2"
         },
-        "timestamp": "2026-02-12T18:09:13.544553"
+        "timestamp": "2026-02-18T10:46:15.118458083"
     }
 }
