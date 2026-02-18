@@ -21,7 +21,7 @@
                     "generate_report.py": "Python 3.12.7"
                 },
                 "RUN_ALPHAFOLD2": {
-                    "python": null,
+                    "python": "unknown",
                     "alphafold2": "unknown",
                     "jax": "unknown",
                     "jaxlib": "unknown",
@@ -114,6 +114,6 @@
             "nf-test": "0.9.3",
             "nextflow": "25.10.2"
         },
-        "timestamp": "2026-02-18T00:00:57.577126974"
+        "timestamp": "2026-02-18T12:00:00.943247062"
     }
 }
