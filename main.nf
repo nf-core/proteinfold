@@ -68,7 +68,6 @@ workflow NFCORE_PROTEINFOLD {
     ch_multiqc           = channel.empty()
     ch_versions          = channel.empty()
     ch_report_input      = channel.empty()
-    ch_foldseek_db       = channel.empty()
     ch_top_ranked_model  = channel.empty()
     requested_modes      = params.mode.toLowerCase().split(",")
     requested_modes_size = requested_modes.size()
@@ -564,19 +563,6 @@ workflow NFCORE_PROTEINFOLD {
     //
     // POST PROCESSING: generate visualisation reports
     //
-    // TODO: we need to validate the rest of foldseek parameters if foldseek is set to run
-    // TODO: maybe create a parameter that is run_foldseek or skip_foldsee instead as there are no more mode than can be use now
-
-    // TODO move it to pdb.config? asign as in prepare dbs
-    if (params.foldseek_search == "easysearch"){
-        ch_foldseek_db = channel.value([
-            [
-                id: params.foldseek_db,
-            ],
-            file(params.foldseek_db_path, checkIfExists: true)
-        ])
-    }
-
     ch_multiqc_config        = channel.fromPath("$projectDir/assets/multiqc_config.yml", checkIfExists: true).first()
     ch_multiqc_custom_config = params.multiqc_config ? channel.fromPath( params.multiqc_config ).first()  : channel.empty()
     ch_multiqc_logo          = params.multiqc_logo   ? channel.fromPath( params.multiqc_logo ).first()    : channel.empty()
@@ -590,8 +576,9 @@ workflow NFCORE_PROTEINFOLD {
         ch_report_input,
         ch_report_template,
         ch_comparison_template,
-        params.foldseek_search,
-        ch_foldseek_db,
+        params.skip_foldseek,
+        params.foldseek_db,
+        params.foldseek_db_path,
         params.skip_multiqc,
         params.outdir,
         ch_versions,

@@ -24,8 +24,9 @@ workflow POST_PROCESSING {
     ch_report_input
     ch_report_template
     ch_comparison_template
-    foldseek_search
-    ch_foldseek_db
+    skip_foldseek
+    foldseek_db
+    foldseek_db_path
     skip_multiqc
     outdir
     ch_versions
@@ -94,7 +95,13 @@ workflow POST_PROCESSING {
         }
     }
 
-    if (foldseek_search == "easysearch"){
+    if (!skip_foldseek) {
+        ch_foldseek_db = channel.value([
+            [
+                id: foldseek_db,
+            ],
+            file(foldseek_db_path, checkIfExists: true)
+        ])
         FOLDSEEK_EASYSEARCH(
             ch_top_ranked_model,
             ch_foldseek_db
