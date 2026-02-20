@@ -30,8 +30,6 @@ process RUN_ROSETTAFOLD_ALL_ATOM {
     when:
     task.ext.when == null || task.ext.when
 
-
-    // TODO: I'm not convinced --a3ms to chain /A/msa is entirely what I want here, but the MSA isn't easily stored elsewhere
     script:
     // Exit if running this module with -profile conda / -profile mamba
     if (workflow.profile.tokenize(',').intersect(['conda', 'mamba']).size() >= 1) {
