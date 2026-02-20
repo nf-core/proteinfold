@@ -271,11 +271,11 @@
             "fa_icon": "fas fa-coins",
             "description": "Foldseek options.",
             "properties": {
-                "foldseek_search": {
-                    "type": "string",
-                    "enum": [null, "easysearch"],
-                    "description": "Specifies the mode of foldseek search.",
-                    "fa_icon": "fas fa-search"
+                "skip_foldseek": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Skip foldseek structural similarity search.",
+                    "fa_icon": "fas fa-fast-forward"
                 },
                 "foldseek_db": {
                     "type": "string",
