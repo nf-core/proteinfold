@@ -1,11 +1,11 @@
 ########################################################################
 # Dockerfile for RoseTTAFold2NA (CUDA 12.2), auto-activating conda env
 ########################################################################
-ARG CUDA=12.2.2
-FROM nvidia/cuda:${CUDA}-cudnn8-runtime-ubuntu20.04 AS builder
+ARG CUDA_VERSION=12.2.2
+FROM nvidia/cuda:${CUDA_VERSION}-cudnn8-runtime-ubuntu20.04 AS builder
 # FROM directive resets ARGS, so we specify again (the value is retained if
 # previously set).
-ARG CUDA
+ARG CUDA_VERSION
 
 LABEL Author="petrislp@gmail.com, Jose Espinosa-Carrasco" \
     Version="2.0.0dev" \
@@ -18,7 +18,7 @@ SHELL ["/bin/bash", "-c"]
 ENV PYTHONPATH="/app/RoseTTAFold2NA" \
     PATH="/conda/bin:/app/RoseTTAFold2NA:/conda/envs/RF2NA/bin:$PATH" \
     DGLBACKEND="pytorch" \
-    LD_LIBRARY_PATH="/usr/local/cuda-$(cut -f1,2 -d. <<< ${CUDA})/lib64:$LD_LIBRARY_PATH" \
+    LD_LIBRARY_PATH="/usr/local/cuda-$(cut -f1,2 -d. <<< ${CUDA_VERSION})/lib64:$LD_LIBRARY_PATH" \
     LANG=en_US.UTF-8 \
     LC_ALL=en_US.UTF-8
 
@@ -71,10 +71,10 @@ RUN apt-get autoremove -y && \
     apt-get clean -y && \
     rm -rf /root/.cache
 
-FROM nvidia/cuda:${CUDA}-base-ubuntu22.04
+FROM nvidia/cuda:${CUDA_VERSION}-base-ubuntu22.04
 # FROM directive resets ARGS, so we specify again (the value is retained if
 # previously set).
-ARG CUDA
+ARG CUDA_VERSION
 
 COPY --from=builder /app /app
 COPY --from=builder /conda /conda
@@ -83,7 +83,7 @@ COPY --from=builder /conda /conda
 ENV PYTHONPATH="/app/RoseTTAFold2NA" \
     PATH="/conda/bin:/app/RoseTTAFold2NA:/conda/envs/RF2NA/bin:$PATH" \
     DGLBACKEND="pytorch" \
-    LD_LIBRARY_PATH="/usr/local/cuda-$(cut -f1,2 -d. <<< ${CUDA})/lib64:$LD_LIBRARY_PATH" \
+    LD_LIBRARY_PATH="/usr/local/cuda-$(cut -f1,2 -d. <<< ${CUDA_VERSION})/lib64:$LD_LIBRARY_PATH" \
     LANG=en_US.UTF-8 \
     LC_ALL=en_US.UTF-8
 

@@ -1,8 +1,8 @@
-ARG CUDA=12.2.2
-FROM nvidia/cuda:${CUDA}-cudnn8-runtime-ubuntu20.04
+ARG CUDA_VERSION=12.2.2
+FROM nvidia/cuda:${CUDA_VERSION}-cudnn8-runtime-ubuntu20.04
 # FROM directive resets ARGS, so we specify again (the value is retained if
 # previously set).
-ARG CUDA
+ARG CUDA_VERSION
 
 LABEL authors="Athanasios Baltzis, Jose Espinosa-Carrasco, Leila Mansouri" \
     title="nfcore/proteinfold_alphafold2_pred" \
@@ -16,7 +16,7 @@ RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys A4B469963BF863CC
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y \
     build-essential \
     cmake \
-    cuda-command-line-tools-$(cut -f1,2 -d- <<< ${CUDA//./-}) \
+    cuda-command-line-tools-$(cut -f1,2 -d- <<< ${CUDA_VERSION//./-}) \
     git \
     hmmer \
     kalign \
@@ -57,7 +57,7 @@ RUN conda install --quiet --yes conda==24.11.1 pip python=3.11 \
     && conda install --quiet --yes --channel conda-forge openmm=8.0.0 pdbfixer \
     && conda clean --all --force-pkgs-dirs --yes
 
-RUN mamba install --quiet --yes cuda-toolkit=${CUDA} \
+RUN mamba install --quiet --yes cuda-toolkit=${CUDA_VERSION} \
     && mamba clean --all --force-pkgs-dirs --yes
 
 RUN wget -q -P /app/alphafold/alphafold/common/ \

@@ -1,8 +1,8 @@
-ARG CUDA=12.8.1
-FROM nvidia/cuda:${CUDA}-cudnn-devel-ubuntu22.04
+ARG CUDA_VERSION=12.8.1
+FROM nvidia/cuda:${CUDA_VERSION}-cudnn-devel-ubuntu22.04
 # FROM directive resets ARGS, so we specify again (the value is retained if
 # previously set).
-ARG CUDA
+ARG CUDA_VERSION
 
 LABEL Author="j.caley@unsw.edu.au, Jose Espinosa-Carrasco" \
     title="nfcore/proteinfold_helixfold3" \

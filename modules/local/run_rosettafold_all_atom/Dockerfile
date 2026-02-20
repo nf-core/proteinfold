@@ -1,8 +1,8 @@
-ARG CUDA=12.6.0
-FROM nvidia/cuda:${CUDA}-runtime-ubuntu24.04 AS builder
+ARG CUDA_VERSION=12.6.0
+FROM nvidia/cuda:${CUDA_VERSION}-runtime-ubuntu24.04 AS builder
 # FROM directive resets ARGS, so we specify again (the value is retained if
 # previously set).
-ARG CUDA
+ARG CUDA_VERSION
 
 LABEL Author="j.caley@unsw.edu.au" \
     title="nfcore/proteinfold_rosettafold_all_atom" \
@@ -12,7 +12,7 @@ LABEL Author="j.caley@unsw.edu.au" \
 ENV PYTHONPATH="/app/RoseTTAFold-All-Atom" \
     PATH="/conda/bin:/app/RoseTTAFold-All-Atom:$PATH" \
     DGLBACKEND="pytorch" \
-    LD_LIBRARY_PATH="/conda/lib:/usr/local/cuda-$(cut -f1,2 -d. <<< ${CUDA})/lib64:$LD_LIBRARY_PATH"
+    LD_LIBRARY_PATH="/conda/lib:/usr/local/cuda-$(cut -f1,2 -d. <<< ${CUDA_VERSION})/lib64:$LD_LIBRARY_PATH"
 
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y wget git && \
     wget -q -P /tmp "https://github.com/conda-forge/miniforge/releases/download/24.11.0-0/Miniforge3-$(uname)-$(uname -m).sh" && \
@@ -37,10 +37,10 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --no-instal
     rm -rf /root/.cache *.tar.gz && \
     apt-get remove --purge -y wget git && apt-get autoremove -y && apt-get clean -y
 
-FROM nvidia/cuda:${CUDA}-base-ubuntu24.04
+FROM nvidia/cuda:${CUDA_VERSION}-base-ubuntu24.04
 # FROM directive resets ARGS, so we specify again (the value is retained if
 # previously set).
-ARG CUDA
+ARG CUDA_VERSION
 
 COPY --from=builder /app /app
 COPY --from=builder /conda /conda
@@ -48,4 +48,4 @@ COPY --from=builder /conda /conda
 ENV PYTHONPATH="/app/RoseTTAFold-All-Atom" \
     PATH="/conda/bin:/app/RoseTTAFold-All-Atom:$PATH" \
     DGLBACKEND="pytorch" \
-    LD_LIBRARY_PATH="/conda/lib:/usr/local/cuda-$(cut -f1,2 -d. <<< ${CUDA})/lib64:$LD_LIBRARY_PATH"
+    LD_LIBRARY_PATH="/conda/lib:/usr/local/cuda-$(cut -f1,2 -d. <<< ${CUDA_VERSION})/lib64:$LD_LIBRARY_PATH"
