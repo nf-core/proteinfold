@@ -9,7 +9,7 @@ ARG CUDA_VERSION
 
 LABEL org.opencontainers.image.title="nf-core/proteinfold_rosettafold2na" \
     org.opencontainers.image.description="Docker image containing all software requirements to run the RUN_ROSETTAFOLD2NA module using the nf-core/proteinfold pipeline" \
-    org.opencontainers.image.version="2.0.0dev" \
+    org.opencontainers.image.version="2.0.0" \
     org.opencontainers.image.authors="Patri Bota <petrislp@gmail.com>, Jose Espinosa-Carrasco <espinosacarrascoj@gmail.com>" \
     org.opencontainers.image.source="https://github.com/nf-core/proteinfold" \
     org.opencontainers.image.licenses="MIT"

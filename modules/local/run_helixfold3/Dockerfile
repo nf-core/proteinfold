@@ -6,7 +6,7 @@ ARG CUDA_VERSION
 
 LABEL org.opencontainers.image.title="nf-core/proteinfold_helixfold3" \
     org.opencontainers.image.description="Docker image containing all software requirements to run the RUN_HELIXFOLD3 module using the nf-core/proteinfold pipeline" \
-    org.opencontainers.image.version="2.0.0dev" \
+    org.opencontainers.image.version="2.0.0" \
     org.opencontainers.image.authors="Joshua Caley <j.caley@unsw.edu.au>, Jose Espinosa-Carrasco <espinosacarrascoj@gmail.com>" \
     org.opencontainers.image.source="https://github.com/nf-core/proteinfold" \
     org.opencontainers.image.licenses="MIT"
