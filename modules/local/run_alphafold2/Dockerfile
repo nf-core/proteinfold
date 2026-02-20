@@ -4,10 +4,12 @@ FROM nvidia/cuda:${CUDA_VERSION}-cudnn8-runtime-ubuntu20.04
 # previously set).
 ARG CUDA_VERSION
 
-LABEL authors="Athanasios Baltzis, Jose Espinosa-Carrasco, Leila Mansouri, Joshua Caley" \
-    title="nfcore/proteinfold_alphafold2_standard" \
-    Version="2.0.0dev" \
-    description="Docker image containing all software requirements to run the RUN_ALPHAFOLD2 module using the nf-core/proteinfold pipeline"
+LABEL org.opencontainers.image.title="nf-core/proteinfold_alphafold2_standard" \
+    org.opencontainers.image.description="Docker image containing all software requirements to run the RUN_ALPHAFOLD2 module using the nf-core/proteinfold pipeline" \
+    org.opencontainers.image.version="2.0.0dev" \
+    org.opencontainers.image.authors="Athanasios Baltzis, Jose Espinosa-Carrasco <espinosacarrascoj@gmail.com>, Leila Mansouri, Joshua Caley <j.caley@unsw.edu.au>" \
+    org.opencontainers.image.source="https://github.com/nf-core/proteinfold" \
+    org.opencontainers.image.licenses="MIT"
 
 # Use bash to support string substitution.
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]

@@ -7,9 +7,12 @@ FROM nvidia/cuda:${CUDA_VERSION}-cudnn8-runtime-ubuntu20.04 AS builder
 # previously set).
 ARG CUDA_VERSION
 
-LABEL Author="petrislp@gmail.com, Jose Espinosa-Carrasco" \
-    Version="2.0.0dev" \
-    description="Docker image containing all software requirements to run the RUN_ROSETTAFOLD2NA module using the nf-core/proteinfold pipeline"
+LABEL org.opencontainers.image.title="nf-core/proteinfold_rosettafold2na" \
+    org.opencontainers.image.description="Docker image containing all software requirements to run the RUN_ROSETTAFOLD2NA module using the nf-core/proteinfold pipeline" \
+    org.opencontainers.image.version="2.0.0dev" \
+    org.opencontainers.image.authors="Patri Bota <petrislp@gmail.com>, Jose Espinosa-Carrasco <espinosacarrascoj@gmail.com>" \
+    org.opencontainers.image.source="https://github.com/nf-core/proteinfold" \
+    org.opencontainers.image.licenses="MIT"
 
 # Switch default shell to bash for subsequent RUN commands
 SHELL ["/bin/bash", "-c"]

@@ -4,10 +4,12 @@ FROM nvidia/cuda:${CUDA_VERSION}-cudnn8-devel-ubuntu22.04 AS builder
 # previously set).
 ARG CUDA_VERSION
 
-LABEL authors="Athanasios Baltzis, Jose Espinosa-Carrasco" \
-    title="nfcore/proteinfold_esmfold" \
-    Version="1.2.0dev" \
-    description="Docker image containing all software requirements to run ESMFold using the nf-core/proteinfold pipeline"
+LABEL org.opencontainers.image.title="nf-core/proteinfold_esmfold" \
+    org.opencontainers.image.description="Docker image containing all software requirements to run ESMFold using the nf-core/proteinfold pipeline" \
+    org.opencontainers.image.version="1.2.0dev" \
+    org.opencontainers.image.authors="Athanasios Baltzis, Jose Espinosa-Carrasco <espinosacarrascoj@gmail.com>" \
+    org.opencontainers.image.source="https://github.com/nf-core/proteinfold" \
+    org.opencontainers.image.licenses="MIT"
 
 # Add env variables
 ENV LD_LIBRARY_PATH="/conda/lib:/usr/local/cuda-11.7/lib64:/conda/lib/python3.9/site-packages/nvidia/cusparse/lib:$LD_LIBRARY_PATH" \

@@ -4,10 +4,12 @@ FROM nvidia/cuda:${CUDA_VERSION}-cudnn-devel-ubuntu22.04
 # previously set).
 ARG CUDA_VERSION
 
-LABEL Author="j.caley@unsw.edu.au, Jose Espinosa-Carrasco" \
-    title="nfcore/proteinfold_helixfold3" \
-    Version="2.0.0dev" \
-    description="Docker image containing all software requirements to run the RUN_HELIXFOLD3 module using the nf-core/proteinfold pipeline"
+LABEL org.opencontainers.image.title="nf-core/proteinfold_helixfold3" \
+    org.opencontainers.image.description="Docker image containing all software requirements to run the RUN_HELIXFOLD3 module using the nf-core/proteinfold pipeline" \
+    org.opencontainers.image.version="2.0.0dev" \
+    org.opencontainers.image.authors="Joshua Caley <j.caley@unsw.edu.au>, Jose Espinosa-Carrasco <espinosacarrascoj@gmail.com>" \
+    org.opencontainers.image.source="https://github.com/nf-core/proteinfold" \
+    org.opencontainers.image.licenses="MIT"
 
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y wget git && \
     wget -q -P /tmp "https://github.com/conda-forge/miniforge/releases/download/24.11.0-0/Miniforge3-$(uname)-$(uname -m).sh" && \
