@@ -1,13 +1,15 @@
-ARG CUDA=12.2.2
-FROM nvidia/cuda:${CUDA}-cudnn8-runtime-ubuntu20.04
+ARG CUDA_VERSION=12.2.2
+FROM nvidia/cuda:${CUDA_VERSION}-cudnn8-runtime-ubuntu20.04
 # FROM directive resets ARGS, so we specify again (the value is retained if
 # previously set).
-ARG CUDA
+ARG CUDA_VERSION
 
-LABEL authors="Athanasios Baltzis, Jose Espinosa-Carrasco, Leila Mansouri" \
-    title="nfcore/proteinfold_alphafold2_pred" \
-    Version="1.2.0dev" \
-    description="Docker image containing all software requirements to run the RUN_ALPHAFOLD2_PRED module using the nf-core/proteinfold pipeline"
+LABEL org.opencontainers.image.title="nf-core/proteinfold_alphafold2_pred" \
+    org.opencontainers.image.description="Docker image containing all software requirements to run the RUN_ALPHAFOLD2_PRED module using the nf-core/proteinfold pipeline" \
+    org.opencontainers.image.version="2.0.0" \
+    org.opencontainers.image.authors="Athanasios Baltzis, Jose Espinosa-Carrasco <espinosacarrascoj@gmail.com>, Leila Mansouri" \
+    org.opencontainers.image.source="https://github.com/nf-core/proteinfold" \
+    org.opencontainers.image.licenses="MIT"
 
 # Use bash to support string substitution.
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
@@ -16,7 +18,7 @@ RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys A4B469963BF863CC
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y \
     build-essential \
     cmake \
-    cuda-command-line-tools-$(cut -f1,2 -d- <<< ${CUDA//./-}) \
+    cuda-command-line-tools-$(cut -f1,2 -d- <<< ${CUDA_VERSION//./-}) \
     git \
     hmmer \
     kalign \
@@ -57,7 +59,7 @@ RUN conda install --quiet --yes conda==24.11.1 pip python=3.11 \
     && conda install --quiet --yes --channel conda-forge openmm=8.0.0 pdbfixer \
     && conda clean --all --force-pkgs-dirs --yes
 
-RUN mamba install --quiet --yes cuda-toolkit=${CUDA} \
+RUN mamba install --quiet --yes cuda-toolkit=${CUDA_VERSION} \
     && mamba clean --all --force-pkgs-dirs --yes
 
 RUN wget -q -P /app/alphafold/alphafold/common/ \

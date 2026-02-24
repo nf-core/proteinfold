@@ -1,9 +1,11 @@
 FROM nvidia/cuda:12.6.0-base-ubuntu22.04
 
-LABEL authors="Jose Espinosa-Carrasco" \
-    title="nfcore/proteinfold_alphafold3" \
-    Version="1.2.0dev" \
-    description="Docker image containing all software requirements to run Alphafold3 using the nf-core/proteinfold pipeline"
+LABEL org.opencontainers.image.title="nf-core/proteinfold_alphafold3" \
+    org.opencontainers.image.description="Docker image containing all software requirements to run AlphaFold3 using the nf-core/proteinfold pipeline" \
+    org.opencontainers.image.version="2.0.0" \
+    org.opencontainers.image.authors="Jose Espinosa-Carrasco <espinosacarrascoj@gmail.com>" \
+    org.opencontainers.image.source="https://github.com/nf-core/proteinfold" \
+    org.opencontainers.image.licenses="MIT"
 
 # Some RUN statements are combined together to make Docker build run faster.
 # Get latest package listing, install software-properties-common, git and wget.
