@@ -110,6 +110,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[#480](https://github.com/nf-core/proteinfold/issues/480)] - Make version reporting consistent for all local modules.
 - [[PR #482](https://github.com/nf-core/proteinfold/pulls/482)] - Update utils_nfschema to fix help message with strict syntax.
 - [[PR #483](https://github.com/nf-core/proteinfold/pulls/483)] - Move foldseek logic to the `post_processing` subworkflow and set sensible time to aria2 processes.
+- [[#494](https://github.com/nf-core/proteinfold/issues/494)] - Publish Colabfold DBs when downloaded to be directly consumable using `colabfold_db` parameter.
 
 ### Parameters
 
