@@ -111,6 +111,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[PR #482](https://github.com/nf-core/proteinfold/pulls/482)] - Update utils_nfschema to fix help message with strict syntax.
 - [[PR #483](https://github.com/nf-core/proteinfold/pulls/483)] - Move foldseek logic to the `post_processing` subworkflow and set sensible time to aria2 processes.
 - [[PR #492](https://github.com/nf-core/proteinfold/pulls/492)] - Clean TODOs from code and create issues instead for 2.0.0 release preparation.
+- [[#494](https://github.com/nf-core/proteinfold/issues/494)] - Publish Colabfold DBs when downloaded to be directly consumable using `colabfold_db` parameter.
 
 ### Parameters
 
