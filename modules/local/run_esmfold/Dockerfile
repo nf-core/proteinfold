@@ -1,13 +1,15 @@
-ARG CUDA=11.7.1
-FROM nvidia/cuda:${CUDA}-cudnn8-devel-ubuntu22.04 AS builder
+ARG CUDA_VERSION=11.7.1
+FROM nvidia/cuda:${CUDA_VERSION}-cudnn8-devel-ubuntu22.04 AS builder
 # FROM directive resets ARGS, so we specify again (the value is retained if
 # previously set).
-ARG CUDA
+ARG CUDA_VERSION
 
-LABEL authors="Athanasios Baltzis, Jose Espinosa-Carrasco" \
-    title="nfcore/proteinfold_esmfold" \
-    Version="1.2.0dev" \
-    description="Docker image containing all software requirements to run ESMFold using the nf-core/proteinfold pipeline"
+LABEL org.opencontainers.image.title="nf-core/proteinfold_esmfold" \
+    org.opencontainers.image.description="Docker image containing all software requirements to run ESMFold using the nf-core/proteinfold pipeline" \
+    org.opencontainers.image.version="2.0.0" \
+    org.opencontainers.image.authors="Athanasios Baltzis, Jose Espinosa-Carrasco <espinosacarrascoj@gmail.com>" \
+    org.opencontainers.image.source="https://github.com/nf-core/proteinfold" \
+    org.opencontainers.image.licenses="MIT"
 
 # Add env variables
 ENV LD_LIBRARY_PATH="/conda/lib:/usr/local/cuda-11.7/lib64:/conda/lib/python3.9/site-packages/nvidia/cusparse/lib:$LD_LIBRARY_PATH" \
@@ -61,12 +63,12 @@ RUN git clone https://github.com/aqlaboratory/openfold.git && \
     /conda/bin/pip install . && \
     cd .. && rm -rf openfold
 
-FROM nvidia/cuda:${CUDA}-cudnn8-devel-ubuntu22.04
+FROM nvidia/cuda:${CUDA_VERSION}-cudnn8-devel-ubuntu22.04
 # FROM directive resets ARGS, so we specify again (the value is retained if
 # previously set).
-ARG CUDA
+ARG CUDA_VERSION
 
 COPY --from=builder /conda /conda
 
-ENV LD_LIBRARY_PATH="/conda/lib:/usr/local/cuda-$(cut -f1,2 -d. <<< ${CUDA})/lib64:/conda/lib/python3.9/site-packages/nvidia/cusparse/lib:$LD_LIBRARY_PATH" \
+ENV LD_LIBRARY_PATH="/conda/lib:/usr/local/cuda-$(cut -f1,2 -d. <<< ${CUDA_VERSION})/lib64:/conda/lib/python3.9/site-packages/nvidia/cusparse/lib:$LD_LIBRARY_PATH" \
     PATH="/conda/bin:$PATH"
