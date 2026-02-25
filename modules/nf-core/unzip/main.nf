@@ -12,6 +12,7 @@ process UNZIP {
 
     output:
     tuple val(meta), path("${prefix}/"), emit: unzipped_archive
+    tuple val(meta), path('*.pdparams'), emit: pdparams
     path "versions.yml"                , emit: versions
 
     when:
@@ -27,6 +28,8 @@ process UNZIP {
         -o"${prefix}"/ \\
         $args \\
         $archive
+
+    cp */*/*.pdparams .
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
