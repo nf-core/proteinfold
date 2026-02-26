@@ -112,6 +112,24 @@ workflow PREPARE_COLABFOLD_DBS {
         }
     }
 
+    if (colabfold_enable_gpu_search) {
+        // TODO: Blocked and awaiting PR merge in nf-core/modules
+        MMSEQS_CREATEINDEX_UINPROT30_PADDED(
+            ch_uniref30.
+                map { path_str ->
+                    def db_file = file(path_str)
+                    [ [id: "uniprot30_gpu"], db_file ]
+                }
+        )
+
+        ch_uniprot30_padded = MMSEQS_CREATEINDEX_UNIPROT30_PADDED
+            .out
+            .db_padded
+            .map { _meta, dir ->
+                file("${dir}/*")
+            }
+    }
+
     emit:
     params          = ch_params
     colabfold_db    = ch_colabfold_db
