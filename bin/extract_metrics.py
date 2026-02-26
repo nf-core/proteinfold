@@ -10,7 +10,7 @@ import csv
 import string
 from utils import plddt_from_struct_b_factor, get_chain_ids
 
-# TODO: Issue #309, make into a poper separate process, it its own module so that dependencies can be managed better
+# TODO: Issue #309, make into a proper separate process, it its own module so that dependencies can be managed better
 # TODO: Need a sense of ranking, so that metrics can be traced back to correct model structure, even if they're not in sequential order. The enumerates() here are not sufficient.
 #       Needs to be program-dependent, (see item below).
 # TODO: look into have a --prog argument that could set filenames etc, logically seperate it?
