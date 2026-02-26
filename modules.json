@@ -27,6 +27,11 @@
                         "git_sha": "38697a933bef7041bb935c9b8374d9948ce6c794",
                         "installed_by": ["modules"]
                     },
+                    "mmseqs/makepaddedseqdb": {
+                        "branch": "master",
+                        "git_sha": "40a31ec6d922ce6022a3a78f9f1e832b33de6a6d",
+                        "installed_by": ["modules"]
+                    },
                     "mmseqs/tsv2exprofiledb": {
                         "branch": "master",
                         "git_sha": "151460db852d636979d9ff3ee631e2268060d4c3",
