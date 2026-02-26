@@ -112,6 +112,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[PR #483](https://github.com/nf-core/proteinfold/pulls/483)] - Move foldseek logic to the `post_processing` subworkflow and set sensible time to aria2 processes.
 - [[PR #493](https://github.com/nf-core/proteinfold/pulls/493)] - Standardise Dockerfiles labels and bump version 2.0.0 to prepare release.
 - [[#494](https://github.com/nf-core/proteinfold/issues/494)] - Publish Colabfold DBs when downloaded to be directly consumable using `colabfold_db` parameter.
+- [[#496](https://github.com/nf-core/proteinfold/issues/496)] - Publish all DBs when downloaded to be directly consumable using the corresponding mode parameter.
 
 ### Parameters
 
