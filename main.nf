@@ -248,6 +248,8 @@ workflow NFCORE_PROTEINFOLD {
             params.colabfold_alphafold2_params_path,
             params.colabfold_envdb_path,
             params.colabfold_uniref30_path,
+            params.colabfold_uniref30_path_padded,
+            params.colabfold_enable_gpu_search,
             params.colabfold_alphafold2_params_link,
             params.colabfold_db_link,
             params.colabfold_uniref30_link,
