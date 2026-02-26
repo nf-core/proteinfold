@@ -260,16 +260,26 @@ workflow NFCORE_PROTEINFOLD {
         //
         // WORKFLOW: Run nf-core/colabfold workflow
         //
-        COLABFOLD (
-            ch_samplesheet,
-            ch_versions,
-            params.colabfold_model_preset,
-            PREPARE_COLABFOLD_DBS.out.params,
-            PREPARE_COLABFOLD_DBS.out.colabfold_db,
-            PREPARE_COLABFOLD_DBS.out.uniref30,
-            params.colabfold_num_recycles
-        )
-
+        if (params.colabfold_enable_gpu_search) {
+            COLABFOLD (
+                ch_samplesheet,
+                ch_versions,
+                params.colabfold_model_preset,
+                PREPARE_COLABFOLD_DBS.out.params,
+                PREPARE_COLABFOLD_DBS.out.colabfold_db,
+                PREPARE_COLABFOLD_DBS.out.uniref30_padded,
+                params.colabfold_num_recycles
+        } else {
+            COLABFOLD (
+                ch_samplesheet,
+                ch_versions,
+                params.colabfold_model_preset,
+                PREPARE_COLABFOLD_DBS.out.params,
+                PREPARE_COLABFOLD_DBS.out.colabfold_db,
+                PREPARE_COLABFOLD_DBS.out.uniref30,
+                params.colabfold_num_recycles
+            )
+        }
         ch_multiqc          = ch_multiqc.mix(COLABFOLD.out.multiqc_report)
         ch_versions         = ch_versions.mix(COLABFOLD.out.versions)
         ch_report_input     = ch_report_input
