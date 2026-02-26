@@ -22,10 +22,10 @@ RUN apt-get update && \
     pip install --no-cache-dir --break-system-packages \
         "colabfold @ git+https://github.com/sokrypton/ColabFold.git@e8ebd9a" && \
     \
-    wget -q https://github.com/soedinglab/MMseqs2/releases/download/${MMSEQS2_VERSION}/mmseqs-linux-sse41.tar.gz && \
-    tar xzf mmseqs-linux-sse41.tar.gz && \
+    wget -q https://github.com/soedinglab/MMseqs2/releases/download/${MMSEQS2_VERSION}/mmseqs-linux-gpu.tar.gz && \
+    tar xzf mmseqs-linux-gpu.tar.gz && \
     cp mmseqs/bin/* /usr/local/bin/ && \
-    rm -rf mmseqs mmseqs-linux-sse41.tar.gz && \
+    rm -rf mmseqs mmseqs-linux-gpu.tar.gz && \
     \
     apt-get remove -y \
         python3-dev \
