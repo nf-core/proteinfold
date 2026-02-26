@@ -1,8 +1,9 @@
 //
 // Download all the required databases and params by Colabfold
 //
-include { MMSEQS_CREATEINDEX as MMSEQS_CREATEINDEX_COLABFOLDDB } from '../../modules/nf-core/mmseqs/createindex/main'
-include { MMSEQS_CREATEINDEX as MMSEQS_CREATEINDEX_UNIPROT30   } from '../../modules/nf-core/mmseqs/createindex/main'
+include { MMSEQS_CREATEINDEX as MMSEQS_CREATEINDEX_COLABFOLDDB      } from '../../modules/nf-core/mmseqs/createindex/main'
+include { MMSEQS_CREATEINDEX as MMSEQS_CREATEINDEX_UNIPROT30        } from '../../modules/nf-core/mmseqs/createindex/main'
+include { MMSEQS_CREATEINDEX as MMSEQS_CREATEINDEX_UNIPROT30_PADDED } from '../../modules/nf-core/mmseqs/createindex/main' // TODO: Waiting on RP merge in nf-core/modules
 
 include { ARIA2_UNCOMPRESS as ARIA2_COLABFOLD_PARAMS } from './aria2_uncompress'
 include { ARIA2_UNCOMPRESS as ARIA2_COLABFOLD_DB     } from './aria2_uncompress'
