@@ -35,9 +35,14 @@ workflow ARIA2_UNCOMPRESS {
         ch_db = UNZIP (ARIA2.out.downloaded_file)
                     .unzipped_archive
                     .map { _meta, dir ->
-                        def nestedDir = dir.listFiles()[0]
-                        // Find the .pdparams file
-                        def pdparamsFile = nestedDir.listFiles().find { it -> it.getName().endsWith('.pdparams') }
+                        // Find the HelixFold3-params-240814 directory
+                        def targetDir = dir.listFiles().find { it -> 
+                            it.isDirectory() && it.getName() == 'HelixFold3-params-240814' 
+                        }
+                        // Find the .pdparams file in that directory
+                        def pdparamsFile = targetDir.listFiles().find { it -> 
+                            it.getName().endsWith('.pdparams') 
+                        }
                         [ pdparamsFile ]
                     }
     } else {
