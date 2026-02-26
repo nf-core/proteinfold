@@ -17,16 +17,19 @@ workflow PREPARE_COLABFOLD_DBS {
     colabfold_alphafold2_params_path // directory: /path/to/colabfold/alphafold2/params/
     colabfold_envdb_path             // directory: /path/to/colabfold/db/
     colabfold_uniref30_path          // directory: /path/to/uniref30/colabfold/
+    colabfold_uniref30_path_padded   // directory: /path/to/uniref30/colabfold_padded/
+    colabfold_enable_gpu_search      //   boolean: Enable GPU accelerated search (collect or create GPU padded databases)
     colabfold_alphafold2_params_link //    string: Specifies the link to download colabfold alphafold2 params
     colabfold_db_link                //    string: Specifies the link to download colabfold db
     colabfold_uniref30_link          //    string: Specifies the link to download uniref30
     colabfold_create_index           //   boolean: Create index for colabfold db
 
     main:
-    ch_params       = channel.empty()
-    ch_colabfold_db = channel.empty()
-    ch_uniref30     = channel.empty()
-    ch_versions     = channel.empty()
+    ch_params          = channel.empty()
+    ch_colabfold_db    = channel.empty()
+    ch_uniref30        = channel.empty()
+    ch_uniref30_padded = channel.empty()
+    ch_versions        = channel.empty()
 
     if (colabfold_db) {
         ch_params = channel.value(file(colabfold_alphafold2_params_path, type: 'any'))
