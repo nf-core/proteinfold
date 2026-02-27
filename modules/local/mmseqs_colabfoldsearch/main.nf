@@ -27,6 +27,7 @@ process MMSEQS_COLABFOLDSEARCH {
     """
     colabfold_search \\
         $args \\
+        --gpu 1 \\
         --threads $task.cpus ${fasta} \\
         ./db \\
         --af3-json \\
