@@ -34,8 +34,12 @@ workflow PREPARE_COLABFOLD_DBS {
     if (colabfold_db) {
         ch_params = channel.value(file(colabfold_alphafold2_params_path, type: 'any'))
         if (!use_msa_server) {
+            println colabfold_envdb_path
             ch_colabfold_db = channel.value(file(colabfold_envdb_path, type: 'any'))
             ch_uniref30     = channel.value(file(colabfold_uniref30_path, type: 'any'))
+        }
+        if (colabfold_enable_gpu_search) {
+            ch_uniref30_padded = channel.value(file(colabfold_uniref30_path_padded, type: 'any'))
         }
     }
     else {
@@ -112,23 +116,6 @@ workflow PREPARE_COLABFOLD_DBS {
         }
     }
 
-    if (colabfold_enable_gpu_search) {
-        // TODO: Blocked and awaiting PR merge in nf-core/modules
-        MMSEQS_MAKEPADDEDSEQDB_UINPROT30_PADDED(
-            ch_uniref30.
-                map { path_str ->
-                    def db_file = file(path_str)
-                    [ [id: "uniprot30_gpu"], db_file ]
-                }
-        )
-
-        ch_uniprot30_padded = MMSEQS_MAKEPADDEDSEQDB_UNIPROT30_PADDED
-            .out
-            .db_padded
-            .map { _meta, dir ->
-                file("${dir}/*")
-            }
-    }
 
     emit:
     params          = ch_params
