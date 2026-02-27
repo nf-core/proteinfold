@@ -3,7 +3,7 @@ process MMSEQS_COLABFOLDSEARCH {
     label 'process_high_memory'
     label 'process_high'
 
-    container "/home/z3545907/mmseqs_colabfoldsearch.sif"
+    container "docker.io/nbtmsh/mmseqs_colabfoldsearch:latest"
 
     input:
     tuple val(meta), path(fasta)
