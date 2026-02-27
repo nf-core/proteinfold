@@ -16,6 +16,7 @@ workflow PREPARE_COLABFOLD_DBS {
     use_msa_server                   //      bool: Specifies whether to use web msa server
     colabfold_alphafold2_params_path // directory: /path/to/colabfold/alphafold2/params/
     colabfold_envdb_path             // directory: /path/to/colabfold/db/
+    colabfold_envdb_path_padded      // directory: /path/to/colabfold/db/
     colabfold_uniref30_path          // directory: /path/to/uniref30/colabfold/
     colabfold_uniref30_path_padded   // directory: /path/to/uniref30/colabfold_padded/
     colabfold_enable_gpu_search      //   boolean: Enable GPU accelerated search (collect or create GPU padded databases)
