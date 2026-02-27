@@ -11,6 +11,7 @@ nextflow_pipeline {
         when {
             params {
                 outdir = "$outputDir"
+                colabfold_enable_gpu_search = false
             }
         }
 
