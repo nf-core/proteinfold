@@ -113,6 +113,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[PR #492](https://github.com/nf-core/proteinfold/pulls/492)] - Clean TODOs from code and create issues instead for 2.0.0 release preparation.
 - [[PR #493](https://github.com/nf-core/proteinfold/pulls/493)] - Standardise Dockerfiles labels and bump version 2.0.0 to prepare release.
 - [[#494](https://github.com/nf-core/proteinfold/issues/494)] - Publish Colabfold DBs when downloaded to be directly consumable using `colabfold_db` parameter.
+- [[PR #497](https://github.com/nf-core/proteinfold/pull/497)] - Add MMseqs Colabfold Search GPU Support.
 
 ### Parameters
 
