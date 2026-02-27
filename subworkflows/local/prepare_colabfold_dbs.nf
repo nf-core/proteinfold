@@ -120,9 +120,10 @@ workflow PREPARE_COLABFOLD_DBS {
 
 
     emit:
-    params          = ch_params
-    colabfold_db    = ch_colabfold_db
-    uniref30        = ch_uniref30
-    uniref30_padded = ch_uniref30_padded
-    versions        = ch_versions
+    params              = ch_params
+    colabfold_db        = ch_colabfold_db
+    colabfold_db_padded = ch_colabfold_db_padded
+    uniref30            = ch_uniref30
+    uniref30_padded     = ch_uniref30_padded
+    versions            = ch_versions
 }
