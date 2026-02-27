@@ -19,12 +19,10 @@ process RUN_BOLTZ {
 
     output:
     tuple val(meta), path ("boltz_results_${meta.id}")                          , optional: true, emit: intermediates
-    // TODO: rename npz into different emit channels as to not conflict with raw (.tsv) PAE etc. As in PR #306
     tuple val(meta), path ("boltz_results_*/processed/msa/*.npz")               , emit: msa
     tuple val(meta), path ("boltz_results_*/processed/structures/*.npz")        , emit: structures
     tuple val(meta), path ("boltz_results_*/predictions/*/confidence*.json")    , emit: confidence
     tuple val(meta), path ("${meta.id}_plddt.tsv")                              , emit: multiqc
-    // TODO: support cif as well like with HelixFold3
     tuple val(meta), path ("${meta.id}_boltz.pdb")                              , emit: top_ranked_pdb
     tuple val(meta), path ("boltz_results_*/predictions/*/*.pdb")               , emit: pdb
     tuple val(meta), path ("boltz_results_*/predictions/*/plddt_*model_0.npz")  , emit: plddt
@@ -43,13 +41,6 @@ process RUN_BOLTZ {
 
     script:
     // Exit if running this module with -profile conda / -profile mamba
-
-    // TODO: "boltz_results_*" dir should be be further specified using --out_dir when running Boltz, and being able to go "boltz_results_${meta.id}" instead of "boltz_results_*"
-    // TODO: MSA processing for Boltz is not solid yet. They can come from webserver, local mmseq, or a custom paired .csv (see docs below)
-    // https://github.com/jwohlwend/boltz/blob/main/docs/prediction.md#yaml-format
-    // TODO: what I really need to do is add a function to read /processed/msa/*.npz and convert it to a .tsv file
-
-    // TODO: Boltz is the example to do chain-wise summary files. This will be better if model_id was properly written per prog and EXTRACT_METRICs was a process
     if (workflow.profile.tokenize(',').intersect(['conda', 'mamba']).size() >= 1) {
         error("Local RUN_BOLTZ module does not support Conda. Please use Docker / Singularity / Podman instead.")
     }

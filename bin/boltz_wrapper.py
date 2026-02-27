@@ -78,7 +78,6 @@ def get_mig_devices_and_sm_counts() -> int:
         if len(unique_counts) > 1:
             print (
                 "Visible GPU devices report different multiprocessor_count values "
-                # TODO take the one with less sm
                 f"(counts per device: {all_counts}). This is expected if you have mixed MIG slice sizes. "
                 "If you expected identical slices, check your allocation and device isolation."
             )

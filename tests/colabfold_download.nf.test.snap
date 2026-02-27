@@ -25,6 +25,7 @@
                 "DBs",
                 "DBs/colabfold",
                 "DBs/colabfold/params",
+                "DBs/colabfold/params/alphafold_params_2021-07-14",
                 "colabfold",
                 "colabfold/T1024",
                 "colabfold/T1024/T1024_colabfold_msa.tsv",
@@ -74,6 +75,6 @@
             "nf-test": "0.9.3",
             "nextflow": "25.10.4"
         },
-        "timestamp": "2026-02-12T10:48:56.591432"
+        "timestamp": "2026-02-25T22:29:57.542050186"
     }
 }

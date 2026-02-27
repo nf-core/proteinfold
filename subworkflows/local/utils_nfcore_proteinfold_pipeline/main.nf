@@ -108,8 +108,6 @@ ${colors.purple}  nf-core/rnaseq ${workflow.manifest.version}${colors.reset}
         }
 
     if (params.split_fasta) {
-        // TODO: here we have to validate that the ids are unique and valid as an extra step
-        // since it is not done with the samplesheet schema (they are all in the same file)
         ch_samplesheet.map { _meta, fasta ->
             validateFasta(fasta)
         }
