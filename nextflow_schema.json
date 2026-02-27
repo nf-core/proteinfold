@@ -1364,5 +1364,19 @@
         {
             "$ref": "#/$defs/helixfold3_dbs_and_parameters_paths_options"
         }
-    ]
+    ],
+    "properties": {
+        "colabfold_enable_gpu_search": {
+            "type": "boolean",
+            "default": true
+        },
+        "colabfold_envdb_path_padded": {
+            "type": "string",
+            "default": "null/colabfold_envdb_padded/*"
+        },
+        "colabfold_uniref30_path_padded": {
+            "type": "string",
+            "default": "null/colabfold_uniref30_padded/*"
+        }
+    }
 }
