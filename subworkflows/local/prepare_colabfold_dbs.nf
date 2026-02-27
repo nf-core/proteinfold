@@ -26,21 +26,22 @@ workflow PREPARE_COLABFOLD_DBS {
     colabfold_create_index           //   boolean: Create index for colabfold db
 
     main:
-    ch_params          = channel.empty()
-    ch_colabfold_db    = channel.empty()
-    ch_uniref30        = channel.empty()
-    ch_uniref30_padded = channel.empty()
-    ch_versions        = channel.empty()
+    ch_params              = channel.empty()
+    ch_colabfold_db        = channel.empty()
+    ch_colabfold_db_padded = channel.empty()
+    ch_uniref30            = channel.empty()
+    ch_uniref30_padded     = channel.empty()
+    ch_versions            = channel.empty()
 
     if (colabfold_db) {
         ch_params = channel.value(file(colabfold_alphafold2_params_path, type: 'any'))
         if (!use_msa_server) {
-            println colabfold_envdb_path
             ch_colabfold_db = channel.value(file(colabfold_envdb_path, type: 'any'))
             ch_uniref30     = channel.value(file(colabfold_uniref30_path, type: 'any'))
         }
         if (colabfold_enable_gpu_search) {
             ch_uniref30_padded = channel.value(file(colabfold_uniref30_path_padded, type: 'any'))
+            ch_colabfold_db_padded = channel.value(file(colabfold_envdb_path_padded, type: 'any'))
         }
     }
     else {
