@@ -3,12 +3,13 @@ process MMSEQS_COLABFOLDSEARCH {
     label 'process_high_memory'
     label 'process_high'
 
-    container "nf-core/proteinfold_mmseqs_colabfoldsearch:2.0.0"
+    container "/home/z3545907/mmseqs_colabfoldsearch.sif"
 
     input:
     tuple val(meta), path(fasta)
     path ('db/*')
     path ('db/*')
+    val colabfold_enable_gpu_search
 
     output:
     tuple val(meta), path("**.a3m"), emit: a3m
@@ -25,9 +26,13 @@ process MMSEQS_COLABFOLDSEARCH {
     def args = task.ext.args ?: ''
 
     """
+    GPU_ARG=""
+    if [ "${colabfold_enable_gpu_search}" == "1" ]; then
+        GPU_ARG="--gpu 1"
+    fi
     colabfold_search \\
         $args \\
-        --gpu 1 \\
+        \${GPU_ARG} \\
         --threads $task.cpus ${fasta} \\
         ./db \\
         --af3-json \\
