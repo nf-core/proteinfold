@@ -267,7 +267,7 @@ workflow NFCORE_PROTEINFOLD {
                 ch_versions,
                 params.colabfold_model_preset,
                 PREPARE_COLABFOLD_DBS.out.params,
-                PREPARE_COLABFOLD_DBS.out.colabfold_db,
+                PREPARE_COLABFOLD_DBS.out.colabfold_db_padded,
                 PREPARE_COLABFOLD_DBS.out.uniref30_padded,
                 params.colabfold_num_recycles
             )
