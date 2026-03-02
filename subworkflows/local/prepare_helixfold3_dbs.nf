@@ -52,22 +52,22 @@ workflow PREPARE_HELIXFOLD3_DBS {
     helixfold3_maxit_src_path
 
     main:
-    ch_helixfold3_maxit_src             = channel.value(file(helixfold3_maxit_src_path))
+    ch_helixfold3_maxit_src             = channel.value(file(helixfold3_maxit_src_path, checkIfExists: true))
     ch_versions                         = channel.empty()
 
     if (helixfold3_db) {
-        ch_helixfold3_uniclust30        = channel.value(file(helixfold3_uniclust30_path))
-        ch_helixfold3_ccd_preprocessed  = channel.value(file(helixfold3_ccd_preprocessed_path))
-        ch_helixfold3_rfam              = channel.value(file(helixfold3_rfam_path))
-        ch_helixfold3_bfd               = channel.value(file(helixfold3_bfd_path))
-        ch_helixfold3_small_bfd         = channel.value(file(helixfold3_small_bfd_path))
-        ch_helixfold3_uniprot           = channel.value(file(helixfold3_uniprot_path))
-        ch_helixfold3_pdb_seqres        = channel.value(file(helixfold3_pdb_seqres_path))
-        ch_helixfold3_uniref90          = channel.value(file(helixfold3_uniref90_path))
-        ch_helixfold3_mgnify            = channel.value(file(helixfold3_mgnify_path))
-        ch_helixfold3_mmcif_files       = channel.value(file(helixfold3_pdb_mmcif_path))
-        ch_helixfold3_obsolete          = channel.value(file(helixfold3_obsolete_path))
-        ch_helixfold3_init_models       = channel.value(file(helixfold3_init_models_path))
+        ch_helixfold3_uniclust30        = channel.value(file(helixfold3_uniclust30_path, checkIfExists: true))
+        ch_helixfold3_ccd_preprocessed  = channel.value(file(helixfold3_ccd_preprocessed_path, checkIfExists: true))
+        ch_helixfold3_rfam              = channel.value(file(helixfold3_rfam_path, checkIfExists: true))
+        ch_helixfold3_bfd               = channel.value(file(helixfold3_bfd_path, checkIfExists: true))
+        ch_helixfold3_small_bfd         = channel.value(file(helixfold3_small_bfd_path, checkIfExists: true))
+        ch_helixfold3_uniprot           = channel.value(file(helixfold3_uniprot_path, checkIfExists: true))
+        ch_helixfold3_pdb_seqres        = channel.value(file(helixfold3_pdb_seqres_path, checkIfExists: true))
+        ch_helixfold3_uniref90          = channel.value(file(helixfold3_uniref90_path, checkIfExists: true))
+        ch_helixfold3_mgnify            = channel.value(file(helixfold3_mgnify_path, checkIfExists: true))
+        ch_helixfold3_mmcif_files       = channel.value(file(helixfold3_pdb_mmcif_path, checkIfExists: true))
+        ch_helixfold3_obsolete          = channel.value(file(helixfold3_obsolete_path, checkIfExists: true))
+        ch_helixfold3_init_models       = channel.value(file(helixfold3_init_models_path, checkIfExists: true))
     }
     else {
         ARIA2_UNICLUST30(helixfold3_uniclust30_link)
