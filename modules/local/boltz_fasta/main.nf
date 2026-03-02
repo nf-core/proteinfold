@@ -21,7 +21,7 @@ process BOLTZ_FASTA {
     def args = task.ext.args ?: ''
     def msa_files = msa ? "--msa " + msa.join(' ') : ''
     """
-    fasta_to_boltz.py ${fasta} ${meta.id} ${msa_files} ${args}
+    fasta_to_boltz.py ${fasta} ${meta.id} ${msa_files}
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
