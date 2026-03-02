@@ -28,10 +28,10 @@ workflow PREPARE_COLABFOLD_DBS {
     ch_versions     = channel.empty()
 
     if (colabfold_db) {
-        ch_params = channel.value(file(colabfold_alphafold2_params_path, type: 'any'))
+        ch_params = channel.value(file(colabfold_alphafold2_params_path, type: 'any', checkIfExists: true))
         if (!use_msa_server) {
-            ch_colabfold_db = channel.value(file(colabfold_envdb_path, type: 'any'))
-            ch_uniref30     = channel.value(file(colabfold_uniref30_path, type: 'any'))
+            ch_colabfold_db = channel.value(file(colabfold_envdb_path, type: 'any', checkIfExists: true))
+            ch_uniref30     = channel.value(file(colabfold_uniref30_path, type: 'any', checkIfExists: true))
         }
     }
     else {
