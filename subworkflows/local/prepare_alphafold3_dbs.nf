@@ -49,9 +49,9 @@ workflow PREPARE_ALPHAFOLD3_DBS {
         ch_uniref90       = channel.value(file(uniref90_path, checkIfExists: true))
         ch_pdb_seqres     = channel.value(file(pdb_seqres_path, checkIfExists: true))
         ch_uniprot        = channel.value(file(uniprot_path, checkIfExists: true))
-        ch_rnacentral     = channel.value(file(rnacentral_active_seq_path, checkIfExists: true))
-        ch_nt_rna         = channel.value(file(nt_rna_2023_02_23_path, checkIfExists: true))
-        ch_rfam           = channel.value(file(rfam_path, checkIfExists: true))
+        ch_rnacentral     = channel.value(file(rnacentral_active_seq_path))
+        ch_nt_rna         = channel.value(file(nt_rna_2023_02_23_path))
+        ch_rfam           = channel.value(file(rfam_path))
     } else {
 
         ARIA2_SMALL_BFD (
