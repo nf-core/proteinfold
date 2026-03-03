@@ -55,10 +55,10 @@ workflow PREPARE_ALPHAFOLD2_DBS {
     if (alphafold2_db) {
         if (alphafold2_full_dbs) {
             ch_bfd       = channel.value(file(bfd_path, checkIfExists: true))
-            ch_small_bfd = channel.value(file("${projectDir}/assets/dummy_db", checkIfExists: true))
+            ch_small_bfd = channel.value(file("${projectDir}/assets/dummy_db"))
         }
         else {
-            ch_bfd       = channel.value(file("${projectDir}/assets/dummy_db", checkIfExists: true))
+            ch_bfd       = channel.value(file("${projectDir}/assets/dummy_db"))
             ch_small_bfd = channel.value(file(small_bfd_path, checkIfExists: true))
         }
 
