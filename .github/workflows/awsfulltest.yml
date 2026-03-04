@@ -49,7 +49,7 @@ jobs:
               "hook_url": "${{ secrets.MEGATESTS_ALERTS_SLACK_HOOK_URL }}",
               "outdir": "s3://${{ vars.AWS_S3_BUCKET }}/proteinfold/results-${{ steps.revision.outputs.revision }}"
             }
-          profiles: test_full_${{ matrix.mode }}
+          profiles: test_full_${{ matrix.mode }},gpu
 
       - uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
         with:
