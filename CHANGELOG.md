@@ -119,6 +119,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[PR #501](https://github.com/nf-core/proteinfold/pulls/501)] - Move python code of `BOLTZ_FASTA` to a python script in `bin`.
 - [[#503](https://github.com/nf-core/proteinfold/issues/503)] - Add checkIfExists validation to user-provided database paths across all prepare DB subworkflows.
 - [[#507](https://github.com/nf-core/proteinfold/issues/507)] - Implement missing full tests and check that the others work before release 2.0.0.
+- [[PR #509](https://github.com/nf-core/proteinfold/pulls/509)] - Setup gpu environment for full tests.
 
 ### Parameters
 
