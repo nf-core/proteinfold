@@ -19,29 +19,50 @@ jobs:
     # Do a full-scale run on each of the mode
     strategy:
       matrix:
-        mode:
-          [
-            "alphafold2_standard",
-            "alphafold2_split",
-            "alphafold2_multimer",
-            "colabfold_local",
-            "colabfold_webserver",
-            "colabfold_multimer",
-            "esmfold",
-            "esmfold_multimer",
-          ]
+        include:
+          - mode: "alphafold2_standard"
+            compute_env: "gpu"
+          - mode: "alphafold2_split"
+            compute_env: "gpu"
+          - mode: "alphafold2_multimer"
+            compute_env: "gpu"
+          - mode: "colabfold_local"
+            compute_env: "gpu"
+          - mode: "colabfold_webserver"
+            compute_env: "gpu"
+          - mode: "colabfold_multimer"
+            compute_env: "gpu"
+          - mode: "esmfold"
+            compute_env: "gpu"
+          - mode: "esmfold_multimer"
+            compute_env: "gpu"
+          - mode: "boltz"
+            compute_env: "gpu"
+          - mode: "helixfold3"
+            compute_env: "gpu"
+          - mode: "rosettafold_all_atom"
+            compute_env: "gpu"
+          - mode: "rosettafold2na"
+            compute_env: "gpu"
     steps:
       - name: Set revision variable
         id: revision
         run: |
           echo "revision=${{ (github.event_name == 'workflow_dispatch' || github.event_name == 'release') && github.sha || 'dev' }}" >> "$GITHUB_OUTPUT"
 
+      - name: Set compute environment
+        id: compute_env
+        run: |
+          echo "compute_env=${{ matrix.compute_env == 'gpu' && vars.TOWER_COMPUTE_ENV_GPU || vars.TOWER_COMPUTE_ENV }}" >> "$GITHUB_OUTPUT"
+          echo "Mode: ${{ matrix.mode }}"
+          echo "Compute env type: ${{ matrix.compute_env }}"
+
       - name: Launch workflow via Seqera Platform
         uses: seqeralabs/action-tower-launch@v2
         with:
           workspace_id: ${{ vars.TOWER_WORKSPACE_ID }}
           access_token: ${{ secrets.TOWER_ACCESS_TOKEN }}
-          compute_env: ${{ vars.TOWER_COMPUTE_ENV }}
+          compute_env: ${{ steps.compute_env.outputs.compute_env }}
           revision: ${{ steps.revision.outputs.revision }}
           workdir: s3://${{ vars.AWS_S3_BUCKET }}/work/proteinfold/work-${{ steps.revision.outputs.revision }}
           parameters: |
