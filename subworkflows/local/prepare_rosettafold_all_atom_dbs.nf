@@ -27,10 +27,10 @@ workflow PREPARE_ROSETTAFOLD_ALL_ATOM_DBS {
     ch_versions                 = channel.empty()
 
     if (rosettafold_all_atom_db) {
-        ch_bfd                  = channel.value(file(rosettafold_all_atom_bfd_path))
-        ch_uniref30             = channel.value(file(rosettafold_all_atom_uniref30_path))
-        ch_pdb100               = channel.value(file(rosettafold_all_atom_pdb100_path))
-        ch_rfaa_paper_weights   = channel.value(file(rosettafold_all_atom_paper_weights_path))
+        ch_bfd                  = channel.value(file(rosettafold_all_atom_bfd_path, checkIfExists: true))
+        ch_uniref30             = channel.value(file(rosettafold_all_atom_uniref30_path, checkIfExists: true))
+        ch_pdb100               = channel.value(file(rosettafold_all_atom_pdb100_path, checkIfExists: true))
+        ch_rfaa_paper_weights   = channel.value(file(rosettafold_all_atom_paper_weights_path, checkIfExists: true))
     }
     else {
         ARIA2_BFD(rosettafold_all_atom_bfd_link)
