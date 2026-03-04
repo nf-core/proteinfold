@@ -117,6 +117,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[#494](https://github.com/nf-core/proteinfold/issues/494)] - Publish Colabfold DBs when downloaded to be directly consumable using `colabfold_db` parameter.
 - [[#499](https://github.com/nf-core/proteinfold/issues/499)] - Get rid of `ENTRYPOINT` in alphafold2 dockerfiles.
 - [[PR #501](https://github.com/nf-core/proteinfold/pulls/501)] - Move python code of `BOLTZ_FASTA` to a python script in `bin`.
+- [[#503](https://github.com/nf-core/proteinfold/issues/503)] - Add checkIfExists validation to user-provided database paths across all prepare DB subworkflows.
 
 ### Parameters
 

@@ -46,7 +46,7 @@ process RUN_ESMFOLD {
         esm-fold: $VERSION
         python: \$(python3 --version | sed 's/Python //g')
         pytorch: \$(python3 -c "import torch; print(torch.__version__)" 2>/dev/null || echo "unknown")
-        openfold: \$(python -m pip show openfold | grep "^Version" | sed 's/.*Version: //'" 2>/dev/null || echo "unknown")
+        openfold: \$(python -m pip show openfold | grep "^Version" | sed 's/.*Version: //' 2>/dev/null || echo "unknown")
         numpy: \$(python3 -c "import numpy; print(numpy.__version__)" 2>/dev/null || echo "unknown")
         biopython: \$(python3 -c "import Bio; print(Bio.__version__)" 2>/dev/null || echo "unknown")
     END_VERSIONS

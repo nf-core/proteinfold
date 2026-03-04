@@ -19,7 +19,7 @@ workflow PREPARE_ESMFOLD_DBS {
     ch_versions   = channel.empty()
 
     if (esmfold_db) {
-        ch_params     = channel.value(file( esmfold_params_path, type: 'file' ))
+        ch_params     = channel.value(file(esmfold_params_path, checkIfExists: true ))
     }
     else {
         ARIA2_ESMFOLD_3B_V1 (
