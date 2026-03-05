@@ -29,7 +29,7 @@ The file structure of `--alphafold3_db` must be as follows:
 │   └── mgy_clusters_2022_05.fa
 ├── params
 │   └── af3.bin
-├── pdb_mmcif 
+├── pdb_mmcif
 │   └── mmcif_files
 │       ├── 1g6g.cif
 │       ├── 1go4.cif
