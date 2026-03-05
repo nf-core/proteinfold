@@ -59,7 +59,8 @@ jobs:
           parameters: |
             {
               "hook_url": "${{ secrets.MEGATESTS_ALERTS_SLACK_HOOK_URL }}",
-              "outdir": "s3://${{ vars.AWS_S3_BUCKET }}/proteinfold/results-${{ steps.revision.outputs.revision }}"
+              "outdir": "s3://${{ vars.AWS_S3_BUCKET }}/proteinfold/results-${{ steps.revision.outputs.revision }}",
+              "use_gpu": true
             }
           profiles: test_full_${{ matrix.mode }}
 
