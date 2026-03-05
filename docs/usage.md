@@ -153,6 +153,49 @@ Alternatively, the required data layout for each of the individual modes is desc
 
 > Omitting the `--db` flag will allow the pipeline to download the reference data required to execute the selected modes.
 
+## Foldseek structural similarity search
+
+The pipeline can run an optional Foldseek `easy-search` step on the top-ranked structure for each input/mode combination.
+
+Foldseek is disabled by default (`--skip_foldseek true`). To enable it, set:
+
+```bash
+--skip_foldseek false
+--foldseek_db <DATABASE_ID>
+--foldseek_db_path <PATH/TO/FOLDSEEK_DATABASE_DIR>
+```
+
+The database is resolved as:
+
+```bash
+<foldseek_db_path>/<foldseek_db>
+```
+
+For example:
+
+```bash
+nextflow run nf-core/proteinfold \
+   -profile <docker/singularity/.../institute> \
+   --input samplesheet.csv \
+   --outdir <OUTDIR> \
+   --mode alphafold2,colabfold \
+   --skip_foldseek false \
+   --foldseek_db pdb100 \
+   --foldseek_db_path /data/foldseek_db
+```
+
+By default, results are written in HTML format (`--format-mode 3`) to:
+
+```bash
+<OUTDIR>/foldseek_easysearch/
+```
+
+You can override Foldseek arguments with:
+
+```bash
+--foldseek_easysearch_arg "<custom args>"
+```
+
 Note that the pipeline will create the following files in your working directory:
 
 ```bash

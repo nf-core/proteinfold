@@ -155,6 +155,21 @@ The report exports include key visualisations such as sequence coverage, predict
 
 </details>
 
+### Foldseek structural similarity search
+
+If Foldseek is enabled (`--skip_foldseek false`), results are written to:
+
+<details markdown="1">
+<summary>Output files</summary>
+
+- `foldseek_easysearch/`
+  - `<SEQUENCE NAME>_<MODE>_foldseek.html` (default output format)
+  - `<SEQUENCE NAME>.m8` (tabular output when `--foldseek_easysearch_arg` does not include `--format-mode 3`)
+
+</details>
+
+Foldseek runs on top-ranked structures from each selected mode and sequence. By default, the pipeline uses `--format-mode 3` and publishes HTML reports.
+
 ### MultiQC report
 
 <details markdown="1">
