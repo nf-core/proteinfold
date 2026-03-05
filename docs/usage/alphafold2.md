@@ -18,7 +18,7 @@ nextflow run nf-core/proteinfold \
 ```
 
 > [!NOTE]
-> By default, this will run a fork of AlphaFold2 where MSA generation is split from the neural network inference. This enables more efficient utilization of resources by allowing the CPU-bound MSA generation to be executed without occupying an idle GPU. If you want to run the original implementation of AlphaFold2 you can use the `--alphafold2_mode standard`.
+> By default, this will run a fork of AlphaFold2 where MSA generation is split from the neural network inference. This enables more efficient utilization of resources by allowing the CPU-bound MSA generation to be executed without occupying an idle GPU. If you want to run the original implementation of AlphaFold2 you can use the `--alphafold2_mode standard`. However, please be advised that this will cause the allocated GPU to idle while MSAs are generated.
 
 > [!WARNING]
 > `--alphafold2_model_preset <monomer_ptm/monomer/monomer_casp14/multimer>` is used to infer how to handle multi-entry fasta files. Choosing `monomer_ptm`, `monomer` or `monomer_casp14` will result in a multi-entry fasta being processed as a series of monomer entries rather than as a single oligomeric complex.
@@ -93,7 +93,7 @@ The file structure of `--alphafold2_db` must be as follows:
 │   ├── UniRef30_2023_02_a3m.ffindex
 │   ├── UniRef30_2023_02_cs219.ffdata
 │   ├── UniRef30_2023_02_cs219.ffindex
-|   ├── UniRef30_2023_02_hhm.ffdata
+│   ├── UniRef30_2023_02_hhm.ffdata
 │   ├── UniRef30_2023_02_hhm.ffindex
 │   └── UniRef30_2023_02.md5sums
 └── uniref90
@@ -105,20 +105,20 @@ The file structure of `--alphafold2_db` must be as follows:
 If individual components are available at different locations in the filesystem, they can be set using the following flags:
 
 ```console
---bfd_path </PATH/TO/bfd/>
---alphafold2_small_bfd_path </PATH/TO/small_bfd/>
---alphafold2_params_path </PATH/TO/params/alphafold_params_*>
---alphafold2_mgnify_path </PATH/TO/mgnify/>
---pdb70_path </PATH/TO/pdb70/>
+--alphafold2_bfd_path </PATH/TO/bfd/*>
+--alphafold2_small_bfd_path </PATH/TO/small_bfd/*>
+--alphafold2_params_path </PATH/TO/params/alphafold_params_*/*>
+--alphafold2_mgnify_path </PATH/TO/mgnify/*>
+--alphafold2_pdb70_path </PATH/TO/pdb70/**>
 --alphafold2_pdb_mmcif_path </PATH/TO/pdb_mmcif/mmcif_files>
---pdb_obsolete_path </PATH/TO/pdb_mmcif/obsolete.dat>
---alphafold2_uniref30_path </PATH/TO/uniref30/>
---alphafold2_uniref90_path </PATH/TO/uniref90/>
---alphafold2_pdb_seqres_path </PATH/TO/pdb_seqres/>
---alphafold2_uniprot_path </PATH/TO/uniprot/>
+--alphafold2_pdb_obsolete_path </PATH/TO/pdb_mmcif/obsolete.dat>
+--alphafold2_uniref30_path </PATH/TO/uniref30/*>
+--alphafold2_uniref90_path </PATH/TO/uniref90/*>
+--alphafold2_pdb_seqres_path </PATH/TO/pdb_seqres/*>
+--alphafold2_uniprot_path </PATH/TO/uniprot/*>
 ```
 
-Without setting the `--alphafold2_db` flag, all of the required data files will be downloaded during the workflow execution.
+Without setting the `--alphafold2_db` flag, all of the required data files will be downloaded during the workflow execution. Database downloaded can be an extremely long process. The downloaded data can be used for future workflow executions.
 
 > [!WARNING]
 > The AlphaFold2 reference databases require ~2TB of disk space.

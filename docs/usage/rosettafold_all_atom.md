@@ -59,10 +59,10 @@ The file structure of `--rosettafold_all_atom_db` must be as follows:
 If individual components are available at different locations in the filesystem, they can be set using the following flags:
 
 ```console
---bfd_rosettafold_all_atom_path </PATH/TO/bfd/>
---rfaa_paper_weights_path </PATH/TO/params/RFAA_paper_weights.pt>
---uniref30_rosettafold_all_atom_path </PATH/TO/uniref30/>
---pdb100_rosettafold_all_atom_path </PATH/TO/pdb100/>
+--rosettafold_all_atom_bfd_path </PATH/TO/bfd/*>
+--rosettafold_all_atom_paper_weights_path </PATH/TO/params/RFAA_paper_weights.pt>
+--rosettafold_all_atom_uniref30_path </PATH/TO/uniref30/*>
+--rosettafold_all_atom_pdb100_path </PATH/TO/pdb100/*>
 ```
 
 Without setting the `--rosettafold_all_atom_db` flag, all of the required data files will be downloaded during the workflow execution.

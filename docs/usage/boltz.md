@@ -138,6 +138,7 @@ See the [Boltz](https://github.com/jwohlwend/boltz) documentation for a full des
 | Parameter                | Default  | Description                                                                                                                                                                                                                         |
 | ------------------------ | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `--boltz_model`          | `boltz2` | The model to use for prediction (boltz1 or boltz2)                                                                                                                                                                                  |
-| `--boltz_use_potentials` | `false`  | Steering potentials are used by Boltz to improve the physical validity of output predictions (ie steric clashes, incorrect chirality etc). However, these potentials dramatically increase execution time and memory requirements.) |
+| `--boltz_use_potentials` | `false`  | Steering potentials are used by Boltz to improve the physical validity of output predictions (ie steric clashes, incorrect chirality etc). However, these potentials dramatically increase execution time and memory requirements. |
+| `--boltz_use_kernels` | `true`  | Use optimized Triton-based CUDA kernels for Boltz inference. These may be incompatible with some GPU types and can be disabled as a workaround. |
 
 > You can override any of these parameters via the command line or a params file.

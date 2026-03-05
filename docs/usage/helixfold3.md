@@ -74,15 +74,15 @@ If individual components are available at different locations in the filesystem,
 --helixfold3_ccd_preprocessed_path </PATH/TO/params/ccd_preprocessed_etkdg.pkl.gz>
 --helixfold3_rfam_path </PATH/TO/rfam/Rfam-14.9_rep_seq.fasta>
 --helixfold3_maxit_src_path </PATH/TO/maxit-v11.200-prod-src>
---helixfold3_bfd_path </PATH/TO/bfd/>
---helixfold3_small_bfd_path </PATH/TO/small_bfd/>
---helixfold3_mgnify_path </PATH/TO/mgnify/>
+--helixfold3_bfd_path </PATH/TO/bfd/*>
+--helixfold3_small_bfd_path </PATH/TO/small_bfd/*>
+--helixfold3_mgnify_path </PATH/TO/mgnify/*>
 --helixfold3_pdb_mmcif_path </PATH/TO/pdb_mmcif/mmcif_files>
 --helixfold3_obsolete_path </PATH/TO/pdb_mmcif/obsolete.dat>
---helixfold3_uniclust30_path </PATH/TO/uniref30/>
---helixfold3_uniref90_path </PATH/TO/uniref90/>
---helixfold3_pdb_seqres_path </PATH/TO/pdb_seqres/>
---helixfold3_uniprot_path </PATH/TO/uniprot/>
+--helixfold3_uniclust30_path </PATH/TO/uniref30/*>
+--helixfold3_uniref90_path </PATH/TO/uniref90/*>
+--helixfold3_pdb_seqres_path </PATH/TO/pdb_seqres/*>
+--helixfold3_uniprot_path </PATH/TO/uniprot/*>
 ```
 
 Without setting the `--helixfold3_db` flag, all of the required data files will be downloaded during the workflow execution.
@@ -111,7 +111,6 @@ See the [HelixFold3](https://github.com/PaddlePaddle/PaddleHelix/tree/dev/apps/p
 | Parameter                        | Default      | Description                                                                                                                                                                                                                                                                                                                                                                             |
 | -------------------------------- | ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `--helixfold3_max_template_date` | `2038-01-19` | Structural templates from the PDB are used as additional context when making predictions. Molecules with solved structures in the PDB can be trivially predicted by using these structures as inputs. When benchmarking model performance it can be useful to restrict the use of templates to those deposited before a fixed date to ensure solved structures do not bias predictions. |
-| `--helixfold3_full_dbs`          | `false`      | bfd is a large environmental sequence database used to identify homologs. small bfd is a redundancy recuced version of the bfd database which can reduce execution time of homolog search but may reduce the depth of the resulting MSA in some cases. `--helixfold3_full_dbs` controls the version of bfd used for search.                                                             |
 | `--helixfold3_precision`         | `bf16`       | Controls the numerical precision during neural network inference. bf16 is supported by GPU accelerators A100, H100 and higher, while others will require fp32 inference. (bf16/fp32)                                                                                                                                                                                                    |
 | `--helixfold3_infer_times`       | `4`          | The number of independent seeds used to generate structure predictions using the HelixFold3 model.                                                                                                                                                                                                                                                                                      |
 

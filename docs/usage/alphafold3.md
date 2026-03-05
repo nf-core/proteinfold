@@ -27,12 +27,13 @@ The file structure of `--alphafold3_db` must be as follows:
 ```console
 ├── mgnify
 │   └── mgy_clusters_2022_05.fa
-├── mmcif_files
-│   ├── 1g6g.cif
-│   ├── 1go4.cif
-│   └── ...
 ├── params
 │   └── af3.bin
+├── pdb_mmcif 
+│   └── mmcif_files
+│       ├── 1g6g.cif
+│       ├── 1go4.cif
+│       └── ...
 ├── pdb_seqres
 │   └── pdb_seqres_2022_09_28.fasta
 ├── small_bfd
@@ -51,14 +52,21 @@ The file structure of `--alphafold3_db` must be as follows:
 If individual components are available at different locations in the filesystem, they can be set using the following flags:
 
 ```console
---alphafold3_small_bfd_path </PATH/TO/small_bfd/>
---alphafold3_params_path </PATH/TO/params/alphafold_params_*>
---alphafold3_mgnify_path </PATH/TO/mgnify/>
---pdb70_path </PATH/TO/pdb70/>
+--alphafold3_small_bfd_path </PATH/TO/small_bfd/*>
+--alphafold3_params_path </PATH/TO/params/af3.bin>
+--alphafold3_mgnify_path </PATH/TO/mgnify/*>
 --alphafold3_pdb_mmcif_path </PATH/TO/pdb_mmcif/mmcif_files>
---alphafold3_uniref90_path </PATH/TO/uniref90/>
---alphafold3_pdb_seqres_path </PATH/TO/pdb_seqres/>
---alphafold3_uniprot_path </PATH/TO/uniprot/>
+--alphafold3_uniref90_path </PATH/TO/uniref90/*>
+--alphafold3_pdb_seqres_path </PATH/TO/pdb_seqres/*>
+--alphafold3_uniprot_path </PATH/TO/uniprot/*>
+```
+
+Note the following databases are only required to support RNA predictions:
+
+```console
+--alphafold3_rnacentral_path </PATH/TO/rnacentral/*>
+--alphafold3_nt_rna_path </PATH/TO/nt_rna/*>
+--alphafold3_rfam_path </PATH/TO/rfam/*>
 ```
 
 Without setting the `--alphafold3_db` flag, all of the required data files will be downloaded during the workflow execution.

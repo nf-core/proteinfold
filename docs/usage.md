@@ -153,21 +153,6 @@ Alternatively, the required data layout for each of the individual modes is desc
 
 > Omitting the `--db` flag will allow the pipeline to download the reference data required to execute the selected modes.
 
-RosettaFold2NA can be run using this command:
-
-```bash
-nextflow run nf-core/proteinfold \
-      --input samplesheet.csv \
-      --outdir <OUTDIR> \
-      --mode rosettafold2na \
-      --rosettafold2na_db <null (default) | DB_PATH> \
-      --use_gpu <true/false> \
-      -profile <docker/singularity/.../institute>
-```
-
-> [!NOTE]
-> RosettaFold2NA now expects each samplesheet row to reference a multi-chain FASTA that includes every interacting molecule. Add a `type=` hint to each header (for example `type=protein`, `type=rna`, `type=double_dna`, or `type=single_dna`) so the adaptor can tag chains with the correct RF2NA entity codes (`P`, `R`, `D`, `S`). If no hint is present, the chain type is inferred from sequence composition (pure `ACUGN` → RNA, pure `ACTGN` → DNA which defaults to `D` unless explicitly tagged single-strand, otherwise protein).
-
 Note that the pipeline will create the following files in your working directory:
 
 ```bash
