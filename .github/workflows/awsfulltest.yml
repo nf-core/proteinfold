@@ -16,34 +16,25 @@ jobs:
     # run only if the PR is approved by at least 2 reviewers and against the master/main branch or manually triggered
     if: github.repository == 'nf-core/proteinfold' && github.event.review.state == 'approved' && (github.event.pull_request.base.ref == 'master' || github.event.pull_request.base.ref == 'main') || github.event_name == 'workflow_dispatch' || github.event_name == 'release'
     runs-on: ubuntu-latest
-    # Do a full-scale run on each of the mode
+    # Do a full test on each of the modes
     strategy:
       matrix:
-        include:
-          - mode: "alphafold2_standard"
-            compute_env: "gpu"
-          - mode: "alphafold2_split"
-            compute_env: "gpu"
-          - mode: "alphafold2_multimer"
-            compute_env: "gpu"
-          - mode: "colabfold_local"
-            compute_env: "gpu"
-          - mode: "colabfold_webserver"
-            compute_env: "gpu"
-          - mode: "colabfold_multimer"
-            compute_env: "gpu"
-          - mode: "esmfold"
-            compute_env: "gpu"
-          - mode: "esmfold_multimer"
-            compute_env: "gpu"
-          - mode: "boltz"
-            compute_env: "gpu"
-          - mode: "helixfold3"
-            compute_env: "gpu"
-          - mode: "rosettafold_all_atom"
-            compute_env: "gpu"
-          - mode: "rosettafold2na"
-            compute_env: "gpu"
+        compute_env: ["gpu"]
+        mode:
+          [
+            "alphafold2_standard",
+            "alphafold2_split",
+            "alphafold2_multimer",
+            "colabfold_local",
+            "colabfold_webserver",
+            "colabfold_multimer",
+            "esmfold",
+            "esmfold_multimer",
+            "boltz",
+            "helixfold3",
+            "rosettafold_all_atom",
+            "rosettafold2na",
+          ]
     steps:
       - name: Set revision variable
         id: revision
