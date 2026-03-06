@@ -63,8 +63,6 @@ On release, automated continuous integration tests run the pipeline on a full-si
 
 6. MultiQC: Overall QC statistics are summarized.
 
-   x. [RosettaFold2NA](https://github.com/uw-ipd/RoseTTAFold2NA) - Regular RF2NA
-
 ## Usage
 
 > [!NOTE]
