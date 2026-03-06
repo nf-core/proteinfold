@@ -61,7 +61,7 @@ On release, automated continuous integration tests run the pipeline on a full-si
 
 5. Comparison Report: The structures predicted by parallel modes are combined in an interactive HTML report.
 
-6. MultiQC: Overall QC statistics are summarized.
+6. MultiQC: The overall QC statistics are summarized.
 
 ## Usage
 
