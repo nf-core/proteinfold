@@ -1,0 +1,14 @@
+name: validate_structure_quality
+description: Validate predicted structure quality using BioPython and proper metric extraction
+keywords:
+  - validation
+  - structure
+  - quality
+  - plddt
+  - biopython
+tools:
+  - biopython:
+      description: Computational molecular biology toolkit
+      homepage: "https://biopython.org"
+      documentation: "https://biopython.org"
+      licence: ["Biopython license agreement"]

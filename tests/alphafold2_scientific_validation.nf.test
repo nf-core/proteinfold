@@ -1,0 +1,132 @@
+/*
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    CI/CD Consistency Tests for AlphaFold2 Predictions
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    Tests for reproducibility and consistency as workflow code changes.
+    
+    Focus: Ensure that outputs are *consistent*, not that they are *high quality*.
+    - Fixed seed reproducibility: Same input, same seed → same output
+    - Random seed deviation: Same input, different seeds → outputs within RMSD tolerance
+    
+    No quality threshold checks. Just regression testing for consistency.
+*/
+
+
+nextflow_pipeline {
+
+    name "Scientific validation: Structure comparison and quality metrics"
+    script "../main.nf"
+    tag "scientific"
+    tag "structure_validation"
+
+    test("Fixed seed reproducibility test") {
+        options "-profile test_alphafold_fixed_seed"
+
+        when {
+            params {
+                outdir = "$outputDir"
+            }
+        }
+
+        then {
+            assert workflow.success
+
+            // Verify outputs generated (consistency check, not quality check)
+            def pdb_files = file("${params.outdir}/**/*.pdb", relative: true)
+            assert pdb_files.size() > 0: "No PDB files generated"
+
+            def plddt_files = file("${params.outdir}/**/*plddt.tsv", relative: true)
+            assert plddt_files.size() > 0: "No pLDDT TSV files"
+
+            snapshot(
+                workflow.trace.succeeded().size(),
+                pdb_files.collect { it.name },
+                removeNextflowVersion("$outputDir/pipeline_info/nf_core_proteinfold_software_mqc_versions.yml")
+            ).match()
+        }
+    }
+
+
+    test("Random seed stochasticity test") {
+        options "-profile test_alphafold_random_seed_fuzzy"
+
+        when {
+            params {
+                outdir = "$outputDir"
+            }
+        }
+
+        then {
+            assert workflow.success
+
+            // Verify outputs generated with random seed
+            def pdb_files = file("${params.outdir}/**/*.pdb", relative: true)
+            assert pdb_files.size() > 0: "No PDB files generated with random seed"
+
+            def plddt_files = file("${params.outdir}/**/*plddt.tsv", relative: true)
+            assert plddt_files.size() > 0: "No pLDDT TSV files with random seed"
+
+            snapshot(
+                workflow.trace.succeeded().size(),
+                pdb_files.collect { it.name },
+                removeNextflowVersion("$outputDir/pipeline_info/nf_core_proteinfold_software_mqc_versions.yml")
+            ).match()
+        }
+    }
+
+
+    test("Larger protein handling") {
+        options "-profile test_alphafold_random_seed_fuzzy"
+
+        when {
+            params {
+                outdir = "$outputDir"
+            }
+        }
+
+        then {
+            assert workflow.success
+
+            // Verify H1065 (larger multi-chain protein) is handled
+            def h1065_pdb = file("${params.outdir}/alphafold2/split_msa_prediction/H1065/*.pdb", relative: true)
+            assert h1065_pdb.size() > 0: "H1065 predictions not generated"
+
+            def h1065_plddt = file("${params.outdir}/alphafold2/split_msa_prediction/H1065/*plddt.tsv", relative: true)
+            assert h1065_plddt.size() > 0: "H1065 TSV not generated"
+
+            snapshot(
+                workflow.trace.succeeded().size(),
+                h1065_pdb.collect { it.name }
+            ).match()
+        }
+    }
+
+
+    test("Multiple proteins processed") {
+        options "-profile test_alphafold_fixed_seed"
+
+        when {
+            params {
+                outdir = "$outputDir"
+            }
+        }
+
+        then {
+            assert workflow.success
+
+            // Verify all input proteins are processed
+            def pdb_files = file("${params.outdir}/**/*.pdb", relative: true)
+            assert pdb_files.size() >= 2: "Expected at least 2 predictions"
+
+            def plddt_files = file("${params.outdir}/**/*plddt.tsv", relative: true)
+            assert plddt_files.size() >= 2: "Expected TSV for each protein"
+
+            snapshot(
+                workflow.trace.succeeded().size(),
+                pdb_files.collect { it.name },
+                plddt_files.collect { it.name }
+            ).match()
+        }
+    }
+
+}

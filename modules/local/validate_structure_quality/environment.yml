@@ -1,0 +1,9 @@
+name: validate_structure_quality
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - python=3.10
+  - biopython::biopython >=1.80
+  - numpy
