@@ -113,6 +113,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[PR #492](https://github.com/nf-core/proteinfold/pulls/492)] - Clean TODOs from code and create issues instead for 2.0.0 release preparation.
 - [[PR #493](https://github.com/nf-core/proteinfold/pulls/493)] - Standardise Dockerfiles labels and bump version 2.0.0 to prepare release.
 - [[#494](https://github.com/nf-core/proteinfold/issues/494)] - Publish Colabfold DBs when downloaded to be directly consumable using `colabfold_db` parameter.
+- [[#496](https://github.com/nf-core/proteinfold/issues/496)] - Publish all DBs when downloaded to be directly consumable using the corresponding mode parameter.
+- [[#494](https://github.com/nf-core/proteinfold/issues/494)] - Publish Colabfold DBs when downloaded to be directly consumable using `colabfold_db` parameter.
+- [[#499](https://github.com/nf-core/proteinfold/issues/499)] - Get rid of `ENTRYPOINT` in alphafold2 dockerfiles.
+- [[PR #501](https://github.com/nf-core/proteinfold/pulls/501)] - Move python code of `BOLTZ_FASTA` to a python script in `bin`.
+- [[#503](https://github.com/nf-core/proteinfold/issues/503)] - Add checkIfExists validation to user-provided database paths across all prepare DB subworkflows.
+- [[#507](https://github.com/nf-core/proteinfold/issues/507)] - Implement missing full tests and check that the others work before release 2.0.0.
+- [[PR #509](https://github.com/nf-core/proteinfold/pulls/509)] - Setup gpu environment for AWS full tests.
 - [[PR #497](https://github.com/nf-core/proteinfold/pull/497)] - Add MMseqs Colabfold Search GPU Support.
 
 ### Parameters

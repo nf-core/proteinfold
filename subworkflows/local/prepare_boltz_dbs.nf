@@ -26,11 +26,11 @@ workflow PREPARE_BOLTZ_DBS {
     ch_versions     = channel.empty()
 
     if (boltz_db) {
-        ch_boltz_ccd    = channel.value(file(boltz_ccd))
-        ch_boltz_model  = channel.value(file(boltz_model))
-        ch_boltz2_aff   = channel.value(file(boltz2_aff))
-        ch_boltz2_conf  = channel.value(file(boltz2_conf))
-        ch_boltz2_mols  = channel.value(file(boltz2_mols))
+        ch_boltz_ccd    = channel.value(file(boltz_ccd, checkIfExists: true))
+        ch_boltz_model  = channel.value(file(boltz_model, checkIfExists: true))
+        ch_boltz2_aff   = channel.value(file(boltz2_aff, checkIfExists: true))
+        ch_boltz2_conf  = channel.value(file(boltz2_conf, checkIfExists: true))
+        ch_boltz2_mols  = channel.value(file(boltz2_mols, checkIfExists: true))
     } else {
         ARIA2_BOLTZ_CCD(
             [

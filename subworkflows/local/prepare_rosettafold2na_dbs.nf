@@ -33,11 +33,11 @@ workflow PREPARE_ROSETTAFOLD2NA_DBS {
     ch_versions = channel.empty()
 
     if (rosettafold2na_db) {
-        ch_bfd      = channel.value(file(rosettafold2na_bfd_path))
-        ch_uniref30 = channel.value(file(rosettafold2na_uniref30_path))
-        ch_pdb100   = channel.value(file(rosettafold2na_pdb100_path))
-        ch_weights  = channel.value(file(rosettafold2na_weights_path))
-        ch_rna      = channel.value(file(rosettafold2na_rna_path))
+        ch_bfd      = channel.value(file(rosettafold2na_bfd_path, checkIfExists: true))
+        ch_uniref30 = channel.value(file(rosettafold2na_uniref30_path, checkIfExists: true))
+        ch_pdb100   = channel.value(file(rosettafold2na_pdb100_path, checkIfExists: true))
+        ch_weights  = channel.value(file(rosettafold2na_weights_path, checkIfExists: true))
+        ch_rna      = channel.value(file(rosettafold2na_rna_path, checkIfExists: true))
     } else {
         ARIA2_BFD(rosettafold2na_bfd_link)
         ch_bfd = ARIA2_BFD

@@ -54,23 +54,23 @@ workflow PREPARE_ALPHAFOLD2_DBS {
 
     if (alphafold2_db) {
         if (alphafold2_full_dbs) {
-            ch_bfd       = channel.value(file(bfd_path))
+            ch_bfd       = channel.value(file(bfd_path, checkIfExists: true))
             ch_small_bfd = channel.value(file("${projectDir}/assets/dummy_db"))
         }
         else {
             ch_bfd       = channel.value(file("${projectDir}/assets/dummy_db"))
-            ch_small_bfd = channel.value(file(small_bfd_path))
+            ch_small_bfd = channel.value(file(small_bfd_path, checkIfExists: true))
         }
 
-        ch_params         = channel.value(file(alphafold2_params_path))
-        ch_mgnify         = channel.value(file(mgnify_path))
-        ch_pdb70          = channel.value(file(pdb70_path))
-        ch_mmcif_files    = channel.value(file(pdb_mmcif_path))
-        ch_obsolete       = channel.value(file(pdb_obsolete_path, type: 'file'))
-        ch_uniref30       = channel.value(file(alphafold2_uniref30_path, type: 'any'))
-        ch_uniref90       = channel.value(file(uniref90_path))
-        ch_pdb_seqres     = channel.value(file(pdb_seqres_path))
-        ch_uniprot        = channel.value(file(uniprot_path))
+        ch_params         = channel.value(file(alphafold2_params_path, checkIfExists: true))
+        ch_mgnify         = channel.value(file(mgnify_path, checkIfExists: true))
+        ch_pdb70          = channel.value(file(pdb70_path, checkIfExists: true))
+        ch_mmcif_files    = channel.value(file(pdb_mmcif_path, checkIfExists: true))
+        ch_obsolete       = channel.value(file(pdb_obsolete_path, type: 'file', checkIfExists: true))
+        ch_uniref30       = channel.value(file(alphafold2_uniref30_path, type: 'any', checkIfExists: true))
+        ch_uniref90       = channel.value(file(uniref90_path, checkIfExists: true))
+        ch_pdb_seqres     = channel.value(file(pdb_seqres_path, checkIfExists: true))
+        ch_uniprot        = channel.value(file(uniprot_path, checkIfExists: true))
     }
     else {
         if (alphafold2_full_dbs) {

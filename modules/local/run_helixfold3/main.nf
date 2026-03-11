@@ -53,6 +53,8 @@ process RUN_HELIXFOLD3 {
     init_model_path=\$(ls ./init_models/*.pdparams | head -n 1)
     mgnify_db_path=\$(ls -v ./mgnify/mgy_clusters*.fa | tail -n 1)
 
+    chmod +x ./maxit_src/bin/maxit
+
     mamba run --name helixfold python3.9 /app/helixfold3/inference.py \\
         --maxit_binary "./maxit_src/bin/maxit" \\
         --jackhmmer_binary_path "jackhmmer" \\
