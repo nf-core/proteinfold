@@ -945,7 +945,6 @@
                 }
             }
         },
-
         "generic_options": {
             "title": "Generic options",
             "type": "object",
@@ -1367,8 +1366,7 @@
     ],
     "properties": {
         "colabfold_enable_gpu_search": {
-            "type": "boolean",
-            "default": true
+            "type": "boolean"
         },
         "colabfold_envdb_path_padded": {
             "type": "string",
