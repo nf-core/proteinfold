@@ -8,51 +8,62 @@
                     "aria2": {
                         "branch": "master",
                         "git_sha": "7d0ccc097c60d23a195099b326a5882e135c7949",
-                        "installed_by": ["modules"],
+                        "installed_by": [
+                            "modules"
+                        ],
                         "patch": "modules/nf-core/aria2/aria2.diff"
                     },
                     "foldseek/easysearch": {
                         "branch": "master",
                         "git_sha": "a02efd7783000a416d5d2f1b2bc86b8d41b9f439",
-                        "installed_by": ["modules"],
+                        "installed_by": [
+                            "modules"
+                        ],
                         "patch": "modules/nf-core/foldseek/easysearch/foldseek-easysearch.diff"
                     },
                     "gunzip": {
                         "branch": "master",
                         "git_sha": "5c460c5a4736974abde2843294f35307ee2b0e5e",
-                        "installed_by": ["modules"]
+                        "installed_by": [
+                            "modules"
+                        ]
                     },
                     "mmseqs/createindex": {
                         "branch": "master",
                         "git_sha": "38697a933bef7041bb935c9b8374d9948ce6c794",
-                        "installed_by": ["modules"]
-                    },
-                    "mmseqs/makepaddedseqdb": {
-                        "branch": "master",
-                        "git_sha": "40a31ec6d922ce6022a3a78f9f1e832b33de6a6d",
-                        "installed_by": ["modules"]
+                        "installed_by": [
+                            "modules"
+                        ]
                     },
                     "mmseqs/tsv2exprofiledb": {
                         "branch": "master",
                         "git_sha": "151460db852d636979d9ff3ee631e2268060d4c3",
-                        "installed_by": ["modules"]
+                        "installed_by": [
+                            "modules"
+                        ]
                     },
                     "multiqc": {
                         "branch": "master",
                         "git_sha": "f0719ae309075ae4a291533883847c3f7c441dad",
-                        "installed_by": ["modules"],
+                        "installed_by": [
+                            "modules"
+                        ],
                         "patch": "modules/nf-core/multiqc/multiqc.diff"
                     },
                     "untar": {
                         "branch": "master",
                         "git_sha": "41dfa3f7c0ffabb96a6a813fe321c6d1cc5b6e46",
-                        "installed_by": ["modules"],
+                        "installed_by": [
+                            "modules"
+                        ],
                         "patch": "modules/nf-core/untar/untar.diff"
                     },
                     "unzip": {
                         "branch": "master",
                         "git_sha": "4dd9d8439a429c7ee566e0e2347f76ddeef27e66",
-                        "installed_by": ["modules"]
+                        "installed_by": [
+                            "modules"
+                        ]
                     }
                 }
             },
@@ -61,17 +72,23 @@
                     "utils_nextflow_pipeline": {
                         "branch": "master",
                         "git_sha": "05954dab2ff481bcb999f24455da29a5828af08d",
-                        "installed_by": ["subworkflows"]
+                        "installed_by": [
+                            "subworkflows"
+                        ]
                     },
                     "utils_nfcore_pipeline": {
                         "branch": "master",
                         "git_sha": "65f5e638d901a51534c68fd5c1c19e8112fb4df1",
-                        "installed_by": ["subworkflows"]
+                        "installed_by": [
+                            "subworkflows"
+                        ]
                     },
                     "utils_nfschema_plugin": {
                         "branch": "master",
                         "git_sha": "fdc08b8b1ae74f56686ce21f7ea11ad11990ce57",
-                        "installed_by": ["subworkflows"]
+                        "installed_by": [
+                            "subworkflows"
+                        ]
                     }
                 }
             }
