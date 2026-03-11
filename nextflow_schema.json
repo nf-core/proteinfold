@@ -135,7 +135,7 @@
                     "fa_icon": "fas fa-stream"
                 },
                 "alphafold2_random_seed": {
-                    "type": "string",
+                    "type": "integer",
                     "description": "Random seed to control stochastic alphafold inference."
                 },
                 "alphafold2_params_prefix": {
