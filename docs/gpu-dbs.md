@@ -110,8 +110,8 @@ mkdir colabfold_uniref30_padded
 mmseqs makepaddedseqdb ./colabfold_uniref30/uniref30_2302_db_seq ./colabfold_uniref30_padded/uniref30_2302_db_seq
 mmseqs makepaddedseqdb ./colabfold_uniref30/uniref30_2302_db ./colabfold_uniref30_padded/uniref30_2302_db
 mkdir colabfold_envdb_padded
-~/app/mmseqs/mmseqs/bin/mmseqs makepaddedseqdb ./colabfold_envdb/colabfold_envdb_202108_db ./colabfold_envdb_padded/colabfold_envdb_202108_db
-~/app/mmseqs/mmseqs/bin/mmseqs makepaddedseqdb ./colabfold_envdb/colabfold_envdb_202108_db_seq ./colabfold_envdb_padded/colabfold_envdb_202108_db_seq
+mmseqs makepaddedseqdb ./colabfold_envdb/colabfold_envdb_202108_db ./colabfold_envdb_padded/colabfold_envdb_202108_db
+mmseqs makepaddedseqdb ./colabfold_envdb/colabfold_envdb_202108_db_seq ./colabfold_envdb_padded/colabfold_envdb_202108_db_seq
 cp ./colabfold_envdb/colabfold_envdb_202108_db_aln.* ./colabfold_envdb_padded/
 ```
 
