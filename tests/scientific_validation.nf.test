@@ -1,0 +1,311 @@
+/*
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    Scientific Validation: All Structure Prediction Modes with Full TSV Parsing
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+*/
+
+nextflow_pipeline {
+
+    name "Scientific validation: All structure prediction modes with full TSV parsing"
+    script "../main.nf"
+    tag "scientific"
+    tag "output_validation"
+
+    def modes = [
+        [name: 'alphafold2', displayName: 'AlphaFold2', profile: 'test_full_alphafold2_split', ext: '.pdb', tags: ['alphafold2']],
+        [name: 'alphafold3', displayName: 'AlphaFold3', profile: 'test_full_alphafold3', ext: '.cif', tags: ['alphafold3']],
+        [name: 'esmfold', displayName: 'ESMFold', profile: 'test_full_esmfold', ext: '.pdb', tags: ['esmfold']],
+        [name: 'colabfold', displayName: 'ColabFold', profile: 'test_full_colabfold_local', ext: '.pdb', tags: ['colabfold']],
+        [name: 'boltz', displayName: 'Boltz', profile: 'test_full_boltz', ext: '.pdb', tags: ['boltz']],
+        // [name: 'rosettafold2na', ...],  // TODO: enable when UniRef30_2020_06 database is available
+        [name: 'rosettafold_all_atom', displayName: 'RoseTTAFold-AA', profile: 'test_full_rosettafold_all_atom', ext: '.pdb', tags: ['rosettafold_all_atom', 'rosettafold']],
+        [name: 'helixfold3', displayName: 'HelixFold3', profile: 'test_full_helixfold3', ext: '.pdb', tags: ['helixfold3']],
+    ]
+
+    // ==================== Shared Python runner ====================
+    def runPython = { String script_text, String tmpname ->
+        def script_file = new File("/tmp/${tmpname}.py")
+        script_file.text = script_text
+        def sout = new StringBuffer()
+        def serr = new StringBuffer()
+        def proc = "python3 ${script_file.absolutePath}".execute()
+        proc.consumeProcessOutput(sout, serr)
+        def exit_code = proc.waitFor()
+        [exit_code: exit_code, stdout: sout.toString(), stderr: serr.toString()]
+    }
+
+    // ==================== Canary: validate the validator ====================
+    // Must be called before trusting ANY structure validation results.
+    // Tests all three cases:
+    //   1. Malformed file (no ATOM records)        → parser MUST reject
+    //   2. Valid minimal PDB                        → parser MUST accept
+    //   3. Invalid residues + malformed coordinates → parser MUST reject
+    def assertParserIsSound = { String modeName ->
+
+        // ---- Canary 1: Malformed PDB (no ATOM records) must be REJECTED ----
+        def malformed_pdb = "/tmp/canary_malformed_${modeName}.pdb"
+        new File(malformed_pdb).text = """\
+TITLE    CANARY MALFORMED TEST
+REMARK   Deliberately missing ATOM records - parser must reject this
+END
+"""
+        def r1 = runPython("""
+import sys, warnings
+from Bio.PDB.PDBParser import PDBConstructionWarning
+warnings.filterwarnings("ignore", category=PDBConstructionWarning, message=".*Ignoring unrecognized record.*")
+warnings.filterwarnings("error",  category=PDBConstructionWarning, message=".*discontinuous.*")
+warnings.filterwarnings("error",  category=PDBConstructionWarning, message=".*duplicate.*")
+warnings.filterwarnings("error",  category=PDBConstructionWarning, message=".*could not assign element.*")
+from Bio.PDB import PDBParser
+try:
+    parser = PDBParser(QUIET=False)
+    structure = parser.get_structure("protein", "${malformed_pdb}")
+    residues = sum(len(list(c.get_residues())) for m in structure for c in m)
+    if residues == 0:
+        raise ValueError("No residues found - correctly rejected empty structure")
+    print(f"CANARY FAILED: parser accepted malformed file with {residues} residues!")
+    sys.exit(1)
+except Exception as e:
+    print(f"✓ Canary 1 passed - malformed PDB correctly rejected: {e}")
+    sys.exit(0)
+""", "canary_malformed_${modeName}")
+
+        println r1.stdout
+        if (r1.stderr) println r1.stderr
+        assert r1.exit_code == 0: \
+            "CANARY FAILED [${modeName}]: Parser did NOT reject a malformed PDB (no ATOM records).\n" +
+            "Structure validation results CANNOT be trusted.\n" +
+            "stdout: ${r1.stdout}\nstderr: ${r1.stderr}"
+
+        // ---- Canary 2: Valid minimal PDB must be ACCEPTED ----
+        def valid_pdb = "/tmp/canary_valid_${modeName}.pdb"
+        new File(valid_pdb).text = """\
+TITLE    CANARY VALID TEST
+REMARK   Minimal valid PDB - parser must accept this
+ATOM      1  N   ALA A   1       0.000   0.000   0.000  1.00  0.00           N
+ATOM      2  CA  ALA A   1       1.458   0.000   0.000  1.00  0.00           C
+ATOM      3  C   ALA A   1       2.009   1.390   0.000  1.00  0.00           C
+ATOM      4  O   ALA A   1       1.221   2.341   0.000  1.00  0.00           O
+ATOM      5  CB  ALA A   1       1.988  -0.760  -1.206  1.00  0.00           C
+END
+"""
+        def r2 = runPython("""
+import sys, warnings
+from Bio.PDB.PDBParser import PDBConstructionWarning
+warnings.filterwarnings("ignore", category=PDBConstructionWarning, message=".*Ignoring unrecognized record.*")
+warnings.filterwarnings("error",  category=PDBConstructionWarning, message=".*discontinuous.*")
+warnings.filterwarnings("error",  category=PDBConstructionWarning, message=".*duplicate.*")
+warnings.filterwarnings("error",  category=PDBConstructionWarning, message=".*could not assign element.*")
+from Bio.PDB import PDBParser
+try:
+    parser = PDBParser(QUIET=False)
+    structure = parser.get_structure("protein", "${valid_pdb}")
+    residues = sum(len(list(c.get_residues())) for m in structure for c in m)
+    if residues == 0:
+        raise ValueError("No residues found in a file that should be valid!")
+    print(f"✓ Canary 2 passed - valid PDB correctly accepted: {residues} residues")
+    sys.exit(0)
+except Exception as e:
+    print(f"CANARY FAILED: parser rejected a valid PDB: {e}")
+    sys.exit(1)
+""", "canary_valid_${modeName}")
+
+        println r2.stdout
+        if (r2.stderr) println r2.stderr
+        assert r2.exit_code == 0: \
+            "CANARY FAILED [${modeName}]: Parser REJECTED a known-valid PDB.\n" +
+            "Structure validation results CANNOT be trusted.\n" +
+            "stdout: ${r2.stdout}\nstderr: ${r2.stderr}"
+
+        // ---- Canary 3: Non-standard residues + malformed coordinates must be REJECTED ----
+        def invalid_pdb = "/tmp/canary_invalid_residue_${modeName}.pdb"
+        new File(invalid_pdb).text = """\
+TITLE    CANARY INVALID RESIDUE TEST
+REMARK   Non-standard residues and malformed coordinates - parser must reject this
+ATOM      1  N   AZA A   1       0.000   0.000   0.000  1.00  0.00           N
+ATOM      2  CA  ALA A   1       1.458   0.000   0.000  1.00  0.00           C
+ATOM      3  C   AZA A   1       2.009   1.390   0.000  Q.00  0.00           C
+ATOM      4  O   AZA A   1       1.221   2.3X1   0.000  1.00  0.00           5
+END
+"""
+        def r3 = runPython("""
+import sys, warnings
+from Bio.PDB.PDBParser import PDBConstructionWarning
+warnings.filterwarnings("ignore", category=PDBConstructionWarning, message=".*Ignoring unrecognized record.*")
+warnings.filterwarnings("error",  category=PDBConstructionWarning, message=".*discontinuous.*")
+warnings.filterwarnings("error",  category=PDBConstructionWarning, message=".*duplicate.*")
+warnings.filterwarnings("error",  category=PDBConstructionWarning, message=".*could not assign element.*")
+from Bio.PDB import PDBParser
+try:
+    parser = PDBParser(QUIET=False)
+    parser.get_structure("protein", "${invalid_pdb}")
+    print("CANARY FAILED: parser accepted non-standard residues/malformed coordinates!")
+    sys.exit(1)
+except Exception as e:
+    print(f"✓ Canary 3 passed - invalid residues/coordinates correctly rejected: {e}")
+    sys.exit(0)
+""", "canary_invalid_${modeName}")
+
+        println r3.stdout
+        if (r3.stderr) println r3.stderr
+        assert r3.exit_code == 0: \
+            "CANARY FAILED [${modeName}]: Parser did NOT reject non-standard residues/malformed coordinates.\n" +
+            "Structure validation results CANNOT be trusted.\n" +
+            "stdout: ${r3.stdout}\nstderr: ${r3.stderr}"
+
+        println "✓ All 3 canary checks passed for ${modeName} - parser is sound, proceeding with validation"
+    }
+
+    // ==================== Per-mode tests ====================
+    modes.each { mode ->
+        def modeName    = mode.name
+        def modeDisplay = mode.displayName
+        def modeProfile = mode.profile
+        def modeExt     = mode.ext
+        def modeTags    = mode.tags
+
+        test("${modeDisplay}: BioPython structure validation") {
+            tag "${modeName}"
+            modeTags.each { t -> tag t }
+            tag "structure_validation"
+
+            options "-profile ${modeProfile}"
+
+            when {
+                params {
+                    input  = "$projectDir/assets/samplesheet.csv"
+                    outdir = "$outputDir"
+                }
+            }
+
+            then {
+                // ===== CANARY: must run first - if parser is broken, nothing below can be trusted =====
+                assertParserIsSound(modeName)
+
+                // ===== Workflow success =====
+                if (!workflow.success) {
+                    println "Workflow failed with exit status: ${workflow.exitStatus}"
+                    println "Failed processes: ${workflow.trace.failed().collect { "${it.process} [${it.exit}]" }}"
+                }
+                assert workflow.success: "${modeDisplay} workflow failed - exit status: ${workflow.exitStatus}"
+
+                def modeOutputDir = file("${params.outdir}/${modeName}")
+                def structDir     = file("${params.outdir}/${modeName}/top_ranked_structures")
+                def struct_files  = structDir.exists() ? structDir.listFiles().findAll { it.name.endsWith(modeExt) } : []
+
+                assert struct_files.size() > 0: "${modeDisplay} produced no structure files"
+
+                // ===== BioPython structure validation =====
+                struct_files.each { struct_file ->
+                    def result = runPython("""
+import sys
+from Bio.PDB import PDBParser, MMCIFParser
+
+struct_file = "${struct_file.toString()}"
+ext = struct_file.split('.')[-1]
+
+try:
+    if ext == 'pdb':
+        parser = PDBParser(QUIET=False)
+    elif ext == 'cif':
+        parser = MMCIFParser(QUIET=False)
+    else:
+        raise ValueError(f"Unknown structure format: {ext}")
+
+    structure = parser.get_structure("protein", struct_file)
+    residue_count = sum(len(list(c.get_residues())) for m in structure for c in m)
+
+    if residue_count == 0:
+        raise ValueError("Structure has no residues")
+
+    print(f"✓ {struct_file.split('/')[-1]}: {residue_count} residues validated")
+    sys.exit(0)
+except Exception as e:
+    print(f"✗ BioPython validation failed: {e}")
+    sys.exit(1)
+""", "validate_${struct_file.name.replaceAll(/\\..*/, '')}")
+
+                    println result.stdout
+                    if (result.stderr) println result.stderr
+                    assert result.exit_code == 0: \
+                        "BioPython validation failed for ${struct_file.name}\n" +
+                        "Output: ${result.stdout}\nError: ${result.stderr}"
+                }
+
+                // ===== pLDDT Validation =====
+                def plddt_files = modeOutputDir.listFiles().findAll { it.isDirectory() }.collect { proteinDir ->
+                    proteinDir.listFiles().findAll { it.name.endsWith('plddt.tsv') }
+                }.flatten()
+                assert plddt_files.size() > 0: "${modeDisplay} failed to produce pLDDT metrics"
+
+                plddt_files.each { f ->
+                    assert f.size() > 0: "Empty pLDDT file: ${f.name}"
+                    def lines  = f.readLines()
+                    assert lines.size() > 1: "pLDDT file has no data rows: ${f.name}"
+                    def header = lines[0].split('\t')
+                    assert header[0] == 'Positions': "pLDDT header should start with 'Positions', got '${header[0]}'"
+
+                    lines.drop(1).each { line ->
+                        def values = line.split('\t')
+                        assert values.size() == header.size(): \
+                            "Row has ${values.size()} columns, expected ${header.size()} in ${f.name}"
+                        for (int i = 1; i < values.size(); i++) {
+                            try {
+                                def v = Float.parseFloat(values[i])
+                                assert v >= 0 && v <= 100:         "pLDDT value ${v} outside 0-100 range in ${f.name}"
+                                assert !v.isNaN() && !v.isInfinite(): "pLDDT has NaN/inf value in ${f.name}"
+                            } catch (NumberFormatException e) {
+                                assert false: "pLDDT value '${values[i]}' is not a valid float in ${f.name}"
+                            }
+                        }
+                    }
+                    println "✓ pLDDT validation passed: ${f.name} (${lines.size() - 1} positions)"
+                }
+
+                // ===== PAE Validation (if present) =====
+                def pae_files = modeOutputDir.listFiles().findAll { it.isDirectory() }.collect { proteinDir ->
+                    def paeDir = new File("${proteinDir}/paes")
+                    paeDir.exists() ? paeDir.listFiles().findAll { it.name.endsWith('.tsv') } : []
+                }.flatten()
+
+                pae_files.each { f ->
+                    assert f.size() > 0: "Empty PAE file: ${f.name}"
+                    def data_rows = f.readLines().drop(1)
+                    if (data_rows.size() > 0) {
+                        def n_rows = data_rows.size()
+                        def n_cols = data_rows[0].split('\t').size()
+                        assert n_rows == n_cols: "PAE matrix not square: ${n_rows}x${n_cols} in ${f.name}"
+                        data_rows.each { line ->
+                            line.split('\t').each { val ->
+                                try {
+                                    def v = Float.parseFloat(val)
+                                    assert v >= 0 && v <= 31.75:          "PAE value ${v} outside 0-31.75 range in ${f.name}"
+                                    assert !v.isNaN() && !v.isInfinite(): "PAE has NaN/inf value in ${f.name}"
+                                } catch (NumberFormatException e) {
+                                    assert false: "PAE value '${val}' is not a valid float in ${f.name}"
+                                }
+                            }
+                        }
+                        println "✓ PAE validation passed: ${f.name} (${n_rows}x${n_cols} matrix)"
+                    }
+                }
+
+                // ===== Multiple proteins consistency =====
+                assert struct_files.size() >= 2: \
+                    "Expected at least 2 ${modeExt} files, got ${struct_files.size()}"
+                assert plddt_files.size() >= 2: \
+                    "Expected at least 2 pLDDT files, got ${plddt_files.size()}"
+
+                println ""
+                println "═══════════════════════════════════════════════════════════"
+                println "✓ ALL VALIDATIONS PASSED for ${modeDisplay}"
+                println "  - Canary (parser soundness): 3/3 checks passed ✓"
+                println "  - BioPython structure validation: ${struct_files.size()} files"
+                println "  - pLDDT metrics: ${plddt_files.size()} files"
+                println "  - PAE matrices: ${pae_files.size()} files"
+                println "  - Multiple proteins: ${struct_files.size()} structures, ${plddt_files.size()} metrics"
+                println "═══════════════════════════════════════════════════════════"
+            }
+        }
+    }
+}
