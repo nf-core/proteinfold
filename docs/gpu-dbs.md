@@ -1,7 +1,9 @@
 # Using padded databases in proteinfold
+
 Proteinfold can make use of GPU MSA search for faster searching. However, this requires creating padded databases for the GPU hardware you wish to use.
 
 ## Requirements
+
 - mmseqs-gpu
 - uniref30 database
 - colabfold envdb database
@@ -9,7 +11,9 @@ Proteinfold can make use of GPU MSA search for faster searching. However, this r
 - CUDA 12.4 or newer
 
 ## Database structure
+
 Proteinfold can make use of the `--db` flag to load in all required databases. In order to load the padded databases, the database should be structured as such. Below is a truncated version of the database tree. It is important to note that the padded database files have the same prefix as the CPU files.
+
 ```
 .
 ├── boltz1.ckpt
@@ -65,6 +69,7 @@ Proteinfold can make use of the `--db` flag to load in all required databases. I
 ```
 
 ## Obtaining MMseqs-GPU
+
 MMseqs has two x86 builds available for Linux. This requires the GPU version of MMseqs. It can be obtained via this command:
 
 ```bash
@@ -73,14 +78,18 @@ tar xvf mmseqs-linux-gpu.tar.gz
 ```
 
 ## Downloading UniRef30 Database
+
 Firstly, you must obtain the UniRef database. The database file is approx. 55GB. You may be able to get faster downloads by using `aria2c` with the `-x 8` option.
+
 ```bash
 wget https://opendata.mmseqs.org/colabfold/uniref30_2302.db.tar.gz
 tar xvf uniref30_2302.db.tar.gz
 ```
 
 ## Downloading the Colabfold EnvDB
+
 Next, you will need to download the Colabfold EnvDB. This database is approx. 120GB.
+
 ```bash
 wget https://opendata.mmseqs.org/colabfold/colabfold_envdb_202108.db.tar.gz
 tar xvf colabfold_envdb_202108.db.tar.gz
@@ -88,11 +97,14 @@ tar xvf colabfold_envdb_202108.db.tar.gz
 ```
 
 ## CPU Database structure
+
 By now, your directory structure should look something like this
 [T.B.D.]
 
 ## Create padded database
+
 Next, we need to create the padded databases. For this, it is recommended to duplicate the databases.
+
 ```bash
 mkdir colabfold_uniref30_padded
 mmseqs makepaddedseqdb ./colabfold_uniref30/uniref30_2302_db_seq ./colabfold_uniref30_padded/uniref30_2302_db_seq
@@ -104,6 +116,7 @@ cp ./colabfold_envdb/colabfold_envdb_202108_db_aln.* ./colabfold_envdb_padded/
 ```
 
 You should now have a directory structure that looks something similar to this
+
 ```
 .
 ├── colabfold_envdb
@@ -230,7 +243,9 @@ You should now have a directory structure that looks something similar to this
 ```
 
 ## Running colabfold
+
 You will need to set the `--colabfold_enable_gpu_search true` flag. Below is an example command you can use to run with GPU search enabled:
+
 ```bash
 nextflow run ./main.nf \
     --input "samplesheet.csv" \
@@ -242,4 +257,3 @@ nextflow run ./main.nf \
     --colabfold_enable_gpu_search true \
     --colabfold_model_preset alphafold2_ptm
 ```
-
