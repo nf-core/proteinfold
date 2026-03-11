@@ -33,7 +33,7 @@ workflow ALPHAFOLD2 {
     ch_versions             // channel: [ path(versions.yml) ]
     alphafold2_full_dbs     // boolean: Use full databases (otherwise reduced version)
     alphafold2_mode         //  string: Mode to run Alphafold2 in
-    alphafold2_model_preset //  string: Specifies the model preset to use for Alphafold2
+    alphafold2_model_preset //  string: Model preset used for single-entry FASTA inputs
     uniref30_prefix         //  string: Prefix for uniref30 database files
     ch_alphafold2_params    // channel: path(alphafold2_params)
     ch_bfd                  // channel: path(bfd)
@@ -57,9 +57,7 @@ workflow ALPHAFOLD2 {
 
     ch_samplesheet
         .map { meta, fasta ->
-            def resolved_model_preset = alphafold2_model_preset == 'auto'
-                ? resolveModelPresetByFastaEntities(fasta, 'monomer_ptm')
-                : alphafold2_model_preset
+            def resolved_model_preset = resolveModelPresetByFastaEntities(fasta, alphafold2_model_preset, 'multimer')
             [ meta, fasta, resolved_model_preset ]
         }
         .branch { it ->

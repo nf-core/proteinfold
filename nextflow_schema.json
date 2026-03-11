@@ -133,9 +133,9 @@
                 },
                 "alphafold2_model_preset": {
                     "type": "string",
-                    "default": "auto",
-                    "description": "Model preset for 'AlphaFold2' mode",
-                    "enum": ["auto", "monomer", "monomer_casp14", "monomer_ptm", "multimer"],
+                    "default": "monomer_ptm",
+                    "description": "Model preset used only for single-entry FASTA inputs in 'AlphaFold2' mode",
+                    "enum": ["monomer", "monomer_casp14", "monomer_ptm"],
                     "fa_icon": "fas fa-stream"
                 },
                 "alphafold2_params_prefix": {
@@ -158,6 +158,17 @@
             "fa_icon": "fas fa-coins",
             "description": "ColabFold options.",
             "properties": {
+                "colabfold_model_preset": {
+                    "type": "string",
+                    "default": "alphafold2_multimer_v3",
+                    "description": "Model preset used only for multi-entry FASTA inputs in 'colabfold' mode",
+                    "enum": [
+                        "alphafold2_multimer_v1",
+                        "alphafold2_multimer_v2",
+                        "alphafold2_multimer_v3"
+                    ],
+                    "fa_icon": "fas fa-stream"
+                },
                 "colabfold_num_recycles": {
                     "type": "integer",
                     "default": 3,
@@ -225,13 +236,6 @@
                     "minimum": 1,
                     "maximum": 20,
                     "errorMessage": "Number of recycles must be a whole number between 1 and 20"
-                },
-                "esmfold_model_preset": {
-                    "type": "string",
-                    "description": "Specifies whether prediction mode is auto-detected, 'monomer' or 'multimer'",
-                    "enum": ["auto", "monomer", "multimer"],
-                    "fa_icon": "fas fa-stream",
-                    "default": "auto"
                 }
             }
         },
