@@ -162,11 +162,7 @@
                     "type": "string",
                     "default": "alphafold2_multimer_v3",
                     "description": "Model preset used only for multi-entry FASTA inputs in 'colabfold' mode",
-                    "enum": [
-                        "alphafold2_multimer_v1",
-                        "alphafold2_multimer_v2",
-                        "alphafold2_multimer_v3"
-                    ],
+                    "enum": ["alphafold2_multimer_v1", "alphafold2_multimer_v2", "alphafold2_multimer_v3"],
                     "fa_icon": "fas fa-stream"
                 },
                 "colabfold_num_recycles": {
