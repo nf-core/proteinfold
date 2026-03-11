@@ -12,6 +12,7 @@ include { MMSEQS_COLABFOLDSEARCH } from '../modules/local/mmseqs_colabfoldsearch
 include { MULTIFASTA_TO_CSV      } from '../modules/local/multifasta_to_csv'
 
 include { modeChannel            } from '../subworkflows/local/utils_nfcore_proteinfold_pipeline'
+include { resolveModelPresetByFastaEntities } from '../subworkflows/local/utils_nfcore_proteinfold_pipeline'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -30,7 +31,7 @@ workflow COLABFOLD {
     take:
     ch_samplesheet          // channel: samplesheet read in from --input
     ch_versions            // channel: [ path(versions.yml) ]
-    colabfold_model_preset // string: Specifies the model preset to use for colabfold
+    colabfold_model_preset // string: Model preset used for multi-entry FASTA inputs
     ch_colabfold_params    // channel: path(colabfold_params)
     ch_colabfold_db        // channel: path(colabfold_db)
     ch_uniref30            // channel: path(uniref30)
@@ -39,19 +40,32 @@ workflow COLABFOLD {
     main:
     ch_multiqc_report = channel.empty()
 
+    ch_samplesheet
+        .map { meta, fasta ->
+            def resolved_model_preset = resolveModelPresetByFastaEntities(fasta, 'alphafold2_ptm', colabfold_model_preset)
+            [ meta, fasta, resolved_model_preset ]
+        }
+        .set { ch_samplesheet_with_preset }
+
     if (params.use_msa_server) {
         //
         // MODULE: Run colabfold
         //
 
         MULTIFASTA_TO_CSV(
-            ch_samplesheet
+            ch_samplesheet_with_preset
+                .map { meta, fasta, _resolved_model_preset ->
+                    [ meta, fasta ]
+                }
         )
         ch_versions = ch_versions.mix(MULTIFASTA_TO_CSV.out.versions)
 
         COLABFOLD_BATCH(
-            MULTIFASTA_TO_CSV.out.input_csv,
-            colabfold_model_preset,
+            MULTIFASTA_TO_CSV.out.input_csv
+                .join(ch_samplesheet_with_preset.map { meta, _fasta, resolved_model_preset -> [ meta, resolved_model_preset ] })
+                .map { meta, input_csv, resolved_model_preset ->
+                    [ meta, input_csv, resolved_model_preset ]
+                },
             ch_colabfold_params,
             [],
             [],
@@ -65,7 +79,10 @@ workflow COLABFOLD {
         //
         //Multimer mode
         MULTIFASTA_TO_CSV(
-            ch_samplesheet
+            ch_samplesheet_with_preset
+                .map { meta, fasta, _resolved_model_preset ->
+                    [ meta, fasta ]
+                }
         )
         ch_versions = ch_versions.mix(MULTIFASTA_TO_CSV.out.versions)
         MMSEQS_COLABFOLDSEARCH (
@@ -79,8 +96,11 @@ workflow COLABFOLD {
         // MODULE: Run colabfold
         //
         COLABFOLD_BATCH(
-            MMSEQS_COLABFOLDSEARCH.out.a3m,
-            colabfold_model_preset,
+            MMSEQS_COLABFOLDSEARCH.out.a3m
+                .join(ch_samplesheet_with_preset.map { meta, _fasta, resolved_model_preset -> [ meta, resolved_model_preset ] })
+                .map { meta, a3m, resolved_model_preset ->
+                    [ meta, a3m, resolved_model_preset ]
+                },
             ch_colabfold_params,
             ch_colabfold_db,
             ch_uniref30,
