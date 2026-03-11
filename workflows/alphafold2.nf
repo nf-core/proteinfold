@@ -12,6 +12,7 @@ include { RUN_ALPHAFOLD2_MSA  } from '../modules/local/run_alphafold2_msa'
 include { RUN_ALPHAFOLD2_PRED } from '../modules/local/run_alphafold2_pred'
 include { EXTRACT_METRICS as EXTRACT_METRICS_AF2_STANDARD } from '../modules/local/extract_metrics'
 include { EXTRACT_METRICS as EXTRACT_METRICS_AF2_PRED } from '../modules/local/extract_metrics'
+include { resolveModelPresetByFastaEntities } from '../subworkflows/local/utils_nfcore_proteinfold_pipeline'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -32,7 +33,7 @@ workflow ALPHAFOLD2 {
     ch_versions             // channel: [ path(versions.yml) ]
     alphafold2_full_dbs     // boolean: Use full databases (otherwise reduced version)
     alphafold2_mode         //  string: Mode to run Alphafold2 in
-    alphafold2_model_preset //  string: Model preset used for single-entry FASTA inputs
+    alphafold2_model_preset //  string: Specifies the model preset to use for Alphafold2
     uniref30_prefix         //  string: Prefix for uniref30 database files
     ch_alphafold2_params    // channel: path(alphafold2_params)
     ch_bfd                  // channel: path(bfd)
@@ -56,9 +57,26 @@ workflow ALPHAFOLD2 {
 
     ch_samplesheet
         .map { meta, fasta ->
-            def resolved_model_preset = resolveModelPresetByFastaEntities(fasta, alphafold2_model_preset, 'multimer')
+            def resolved_model_preset = alphafold2_model_preset == 'auto'
+                ? resolveModelPresetByFastaEntities(fasta, 'monomer_ptm')
+                : alphafold2_model_preset
             [ meta, fasta, resolved_model_preset ]
         }
+        .branch { it ->
+            multimer: it[2] == 'multimer'
+            monomer: it[2] != 'multimer'
+        }
+        .set { ch_samplesheet_by_preset }
+
+    ch_samplesheet_by_preset.monomer
+        .map { meta, fasta, resolved_model_preset ->
+            [ meta, resolved_model_preset, fasta.splitFasta(file:true) ]
+        }
+        .transpose()
+        .map { meta, resolved_model_preset, fasta ->
+            [ meta, fasta, resolved_model_preset ]
+        }
+        .mix(ch_samplesheet_by_preset.multimer)
         .set { ch_samplesheet_prepared }
 
     if (alphafold2_mode == 'standard') {
