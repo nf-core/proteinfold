@@ -10,6 +10,7 @@
 include { RUN_ALPHAFOLD2      } from '../modules/local/run_alphafold2'
 include { RUN_ALPHAFOLD2_MSA  } from '../modules/local/run_alphafold2_msa'
 include { RUN_ALPHAFOLD2_PRED } from '../modules/local/run_alphafold2_pred'
+include { resolveModelPresetByFastaEntities } from '../subworkflows/local/utils_nfcore_proteinfold_pipeline'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -51,24 +52,37 @@ workflow ALPHAFOLD2 {
     ch_pae            = channel.empty()
     ch_multiqc_report = channel.empty()
 
-    if (alphafold2_model_preset != 'multimer') {
-        ch_samplesheet
-            .map {
-                meta, fasta ->
-                [ meta, fasta.splitFasta(file:true) ]
-            }
-            .transpose()
-            .set { ch_samplesheet }
-    }
+    ch_samplesheet
+        .map { meta, fasta ->
+            def resolved_model_preset = alphafold2_model_preset == 'auto'
+                ? resolveModelPresetByFastaEntities(fasta, 'monomer_ptm')
+                : alphafold2_model_preset
+            [ meta, fasta, resolved_model_preset ]
+        }
+        .branch { it ->
+            multimer: it[2] == 'multimer'
+            monomer: it[2] != 'multimer'
+        }
+        .set { ch_samplesheet_by_preset }
+
+    ch_samplesheet_by_preset.monomer
+        .map { meta, fasta, resolved_model_preset ->
+            [ meta, resolved_model_preset, fasta.splitFasta(file:true) ]
+        }
+        .transpose()
+        .map { meta, resolved_model_preset, fasta ->
+            [ meta, fasta, resolved_model_preset ]
+        }
+        .mix(ch_samplesheet_by_preset.multimer)
+        .set { ch_samplesheet_prepared }
 
     if (alphafold2_mode == 'standard') {
         //
         // SUBWORKFLOW: Run Alphafold2 standard mode
         //
         RUN_ALPHAFOLD2 (
-            ch_samplesheet,
+            ch_samplesheet_prepared,
             alphafold2_full_dbs,
-            alphafold2_model_preset,
             uniref30_prefix,
             ch_alphafold2_params,
             ch_bfd,
@@ -104,9 +118,8 @@ workflow ALPHAFOLD2 {
         // SUBWORKFLOW: Run Alphafold2 split mode, MSA and predicition
         //
         RUN_ALPHAFOLD2_MSA (
-            ch_samplesheet,
+            ch_samplesheet_prepared,
             alphafold2_full_dbs,
-            alphafold2_model_preset,
             uniref30_prefix,
             ch_alphafold2_params,
             ch_bfd,
@@ -123,13 +136,15 @@ workflow ALPHAFOLD2 {
         ch_versions = ch_versions.mix(RUN_ALPHAFOLD2_MSA.out.versions)
 
         //synchronize
-        ch_samplesheet
+        ch_samplesheet_prepared
             .join(RUN_ALPHAFOLD2_MSA.out.features)
+            .map { meta, fasta, resolved_model_preset, features ->
+                [ meta, fasta, features, resolved_model_preset ]
+            }
             .set { ch_fasta_features }
 
         RUN_ALPHAFOLD2_PRED (
             ch_fasta_features,
-            alphafold2_model_preset,
             ch_alphafold2_params,
             ch_bfd,
             ch_small_bfd,
