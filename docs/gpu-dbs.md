@@ -228,3 +228,18 @@ You should now have a directory structure that looks something similar to this
     ├── uniref30_2302_db_seq.index
     └── uniref30_2302_db_seq.lookup
 ```
+
+## Running colabfold
+You will need to set the `--colabfold_enable_gpu_search true` flag. Below is an example command you can use to run with GPU search enabled:
+```bash
+nextflow run ./main.nf \
+    --input "samplesheet.csv" \
+    --outdir "output" \
+    --mode "colabfold" \
+    --use_gpu \
+    --db /path/to/db/root \
+    --use_msa_server false \
+    --colabfold_enable_gpu_search true \
+    --colabfold_model_preset alphafold2_ptm
+```
+
