@@ -165,6 +165,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 |                              | `--boltz2_mols_link`             |
 |                              | `--boltz_model_link`             |
 |                              | `--boltz_ccd_link`               |
+|                              | `--colabfold_use_gpu_relax`      |
 
 > **NB:** Parameter has been **updated** if both old and new parameter information is present.
 > **NB:** Parameter has been **added** if just the new parameter information is present.
