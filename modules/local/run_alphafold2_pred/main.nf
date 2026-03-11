@@ -9,8 +9,7 @@ process RUN_ALPHAFOLD2_PRED {
     container "nf-core/proteinfold_alphafold2_pred:2.0.0"
 
     input:
-    tuple val(meta), path(fasta), path(features)
-    val   alphafold2_model_preset
+    tuple val(meta), path(fasta), path(features), val(alphafold2_model_preset)
     path ('params/*')
     path ('bfd/*')
     path ('small_bfd/*')
