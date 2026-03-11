@@ -129,9 +129,9 @@
                 },
                 "alphafold2_model_preset": {
                     "type": "string",
-                    "default": "monomer_ptm",
+                    "default": "auto",
                     "description": "Model preset for 'AlphaFold2' mode",
-                    "enum": ["monomer", "monomer_casp14", "monomer_ptm", "multimer"],
+                    "enum": ["auto", "monomer", "monomer_casp14", "monomer_ptm", "multimer"],
                     "fa_icon": "fas fa-stream"
                 },
                 "alphafold2_random_seed": {
@@ -228,10 +228,10 @@
                 },
                 "esmfold_model_preset": {
                     "type": "string",
-                    "description": "Specifies whether is a 'monomer' or 'multimer' prediction",
-                    "enum": ["monomer", "multimer"],
+                    "description": "Specifies whether prediction mode is auto-detected, 'monomer' or 'multimer'",
+                    "enum": ["auto", "monomer", "multimer"],
                     "fa_icon": "fas fa-stream",
-                    "default": "monomer"
+                    "default": "auto"
                 }
             }
         },

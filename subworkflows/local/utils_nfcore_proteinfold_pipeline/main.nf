@@ -228,6 +228,16 @@ def modeChannel(ch, mode) {
     }
 }
 
+def countMolecularEntitiesInFasta(fasta) {
+    return fasta.text
+        .readLines()
+        .count { line -> line.trim().startsWith('>') }
+}
+
+def resolveModelPresetByFastaEntities(fasta, monomerPreset, multimerPreset = 'multimer') {
+    return countMolecularEntitiesInFasta(fasta) > 1 ? multimerPreset : monomerPreset
+}
+
 //
 // Generate methods description for MultiQC
 //
