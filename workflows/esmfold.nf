@@ -37,49 +37,31 @@ workflow ESMFOLD {
     //
     // MODULE: Run esmfold
     //
-    if (params.esmfold_model_preset == 'auto') {
-        ch_samplesheet
-            .map { meta, fasta ->
-                [ meta, fasta, countMolecularEntitiesInFasta(fasta) ]
-            }
-            .branch { it ->
-                multimer: it[2] > 1
-                monomer: it[2] <= 1
-            }
-            .set { ch_input_by_entity_count }
+    ch_samplesheet
+        .map { meta, fasta ->
+            [ meta, fasta, countMolecularEntitiesInFasta(fasta) ]
+        }
+        .branch { it ->
+            multimer: it[2] > 1
+            monomer: it[2] <= 1
+        }
+        .set { ch_input_by_entity_count }
 
-        MULTIFASTA_TO_SINGLEFASTA(
-            ch_input_by_entity_count.multimer.map { meta, fasta, _entity_count ->
+    MULTIFASTA_TO_SINGLEFASTA(
+        ch_input_by_entity_count.multimer.map { meta, fasta, _entity_count ->
+            [ meta, fasta ]
+        }
+    )
+    ch_versions = ch_versions.mix(MULTIFASTA_TO_SINGLEFASTA.out.versions)
+    RUN_ESMFOLD(
+        ch_input_by_entity_count.monomer
+            .map { meta, fasta, _entity_count ->
                 [ meta, fasta ]
             }
-        )
-        ch_versions = ch_versions.mix(MULTIFASTA_TO_SINGLEFASTA.out.versions)
-        RUN_ESMFOLD(
-            ch_input_by_entity_count.monomer
-                .map { meta, fasta, _entity_count ->
-                    [ meta, fasta ]
-                }
-                .mix(MULTIFASTA_TO_SINGLEFASTA.out.input_fasta),
-            ch_esmfold_params,
-            ch_num_recycles
-        )
-    } else if (params.esmfold_model_preset != 'monomer') {
-        MULTIFASTA_TO_SINGLEFASTA(
-            ch_samplesheet
-        )
-        ch_versions = ch_versions.mix(MULTIFASTA_TO_SINGLEFASTA.out.versions)
-        RUN_ESMFOLD(
-            MULTIFASTA_TO_SINGLEFASTA.out.input_fasta,
-            ch_esmfold_params,
-            ch_num_recycles
-        )
-    } else {
-        RUN_ESMFOLD(
-            ch_samplesheet,
-            ch_esmfold_params,
-            ch_num_recycles
-        )
-    }
+            .mix(MULTIFASTA_TO_SINGLEFASTA.out.input_fasta),
+        ch_esmfold_params,
+        ch_num_recycles
+    )
     ch_versions = ch_versions.mix(RUN_ESMFOLD.out.versions)
 
     RUN_ESMFOLD
