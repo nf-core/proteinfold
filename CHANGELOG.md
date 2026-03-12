@@ -120,7 +120,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[#503](https://github.com/nf-core/proteinfold/issues/503)] - Add checkIfExists validation to user-provided database paths across all prepare DB subworkflows.
 - [[#507](https://github.com/nf-core/proteinfold/issues/507)] - Implement missing full tests and check that the others work before release 2.0.0.
 - [[PR #509](https://github.com/nf-core/proteinfold/pulls/509)] - Setup gpu environment for AWS full tests.
-- # [[PR #519](https://github.com/nf-core/proteinfold/issues/519)] - Fix AWS full test before release 2.0.0.
+- [[#519](https://github.com/nf-core/proteinfold/issues/519)] - Fix AWS full test before release 2.0.0.
 - [[PR #531](https://github.com/nf-core/proteinfold/pulls/531)] - Fix alphafold2_random_seed type.
 
 ### Parameters
