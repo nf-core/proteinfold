@@ -16,8 +16,6 @@ Proteinfold can make use of the `--db` flag to load in all required databases. I
 
 ```
 .
-├── boltz1.ckpt
-├── ccd.pkl
 ├── colabfold_envdb
 │   ├── colabfold_envdb_202108_sample_h.tsv
 │   ├── colabfold_envdb_202108_sample_seq.tsv
@@ -31,41 +29,10 @@ Proteinfold can make use of the `--db` flag to load in all required databases. I
 │   ├── uniref30_2302_db_seq_h.index
 │   ├── uniref30_2302_db_seq.index
 │   └── uniref30_2302_db_taxonomy
-├── colabfold_uniref30_gpu
-│   ├── uniref30_2302_db.idx.index
-│   ├── uniref30_2302_db.index
-│   └── uniref30_2302_db.lookup
-├── colabfold_uniref30.old
-│   ├── uniref30_2302_db_seq.7
-│   ├── uniref30_2302_db_seq.dbtype
-│   └── uniref30_2302_db_seq.index
-├── colabfold_uniref30_padded
-│   ├── uniref30_2302_db_seq_h.index
-│   ├── uniref30_2302_db_seq.index
-│   └── uniref30_2302_db_taxonomy
-├── mgnify
-│   └── mgy_clusters.fa
-├── pdb100
-│   ├── pdb100_2021Mar03_pdb.ffdata
-│   └── pdb100_2021Mar03_pdb.ffindex
-├── pdb70
-│   ├── pdb70_hhm.ffindex
-│   └── pdb_filter.dat
-├── pdb_mmcif
-│   ├── mmcif_files
-│   └── obsolete.dat
-├── pdb_seqres
-│   └── pdb_seqres.txt
-├── rfam
-│   └── Rfam-14.9_rep_seq.fasta
-├── small_bfd
-│   └── bfd-first_non_consensus_sequences.fasta
-├── uniprot
-│   └── uniprot.fasta
-├── uniref30
-│   └── UniRef30_2023_02_hhm.ffindex
-└── uniref90
-    └── uniref90.fasta
+└── colabfold_uniref30_padded
+    ├── uniref30_2302_db_seq_h.index
+    ├── uniref30_2302_db_seq.index
+    └── uniref30_2302_db_taxonomy
 ```
 
 ## Obtaining MMseqs-GPU
