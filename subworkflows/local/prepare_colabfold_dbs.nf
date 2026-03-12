@@ -4,19 +4,22 @@
 include { MMSEQS_CREATEINDEX as MMSEQS_CREATEINDEX_COLABFOLDDB } from '../../modules/nf-core/mmseqs/createindex/main'
 include { MMSEQS_CREATEINDEX as MMSEQS_CREATEINDEX_UNIPROT30   } from '../../modules/nf-core/mmseqs/createindex/main'
 
-include { ARIA2_UNCOMPRESS as ARIA2_COLABFOLD_PARAMS } from './aria2_uncompress'
-include { ARIA2_UNCOMPRESS as ARIA2_COLABFOLD_DB     } from './aria2_uncompress'
-include { ARIA2_UNCOMPRESS as ARIA2_UNIREF30         } from './aria2_uncompress'
+include { ARIA2_UNCOMPRESS as ARIA2_COLABFOLD_MONOMER_PARAMS } from './aria2_uncompress'
+include { ARIA2_UNCOMPRESS as ARIA2_COLABFOLD_MULTIMER_PARAMS } from './aria2_uncompress'
+include { ARIA2_UNCOMPRESS as ARIA2_COLABFOLD_DB              } from './aria2_uncompress'
+include { ARIA2_UNCOMPRESS as ARIA2_UNIREF30                  } from './aria2_uncompress'
 
 workflow PREPARE_COLABFOLD_DBS {
 
     take:
     colabfold_db                     // directory: path/to/colabfold/DBs and params
     use_msa_server                   //      bool: Specifies whether to use web msa server
-    colabfold_alphafold2_params_path // directory: /path/to/colabfold/alphafold2/params/
+    colabfold_alphafold2_monomer_params_path // directory: /path/to/colabfold/alphafold2/monomer/params/
+    colabfold_alphafold2_multimer_params_path // directory: /path/to/colabfold/alphafold2/multimer/params/
     colabfold_envdb_path             // directory: /path/to/colabfold/db/
     colabfold_uniref30_path          // directory: /path/to/uniref30/colabfold/
-    colabfold_alphafold2_params_link //    string: Specifies the link to download colabfold alphafold2 params
+    colabfold_alphafold2_monomer_params_link //    string: Specifies the link to download colabfold monomer params
+    colabfold_alphafold2_multimer_params_link //    string: Specifies the link to download colabfold selected multimer params
     colabfold_db_link                //    string: Specifies the link to download colabfold db
     colabfold_uniref30_link          //    string: Specifies the link to download uniref30
     colabfold_create_index           //   boolean: Create index for colabfold db
@@ -28,22 +31,32 @@ workflow PREPARE_COLABFOLD_DBS {
     ch_versions     = channel.empty()
 
     if (colabfold_db) {
-        ch_params = channel.value(file(colabfold_alphafold2_params_path, type: 'any', checkIfExists: true))
+        ch_params = Channel.of(
+            [ 'monomer', file(colabfold_alphafold2_monomer_params_path,  type: 'any', checkIfExists: true) ],
+            [ 'multimer', file(colabfold_alphafold2_multimer_params_path, type: 'any', checkIfExists: true) ]
+        )
         if (!use_msa_server) {
             ch_colabfold_db = channel.value(file(colabfold_envdb_path, type: 'any', checkIfExists: true))
             ch_uniref30     = channel.value(file(colabfold_uniref30_path, type: 'any', checkIfExists: true))
         }
     }
     else {
-        ARIA2_COLABFOLD_PARAMS (
-            colabfold_alphafold2_params_link
+        ARIA2_COLABFOLD_MONOMER_PARAMS (
+            colabfold_alphafold2_monomer_params_link
         )
-        ch_params = ARIA2_COLABFOLD_PARAMS
-                        .out
-                        .db
-                        .map { dir -> dir.listFiles().findAll { it -> it.isFile() } }
+        ARIA2_COLABFOLD_MULTIMER_PARAMS (
+            colabfold_alphafold2_multimer_params_link
+        )
+        ch_params = ARIA2_COLABFOLD_MONOMER_PARAMS
+                        .out.db
+                        .mix(ARIA2_COLABFOLD_MULTIMER_PARAMS.out.db)
+                        .toList()
+                        .map { param_dirs ->
+                            param_dirs.unique { it.getName() }
+                        }
 
-        ch_versions = ch_versions.mix(ARIA2_COLABFOLD_PARAMS.out.versions)
+        ch_versions = ch_versions.mix(ARIA2_COLABFOLD_MONOMER_PARAMS.out.versions)
+        ch_versions = ch_versions.mix(ARIA2_COLABFOLD_MULTIMER_PARAMS.out.versions)
 
         if (!use_msa_server) {
             ARIA2_COLABFOLD_DB (
