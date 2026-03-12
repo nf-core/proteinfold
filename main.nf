@@ -254,7 +254,6 @@ workflow NFCORE_PROTEINFOLD {
         COLABFOLD (
             ch_samplesheet,
             ch_versions,
-            params.colabfold_model_preset,
             PREPARE_COLABFOLD_DBS_COLABFOLD.out.params,
             PREPARE_COLABFOLD_DBS_COLABFOLD.out.colabfold_db,
             PREPARE_COLABFOLD_DBS_COLABFOLD.out.uniref30,
