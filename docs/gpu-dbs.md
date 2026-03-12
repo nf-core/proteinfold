@@ -1,6 +1,6 @@
 # Using padded databases in proteinfold
 
-Proteinfold can make use of GPU MSA search for faster searching. However, this requires creating padded databases for the GPU hardware you wish to use.
+Proteinfold can make use of GPU MSA search for faster searching. However, this requires creating padded databases for the GPU hardware you wish to use, and setting the appropriate flags.
 
 ## Requirements
 
