@@ -66,8 +66,19 @@ tar xvf colabfold_envdb_202108.db.tar.gz
 ## CPU Database structure
 
 By now, your directory structure should look something like this
-[T.B.D.]
 
+```
+.
+├── colabfold_envdb
+│   ├── colabfold_envdb_202108_sample_h.tsv
+│   ├── colabfold_envdb_202108_sample_seq.tsv
+│   └── colabfold_envdb_202108_sample.tsv
+└── colabfold_uniref30
+    ├── uniref30_2302_db_seq_h.dbtype
+    ├── uniref30_2302_db_seq_h.index
+    ├── uniref30_2302_db_seq.index
+    └── uniref30_2302_db_taxonomy
+```
 ## Create padded database
 
 Next, we need to create the padded databases. For this, it is recommended to duplicate the databases.
