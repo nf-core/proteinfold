@@ -48,12 +48,19 @@ workflow PREPARE_COLABFOLD_DBS {
             colabfold_alphafold2_multimer_params_link
         )
         ch_params = ARIA2_COLABFOLD_MONOMER_PARAMS
-                        .out.db
-                        .mix(ARIA2_COLABFOLD_MULTIMER_PARAMS.out.db)
-                        .toList()
-                        .map { param_dirs ->
-                            param_dirs.unique { it.getName() }
+                        .out
+                        .db
+                        .map { param_dir ->
+                            [ 'monomer', param_dir ]
                         }
+                        .mix(
+                            ARIA2_COLABFOLD_MULTIMER_PARAMS
+                                .out
+                                .db
+                                .map { param_dir ->
+                                    [ 'multimer', param_dir ]
+                                }
+                        )
 
         ch_versions = ch_versions.mix(ARIA2_COLABFOLD_MONOMER_PARAMS.out.versions)
         ch_versions = ch_versions.mix(ARIA2_COLABFOLD_MULTIMER_PARAMS.out.versions)
