@@ -27,7 +27,7 @@
                     "rdkit": "unknown"
                 },
                 "Workflow": {
-                    "nf-core/proteinfold": "v1.2.0dev"
+                    "nf-core/proteinfold": "v2.0.0"
                 }
             },
             [
@@ -106,8 +106,8 @@
         ],
         "meta": {
             "nf-test": "0.9.3",
-            "nextflow": "25.10.2"
+            "nextflow": "25.10.4"
         },
-        "timestamp": "2026-02-18T10:57:39.327496852"
+        "timestamp": "2026-03-12T16:14:34.760694724"
     }
 }
