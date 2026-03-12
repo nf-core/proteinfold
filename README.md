@@ -52,6 +52,8 @@ On release, automated continuous integration tests run the pipeline on a full-si
 
    x. [RosettaFold2NA](https://github.com/uw-ipd/RoseTTAFold2NA) - Regular RF2NA
 
+   xi. [Protenix](https://github.com/bytedance/protenix) - ByteDance Protenix v1
+
 ## Usage
 
 > [!NOTE]
@@ -66,7 +68,7 @@ nextflow run nf-core/proteinfold \
    --outdir <OUTDIR>
 ```
 
-The pipeline takes care of downloading the databases and parameters required by AlphaFold2, Colabfold, ESMFold RoseTTAFold-All-Atom or RosettaFold2NA. In case you have already downloaded the required files, you can skip this step by providing the path to the databases using the corresponding parameter [`--alphafold2_db`], [`--colabfold_db`], [`--esmfold_db`] or ['--rosettafold_all_atom_db']. Please refer to the [usage documentation](https://nf-co.re/proteinfold/usage) to check the directory structure you must provide for each database.
+The pipeline takes care of downloading the databases and parameters required by AlphaFold2, Colabfold, ESMFold, RoseTTAFold-All-Atom, RosettaFold2NA, Boltz or Protenix. In case you have already downloaded the required files, you can skip this step by providing the path to the databases using the corresponding parameter [`--alphafold2_db`], [`--colabfold_db`], [`--esmfold_db`], ['--rosettafold_all_atom_db'] or ['--protenix_db']. Please refer to the [usage documentation](https://nf-co.re/proteinfold/usage) to check the directory structure you must provide for each database.
 
 - The typical command to run AlphaFold2 mode is shown below:
 
@@ -207,6 +209,19 @@ The pipeline takes care of downloading the databases and parameters required by 
       --mode boltz \
       --boltz_ccd_path <null (default) | PATH> \
       --boltz_model_path <null (default) | PATH> \
+      --use_gpu <true/false> \
+      -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
+  ```
+
+- The protenix mode can be run using the command below:
+
+  ```console
+  nextflow run nf-core/proteinfold \
+      --input samplesheet.csv \
+      --outdir <OUTDIR> \
+      --mode protenix \
+      --protenix_db <null (default) | PATH> \
+      --protenix_model_name <protenix_base_default_v1.0.0 (default) | MODEL_NAME> \
       --use_gpu <true/false> \
       -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
   ```

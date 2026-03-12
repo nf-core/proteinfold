@@ -21,6 +21,7 @@ include { PREPARE_ESMFOLD_DBS              } from './subworkflows/local/prepare_
 include { PREPARE_ROSETTAFOLD_ALL_ATOM_DBS } from './subworkflows/local/prepare_rosettafold_all_atom_dbs'
 include { PREPARE_HELIXFOLD3_DBS           } from './subworkflows/local/prepare_helixfold3_dbs'
 include { PREPARE_BOLTZ_DBS                } from './subworkflows/local/prepare_boltz_dbs'
+include { PREPARE_PROTENIX_DBS             } from './subworkflows/local/prepare_protenix_dbs'
 include { PREPARE_COLABFOLD_DBS            } from './subworkflows/local/prepare_colabfold_dbs'
 include { PREPARE_ROSETTAFOLD2NA_DBS       } from './subworkflows/local/prepare_rosettafold2na_dbs'
 
@@ -31,6 +32,7 @@ include { ESMFOLD                          } from './workflows/esmfold'
 include { ROSETTAFOLD_ALL_ATOM             } from './workflows/rosettafold_all_atom'
 include { HELIXFOLD3                       } from './workflows/helixfold3'
 include { BOLTZ                            } from './workflows/boltz'
+include { PROTENIX                         } from './workflows/protenix'
 include { ROSETTAFOLD2NA                   } from './workflows/rosettafold2na'
 
 include { PIPELINE_INITIALISATION          } from './subworkflows/local/utils_nfcore_proteinfold_pipeline'
@@ -559,6 +561,55 @@ workflow NFCORE_PROTEINFOLD {
             .join(BOLTZ.out.pae)
         )
         ch_top_ranked_model         = ch_top_ranked_model.mix(BOLTZ.out.top_ranked_pdb)
+    }
+
+    //
+    // WORKFLOW: Run Protenix
+    //
+    if (params.mode.toLowerCase().split(",").contains("protenix")) {
+
+        PREPARE_PROTENIX_DBS(
+            params.protenix_db,
+            params.protenix_model_path,
+            params.protenix_ccd_path,
+            params.protenix_ccd_rdkit_path,
+            params.protenix_model_link,
+            params.protenix_ccd_link,
+            params.protenix_ccd_rdkit_link
+        )
+        ch_versions = ch_versions.mix(PREPARE_PROTENIX_DBS.out.versions)
+
+        PREPARE_COLABFOLD_DBS (
+            params.colabfold_db,
+            params.use_msa_server,
+            params.colabfold_alphafold2_params_path,
+            params.colabfold_envdb_path,
+            params.colabfold_uniref30_path,
+            params.colabfold_alphafold2_params_link,
+            params.colabfold_db_link,
+            params.colabfold_uniref30_link,
+            params.colabfold_create_index
+        )
+        ch_versions = ch_versions.mix(PREPARE_COLABFOLD_DBS.out.versions)
+
+        PROTENIX(
+            ch_samplesheet,
+            ch_versions,
+            PREPARE_PROTENIX_DBS.out.protenix_model,
+            PREPARE_PROTENIX_DBS.out.protenix_ccd,
+            PREPARE_PROTENIX_DBS.out.protenix_ccd_rdkit,
+            PREPARE_COLABFOLD_DBS.out.colabfold_db,
+            PREPARE_COLABFOLD_DBS.out.uniref30,
+            params.use_msa_server
+        )
+        ch_multiqc                  = ch_multiqc.mix(PROTENIX.out.multiqc_report)
+        ch_versions                 = ch_versions.mix(PROTENIX.out.versions)
+        ch_report_input             = ch_report_input.mix(
+            PROTENIX.out.pdb
+                .combine(ch_dummy_file)
+                .combine(ch_dummy_file_pae)
+        )
+        ch_top_ranked_model         = ch_top_ranked_model.mix(PROTENIX.out.top_ranked_pdb)
     }
     //
     // POST PROCESSING: generate visualisation reports

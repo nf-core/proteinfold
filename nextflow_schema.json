@@ -34,10 +34,10 @@
                 "mode": {
                     "type": "string",
                     "default": "alphafold2",
-                    "description": "Specifies the mode in which the pipeline will be run. mode can be any combination of ['alphafold2', 'alphafold3', 'colabfold', 'esmfold', 'rosettafold_all_atom', 'boltz', 'helixfold3', 'rosettafold2na'] separated by a comma (',') with no spaces.",
+                    "description": "Specifies the mode in which the pipeline will be run. mode can be any combination of ['alphafold2', 'alphafold3', 'colabfold', 'esmfold', 'rosettafold_all_atom', 'boltz', 'helixfold3', 'rosettafold2na', 'protenix'] separated by a comma (',') with no spaces.",
                     "fa_icon": "fas fa-cogs",
-                    "pattern": "^(alphafold2|alphafold3|colabfold|esmfold|rosettafold_all_atom|helixfold3|boltz|rosettafold2na|)(,(alphafold2|alphafold3|colabfold|esmfold|rosettafold_all_atom|helixfold3|boltz|rosettafold2na)?,?)*(?<!,)$",
-                    "errorMessage": "Mode must be a comma-separated list containing any combination of 'alphafold2', 'alphafold3', 'colabfold', 'esmfold', 'rosettafold_all_atom', 'boltz', or 'helixfold3' with no spaces."
+                    "pattern": "^(alphafold2|alphafold3|colabfold|esmfold|rosettafold_all_atom|helixfold3|boltz|rosettafold2na|protenix|)(,(alphafold2|alphafold3|colabfold|esmfold|rosettafold_all_atom|helixfold3|boltz|rosettafold2na|protenix)?,?)*(?<!,)$",
+                    "errorMessage": "Mode must be a comma-separated list containing any combination of 'alphafold2', 'alphafold3', 'colabfold', 'esmfold', 'rosettafold_all_atom', 'boltz', 'helixfold3', 'protenix' with no spaces."
                 },
                 "use_gpu": {
                     "type": "boolean",
@@ -262,6 +262,23 @@
                 "boltz_model": {
                     "type": "string",
                     "description": "Sets the model to use for prediction. Default is boltz2"
+                }
+            }
+        },
+        "protenix_options": {
+            "title": "Protenix options",
+            "type": "object",
+            "fa_icon": "fas fa-database",
+            "description": "Protenix options.",
+            "properties": {
+                "protenix_model_name": {
+                    "type": "string",
+                    "default": "protenix_base_default_v1.0.0",
+                    "description": "Sets the Protenix model checkpoint name for prediction"
+                },
+                "protenix_use_template": {
+                    "type": "boolean",
+                    "description": "Enable template-based modeling in Protenix"
                 }
             }
         },
@@ -872,6 +889,63 @@
                 }
             }
         },
+        "protenix_dbs_and_model_links_options": {
+            "title": "Protenix DBs and model links options",
+            "type": "object",
+            "fa_icon": "fas fa-database",
+            "description": "Links used to provide model links and weight links to Protenix",
+            "properties": {
+                "protenix_model_link": {
+                    "type": "string",
+                    "description": "Link to download Protenix model checkpoint",
+                    "icon": "fas fa-link",
+                    "default": "https://protenix.tos-cn-beijing.volces.com/checkpoint/protenix_base_default_v1.0.0.pt"
+                },
+                "protenix_ccd_link": {
+                    "type": "string",
+                    "description": "Link to download CCD components file",
+                    "icon": "fas fa-link",
+                    "default": "https://protenix.tos-cn-beijing.volces.com/common/components.cif"
+                },
+                "protenix_ccd_rdkit_link": {
+                    "type": "string",
+                    "description": "Link to download CCD RDKit mol file",
+                    "icon": "fas fa-link",
+                    "default": "https://protenix.tos-cn-beijing.volces.com/common/components.cif.rdkit_mol.pkl"
+                }
+            }
+        },
+        "protenix_dbs_and_parameters_paths_options": {
+            "title": "Protenix DBs and model paths options",
+            "type": "object",
+            "fa_icon": "fas fa-database",
+            "description": "Paths used to provide model paths and weight paths to Protenix",
+            "properties": {
+                "protenix_db": {
+                    "type": "string",
+                    "description": "Path to Protenix databases",
+                    "icon": "fas folder-open"
+                },
+                "protenix_model_path": {
+                    "type": "string",
+                    "description": "Path to Protenix model checkpoint",
+                    "icon": "fas folder-open",
+                    "default": "null/params/protenix_base_default_v1.0.0.pt"
+                },
+                "protenix_ccd_path": {
+                    "type": "string",
+                    "description": "Path to CCD components file",
+                    "icon": "fas folder-open",
+                    "default": "null/params/components.cif"
+                },
+                "protenix_ccd_rdkit_path": {
+                    "type": "string",
+                    "description": "Path to CCD RDKit mol file",
+                    "icon": "fas folder-open",
+                    "default": "null/params/components.cif.rdkit_mol.pkl"
+                }
+            }
+        },
         "rosettafold2na_dbs_and_parameters_link_options": {
             "title": "RosettaFold2NA DBs and parameters links options",
             "type": "object",
@@ -1299,6 +1373,9 @@
             "$ref": "#/$defs/boltz_options"
         },
         {
+            "$ref": "#/$defs/protenix_options"
+        },
+        {
             "$ref": "#/$defs/foldseek_options"
         },
         {
@@ -1339,6 +1416,12 @@
         },
         {
             "$ref": "#/$defs/boltz_dbs_and_parameters_paths_options"
+        },
+        {
+            "$ref": "#/$defs/protenix_dbs_and_model_links_options"
+        },
+        {
+            "$ref": "#/$defs/protenix_dbs_and_parameters_paths_options"
         },
         {
             "$ref": "#/$defs/generic_options"
