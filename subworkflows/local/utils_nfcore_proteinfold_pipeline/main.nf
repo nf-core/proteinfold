@@ -201,7 +201,6 @@ def validateInputParameters() {
         randomSeedModeWarn(log, requestedModes)
     }
 }
-
 def modeChannel(ch, mode) {
     return ch.map { meta, value ->
         def meta_clone = meta.clone()

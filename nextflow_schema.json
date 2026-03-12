@@ -714,11 +714,17 @@
                     "description": "Link to the UniRef30 database",
                     "fa_icon": "fas fa-link"
                 },
-                "colabfold_alphafold2_params_link": {
+                "colabfold_alphafold2_monomer_params_link": {
                     "type": "string",
                     "description": "Link to the Alphafold2 monomer parameters for ColabFold",
                     "fa_icon": "fas fa-link",
-                    "default": "https://storage.googleapis.com/alphafold/alphafold_params_2022-12-06.tar"
+                    "default": "https://storage.googleapis.com/alphafold/alphafold_params_2021-07-14.tar"
+                },
+                "colabfold_alphafold2_multimer_params_link": {
+                    "type": "string",
+                    "description": "Link to the Alphafold2 multimer parameters for ColabFold",
+                    "fa_icon": "fas fa-link",
+                    "default": "https://storage.googleapis.com/alphafold/alphafold_params_colab_2022-12-06.tar"
                 }
             }
         },
@@ -748,11 +754,17 @@
                     "fa_icon": "fas fa-folder-open",
                     "default": "null/colabfold_uniref30/*"
                 },
-                "colabfold_alphafold2_params_path": {
+                "colabfold_alphafold2_monomer_params_path": {
                     "type": "string",
-                    "description": "Path to the AlphaFold2 parameters for Colabfold",
+                    "description": "Path to the Alphafold2 monomer parameters for ColabFold",
                     "fa_icon": "fas fa-folder-open",
-                    "default": "null/params/alphafold_params_2022-12-06"
+                    "default": "null/params/alphafold_params_2021-07-14"
+                },
+                "colabfold_alphafold2_multimer_params_path": {
+                    "type": "string",
+                    "description": "Path to the Alphafold2 multimer parameters for ColabFold",
+                    "fa_icon": "fas fa-folder-open",
+                    "default": "null/params/alphafold_params_colab_2022-12-06"
                 }
             }
         },
