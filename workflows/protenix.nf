@@ -50,6 +50,8 @@ workflow PROTENIX {
     ch_protenix_model   // channel: [ path(model_weights) ]
     ch_protenix_ccd     // channel: [ path(components.cif) ]
     ch_protenix_rdkit   // channel: [ path(components.cif.rdkit_mol.pkl) ]
+    ch_protenix_clusters // channel: [ path(clusters-by-entity-40.txt) ]
+    ch_protenix_obsolete // channel: [ path(obsolete_release_date.csv) ]
     ch_colabfold_db     // channel: [ path(colabfold_db) ]
     ch_uniref30         // channel: [ path(uniref30) ]
     msa_server
@@ -131,7 +133,9 @@ workflow PROTENIX {
         ch_protenix_input.map { it -> it[2] },
         ch_protenix_model,
         ch_protenix_ccd,
-        ch_protenix_rdkit
+        ch_protenix_rdkit,
+        ch_protenix_clusters,
+        ch_protenix_obsolete
     )
 
     RUN_PROTENIX

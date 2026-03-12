@@ -573,9 +573,13 @@ workflow NFCORE_PROTEINFOLD {
             params.protenix_model_path,
             params.protenix_ccd_path,
             params.protenix_ccd_rdkit_path,
+            params.protenix_clusters_path,
+            params.protenix_obsolete_path,
             params.protenix_model_link,
             params.protenix_ccd_link,
-            params.protenix_ccd_rdkit_link
+            params.protenix_ccd_rdkit_link,
+            params.protenix_clusters_link,
+            params.protenix_obsolete_link
         )
         ch_versions = ch_versions.mix(PREPARE_PROTENIX_DBS.out.versions)
 
@@ -598,6 +602,8 @@ workflow NFCORE_PROTEINFOLD {
             PREPARE_PROTENIX_DBS.out.protenix_model,
             PREPARE_PROTENIX_DBS.out.protenix_ccd,
             PREPARE_PROTENIX_DBS.out.protenix_ccd_rdkit,
+            PREPARE_PROTENIX_DBS.out.protenix_clusters,
+            PREPARE_PROTENIX_DBS.out.protenix_obsolete,
             PREPARE_COLABFOLD_DBS.out.colabfold_db,
             PREPARE_COLABFOLD_DBS.out.uniref30,
             params.use_msa_server

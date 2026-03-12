@@ -6,7 +6,7 @@ process RUN_PROTENIX {
     label 'process_medium'
     label 'process_gpu'
 
-    container "nf-core/proteinfold_protenix:2.0.0"
+    container "nan5895/protenix:v1.0.6"
 
     input:
     tuple val(meta), path(input_json)
@@ -14,6 +14,8 @@ process RUN_PROTENIX {
     path (model_weights)
     path (ccd_components)
     path (ccd_rdkit_mol)
+    path (ccd_clusters)
+    path (ccd_obsolete)
 
     output:
     tuple val(meta), path ("protenix_output")                                                          , optional: true, emit: intermediates
@@ -45,13 +47,15 @@ process RUN_PROTENIX {
 
     # Set up Protenix cache directory structure
     export PROTENIX_ROOT_DIR=./protenix_cache
-    mkdir -p \${PROTENIX_ROOT_DIR}/model_data
-    mkdir -p \${PROTENIX_ROOT_DIR}/ccd_data
+    mkdir -p \${PROTENIX_ROOT_DIR}/checkpoint
+    mkdir -p \${PROTENIX_ROOT_DIR}/common
 
     # Symlink downloaded files into expected locations
-    ln -sf \$(realpath ${model_weights}) \${PROTENIX_ROOT_DIR}/model_data/${model_name}.pt
-    ln -sf \$(realpath ${ccd_components}) \${PROTENIX_ROOT_DIR}/ccd_data/components.cif
-    ln -sf \$(realpath ${ccd_rdkit_mol}) \${PROTENIX_ROOT_DIR}/ccd_data/components.cif.rdkit_mol.pkl
+    ln -sf \$(realpath ${model_weights}) \${PROTENIX_ROOT_DIR}/checkpoint/${model_name}.pt
+    ln -sf \$(realpath ${ccd_components}) \${PROTENIX_ROOT_DIR}/common/components.cif
+    ln -sf \$(realpath ${ccd_rdkit_mol}) \${PROTENIX_ROOT_DIR}/common/components.cif.rdkit_mol.pkl
+    ln -sf \$(realpath ${ccd_clusters}) \${PROTENIX_ROOT_DIR}/common/clusters-by-entity-40.txt
+    ln -sf \$(realpath ${ccd_obsolete}) \${PROTENIX_ROOT_DIR}/common/obsolete_release_date.csv
 
     # Run Protenix prediction with JSON input from PROTENIX_FASTA
     protenix pred \\
