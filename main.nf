@@ -37,18 +37,7 @@ include { ROSETTAFOLD2NA                   } from './workflows/rosettafold2na'
 
 include { PIPELINE_INITIALISATION          } from './subworkflows/local/utils_nfcore_proteinfold_pipeline'
 include { PIPELINE_COMPLETION              } from './subworkflows/local/utils_nfcore_proteinfold_pipeline'
-include { getColabfoldAlphafold2Params     } from './subworkflows/local/utils_nfcore_proteinfold_pipeline'
-include { getColabfoldAlphafold2ParamsPath } from './subworkflows/local/utils_nfcore_proteinfold_pipeline'
 include { POST_PROCESSING                  } from './subworkflows/local/post_processing'
-
-/*
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    COLABFOLD PARAMETER VALUES
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-*/
-
-params.colabfold_alphafold2_params_link = getColabfoldAlphafold2Params()
-params.colabfold_alphafold2_params_path = getColabfoldAlphafold2ParamsPath()
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -247,10 +236,12 @@ workflow NFCORE_PROTEINFOLD {
         PREPARE_COLABFOLD_DBS_COLABFOLD (
             params.colabfold_db,
             params.use_msa_server,
-            params.colabfold_alphafold2_params_path,
+            params.colabfold_alphafold2_monomer_params_path,
+            params.colabfold_alphafold2_multimer_params_path,
             params.colabfold_envdb_path,
             params.colabfold_uniref30_path,
-            params.colabfold_alphafold2_params_link,
+            params.colabfold_alphafold2_monomer_params_link,
+            params.colabfold_alphafold2_multimer_params_link,
             params.colabfold_db_link,
             params.colabfold_uniref30_link,
             params.colabfold_create_index
@@ -531,10 +522,12 @@ workflow NFCORE_PROTEINFOLD {
         PREPARE_COLABFOLD_DBS_BOLTZ (
             params.colabfold_db,
             params.use_msa_server,
-            params.colabfold_alphafold2_params_path,
+            params.colabfold_alphafold2_monomer_params_path,
+            params.colabfold_alphafold2_multimer_params_path,
             params.colabfold_envdb_path,
             params.colabfold_uniref30_path,
-            params.colabfold_alphafold2_params_link,
+            params.colabfold_alphafold2_monomer_params_link,
+            params.colabfold_alphafold2_multimer_params_link,
             params.colabfold_db_link,
             params.colabfold_uniref30_link,
             params.colabfold_create_index

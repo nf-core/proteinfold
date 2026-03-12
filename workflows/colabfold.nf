@@ -64,9 +64,13 @@ workflow COLABFOLD {
             MULTIFASTA_TO_CSV.out.input_csv
                 .join(ch_samplesheet_with_preset.map { meta, _fasta, resolved_model_preset -> [ meta, resolved_model_preset ] })
                 .map { meta, input_csv, resolved_model_preset ->
-                    [ meta, input_csv, resolved_model_preset ]
+                    def preset_group = resolved_model_preset.contains('multimer') ? 'multimer' : 'monomer'
+                    [ preset_group, meta, input_csv, resolved_model_preset ]
+                }
+                .combine(ch_colabfold_params, by: 0)
+                .map { _preset_group, meta, input_csv, resolved_model_preset, colabfold_params ->
+                    [ meta, input_csv, resolved_model_preset, colabfold_params ]
                 },
-            ch_colabfold_params,
             [],
             [],
             num_recycles
@@ -99,9 +103,13 @@ workflow COLABFOLD {
             MMSEQS_COLABFOLDSEARCH.out.a3m
                 .join(ch_samplesheet_with_preset.map { meta, _fasta, resolved_model_preset -> [ meta, resolved_model_preset ] })
                 .map { meta, a3m, resolved_model_preset ->
-                    [ meta, a3m, resolved_model_preset ]
+                    def preset_group = resolved_model_preset.contains('multimer') ? 'multimer' : 'monomer'
+                    [ preset_group, meta, a3m, resolved_model_preset ]
+                }
+                .combine(ch_colabfold_params, by: 0)
+                .map { _preset_group, meta, a3m, resolved_model_preset, colabfold_params ->
+                    [ meta, a3m, resolved_model_preset, colabfold_params ]
                 },
-            ch_colabfold_params,
             ch_colabfold_db,
             ch_uniref30,
             num_recycles
