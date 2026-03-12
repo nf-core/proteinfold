@@ -3,7 +3,7 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## v1.2.0dev - [date]
+## [[2.0.0](https://github.com/nf-core/proteinfold/releases/tag/2.0.0)] - 2026-03-17
 
 ### Enhancements & fixes
 
@@ -121,6 +121,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[#507](https://github.com/nf-core/proteinfold/issues/507)] - Implement missing full tests and check that the others work before release 2.0.0.
 - [[PR #509](https://github.com/nf-core/proteinfold/pulls/509)] - Setup gpu environment for AWS full tests.
 - [[PR #497](https://github.com/nf-core/proteinfold/pull/497)] - Add MMseqs Colabfold Search GPU Support.
+- [[PR #538](https://github.com/nf-core/proteinfold/pulls/538)] - Fix alphafold2_random_seed type.
 
 ### Parameters
 
