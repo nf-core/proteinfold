@@ -10,7 +10,8 @@
 include { RUN_ALPHAFOLD2      } from '../modules/local/run_alphafold2'
 include { RUN_ALPHAFOLD2_MSA  } from '../modules/local/run_alphafold2_msa'
 include { RUN_ALPHAFOLD2_PRED } from '../modules/local/run_alphafold2_pred'
-include { resolveModelPresetByFastaEntities } from '../subworkflows/local/utils_nfcore_proteinfold_pipeline'
+include { EXTRACT_METRICS as EXTRACT_METRICS_AF2_STANDARD } from '../modules/local/extract_metrics'
+include { EXTRACT_METRICS as EXTRACT_METRICS_AF2_PRED } from '../modules/local/extract_metrics'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -51,6 +52,7 @@ workflow ALPHAFOLD2 {
     ch_msa            = channel.empty()
     ch_pae            = channel.empty()
     ch_multiqc_report = channel.empty()
+    ch_no_file        = channel.fromPath("$projectDir/assets/NO_FILE")
 
     ch_samplesheet
         .map { meta, fasta ->
@@ -80,7 +82,17 @@ workflow ALPHAFOLD2 {
             ch_uniprot
         )
 
-        RUN_ALPHAFOLD2
+        EXTRACT_METRICS_AF2_STANDARD(
+            RUN_ALPHAFOLD2
+                .out
+                .raw
+                .join(ch_no_file)
+                .map { meta, raw, no_file ->
+                    [ meta, raw, "alphafold2", no_file ]
+                }
+        )
+
+        EXTRACT_METRICS_AF2_STANDARD
             .out
             .multiqc
             .map { it -> it[1] }
@@ -92,9 +104,10 @@ workflow ALPHAFOLD2 {
 
         ch_pdb            = ch_pdb.mix(RUN_ALPHAFOLD2.out.pdb)
         ch_top_ranked_pdb = ch_top_ranked_pdb.mix(RUN_ALPHAFOLD2.out.top_ranked_pdb)
-        ch_msa            = ch_msa.mix(RUN_ALPHAFOLD2.out.msa)
-        ch_pae            = ch_pae.mix(RUN_ALPHAFOLD2.out.pae)
+        ch_msa            = ch_msa.mix(EXTRACT_METRICS_AF2_STANDARD.out.msa)
+        ch_pae            = ch_pae.mix(EXTRACT_METRICS_AF2_STANDARD.out.pae)
         ch_versions       = ch_versions.mix(RUN_ALPHAFOLD2.out.versions)
+        ch_versions       = ch_versions.mix(EXTRACT_METRICS_AF2_STANDARD.out.versions)
 
     } else if (alphafold2_mode == 'split_msa_prediction') {
         //
@@ -126,6 +139,12 @@ workflow ALPHAFOLD2 {
             }
             .set { ch_fasta_features }
 
+        ch_fasta_features
+            .map { meta, _fasta, features ->
+                [ meta, features ]
+            }
+            .set { ch_split_features }
+
         RUN_ALPHAFOLD2_PRED (
             ch_fasta_features,
             ch_alphafold2_params,
@@ -141,7 +160,15 @@ workflow ALPHAFOLD2 {
             ch_uniprot
         )
 
-        RUN_ALPHAFOLD2_PRED
+        EXTRACT_METRICS_AF2_PRED(
+            RUN_ALPHAFOLD2_PRED
+                .out
+                .raw
+                .join(ch_split_features)
+                .map { meta, raw, features -> [ meta, raw, "alphafold2", features ] }
+        )
+
+        EXTRACT_METRICS_AF2_PRED
             .out
             .multiqc
             .map { it -> it[1] }
@@ -153,9 +180,10 @@ workflow ALPHAFOLD2 {
 
         ch_top_ranked_pdb = ch_top_ranked_pdb.mix(RUN_ALPHAFOLD2_PRED.out.top_ranked_pdb)
         ch_pdb            = ch_pdb.mix(RUN_ALPHAFOLD2_PRED.out.pdb)
-        ch_msa            = ch_msa.mix(RUN_ALPHAFOLD2_PRED.out.msa)
-        ch_pae            = ch_pae.mix(RUN_ALPHAFOLD2_PRED.out.pae)
+        ch_msa            = ch_msa.mix(EXTRACT_METRICS_AF2_PRED.out.msa)
+        ch_pae            = ch_pae.mix(EXTRACT_METRICS_AF2_PRED.out.pae)
         ch_versions       = ch_versions.mix(RUN_ALPHAFOLD2_PRED.out.versions)
+        ch_versions       = ch_versions.mix(EXTRACT_METRICS_AF2_PRED.out.versions)
     }
 
     ch_pdb
