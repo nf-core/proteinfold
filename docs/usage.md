@@ -183,7 +183,7 @@ To provide the predownloaded AlphaFold3 databases and parameters you can specify
 
 </details>
 
-Colabfold mode can be used with local database search. GPU MSA search is enabeld by default. You may disable GPU MSA search with `--colabfold_enable_gpu_search false`:
+Colabfold mode can be used with local database search. GPU MSA search is enabled by default. You may disable GPU MSA search with `--colabfold_enable_gpu_search false`:
 
 ```bash
 nextflow run nf-core/proteinfold \
