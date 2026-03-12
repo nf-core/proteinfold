@@ -53,9 +53,9 @@ wget https://opendata.mmseqs.org/colabfold/uniref30_2302.db.tar.gz
 tar xvf uniref30_2302.db.tar.gz
 ```
 
-## Downloading the Colabfold EnvDB
+## Downloading the Colabfold envdb
 
-Next, you will need to download the Colabfold EnvDB. This database is approx. 120GB.
+Next, you will need to download the Colabfold envdb. This database is approx. 120GB.
 
 ```bash
 wget https://opendata.mmseqs.org/colabfold/colabfold_envdb_202108.db.tar.gz
