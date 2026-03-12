@@ -1,8 +1,8 @@
 //
 // Download all the required databases and params by Colabfold
 //
-include { MMSEQS_CREATEINDEX as MMSEQS_CREATEINDEX_COLABFOLDDB } from '../../modules/nf-core/mmseqs/createindex/main'
-include { MMSEQS_CREATEINDEX as MMSEQS_CREATEINDEX_UNIPROT30   } from '../../modules/nf-core/mmseqs/createindex/main'
+include { MMSEQS_CREATEINDEX as MMSEQS_CREATEINDEX_COLABFOLDDB              } from '../../modules/nf-core/mmseqs/createindex/main'
+include { MMSEQS_CREATEINDEX as MMSEQS_CREATEINDEX_UNIPROT30                } from '../../modules/nf-core/mmseqs/createindex/main'
 
 include { ARIA2_UNCOMPRESS as ARIA2_COLABFOLD_PARAMS } from './aria2_uncompress'
 include { ARIA2_UNCOMPRESS as ARIA2_COLABFOLD_DB     } from './aria2_uncompress'
@@ -15,23 +15,32 @@ workflow PREPARE_COLABFOLD_DBS {
     use_msa_server                   //      bool: Specifies whether to use web msa server
     colabfold_alphafold2_params_path // directory: /path/to/colabfold/alphafold2/params/
     colabfold_envdb_path             // directory: /path/to/colabfold/db/
+    colabfold_envdb_path_padded      // directory: /path/to/colabfold/db/
     colabfold_uniref30_path          // directory: /path/to/uniref30/colabfold/
+    colabfold_uniref30_path_padded   // directory: /path/to/uniref30/colabfold_padded/
+    colabfold_enable_gpu_search      //   boolean: Enable GPU accelerated search (collect or create GPU padded databases)
     colabfold_alphafold2_params_link //    string: Specifies the link to download colabfold alphafold2 params
     colabfold_db_link                //    string: Specifies the link to download colabfold db
     colabfold_uniref30_link          //    string: Specifies the link to download uniref30
     colabfold_create_index           //   boolean: Create index for colabfold db
 
     main:
-    ch_params       = channel.empty()
-    ch_colabfold_db = channel.empty()
-    ch_uniref30     = channel.empty()
-    ch_versions     = channel.empty()
+    ch_params              = channel.empty()
+    ch_colabfold_db        = channel.empty()
+    ch_colabfold_db_padded = channel.empty()
+    ch_uniref30            = channel.empty()
+    ch_uniref30_padded     = channel.empty()
+    ch_versions            = channel.empty()
 
     if (colabfold_db) {
         ch_params = channel.value(file(colabfold_alphafold2_params_path, type: 'any', checkIfExists: true))
         if (!use_msa_server) {
             ch_colabfold_db = channel.value(file(colabfold_envdb_path, type: 'any', checkIfExists: true))
             ch_uniref30     = channel.value(file(colabfold_uniref30_path, type: 'any', checkIfExists: true))
+        }
+        if (colabfold_enable_gpu_search) {
+            ch_uniref30_padded = channel.value(file(colabfold_uniref30_path_padded, type: 'any'))
+            ch_colabfold_db_padded = channel.value(file(colabfold_envdb_path_padded, type: 'any'))
         }
     }
     else {
@@ -108,9 +117,12 @@ workflow PREPARE_COLABFOLD_DBS {
         }
     }
 
+
     emit:
-    params       = ch_params
-    colabfold_db = ch_colabfold_db
-    uniref30     = ch_uniref30
-    versions     = ch_versions
+    params              = ch_params
+    colabfold_db        = ch_colabfold_db
+    colabfold_db_padded = ch_colabfold_db_padded
+    uniref30            = ch_uniref30
+    uniref30_padded     = ch_uniref30_padded
+    versions            = ch_versions
 }

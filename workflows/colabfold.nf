@@ -71,7 +71,8 @@ workflow COLABFOLD {
         MMSEQS_COLABFOLDSEARCH (
             MULTIFASTA_TO_CSV.out.input_csv,
             ch_colabfold_db,
-            ch_uniref30
+            ch_uniref30,
+            params.colabfold_enable_gpu_search ? "1" : "0"
         )
         ch_versions = ch_versions.mix(MMSEQS_COLABFOLDSEARCH.out.versions)
 
