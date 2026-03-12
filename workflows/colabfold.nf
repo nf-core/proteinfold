@@ -31,7 +31,6 @@ workflow COLABFOLD {
     take:
     ch_samplesheet          // channel: samplesheet read in from --input
     ch_versions            // channel: [ path(versions.yml) ]
-    colabfold_model_preset // string: Model preset used for multi-entry FASTA inputs
     ch_colabfold_params    // channel: path(colabfold_params)
     ch_colabfold_db        // channel: path(colabfold_db)
     ch_uniref30            // channel: path(uniref30)
@@ -39,13 +38,11 @@ workflow COLABFOLD {
 
     main:
     ch_multiqc_report = channel.empty()
-
-    ch_samplesheet
+    ch_samplesheet_with_param_group = ch_samplesheet
         .map { meta, fasta ->
-            def resolved_model_preset = resolveModelPresetByFastaEntities(fasta, 'alphafold2_ptm', colabfold_model_preset)
+            def resolved_model_preset = resolveModelPresetByFastaEntities(fasta, 'monomer', 'multimer')
             [ meta, fasta, resolved_model_preset ]
         }
-        .set { ch_samplesheet_with_preset }
 
     if (params.use_msa_server) {
         //
@@ -53,23 +50,21 @@ workflow COLABFOLD {
         //
 
         MULTIFASTA_TO_CSV(
-            ch_samplesheet_with_preset
-                .map { meta, fasta, _resolved_model_preset ->
-                    [ meta, fasta ]
-                }
+            ch_samplesheet_with_param_group.map { meta, fasta, _param_group ->
+                [ meta, fasta ]
+            }
         )
         ch_versions = ch_versions.mix(MULTIFASTA_TO_CSV.out.versions)
 
         COLABFOLD_BATCH(
             MULTIFASTA_TO_CSV.out.input_csv
-                .join(ch_samplesheet_with_preset.map { meta, _fasta, resolved_model_preset -> [ meta, resolved_model_preset ] })
-                .map { meta, input_csv, resolved_model_preset ->
-                    def preset_group = resolved_model_preset.contains('multimer') ? 'multimer' : 'monomer'
-                    [ preset_group, meta, input_csv, resolved_model_preset ]
+                .join(ch_samplesheet_with_param_group.map { meta, _fasta, param_group -> [ meta, param_group ] })
+                .map { meta, input_csv, param_group ->
+                    [ param_group, meta, input_csv ]
                 }
                 .combine(ch_colabfold_params, by: 0)
-                .map { _preset_group, meta, input_csv, resolved_model_preset, colabfold_params ->
-                    [ meta, input_csv, resolved_model_preset, colabfold_params ]
+                .map { _preset_group, meta, input_csv, colabfold_params ->
+                    [ meta, input_csv, colabfold_params ]
                 },
             [],
             [],
@@ -83,10 +78,9 @@ workflow COLABFOLD {
         //
         //Multimer mode
         MULTIFASTA_TO_CSV(
-            ch_samplesheet_with_preset
-                .map { meta, fasta, _resolved_model_preset ->
-                    [ meta, fasta ]
-                }
+            ch_samplesheet_with_param_group.map { meta, fasta, _param_group ->
+                [ meta, fasta ]
+            }
         )
         ch_versions = ch_versions.mix(MULTIFASTA_TO_CSV.out.versions)
         MMSEQS_COLABFOLDSEARCH (
@@ -101,14 +95,13 @@ workflow COLABFOLD {
         //
         COLABFOLD_BATCH(
             MMSEQS_COLABFOLDSEARCH.out.a3m
-                .join(ch_samplesheet_with_preset.map { meta, _fasta, resolved_model_preset -> [ meta, resolved_model_preset ] })
-                .map { meta, a3m, resolved_model_preset ->
-                    def preset_group = resolved_model_preset.contains('multimer') ? 'multimer' : 'monomer'
-                    [ preset_group, meta, a3m, resolved_model_preset ]
+                .join(ch_samplesheet_with_param_group.map { meta, _fasta, param_group -> [ meta, param_group ] })
+                .map { meta, a3m, param_group ->
+                    [ param_group, meta, a3m ]
                 }
                 .combine(ch_colabfold_params, by: 0)
-                .map { _preset_group, meta, a3m, resolved_model_preset, colabfold_params ->
-                    [ meta, a3m, resolved_model_preset, colabfold_params ]
+                .map { _preset_group, meta, a3m, colabfold_params ->
+                    [ meta, a3m, colabfold_params ]
                 },
             ch_colabfold_db,
             ch_uniref30,
