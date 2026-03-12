@@ -10,6 +10,15 @@ Proteinfold can make use of GPU MSA search for faster searching. However, this r
 - NVIDIA Ampere GPU or newer
 - CUDA 12.4 or newer
 
+## Obtaining MMseqs-GPU
+
+MMseqs has two x86 builds available for Linux. This requires the GPU version of MMseqs. It can be obtained via this command:
+
+```bash
+wget https://github.com/soedinglab/MMseqs2/releases/download/18-8cc5c/mmseqs-linux-gpu.tar.gz
+tar xvf mmseqs-linux-gpu.tar.gz
+```
+
 ## Database structure
 
 Proteinfold can make use of the `--db` flag to load in all required databases. In order to load the padded databases, the database should be structured as such. Below is a truncated version of the database tree. It is important to note that the padded database files have the same prefix as the CPU files.
@@ -33,15 +42,6 @@ Proteinfold can make use of the `--db` flag to load in all required databases. I
     ├── uniref30_2302_db_seq_h.index
     ├── uniref30_2302_db_seq.index
     └── uniref30_2302_db_taxonomy
-```
-
-## Obtaining MMseqs-GPU
-
-MMseqs has two x86 builds available for Linux. This requires the GPU version of MMseqs. It can be obtained via this command:
-
-```bash
-wget https://github.com/soedinglab/MMseqs2/releases/download/18-8cc5c/mmseqs-linux-gpu.tar.gz
-tar xvf mmseqs-linux-gpu.tar.gz
 ```
 
 ## Downloading UniRef30 Database
