@@ -3,6 +3,7 @@ nextflow_pipeline {
     name "Test colabfold local mode stub"
     script "../main.nf"
     tag "pipeline"
+    tag "gpu"
     tag "test_colabfold_local"
     profile "test_colabfold_local"
 
