@@ -66,6 +66,7 @@ workflow NFCORE_PROTEINFOLD {
 
     main:
     ch_samplesheet       = samplesheet
+    ch_samplesheet_input = ch_samplesheet.map { meta, fasta, native_pdb -> [ meta, fasta ] }
     ch_multiqc           = channel.empty()
     ch_versions          = channel.empty()
     ch_report_input      = channel.empty()
@@ -117,7 +118,7 @@ workflow NFCORE_PROTEINFOLD {
         // WORKFLOW: Run nf-core/alphafold2 workflow
         //
         ALPHAFOLD2 (
-            ch_samplesheet,
+            ch_samplesheet_input,
             ch_versions,
             params.alphafold2_full_dbs,
             params.alphafold2_mode,
@@ -197,7 +198,7 @@ workflow NFCORE_PROTEINFOLD {
         // WORKFLOW: Run nf-core/alphafold3 workflow
         //
         ALPHAFOLD3 (
-            ch_samplesheet,
+            ch_samplesheet_input,
             ch_versions,
             PREPARE_ALPHAFOLD3_DBS.out.params,
             PREPARE_ALPHAFOLD3_DBS.out.small_bfd,
@@ -260,7 +261,7 @@ workflow NFCORE_PROTEINFOLD {
         // WORKFLOW: Run nf-core/colabfold workflow
         //
         COLABFOLD (
-            ch_samplesheet,
+            ch_samplesheet_input,
             ch_versions,
             params.colabfold_model_preset,
             PREPARE_COLABFOLD_DBS.out.params,
@@ -313,7 +314,7 @@ workflow NFCORE_PROTEINFOLD {
         // WORKFLOW: Run nf-core/esmfold workflow
         //
         ESMFOLD (
-            ch_samplesheet,
+            ch_samplesheet_input,
             ch_versions,
             PREPARE_ESMFOLD_DBS.out.params,
             params.esmfold_num_recycles
@@ -355,7 +356,7 @@ workflow NFCORE_PROTEINFOLD {
         // WORKFLOW: Run nf-core/rosettafold_all_atom workflow
         //
         ROSETTAFOLD_ALL_ATOM (
-            ch_samplesheet,
+            ch_samplesheet_input,
             ch_versions,
             params.uniref30_prefix,
             PREPARE_ROSETTAFOLD_ALL_ATOM_DBS.out.bfd,
@@ -416,7 +417,7 @@ workflow NFCORE_PROTEINFOLD {
         // WORKFLOW: Run nf-core/helixfold3 workflow
         //
         HELIXFOLD3 (
-            ch_samplesheet,
+            ch_samplesheet_input,
             ch_versions,
             params.uniref30_prefix,
             PREPARE_HELIXFOLD3_DBS.out.helixfold3_uniclust30,
@@ -486,7 +487,7 @@ workflow NFCORE_PROTEINFOLD {
         // WORKFLOW: Run nf-core/rosettafold2na workflow
         //
         ROSETTAFOLD2NA (
-            ch_samplesheet,
+            ch_samplesheet_input,
             ch_versions,
             PREPARE_ROSETTAFOLD2NA_DBS.out.bfd,
             PREPARE_ROSETTAFOLD2NA_DBS.out.uniref30,
@@ -541,7 +542,7 @@ workflow NFCORE_PROTEINFOLD {
         ch_versions = ch_versions.mix(PREPARE_COLABFOLD_DBS.out.versions)
 
         BOLTZ(
-            ch_samplesheet,
+            ch_samplesheet_input,
             ch_versions,
             PREPARE_BOLTZ_DBS.out.boltz_ccd,
             PREPARE_BOLTZ_DBS.out.boltz_model,
@@ -555,7 +556,7 @@ workflow NFCORE_PROTEINFOLD {
 
         
         if (params.run_dockq) {
-            ch_dockq_input = BOLTZ.out.top_ranked_pdb
+            ch_dockq_input = ch_top_ranked_model
                 .map { meta, pdb -> [ meta.id, meta, pdb ] }
                 .join(ch_native_pdb, by: 0)
                 .map { id, meta, predicted_pdb, native_pdb ->
