@@ -25,7 +25,14 @@
                 "exists": true,
                 "pattern": "^\\S+\\.(fa(sta)?|faa|yaml|yml|json)$",
                 "errorMessage": "Fasta, yaml or json file must be provided, cannot contain spaces and must have extension '.fa', '.fasta', '.yaml', '.yml', or '.json'"
-            }
+            },
+            "native_pdb": {
+            "type": "string",
+            "format": "file-path",
+            "exists": true,
+            "pattern": "^\\S+\\.pdb$",
+            "errorMessage": "Native PDB file must have extension '.pdb'"
+            }   
         },
         "required": ["fasta"],
         "anyOf": [{ "required": ["sequence"] }, { "required": ["id"] }]

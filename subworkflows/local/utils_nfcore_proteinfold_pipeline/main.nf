@@ -100,11 +100,9 @@ ${colors.purple}  nf-core/rnaseq ${workflow.manifest.version}${colors.reset}
     ch_samplesheet = channel.fromList(samplesheetToList(input, "assets/schema_input.json"))
 
     ch_samplesheet
-        .map { meta, fasta ->
-            // This mapping supports legacy samplesheets that use 'sequence' as metadata.
-            // If meta.id is missing or empty, meta.sequence is used as the identifier.
+        .map { meta, fasta, native_pdb ->
             def identifier = meta.id ? meta.id : meta.sequence
-            return [[id: identifier], fasta]
+            return [[id: identifier], fasta, native_pdb ?: null]
         }
 
     if (params.split_fasta) {
