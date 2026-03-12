@@ -692,9 +692,14 @@
                     "description": "Link to the UniRef30 database",
                     "fa_icon": "fas fa-link"
                 },
-                "colabfold_alphafold2_params_link": {
+                "colabfold_alphafold2_monomer_params_link": {
                     "type": "string",
-                    "description": "Link to the Alphafold2 parameters for Colabfold",
+                    "description": "Link to the Alphafold2 monomer parameters for ColabFold",
+                    "fa_icon": "fas fa-link"
+                },
+                "colabfold_alphafold2_multimer_params_link": {
+                    "type": "string",
+                    "description": "Link to the Alphafold2 multimer parameters for ColabFold",
                     "fa_icon": "fas fa-link"
                 }
             }
@@ -725,15 +730,15 @@
                     "fa_icon": "fas fa-folder-open",
                     "default": "null/colabfold_uniref30/*"
                 },
-                "colabfold_alphafold2_params_path": {
+                "colabfold_alphafold2_monomer_params_path": {
                     "type": "string",
-                    "description": "Link to the Alphafold2 parameters for Colabfold",
+                    "description": "Path to the Alphafold2 monomer parameters for ColabFold",
                     "fa_icon": "fas fa-folder-open"
                 },
-                "colabfold_alphafold2_params_tags": {
-                    "type": "object",
-                    "description": "Dictionary with Alphafold2 parameters tags",
-                    "fa_icon": "fas fa-stream"
+                "colabfold_alphafold2_multimer_params_path": {
+                    "type": "string",
+                    "description": "Path to the Alphafold2 multimer parameters for ColabFold",
+                    "fa_icon": "fas fa-folder-open"
                 }
             }
         },

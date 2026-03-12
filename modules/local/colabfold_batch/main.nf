@@ -6,8 +6,7 @@ process COLABFOLD_BATCH {
     container "nf-core/proteinfold_colabfold:2.0.0"
 
     input:
-    tuple val(meta), path(fasta), val(colabfold_model_preset)
-    path  ('params/*')
+    tuple val(meta), path(fasta), val(colabfold_model_preset), path('params/*')
     path  ('colabfold_db/*')
     path  ('uniref30/*')
     val   numRec
