@@ -42,8 +42,9 @@ process RUN_PROTENIX {
     def args = task.ext.args ?: ''
     def model_name = model_weights.baseName
     """
-    mkdir -p ./home
-    export HOME=./home
+    export HOME=/tmp/home
+    mkdir -p \${HOME}
+    export CUDA_CACHE_DISABLE=1
 
     # Set up Protenix cache directory structure
     export PROTENIX_ROOT_DIR=./protenix_cache
@@ -87,8 +88,9 @@ st.write_pdb('./${meta.id}_protenix.pdb')
 
     stub:
     """
-    mkdir -p ./home
-    export HOME=./home
+    export HOME=/tmp/home
+    mkdir -p \${HOME}
+    export CUDA_CACHE_DISABLE=1
 
     mkdir -p protenix_output/${meta.id}/seed_101/predictions/
 
