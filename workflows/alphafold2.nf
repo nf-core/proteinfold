@@ -60,21 +60,6 @@ workflow ALPHAFOLD2 {
             def resolved_model_preset = resolveModelPresetByFastaEntities(fasta, alphafold2_model_preset, 'multimer')
             [ meta, fasta, resolved_model_preset ]
         }
-        .branch { it ->
-            multimer: it[2] == 'multimer'
-            monomer: it[2] != 'multimer'
-        }
-        .set { ch_samplesheet_by_preset }
-
-    ch_samplesheet_by_preset.monomer
-        .map { meta, fasta, resolved_model_preset ->
-            [ meta, resolved_model_preset, fasta.splitFasta(file:true) ]
-        }
-        .transpose()
-        .map { meta, resolved_model_preset, fasta ->
-            [ meta, fasta, resolved_model_preset ]
-        }
-        .mix(ch_samplesheet_by_preset.multimer)
         .set { ch_samplesheet_prepared }
 
     if (alphafold2_mode == 'standard') {
