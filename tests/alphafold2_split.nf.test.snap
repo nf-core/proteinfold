@@ -26,7 +26,7 @@
                     "biopython": "unknown"
                 },
                 "Workflow": {
-                    "nf-core/proteinfold": "v1.2.0dev"
+                    "nf-core/proteinfold": "v2.0.0"
                 }
             },
             [
