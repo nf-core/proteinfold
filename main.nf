@@ -554,25 +554,7 @@ workflow NFCORE_PROTEINFOLD {
             params.use_msa_server
         )
 
-        
-        if (params.run_dockq) {
-            ch_dockq_input = ch_top_ranked_model
-                .map { meta, pdb -> [ meta.id, meta, pdb ] }
-                .join(ch_native_pdb, by: 0)
-                .map { id, meta, predicted_pdb, native_pdb ->
-                    [ meta, predicted_pdb, native_pdb ]
-                }
-
-            VALIDATE_INPUTS(
-                ch_dockq_input.map { meta, predicted, native -> [ meta, predicted ] },
-                ch_dockq_input.map { meta, predicted, native -> [ meta, native ] }
-            )
-
-            RUN_DOCKQ(
-                ch_dockq_input.map { meta, predicted, native -> [ meta, predicted ] },
-                ch_dockq_input.map { meta, predicted, native -> [ meta, native ] }
-            )
-        }
+    
 
         ch_multiqc                  = ch_multiqc.mix(BOLTZ.out.multiqc_report)
         ch_versions                 = ch_versions.mix(BOLTZ.out.versions)
@@ -583,6 +565,27 @@ workflow NFCORE_PROTEINFOLD {
         )
         ch_top_ranked_model         = ch_top_ranked_model.mix(BOLTZ.out.top_ranked_pdb)
     }
+
+
+    // if (params.run_dockq) {
+    //     ch_dockq_input = ch_top_ranked_model
+    //         .map { meta, pdb -> [ meta.id, meta, pdb ] }
+    //         .join(ch_native_pdb, by: 0)
+    //         .map { id, meta, predicted_pdb, native_pdb ->
+    //             [ meta, predicted_pdb, native_pdb ]
+    //         }
+
+    //     VALIDATE_INPUTS(
+    //         ch_dockq_input.map { meta, predicted, native -> [ meta, predicted ] },
+    //         ch_dockq_input.map { meta, predicted, native -> [ meta, native ] }
+    //     )
+
+    //     RUN_DOCKQ(
+    //         ch_dockq_input.map { meta, predicted, native -> [ meta, predicted ] },
+    //         ch_dockq_input.map { meta, predicted, native -> [ meta, native ] }
+    //     )
+    // }
+
     //
     // POST PROCESSING: generate visualisation reports
     //

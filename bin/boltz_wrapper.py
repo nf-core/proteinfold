@@ -7,7 +7,7 @@
 # Wrapper script to run Boltz with MIG patch for pynvml.nvmlDeviceGetNumGpuCores
 
 import sys
-import pynvml
+import nvidia_ml_py as pynvml
 import os
 import torch
 

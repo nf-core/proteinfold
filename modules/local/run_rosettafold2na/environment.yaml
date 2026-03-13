@@ -23,7 +23,7 @@ dependencies:
       - pydantic
       - e3nn
       - wandb
-      - pynvml
+      - nvidia-ml-py
       - git+https://github.com/NVIDIA/dllogger#egg=dllogger
       - https://data.dgl.ai/wheels/cu121/dgl-2.0.0%2Bcu121-cp310-cp310-manylinux1_x86_64.whl
       - numpy==1.26.4

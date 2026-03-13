@@ -4,11 +4,11 @@ include { RUN_DOCKQ       } from '../modules/local/run_dockq/main'
 workflow DOCKQ {
     take:
     model     // tuple val(meta), path(model_pdb)
-    native    // tuple val(meta), path(native_pdb)
+    reference    // tuple val(meta), path(reference_pdb)
 
     main:
-    VALIDATE_INPUTS(model, native)
-    RUN_DOCKQ(model, native)
+    VALIDATE_INPUTS(model, reference)
+    RUN_DOCKQ(model, reference)
 
     emit:
     json     = RUN_DOCKQ.out.json
