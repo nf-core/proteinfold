@@ -38,11 +38,12 @@ workflow COLABFOLD {
 
     main:
     ch_multiqc_report = channel.empty()
-    ch_samplesheet_with_param_group = ch_samplesheet
+    ch_samplesheet
         .map { meta, fasta ->
             def resolved_model_preset = resolveModelPresetByFastaEntities(fasta, 'monomer', 'multimer')
             [ meta, fasta, resolved_model_preset ]
         }
+        .set{ ch_samplesheet_with_param_group }
 
     if (params.use_msa_server) {
         //
