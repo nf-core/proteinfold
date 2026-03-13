@@ -133,7 +133,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[#503](https://github.com/nf-core/proteinfold/issues/503)] - Add checkIfExists validation to user-provided database paths across all prepare DB subworkflows.
 - [[#507](https://github.com/nf-core/proteinfold/issues/507)] - Implement missing full tests and check that the others work before release 2.0.0.
 - [[PR #509](https://github.com/nf-core/proteinfold/pulls/509)] - Setup gpu environment for AWS full tests.
-- [[PR #549](https://github.com/nf-core/proteinfold/pulls/549)] - Create EXTRACT_METRICS module and remove extract_metrics.py from AlphaFold2 module.
+- [[PR #549](https://github.com/nf-core/proteinfold/pulls/549)] - Create `EXTRACT_METRICS` module and remove extract_metrics.py from AlphaFold2 module.
 - [[#519](https://github.com/nf-core/proteinfold/issues/519)] - Fix AWS full test before release 2.0.0.
 - [[PR #525](https://github.com/nf-core/proteinfold/pulls/525)] - Reduce AlphaFold2 multimer full test to a single replicate.
 - [[PR #531](https://github.com/nf-core/proteinfold/pulls/531)] - Fix alphafold2_random_seed type.
