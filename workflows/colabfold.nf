@@ -12,13 +12,12 @@ include { MMSEQS_COLABFOLDSEARCH } from '../modules/local/mmseqs_colabfoldsearch
 include { MULTIFASTA_TO_CSV      } from '../modules/local/multifasta_to_csv'
 
 include { modeChannel            } from '../subworkflows/local/utils_nfcore_proteinfold_pipeline'
-
+include { MSA                    } from '../subworkflows/local/msa'
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     IMPORT NF-CORE MODULES/SUBWORKFLOWS
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
-
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     RUN MAIN WORKFLOW
@@ -35,7 +34,7 @@ workflow COLABFOLD {
     ch_colabfold_db        // channel: path(colabfold_db)
     ch_uniref30            // channel: path(uniref30)
     num_recycles           // int: Number of recycles for esmfold
-
+    mmseq_batch_size
     main:
     ch_multiqc_report = channel.empty()
 
@@ -63,23 +62,19 @@ workflow COLABFOLD {
         //
         // MODULE: Run mmseqs
         //
-        //Multimer mode
-        MULTIFASTA_TO_CSV(
-            ch_samplesheet
-        )
-        ch_versions = ch_versions.mix(MULTIFASTA_TO_CSV.out.versions)
-        MMSEQS_COLABFOLDSEARCH (
-            MULTIFASTA_TO_CSV.out.input_csv,
+        MSA(
+            ch_samplesheet,
             ch_colabfold_db,
-            ch_uniref30
+            ch_uniref30,
+            mmseq_batch_size
         )
-        ch_versions = ch_versions.mix(MMSEQS_COLABFOLDSEARCH.out.versions)
+        ch_versions = ch_versions.mix(MSA.out.versions)
 
         //
         // MODULE: Run colabfold
         //
         COLABFOLD_BATCH(
-            MMSEQS_COLABFOLDSEARCH.out.a3m,
+            MSA.out.a3m,
             colabfold_model_preset,
             ch_colabfold_params,
             ch_colabfold_db,

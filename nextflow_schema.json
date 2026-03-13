@@ -98,6 +98,12 @@
                     "fa_icon": "fas fa-link",
                     "format": "uri",
                     "errorMessage": "Please provide a valid URL for the MMSeqs2 API server"
+                },
+                "mmseqs_batch_size": {
+                    "type": "integer",
+                    "default": 1000,
+                    "description": "Number of samples in each mmseq run (batching leads to better performance time in total.)",
+                    "fa_icon": "fas fa-microchip"
                 }
             }
         },
