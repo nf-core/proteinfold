@@ -46,9 +46,6 @@ include { USALIGN                          } from './modules/local/usalign'
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-params.colabfold_alphafold2_params_link = getColabfoldAlphafold2Params()
-params.colabfold_alphafold2_params_path = getColabfoldAlphafold2ParamsPath()
-
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     NAMED WORKFLOWS FOR PIPELINE
@@ -247,10 +244,10 @@ workflow NFCORE_PROTEINFOLD {
         PREPARE_COLABFOLD_DBS (
             params.colabfold_db,
             params.use_msa_server,
-            params.colabfold_alphafold2_params_path,
+            getColabfoldAlphafold2ParamsPath(),
             params.colabfold_envdb_path,
             params.colabfold_uniref30_path,
-            params.colabfold_alphafold2_params_link,
+            getColabfoldAlphafold2Params(),
             params.colabfold_db_link,
             params.colabfold_uniref30_link,
             params.colabfold_create_index
@@ -531,10 +528,10 @@ workflow NFCORE_PROTEINFOLD {
         PREPARE_COLABFOLD_DBS (
             params.colabfold_db,
             params.use_msa_server,
-            params.colabfold_alphafold2_params_path,
+            getColabfoldAlphafold2ParamsPath(),
             params.colabfold_envdb_path,
             params.colabfold_uniref30_path,
-            params.colabfold_alphafold2_params_link,
+            getColabfoldAlphafold2Params(),
             params.colabfold_db_link,
             params.colabfold_uniref30_link,
             params.colabfold_create_index
@@ -568,35 +565,15 @@ workflow NFCORE_PROTEINFOLD {
 
 
     if (params.run_dockq) {
-        ch_dockq_input =ch_top_ranked_model.map{row -> [row[0],row[1],reference_pdb]}.view()
+        ch_dockq_input =ch_top_ranked_model.map{row -> [row[0],row[1],params.reference_pdb]}.view()
 
-
-        // VALIDATE_INPUTS(
-        //     ch_dockq_input.map { meta, predicted, native -> [ meta, predicted ] },
-        //     ch_dockq_input.map { meta, predicted, native -> [ meta, native ] }
-        // )
-
-        // RUN_DOCKQ(
-        //     ch_dockq_input.map { meta, predicted, native -> [ meta, predicted ] },
-        //     ch_dockq_input.map { meta, predicted, native -> [ meta, native ] }
-        // )
         DOCKQ(
             ch_dockq_input
         )
     }
     if (params.use_usalign) {
-        // ch_usalign_input = ch_top_ranked_model
-        //     .map { meta, pdb -> [ meta.id, meta, pdb ] }
-        //     .join(ch_native_pdb, by: 0)
-        //     .map { id, meta, predicted_pdb, native_pdb ->
-        //         [ meta, predicted_pdb, native_pdb ]
-        //     }
-
-        // VALIDATE_INPUTS(
-        //     ch_usalign_input.map { meta, predicted, native -> [ meta, predicted ] },
-        //     ch_usalign_input.map { meta, predicted, native -> [ meta, native ] }
-        // )
-        ch_usalign_input =ch_top_ranked_model.map{row -> [row[0],row[1],reference_pdb]}.view()
+       
+        ch_usalign_input =ch_top_ranked_model.map{row -> [row[0],row[1],params.reference_pdb]}.view()
 
         USALIGN(
             ch_usalign_input
@@ -605,12 +582,12 @@ workflow NFCORE_PROTEINFOLD {
     //
     // POST PROCESSING: generate visualisation reports
     //
-    ch_multiqc_config        = channel.fromPath("$projectDir/assets/multiqc_config.yml", checkIfExists: true).first()
-    ch_multiqc_custom_config = params.multiqc_config ? channel.fromPath( params.multiqc_config ).first()  : channel.empty()
-    ch_multiqc_logo          = params.multiqc_logo   ? channel.fromPath( params.multiqc_logo ).first()    : channel.empty()
-    ch_multiqc_methods_description = params.multiqc_methods_description ? file(params.multiqc_methods_description, checkIfExists: true) : file("$projectDir/assets/methods_description_template.yml", checkIfExists: true)
-    ch_report_template     = channel.value(file("$projectDir/assets/report_template.html", checkIfExists: true))
-    ch_comparison_template = channel.value(file("$projectDir/assets/comparison_template.html", checkIfExists: true))
+        ch_multiqc_config        = channel.fromPath("$projectDir/assets/multiqc_config.yml", checkIfExists: true).first()
+        ch_multiqc_custom_config = params.multiqc_config ? channel.fromPath( params.multiqc_config ).first()  : channel.empty()
+        ch_multiqc_logo          = params.multiqc_logo   ? channel.fromPath( params.multiqc_logo ).first()    : channel.empty()
+        ch_multiqc_methods_description = params.multiqc_methods_description ? file(params.multiqc_methods_description, checkIfExists: true) : file("$projectDir/assets/methods_description_template.yml", checkIfExists: true)
+        ch_report_template     = channel.value(file("$projectDir/assets/report_template.html", checkIfExists: true))
+        ch_comparison_template = channel.value(file("$projectDir/assets/comparison_template.html", checkIfExists: true))
 
     POST_PROCESSING(
         params.skip_visualisation,
@@ -633,7 +610,8 @@ workflow NFCORE_PROTEINFOLD {
     )
 
     emit:
-    multiqc_report = ch_multiqc
+    multiqc_report   = ch_multiqc
+    top_ranked_model = ch_top_ranked_model
 }
 
 /*
