@@ -108,16 +108,17 @@ ${colors.purple}  nf-core/proteinfold ${workflow.manifest.version}${colors.reset
         }
 
     if (params.split_fasta) {
-        ch_samplesheet.map { _meta, fasta ->
+        ch_samplesheet = ch_samplesheet.map { meta, fasta ->
             validateFasta(fasta)
+            [meta, fasta]
         }
 
         // Split the fasta file into individual files for each sequence
         ch_samplesheet
-            .map { _meta,fasta -> fasta }
-            .splitFasta( record: [header: true, sequence: true] )
-            .collectFile { item ->
-                [ "${cleanHeader(item["header"])}.fa", ">" + cleanHeader(item["header"]) + '\n' +item["sequence"] ]
+            .map { meta, fasta -> [meta.id, fasta] }
+            .splitFasta( record: [header: true, sequence: true], elem: 1 )
+            .collectFile { sample_id, item ->
+                [ "${cleanHeader(sample_id.toString())}_${cleanHeader(item["header"])}.fa", ">" + cleanHeader(item["header"]) + '\n' +item["sequence"] ]
             }
             .map {
                 file -> [[id: file.baseName], file]
@@ -279,11 +280,13 @@ def cleanHeader(header) {
         .replaceAll("/","_")
         .replaceAll(",", "")
         .replaceAll(";","")
+        .replaceAll("\\|","_")
 }
 
 def validateFasta(fasta) {
+    def lines = fasta.text.readLines()
     // extract headers
-    def headers = fasta.findAll { it -> it.startsWith('>') }
+    def headers = lines.findAll { it -> it.startsWith('>') }
     // if headers are not unique, throw an error
     if (headers.size() != headers.unique().size()) {
         throw new Exception("Invalid FASTA file. The headers are not unique.")
