@@ -586,17 +586,18 @@ workflow NFCORE_PROTEINFOLD {
     //     )
     // }
     if (params.use_usalign) {
-        ch_usalign_input = ch_top_ranked_model
-            .map { meta, pdb -> [ meta.id, meta, pdb ] }
-            .join(ch_native_pdb, by: 0)
-            .map { id, meta, predicted_pdb, native_pdb ->
-                [ meta, predicted_pdb, native_pdb ]
-            }
+        // ch_usalign_input = ch_top_ranked_model
+        //     .map { meta, pdb -> [ meta.id, meta, pdb ] }
+        //     .join(ch_native_pdb, by: 0)
+        //     .map { id, meta, predicted_pdb, native_pdb ->
+        //         [ meta, predicted_pdb, native_pdb ]
+        //     }
 
-        VALIDATE_INPUTS(
-            ch_usalign_input.map { meta, predicted, native -> [ meta, predicted ] },
-            ch_usalign_input.map { meta, predicted, native -> [ meta, native ] }
-        )
+        // VALIDATE_INPUTS(
+        //     ch_usalign_input.map { meta, predicted, native -> [ meta, predicted ] },
+        //     ch_usalign_input.map { meta, predicted, native -> [ meta, native ] }
+        // )
+        ch_usalign_input =ch_top_ranked_model.map{row -> [row[0],row[1],reference_pdb]}.view()
 
         USALIGN(
             ch_usalign_input
