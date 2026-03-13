@@ -52,6 +52,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[PR #335](https://github.com/nf-core/proteinfold/pull/335)] - Update pipeline template to [nf-core/tools 3.3.1](https://github.com/nf-core/tools/releases/tag/3.3.1).
 - [[PR #346](https://github.com/nf-core/proteinfold/pull/346)] - Update pipeline template to [nf-core/tools 3.3.2](https://github.com/nf-core/tools/releases/tag/3.3.2).
 - [[PR #351](https://github.com/nf-core/proteinfold/pull/351)] - add chain-wise (i)pTM values and summary file for AF3-generation codes.
+- [[PR #354](https://github.com/nf-core/proteinfold/pull/354)] - Update documentation with mode specific usage, capabilities.
 - [[PR #355](https://github.com/nf-core/proteinfold/pull/355)] - Remove unneccesary params from Boltz and Helixfold3 modes.
 - [[PR #356](https://github.com/nf-core/proteinfold/pull/356)] - Update AF2 defaults to use split mode and monomer_ptm model.
 - [[PR #357](https://github.com/nf-core/proteinfold/pull/357)] - Update ColabFold module and image.
