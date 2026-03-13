@@ -52,6 +52,8 @@ On release, automated continuous integration tests run the pipeline on a full-si
 
    x. [RosettaFold2NA](https://github.com/uw-ipd/RoseTTAFold2NA) - Regular RF2NA
 
+   xi. [Protenix](https://github.com/bytedance/protenix) - ByteDance Protenix v1
+
 ## Usage
 
 > [!NOTE]
@@ -66,7 +68,7 @@ nextflow run nf-core/proteinfold \
    --outdir <OUTDIR>
 ```
 
-The pipeline takes care of downloading the databases and parameters required by AlphaFold2, Colabfold, ESMFold RoseTTAFold-All-Atom or RosettaFold2NA. In case you have already downloaded the required files, you can skip this step by providing the path to the databases using the corresponding parameter [`--alphafold2_db`], [`--colabfold_db`], [`--esmfold_db`] or ['--rosettafold_all_atom_db']. Please refer to the [usage documentation](https://nf-co.re/proteinfold/usage) to check the directory structure you must provide for each database.
+The pipeline takes care of downloading the databases and parameters required by AlphaFold2, Colabfold, ESMFold, RoseTTAFold-All-Atom, RosettaFold2NA, Boltz or Protenix. In case you have already downloaded the required files, you can skip this step by providing the path to the databases using the corresponding parameter [`--alphafold2_db`], [`--colabfold_db`], [`--esmfold_db`], ['--rosettafold_all_atom_db'] or ['--protenix_db']. Please refer to the [usage documentation](https://nf-co.re/proteinfold/usage) to check the directory structure you must provide for each database.
 
 - The typical command to run AlphaFold2 mode is shown below:
 
@@ -211,6 +213,19 @@ The pipeline takes care of downloading the databases and parameters required by 
       -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
   ```
 
+- The protenix mode can be run using the command below:
+
+  ```console
+  nextflow run nf-core/proteinfold \
+      --input samplesheet.csv \
+      --outdir <OUTDIR> \
+      --mode protenix \
+      --protenix_db <null (default) | PATH> \
+      --protenix_model_name <protenix_base_default_v1.0.0 (default) | MODEL_NAME> \
+      --use_gpu <true/false> \
+      -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
+  ```
+
 > [!WARNING]
 > Please provide pipeline parameters via the CLI or Nextflow `-params-file` option. Custom config files including those provided by the `-c` Nextflow option can be used to provide any configuration _**except for parameters**_; see [docs](https://nf-co.re/docs/usage/getting_started/configuration#custom-configuration-files).
 
@@ -230,7 +245,7 @@ For details on how to contribute new modes to the pipeline please refer to the [
 
 nf-core/proteinfold was originally written by Athanasios Baltzis ([@athbaltzis](https://github.com/athbaltzis)), Jose Espinosa-Carrasco ([@JoseEspinosa](https://github.com/JoseEspinosa)), Luisa Santus ([@luisas](https://github.com/luisas)) and Leila Mansouri ([@l-mansouri](https://github.com/l-mansouri)) from [The Comparative Bioinformatics Group](https://www.crg.eu/en/cedric_notredame) at [The Centre for Genomic Regulation, Spain](https://www.crg.eu/) under the umbrella of the [BovReg project](https://www.bovreg.eu/) and Harshil Patel ([@drpatelh](https://github.com/drpatelh)) from [Seqera Labs, Spain](https://seqera.io/).
 
-Many thanks to others who have helped out and contributed along the way too, including (but not limited to): Norman Goodacre and Waleed Osman from Interline Therapeutics ([@interlinetx](https://github.com/interlinetx)), Martin Steinegger ([@martin-steinegger](https://github.com/martin-steinegger)) and Raoul J.P. Bonnal ([@rjpbonnal](https://github.com/rjpbonnal))
+Many thanks to others who have helped out and contributed along the way too, including (but not limited to): Norman Goodacre and Waleed Osman from Interline Therapeutics ([@interlinetx](https://github.com/interlinetx)), Martin Steinegger ([@martin-steinegger](https://github.com/martin-steinegger)), Raoul J.P. Bonnal ([@rjpbonnal](https://github.com/rjpbonnal)) and Seunghyun Kang ([@nan5895](https://github.com/nan5895))
 
 We would also like to thanks to the AWS Open Data Sponsorship Program for generously providing the resources necessary to host the data utilized in the testing, development, and deployment of nf-core proteinfold.
 
