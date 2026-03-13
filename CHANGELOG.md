@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - [[PR ##573](https://github.com/nf-core/proteinfold/pull/573)] - Adds affiliations for UNSW Structural Biology Facility (SBF).
 - [[PR #588](https://github.com/nf-core/proteinfold/pulls/588)] - Add `--random_seed` for AF2, Boltz, and ColabFold, removing and replacing `--alphafold2_random_seed`.
+- [[PR #549](https://github.com/nf-core/proteinfold/pulls/549)] - Create EXTRACT_METRICS module and remove extract_metrics.py from AlphaFold2 module.
 
 | Old parameter              | New parameter   |
 | -------------------------- | --------------- |
