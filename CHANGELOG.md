@@ -120,6 +120,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[#503](https://github.com/nf-core/proteinfold/issues/503)] - Add checkIfExists validation to user-provided database paths across all prepare DB subworkflows.
 - [[#507](https://github.com/nf-core/proteinfold/issues/507)] - Implement missing full tests and check that the others work before release 2.0.0.
 - [[PR #509](https://github.com/nf-core/proteinfold/pulls/509)] - Setup gpu environment for AWS full tests.
+- [[#505](https://github.com/nf-core/proteinfold/issues/505)] - Add Protenix v1 (ByteDance) protein structure prediction mode with GPU support, model weight download via ARIA2, and metrics extraction.
 
 ### Parameters
 
@@ -165,6 +166,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 |                              | `--boltz2_mols_link`             |
 |                              | `--boltz_model_link`             |
 |                              | `--boltz_ccd_link`               |
+|                              | `--protenix_db`                  |
+|                              | `--protenix_model_name`          |
+|                              | `--protenix_use_template`        |
+|                              | `--protenix_model_link`          |
+|                              | `--protenix_ccd_link`            |
+|                              | `--protenix_ccd_rdkit_link`      |
+|                              | `--protenix_clusters_link`       |
+|                              | `--protenix_obsolete_link`       |
+|                              | `--protenix_model_path`          |
+|                              | `--protenix_ccd_path`            |
+|                              | `--protenix_ccd_rdkit_path`      |
+|                              | `--protenix_clusters_path`       |
+|                              | `--protenix_obsolete_path`       |
 
 > **NB:** Parameter has been **updated** if both old and new parameter information is present.
 > **NB:** Parameter has been **added** if just the new parameter information is present.
