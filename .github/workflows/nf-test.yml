@@ -71,6 +71,10 @@ jobs:
         profile: [docker, singularity]
         isMain:
           - ${{ github.base_ref == 'master' || github.base_ref == 'main' }}
+        # # Exclude singularity on dev
+        exclude:
+          - isMain: false
+            profile: "singularity"
         NXF_VER:
           - "25.10.2"
           - "latest-everything"
