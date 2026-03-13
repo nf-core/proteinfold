@@ -18,7 +18,7 @@ tools:
       documentation: "https://github.com/google-deepmind/alphafold"
       tool_dev_url: "https://github.com/google-deepmind/alphafold"
       doi: "https://doi.org/10.1038/s41586-021-03819-2"
-      licence: "Apache-2.0"  
+      licence: "Apache-2.0"
       identifier: ""
 
 input:
