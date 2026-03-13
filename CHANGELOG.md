@@ -3,7 +3,7 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## v1.2.0dev - [date]
+## [[2.0.0](https://github.com/nf-core/proteinfold/releases/tag/2.0.0)] - 2026-03-17
 
 ### Enhancements & fixes
 
@@ -52,6 +52,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[PR #335](https://github.com/nf-core/proteinfold/pull/335)] - Update pipeline template to [nf-core/tools 3.3.1](https://github.com/nf-core/tools/releases/tag/3.3.1).
 - [[PR #346](https://github.com/nf-core/proteinfold/pull/346)] - Update pipeline template to [nf-core/tools 3.3.2](https://github.com/nf-core/tools/releases/tag/3.3.2).
 - [[PR #351](https://github.com/nf-core/proteinfold/pull/351)] - add chain-wise (i)pTM values and summary file for AF3-generation codes.
+- [[PR #354](https://github.com/nf-core/proteinfold/pull/354)] - Update documentation with mode specific usage, capabilities.
 - [[PR #355](https://github.com/nf-core/proteinfold/pull/355)] - Remove unneccesary params from Boltz and Helixfold3 modes.
 - [[PR #356](https://github.com/nf-core/proteinfold/pull/356)] - Update AF2 defaults to use split mode and monomer_ptm model.
 - [[PR #357](https://github.com/nf-core/proteinfold/pull/357)] - Update ColabFold module and image.
@@ -120,6 +121,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[#503](https://github.com/nf-core/proteinfold/issues/503)] - Add checkIfExists validation to user-provided database paths across all prepare DB subworkflows.
 - [[#507](https://github.com/nf-core/proteinfold/issues/507)] - Implement missing full tests and check that the others work before release 2.0.0.
 - [[PR #509](https://github.com/nf-core/proteinfold/pulls/509)] - Setup gpu environment for AWS full tests.
+- [[PR #538](https://github.com/nf-core/proteinfold/pulls/538)] - Fix alphafold2_random_seed type.
 
 ### Parameters
 
