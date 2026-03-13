@@ -6,7 +6,6 @@ process EXTRACT_METRICS {
     label 'process_single'
 
     conda "${moduleDir}/environment.yml"
-    container "nf-core/proteinfold_alphafold2_pred:2.0.0"
 
     input:
     tuple val(meta), path(raw), val(mode), path(features)
