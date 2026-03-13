@@ -80,10 +80,11 @@ st.write_pdb('./${meta.id}_protenix.pdb')
     # Extract metrics from confidence JSON files
     protenix_extract_metrics.py --name ${meta.id} --out_dir ./protenix_output
 
-    cat <<-END_VERSIONS > versions.yml
+
+    cat <<-EOF > versions.yml
     "${task.process}":
-        protenix: \$(pip show protenix | grep Version | awk '{print \$2}' 2>/dev/null || echo "unknown")
-    END_VERSIONS
+        protenix: \$(pip list | grep -i protenix | awk '{print \$2}' 2>/dev/null || echo "unknown")
+EOF    
     """
 
     stub:
@@ -105,9 +106,9 @@ st.write_pdb('./${meta.id}_protenix.pdb')
     touch "${meta.id}_chainwise_ptm.tsv"
     touch "${meta.id}_chainwise_iptm.tsv"
 
-    cat <<-END_VERSIONS > versions.yml
+    cat <<-EOF > versions.yml
     "${task.process}":
-        protenix: \$(pip show protenix | grep Version | awk '{print \$2}' 2>/dev/null || echo "unknown")
-    END_VERSIONS
-    """
+        protenix: \$(pip list | grep -i protenix | awk '{print \$2}' 2>/dev/null || echo "unknown")
+EOF
+      """
 }

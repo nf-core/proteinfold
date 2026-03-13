@@ -379,7 +379,8 @@ model_name = {
     "rosettafold_all_atom": "RosettaFold All-Atom",
     "helixfold3": "HelixFold3",
     "rosettafold2na": "RoseTTAFold2NA",
-    "boltz": "Boltz"
+    "boltz": "Boltz",
+    "protenix": "Protenix"  # 이 줄을 추가하세요
 }
 
 parser = argparse.ArgumentParser()
