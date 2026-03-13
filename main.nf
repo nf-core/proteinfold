@@ -32,7 +32,7 @@ include { ROSETTAFOLD_ALL_ATOM             } from './workflows/rosettafold_all_a
 include { HELIXFOLD3                       } from './workflows/helixfold3'
 include { BOLTZ                            } from './workflows/boltz'
 include { ROSETTAFOLD2NA                   } from './workflows/rosettafold2na'
-include { DOCKQ                            } from './workflows/dockq'
+include { DOCKQ                            } from './modules/local/dockq'
 
 include { PIPELINE_INITIALISATION          } from './subworkflows/local/utils_nfcore_proteinfold_pipeline'
 include { PIPELINE_COMPLETION              } from './subworkflows/local/utils_nfcore_proteinfold_pipeline'
@@ -567,24 +567,23 @@ workflow NFCORE_PROTEINFOLD {
     }
 
 
-    // if (params.run_dockq) {
-    //     ch_dockq_input = ch_top_ranked_model
-    //         .map { meta, pdb -> [ meta.id, meta, pdb ] }
-    //         .join(ch_native_pdb, by: 0)
-    //         .map { id, meta, predicted_pdb, native_pdb ->
-    //             [ meta, predicted_pdb, native_pdb ]
-    //         }
+    if (params.run_dockq) {
+        ch_dockq_input =ch_top_ranked_model.map{row -> [row[0],row[1],reference_pdb]}.view()
 
-    //     VALIDATE_INPUTS(
-    //         ch_dockq_input.map { meta, predicted, native -> [ meta, predicted ] },
-    //         ch_dockq_input.map { meta, predicted, native -> [ meta, native ] }
-    //     )
 
-    //     RUN_DOCKQ(
-    //         ch_dockq_input.map { meta, predicted, native -> [ meta, predicted ] },
-    //         ch_dockq_input.map { meta, predicted, native -> [ meta, native ] }
-    //     )
-    // }
+        // VALIDATE_INPUTS(
+        //     ch_dockq_input.map { meta, predicted, native -> [ meta, predicted ] },
+        //     ch_dockq_input.map { meta, predicted, native -> [ meta, native ] }
+        // )
+
+        // RUN_DOCKQ(
+        //     ch_dockq_input.map { meta, predicted, native -> [ meta, predicted ] },
+        //     ch_dockq_input.map { meta, predicted, native -> [ meta, native ] }
+        // )
+        DOCKQ(
+            ch_dockq_input
+        )
+    }
     if (params.use_usalign) {
         // ch_usalign_input = ch_top_ranked_model
         //     .map { meta, pdb -> [ meta.id, meta, pdb ] }

@@ -1,0 +1,36 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/nf-core/modules/master/modules/meta-schema.json
+# # TODO nf-core: Add a description of the module and list keywords
+name: "dockq"
+description: write your description here
+keywords:
+- sort
+- example
+- genomics
+tools:
+# ## TODO nf-core: Add a description and other details for the software below
+- "dockq":
+    description: "A Quality Measure for Protein, Nucleic Acids and Small Ligand Docking\
+      \ Modelsc"
+    homepage: "https://github.com/bjornwallner/DockQ#dockq"
+    documentation: "https://github.com/bjornwallner/DockQ#dockq"
+    tool_dev_url: "https://github.com/bjornwallner/DockQ"
+    doi: ""
+    licence: ['MIT']
+    identifier: biotools:dockq
+
+input:
+# # TODO nf-core: Update the information obtained from bio.tools and make sure that it is correct
+[]
+output:
+# # TODO nf-core: Update the information obtained from bio.tools and make sure that it is correct
+  versions: -
+    versions.yml:
+      type: file
+      description: File containing software versions
+      pattern: versions.yml
+      ontologies:
+      - edam: http://edamontology.org/format_3750  # YAML
+authors:
+- "@ADamjanovski"
+maintainers:
+- "@ADamjanovski"
