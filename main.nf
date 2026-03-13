@@ -46,8 +46,8 @@ include { POST_PROCESSING                  } from './subworkflows/local/post_pro
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-params.colabfold_alphafold2_params_link = getColabfoldAlphafold2Params()
-params.colabfold_alphafold2_params_path = getColabfoldAlphafold2ParamsPath()
+// params.colabfold_alphafold2_params_link = getColabfoldAlphafold2Params()
+// params.colabfold_alphafold2_params_path = getColabfoldAlphafold2ParamsPath()
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -247,10 +247,10 @@ workflow NFCORE_PROTEINFOLD {
         PREPARE_COLABFOLD_DBS (
             params.colabfold_db,
             params.use_msa_server,
-            params.colabfold_alphafold2_params_path,
+            getColabfoldAlphafold2ParamsPath(),
             params.colabfold_envdb_path,
             params.colabfold_uniref30_path,
-            params.colabfold_alphafold2_params_link,
+            getColabfoldAlphafold2Params(),
             params.colabfold_db_link,
             params.colabfold_uniref30_link,
             params.colabfold_create_index
@@ -531,10 +531,10 @@ workflow NFCORE_PROTEINFOLD {
         PREPARE_COLABFOLD_DBS (
             params.colabfold_db,
             params.use_msa_server,
-            params.colabfold_alphafold2_params_path,
+            getColabfoldAlphafold2ParamsPath(),
             params.colabfold_envdb_path,
             params.colabfold_uniref30_path,
-            params.colabfold_alphafold2_params_link,
+            getColabfoldAlphafold2Params(),
             params.colabfold_db_link,
             params.colabfold_uniref30_link,
             params.colabfold_create_index
@@ -567,25 +567,6 @@ workflow NFCORE_PROTEINFOLD {
     }
 
 
-    // if (params.run_dockq) {
-    //     ch_dockq_input = ch_top_ranked_model
-    //         .map { meta, pdb -> [ meta.id, meta, pdb ] }
-    //         .join(ch_native_pdb, by: 0)
-    //         .map { id, meta, predicted_pdb, native_pdb ->
-    //             [ meta, predicted_pdb, native_pdb ]
-    //         }
-
-    //     VALIDATE_INPUTS(
-    //         ch_dockq_input.map { meta, predicted, native -> [ meta, predicted ] },
-    //         ch_dockq_input.map { meta, predicted, native -> [ meta, native ] }
-    //     )
-
-    //     RUN_DOCKQ(
-    //         ch_dockq_input.map { meta, predicted, native -> [ meta, predicted ] },
-    //         ch_dockq_input.map { meta, predicted, native -> [ meta, native ] }
-    //     )
-    // }
-
     //
     // POST PROCESSING: generate visualisation reports
     //
@@ -617,7 +598,8 @@ workflow NFCORE_PROTEINFOLD {
     )
 
     emit:
-    multiqc_report = ch_multiqc
+    multiqc_report   = ch_multiqc
+    top_ranked_model = ch_top_ranked_model
 }
 
 /*
@@ -654,6 +636,20 @@ workflow {
     NFCORE_PROTEINFOLD (
         PIPELINE_INITIALISATION.out.samplesheet
     )
+
+    if (params.run_dockq) {
+    ch_dockq_input = NFCORE_PROTEINFOLD.out.top_ranked_model
+        .map { meta, pdb -> [ meta.id, meta, pdb ] }
+        .join(ch_native_pdb, by: 0)
+        .map { id, meta, predicted_pdb, native_pdb ->
+            [ meta, predicted_pdb, native_pdb ]
+        }
+
+    DOCKQ(
+        ch_dockq_input.map { meta, predicted, native -> [ meta, predicted ] },
+        ch_dockq_input.map { meta, predicted, native -> [ meta, native ] }
+    )
+}
 
     //
     // SUBWORKFLOW: Run completion tasks

@@ -46,7 +46,9 @@ process RUN_BOLTZ {
     }
     def args = task.ext.args ?: ''
     """
-    mkdir -p ./home
+    mkdir -p ./home/.nv/ComputeCache
+    mkdir -p ./home/.cache/torch
+    chmod -R 777 ./home
     export HOME=./home
 
     if command -v nvidia-smi >/dev/null 2>&1 && nvidia-smi -L | grep -q "MIG"; then
