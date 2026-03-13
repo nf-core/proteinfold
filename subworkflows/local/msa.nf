@@ -12,13 +12,13 @@ workflow MSA {
     take:
     ch_samplesheet
     ch_colabfold_db        // channel: path(colabfold_db)
-    ch_uniref30            // channel: path(uniref30)   
+    ch_uniref30            // channel: path(uniref30)
     mmseq_batch_size
-    
+
     main:
     ch_versions = Channel.empty()
     ch_a3m      = Channel.empty()
-    
+
     ch_samplesheet
     .branch {
         fasta: it[1].extension == "fasta" || it[1].extension == "fa"
@@ -70,7 +70,7 @@ workflow MSA {
         ch_uniref30
     )
     ch_versions = ch_versions.mix(MMSEQS_COLABFOLDSEARCH.out.versions)
-    
+
     ch_a3m = ch_a3m.mix(
         ch_input_full
         .map{[it[1].baseName, it[0]]}
@@ -83,7 +83,7 @@ workflow MSA {
         )
         .map{[it[1], it[2]]}
     )
-    
+
     emit:
     formated_input          = ch_input_full
     a3m            = ch_a3m
