@@ -1,0 +1,50 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/nf-core/modules/master/modules/meta-schema.json
+# # TODO nf-core: Add a description of the module and list keywords
+name: "usalign"
+description: write your description here
+keywords:
+- sort
+- example
+- genomics
+tools:
+# ## TODO nf-core: Add a description and other details for the software below
+- "usalign":
+    description: "Universal structure alignment of monomeric, complex proteins and\
+      \ nucleic acids"
+    homepage: "https://zhanggroup.org/US-align/help"
+    documentation: "https://zhanggroup.org/US-align/help"
+    tool_dev_url: "https://github.com/pylelab/USalign"
+    doi: ""
+    licence: ['UNKNOWN']
+    identifier: null
+
+input:
+- bam:
+    type: file
+    description: Sorted BAM/CRAM/SAM file
+    pattern: '*.{bam,cram,sam}'
+    ontologies:
+    - edam: http://edamontology.org/format_2572  # BAM
+    - edam: http://edamontology.org/format_2573  # CRAM
+    - edam: http://edamontology.org/format_3462  # SAM
+output:
+  bam:
+  - '*.bam':
+      type: file
+      description: Sorted BAM/CRAM/SAM file
+      pattern: '*.{bam,cram,sam}'
+      ontologies:
+      - edam: http://edamontology.org/format_2572  # BAM
+      - edam: http://edamontology.org/format_2573  # CRAM
+      - edam: http://edamontology.org/format_3462  # SAM
+  versions:
+  - versions.yml:
+      type: file
+      description: File containing software versions
+      pattern: versions.yml
+      ontologies:
+      - edam: http://edamontology.org/format_3750  # YAML
+authors:
+- "@ADamjanovski"
+maintainers:
+- "@ADamjanovski"

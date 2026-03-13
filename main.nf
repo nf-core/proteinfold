@@ -39,7 +39,7 @@ include { PIPELINE_COMPLETION              } from './subworkflows/local/utils_nf
 include { getColabfoldAlphafold2Params     } from './subworkflows/local/utils_nfcore_proteinfold_pipeline'
 include { getColabfoldAlphafold2ParamsPath } from './subworkflows/local/utils_nfcore_proteinfold_pipeline'
 include { POST_PROCESSING                  } from './subworkflows/local/post_processing'
-
+include { USALIGN                          } from './modules/local/usalign'
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     COLABFOLD PARAMETER VALUES
@@ -585,7 +585,23 @@ workflow NFCORE_PROTEINFOLD {
     //         ch_dockq_input.map { meta, predicted, native -> [ meta, native ] }
     //     )
     // }
+    if (params.use_usalign) {
+        ch_usalign_input = ch_top_ranked_model
+            .map { meta, pdb -> [ meta.id, meta, pdb ] }
+            .join(ch_native_pdb, by: 0)
+            .map { id, meta, predicted_pdb, native_pdb ->
+                [ meta, predicted_pdb, native_pdb ]
+            }
 
+        VALIDATE_INPUTS(
+            ch_usalign_input.map { meta, predicted, native -> [ meta, predicted ] },
+            ch_usalign_input.map { meta, predicted, native -> [ meta, native ] }
+        )
+
+        USALIGN(
+            ch_usalign_input
+        )
+    }  
     //
     // POST PROCESSING: generate visualisation reports
     //
