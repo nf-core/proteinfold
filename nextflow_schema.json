@@ -101,7 +101,7 @@
                 },
                 "mmseqs_batch_size": {
                     "type": "integer",
-                    "default": 10000,
+                    "default": 1000,
                     "description": "Number of samples in each mmseq run (batching leads to better performance time in total.)",
                     "fa_icon": "fas fa-microchip"
                 }
