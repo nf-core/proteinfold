@@ -11,11 +11,13 @@
 include { UTILS_NFSCHEMA_PLUGIN     } from '../../nf-core/utils_nfschema_plugin'
 include { paramsSummaryMap          } from 'plugin/nf-schema'
 include { samplesheetToList         } from 'plugin/nf-schema'
+include { paramsHelp                } from 'plugin/nf-schema'
 include { completionEmail           } from '../../nf-core/utils_nfcore_pipeline'
 include { completionSummary         } from '../../nf-core/utils_nfcore_pipeline'
 include { imNotification            } from '../../nf-core/utils_nfcore_pipeline'
 include { UTILS_NFCORE_PIPELINE     } from '../../nf-core/utils_nfcore_pipeline'
 include { UTILS_NEXTFLOW_PIPELINE   } from '../../nf-core/utils_nextflow_pipeline'
+include { logColours                } from '../../nf-core/utils_nfcore_pipeline'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -32,9 +34,13 @@ workflow PIPELINE_INITIALISATION {
     nextflow_cli_args //   array: List of positional nextflow CLI args
     outdir            //  string: The output directory where the results will be saved
     input             //  string: Path to input samplesheet
+    help              // boolean: Display help message and exit
+    help_full         // boolean: Show the full help message
+    show_hidden       // boolean: Show hidden parameters in the help message
 
     main:
-    ch_versions = Channel.empty()
+
+    ch_versions = channel.empty()
 
     //
     // Print version and exit if required and dump pipeline parameters to JSON file
@@ -49,10 +55,36 @@ workflow PIPELINE_INITIALISATION {
     //
     // Validate parameters and generate parameter summary to stdout
     //
+    def colors = logColours(monochrome_logs)
+    before_text = """
+-${colors.dim}----------------------------------------------------${colors.reset}-
+                                        ${colors.green},--.${colors.black}/${colors.green},-.${colors.reset}
+${colors.blue}        ___     __   __   __   ___     ${colors.green}/,-._.--~\'${colors.reset}
+${colors.blue}  |\\ | |__  __ /  ` /  \\ |__) |__         ${colors.yellow}}  {${colors.reset}
+${colors.blue}  | \\| |       \\__, \\__/ |  \\ |___     ${colors.green}\\`-._,-`-,${colors.reset}
+                                        ${colors.green}`._,._,\'${colors.reset}
+${colors.purple}  nf-core/rnaseq ${workflow.manifest.version}${colors.reset}
+-${colors.dim}----------------------------------------------------${colors.reset}-
+"""
+    after_text = """${workflow.manifest.doi ? "\n* The pipeline\n" : ""}${workflow.manifest.doi.tokenize(",").collect { doi -> "    https://doi.org/${doi.trim().replace('https://doi.org/','')}"}.join("\n")}${workflow.manifest.doi ? "\n" : ""}
+* The nf-core framework
+    https://doi.org/10.1038/s41587-020-0439-x
+
+* Software dependencies
+    https://github.com/nf-core/proteinfold/blob/master/CITATIONS.md
+"""
+    command = "nextflow run ${workflow.manifest.name} -profile <docker/singularity/.../institute> --input samplesheet.csv --outdir <OUTDIR>"
+
     UTILS_NFSCHEMA_PLUGIN (
         workflow,
         validate_params,
-        null
+        null,
+        help,
+        help_full,
+        show_hidden,
+        before_text,
+        after_text,
+        command
     )
 
     //
@@ -63,9 +95,9 @@ workflow PIPELINE_INITIALISATION {
     )
 
     //
-    // Create channel from input file provided through params.input
+    // Create channel from input file provided through input
     //
-    ch_samplesheet = Channel.fromList(samplesheetToList(params.input, "assets/schema_input.json"))
+    ch_samplesheet = channel.fromList(samplesheetToList(input, "assets/schema_input.json"))
 
     ch_samplesheet
         .map { meta, fasta ->
@@ -76,15 +108,13 @@ workflow PIPELINE_INITIALISATION {
         }
 
     if (params.split_fasta) {
-        // TODO: here we have to validate that the ids are unique and valid as an extra step
-        // since it is not done with the samplesheet schema (they are all in the same file)
-        ch_samplesheet.map { meta, fasta ->
+        ch_samplesheet.map { _meta, fasta ->
             validateFasta(fasta)
         }
 
         // Split the fasta file into individual files for each sequence
         ch_samplesheet
-            .map { meta,fasta -> fasta }
+            .map { _meta,fasta -> fasta }
             .splitFasta( record: [header: true, sequence: true] )
             .collectFile { item ->
                 [ "${cleanHeader(item["header"])}.fa", ">" + cleanHeader(item["header"]) + '\n' +item["sequence"] ]
@@ -96,8 +126,8 @@ workflow PIPELINE_INITIALISATION {
     }
 
     emit:
-    samplesheet = ch_samplesheet
-    versions    = ch_versions
+    samplesheet  = ch_samplesheet
+    versions     = ch_versions
 }
 
 /*
@@ -155,6 +185,15 @@ workflow PIPELINE_COMPLETION {
 */
 
 //
+// Check and validate pipeline parameters
+//
+def validateInputParameters() {
+    if (params.mode.toLowerCase().split(",").contains("alphafold3")) {
+        alphafold3Warn(log)
+    }
+}
+
+//
 // Get link to Colabfold Alphafold2 parameters
 //
 def getColabfoldAlphafold2Params() {
@@ -179,6 +218,14 @@ def getColabfoldAlphafold2ParamsPath() {
         }
     }
     return path
+}
+
+def modeChannel(ch, mode) {
+    return ch.map { meta, value ->
+        def meta_clone = meta.clone()
+        meta_clone.model = mode
+        [ meta_clone, value ]
+    }
 }
 
 //
@@ -244,21 +291,36 @@ def methodsDescriptionText(mqc_methods_yaml) {
 }
 
 def cleanHeader(header) {
-    return header.replaceAll(" ", "_").replaceAll(",", "").replaceAll(";","")
+    return header
+        .replaceAll(" ", "_")
+        .replaceAll("/","_")
+        .replaceAll(",", "")
+        .replaceAll(";","")
 }
 
 def validateFasta(fasta) {
     // extract headers
-    def headers = fasta.findAll { it.startsWith('>') }
+    def headers = fasta.findAll { it -> it.startsWith('>') }
     // if headers are not unique, throw an error
     if (headers.size() != headers.unique().size()) {
         throw new Exception("Invalid FASTA file. The headers are not unique.")
     }
     // check headers that are malformed
     headers.each { header ->
-        if (header =~ /[ \t;,]/) {
+        if (header =~ /[ \t;,\/]/) {
             // warn user that the header contains special characters
             log.warn "The header ${header} contains special characters. They have been automatically removed."
         }
     }
+}
+
+//
+// Print a warning when using Alphafold3
+//
+def alphafold3Warn(log) {
+    log.warn "=============================================================================\n" +
+        "  You are using AlphaFold3 mode.\n" +
+        "  Be aware that the predicted structures can not be used for commercial purposes.\n" +
+        "  More information here: \"https://github.com/google-deepmind/alphafold3/blob/main/README.md#alphafold-3-source-code-and-model-parameters.\"\n" +
+        "==================================================================================="
 }

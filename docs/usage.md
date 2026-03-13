@@ -21,7 +21,7 @@ You will need to create a samplesheet with information about the sequences you w
 A sample of the final samplesheet file for two sequences is shown below:
 
 ```csv title="samplesheet.csv"
-sequence,fasta
+id,fasta
 T1024,https://raw.githubusercontent.com/nf-core/test-datasets/proteinfold/testdata/sequences/T1024.fasta
 T1026,https://raw.githubusercontent.com/nf-core/test-datasets/proteinfold/testdata/sequences/T1026.fasta
 ```
@@ -51,7 +51,7 @@ nextflow run nf-core/proteinfold \
       --outdir <OUTDIR> \
       --mode alphafold2 \
       --alphafold2_db <null (default) | DB_PATH> \
-      --full_dbs <true/false> \
+      --alphafold2_full_dbs <true/false> \
       --alphafold2_model_preset monomer \
       --use_gpu <true/false> \
       -profile <docker/singularity/.../institute>
@@ -66,7 +66,7 @@ nextflow run nf-core/proteinfold \
       --mode alphafold2 \
       --alphafold2_mode split_msa_prediction \
       --alphafold2_db <null (default) | DB_PATH> \
-      --full_dbs <true/false> \
+      --alphafold2_full_dbs <true/false> \
       --alphafold2_model_preset monomer \
       --use_gpu <true/false> \
       --random_seed 53343 \
@@ -77,140 +77,50 @@ To provide the predownloaded AlphaFold2 databases and parameters you can specify
 
 <details markdown="1">
 <summary>Directory structure</summary>
+
 ```console
-├── alphafold_params_2022-12-06
-│   ├── LICENSE
-│   ├── params_model_1_multimer.npz
-│   ├── params_model_1_multimer_v2.npz
-│   ├── params_model_1_multimer_v3.npz
-│   ├── params_model_1.npz
-│   ├── params_model_1_ptm.npz
-│   ├── params_model_2_multimer.npz
-│   ├── params_model_2_multimer_v2.npz
-│   ├── params_model_2_multimer_v3.npz
-│   ├── params_model_2.npz
-│   ├── params_model_2_ptm.npz
-│   ├── params_model_3_multimer.npz
-│   ├── params_model_3_multimer_v2.npz
-│   ├── params_model_3_multimer_v3.npz
-│   ├── params_model_3.npz
-│   ├── params_model_3_ptm.npz
-│   ├── params_model_4_multimer.npz
-│   ├── params_model_4_multimer_v2.npz
-│   ├── params_model_4_multimer_v3.npz
-│   ├── params_model_4.npz
-│   ├── params_model_4_ptm.npz
-│   ├── params_model_5_multimer.npz
-│   ├── params_model_5_multimer_v2.npz
-│   ├── params_model_5_multimer_v3.npz
-│   ├── params_model_5.npz
-│   └── params_model_5_ptm.npz
+├── params
+│   └── alphafold_params_2022-12-06
+│       ├── LICENSE
+│       ├── params_model_1_multimer_v3.npz
+│       ├── params_model_1.npz
+│       ├── params_model_1_ptm.npz
+│       ├── params_model_2_multimer_v3.npz
+│       ├── params_model_2.npz
+│       ├── params_model_2_ptm.npz
+│       ├── params_model_3_multimer_v3.npz
+│       ├── params_model_3.npz
+│       ├── params_model_3_ptm.npz
+│       ├── params_model_4_multimer_v3.npz
+│       ├── params_model_4.npz
+│       ├── params_model_4_ptm.npz
+│       ├── params_model_5_multimer_v3.npz
+│       ├── params_model_5.npz
+│       └── params_model_5_ptm.npz
 ├── mgnify
-│   └── mgy_clusters_2022_05.fa
+│   └── mgy_clusters.fa
 ├── pdb70
-│   └── pdb70_from_mmcif_200916
-│       ├── md5sum
-│       ├── pdb70_a3m.ffdata
-│       ├── pdb70_a3m.ffindex
-│       ├── pdb70_clu.tsv
-│       ├── pdb70_cs219.ffdata
-│       ├── pdb70_cs219.ffindex
-│       ├── pdb70_hhm.ffdata
-│       ├── pdb70_hhm.ffindex
-│       └── pdb_filter.dat
+│   ├── md5sum
+│   ├── pdb70_a3m.ffdata
+│   ├── pdb70_a3m.ffindex
+│   ├── pdb70_clu.tsv
+│   ├── pdb70_cs219.ffdata
+│   ├── pdb70_cs219.ffindex
+│   ├── pdb70_hhm.ffdata
+│   ├── pdb70_hhm.ffindex
+│   └── pdb_filter.dat
 ├── pdb_mmcif
 │   ├── mmcif_files
 │   │   ├── 1g6g.cif
 │   │   ├── 1go4.cif
 │   │   ├── 1isn.cif
-│   │   ├── 1kuu.cif
-│   │   ├── 1m7s.cif
-│   │   ├── 1mwq.cif
-│   │   ├── 1ni5.cif
 │   │   ├── 1qgd.cif
 │   │   ├── 1tp9.cif
-│   │   ├── 1wa9.cif
-│   │   ├── 1ye5.cif
-│   │   ├── 1yhl.cif
-│   │   ├── 2bjd.cif
-│   │   ├── 2bo9.cif
-│   │   ├── 2e7t.cif
-│   │   ├── 2fyg.cif
-│   │   ├── 2j0q.cif
-│   │   ├── 2jcq.cif
-│   │   ├── 2m4k.cif
-│   │   ├── 2n9o.cif
-│   │   ├── 2nsx.cif
-│   │   ├── 2w4u.cif
-│   │   ├── 2wd6.cif
-│   │   ├── 2wh5.cif
-│   │   ├── 2wji.cif
-│   │   ├── 2yu3.cif
-│   │   ├── 3cw2.cif
-│   │   ├── 3d45.cif
-│   │   ├── 3gnz.cif
-│   │   ├── 3j0a.cif
-│   │   ├── 3jaj.cif
-│   │   ├── 3mzo.cif
-│   │   ├── 3nrn.cif
-│   │   ├── 3piv.cif
-│   │   ├── 3pof.cif
-│   │   ├── 3pvd.cif
-│   │   ├── 3q45.cif
-│   │   ├── 3qh6.cif
-│   │   ├── 3rg2.cif
-│   │   ├── 3sxe.cif
-│   │   ├── 3uai.cif
-│   │   ├── 3uid.cif
-│   │   ├── 3wae.cif
-│   │   ├── 3wt1.cif
-│   │   ├── 3wtr.cif
-│   │   ├── 3wy2.cif
-│   │   ├── 3zud.cif
-│   │   ├── 4bix.cif
-│   │   ├── 4bzx.cif
-│   │   ├── 4c1n.cif
-│   │   ├── 4cej.cif
-│   │   ├── 4chm.cif
-│   │   ├── 4fzo.cif
-│   │   ├── 4i1f.cif
-│   │   ├── 4ioa.cif
-│   │   ├── 4j6o.cif
-│   │   ├── 4m9q.cif
-│   │   ├── 4mal.cif
-│   │   ├── 4nhe.cif
 │   │   ├── 4o2w.cif
-│   │   ├── 4pzo.cif
-│   │   ├── 4qlx.cif
-│   │   ├── 4uex.cif
-│   │   ├── 4zm4.cif
-│   │   ├── 4zv1.cif
-│   │   ├── 5aj4.cif
-│   │   ├── 5frs.cif
-│   │   ├── 5hwo.cif
-│   │   ├── 5kbk.cif
-│   │   ├── 5odq.cif
-│   │   ├── 5u5t.cif
-│   │   ├── 5wzq.cif
-│   │   ├── 5x9z.cif
-│   │   ├── 5xe5.cif
-│   │   ├── 5ynv.cif
-│   │   ├── 5yud.cif
-│   │   ├── 5z5c.cif
-│   │   ├── 5zb3.cif
-│   │   ├── 5zlg.cif
-│   │   ├── 6a6i.cif
-│   │   ├── 6az3.cif
-│   │   ├── 6ban.cif
-│   │   ├── 6g1f.cif
-│   │   ├── 6ix4.cif
-│   │   ├── 6jwp.cif
-│   │   ├── 6ng9.cif
-│   │   ├── 6ojj.cif
-│   │   ├── 6s0x.cif
 │   │   ├── 6sg9.cif
 │   │   ├── 6vi4.cif
-│   │   └── 7sp5.cif
+│   │   ├── 7sp5.cif
+│   │   └── ...
 │   └── obsolete.dat
 ├── pdb_seqres
 │   └── pdb_seqres.txt
@@ -219,25 +129,67 @@ To provide the predownloaded AlphaFold2 databases and parameters you can specify
 ├── uniprot
 │   └── uniprot.fasta
 ├── uniref30
-│   ├── UniRef30_2021_03_a3m.ffdata
-│   ├── UniRef30_2021_03_a3m.ffindex
-│   ├── UniRef30_2021_03_cs219.ffdata
-│   ├── UniRef30_2021_03_cs219.ffindex
-|   ├── UniRef30_2021_03_hhm.ffdata
-│   └── UniRef30_2021_03_hhm.ffindex
+│   ├── UniRef30_2023_02_a3m.ffdata
+│   ├── UniRef30_2023_02_a3m.ffindex
+│   ├── UniRef30_2023_02_cs219.ffdata
+│   ├── UniRef30_2023_02_cs219.ffindex
+|   ├── UniRef30_2023_02_hhm.ffdata
+│   ├── UniRef30_2023_02_hhm.ffindex
+│   └── UniRef30_2023_02.md5sums
 └── uniref90
     └── uniref90.fasta
 ```
+
 </details>
 
-Colabfold mode using use your own custom MMSeqs2 API server (`--colabfold_server local`) can be run using the following command:
+AlphaFold3 can be run using this command:
+
+```bash
+nextflow run nf-core/proteinfold \
+      --input samplesheet.csv \
+      --outdir <OUTDIR> \
+      --mode alphafold3 \
+      --alphafold3_db <null (default) | DB_PATH> \
+      --use_gpu <true/false> \
+      -profile <docker/singularity/.../institute>
+```
+
+> [!WARNING]
+> The AlphaFold3 model weights are not provided by the pipeline. You need to obtain them from DeepMind as described in the [AlphaFold3 repository](https://github.com/google-deepmind/alphafold3). Please follow their terms of use and licensing requirements.
+
+To provide the predownloaded AlphaFold3 databases and parameters you can specify the `--alphafold3_db <PATH>` parameter and the directory structure of your path should be like this:
+
+<details markdown="1">
+<summary>Directory structure</summary>
+
+```console
+├── mgnify
+│   └── mgy_clusters_2022_05.fa
+├── mmcif_files
+│   ├── 1g6g.cif
+│   ├── 1go4.cif
+│   └── ...
+├── params
+│   └── af3.bin
+├── pdb_seqres
+│   └── pdb_seqres_2022_09_28.fasta
+├── small_bfd
+│   └── bfd-first_non_consensus_sequences.fasta
+├── uniprot
+│   └── uniprot_all_2021_04.fa
+└── uniref90
+    └── uniref90_2022_05.fa
+```
+
+</details>
+
+Colabfold mode can be used with local database search using the following command:
 
 ```bash
 nextflow run nf-core/proteinfold \
       --input samplesheet.csv \
       --outdir <OUTDIR> \
       --mode colabfold \
-      --colabfold_server local \
       --colabfold_db <null (default) | DB_PATH> \
       --num_recycles_colabfold 3 \
       --use_amber <true/false> \
@@ -254,8 +206,8 @@ nextflow run nf-core/proteinfold \
       --input samplesheet.csv \
       --outdir <OUTDIR> \
       --mode colabfold
-      --colabfold_server webserver \
-      --host_url <custom MMSeqs2 API Server URL> \
+      --use_msa_server \
+      --msa_server_url <custom MMSeqs2 API Server URL> \
       --colabfold_db <null (default) | DB_PATH> \
       --num_recycles_colabfold 3 \
       --use_amber <true/false> \
@@ -268,8 +220,9 @@ If you specify the `--colabfold_db <PATH>` parameter, the directory structure of
 
 <details markdown="1">
 <summary>Directory structure</summary>
+
 ```console
-├── colabfold_envdb_202108
+├── colabfold_envdb
 │   ├── colabfold_envdb_202108_db.0
 │   ├── colabfold_envdb_202108_db.1
 │   ├── colabfold_envdb_202108_db.10
@@ -359,7 +312,7 @@ If you specify the `--colabfold_db <PATH>` parameter, the directory structure of
 │       ├── params_model_4.npz
 │       ├── params_model_5_multimer_v3.npz
 │       └── params_model_5.npz
-└── uniref30_2302
+└── uniref30
     ├── uniref30_2302_aln.tsv
     ├── uniref30_2302_db.0
     ├── uniref30_2302_db.1
@@ -404,6 +357,7 @@ If you specify the `--colabfold_db <PATH>` parameter, the directory structure of
     ├── uniref30_2302_db_seq_h.index -> uniref30_2302_db_h.index
     └── uniref30_2302_db_seq.index
 ```
+
 </details>
 
 ```console
@@ -421,7 +375,7 @@ nextflow run nf-core/proteinfold \
 If you specify the `--esmfold_db <PATH>` parameter, the directory structure of your path should be like this:
 
 ```console
-└── checkpoints
+└── params
     ├── esm2_t36_3B_UR50D-contact-regression.pt
     ├── esm2_t36_3B_UR50D.pt
     └── esmfold_3B_v1.pt
@@ -442,10 +396,7 @@ nextflow run nf-core/proteinfold \
 ```console
 ## Optional parameters with default values:
     --helixfold3_max_template_date=2038-01-19
-    --model_name allatom_demo
     --preset 'reduced_dbs'
-    --init_model './init_models/HelixFold3-240814.pdparams'
-    --logging_level 'ERROR'
     --precision 'bf16'
     --infer_times 4
 ```
@@ -463,6 +414,21 @@ nextflow run nf-core/proteinfold \
       --use_gpu <true/false> \
       -profile <docker/singularity/.../institute>
 ```
+
+RosettaFold2NA can be run using this command:
+
+```bash
+nextflow run nf-core/proteinfold \
+      --input samplesheet.csv \
+      --outdir <OUTDIR> \
+      --mode rosettafold2na \
+      --rosettafold2na_db <null (default) | DB_PATH> \
+      --use_gpu <true/false> \
+      -profile <docker/singularity/.../institute>
+```
+
+> [!NOTE]
+> RosettaFold2NA now expects each samplesheet row to reference a multi-chain FASTA that includes every interacting molecule. Add a `type=` hint to each header (for example `type=protein`, `type=rna`, `type=double_dna`, or `type=single_dna`) so the adaptor can tag chains with the correct RF2NA entity codes (`P`, `R`, `D`, `S`). If no hint is present, the chain type is inferred from sequence composition (pure `ACUGN` → RNA, pure `ACTGN` → DNA which defaults to `D` unless explicitly tagged single-strand, otherwise protein).
 
 Note that the pipeline will create the following files in your working directory:
 
@@ -550,7 +516,7 @@ If `-profile` is not specified, the pipeline will run locally and expect all sof
 - `shifter`
   - A generic configuration profile to be used with [Shifter](https://nersc.gitlab.io/development/shifter/how-to-use/)
 - `charliecloud`
-  - A generic configuration profile to be used with [Charliecloud](https://hpc.github.io/charliecloud/)
+  - A generic configuration profile to be used with [Charliecloud](https://charliecloud.io/)
 - `apptainer`
   - A generic configuration profile to be used with [Apptainer](https://apptainer.org/)
 - `wave`
@@ -625,3 +591,30 @@ We recommend adding the following line to your environment to limit this (typica
 ```bash
 NXF_OPTS='-Xms1g -Xmx4g'
 ```
+
+## Boltz mode
+
+To run the pipeline in Boltz mode, use the following command:
+
+```bash
+nextflow run nf-core/proteinfold \
+      --input samplesheet.csv \
+      --outdir <OUTDIR> \
+      --mode boltz \
+      --use_msa_server \
+      --use_gpu <true/false> \
+      -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
+```
+
+### Boltz parameter descriptions
+
+| Parameter                | Default | Description                                         |
+| ------------------------ | ------- | --------------------------------------------------- |
+| `--boltz_model`          | `null`  | The model to use for prediction. Default is Boltz-2 |
+| `--use_msa_server`       | `null`  | Use MSA server to generate MSAs (flag)              |
+| `--msa_server_url`       | `null`  | MSA server URL                                      |
+| `--boltz_use_potentials` | `null`  | Use inference time potentials (flag)                |
+
+> You can override any of these parameters via the command line or a params file.
+
+---

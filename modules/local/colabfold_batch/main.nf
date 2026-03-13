@@ -1,8 +1,9 @@
 process COLABFOLD_BATCH {
     tag "$meta.id"
     label 'process_medium'
+    label 'process_gpu'
 
-    container "nf-core/proteinfold_colabfold:dev"
+    container "nf-core/proteinfold_colabfold:2.0.0"
 
     input:
     tuple val(meta), path(fasta)
@@ -13,11 +14,16 @@ process COLABFOLD_BATCH {
     val   numRec
 
     output:
-    tuple val(meta), path ("${meta.id}_colabfold.pdb"), emit: top_ranked_pdb
-    tuple val(meta), path ("*_relaxed_rank_*.pdb")    , emit: pdb
-    tuple val(meta), path ("*_coverage.png")          , emit: msa
-    tuple val(meta), path ("*_mqc.png")               , emit: multiqc
-    path "versions.yml"                               , emit: versions
+    path ("raw/**")                                         , emit: raw
+    tuple val(meta), path ("${meta.id}_colabfold.pdb")      , emit: top_ranked_pdb
+    tuple val(meta), path ("raw/*relaxed_rank_*.pdb")       , emit: pdb
+    tuple val(meta), path ("${meta.id}_colabfold_msa.tsv")  , emit: msa
+    tuple val(meta), path ("${meta.id}_plddt.tsv")          , emit: multiqc
+    tuple val(meta), path ("${meta.id}_*_pae.tsv")          , optional: true, emit: paes
+    tuple val(meta), path ("${meta.id}_0_pae.tsv")          , optional: true, emit: pae
+    tuple val(meta), path ("${meta.id}_ptm.tsv")            , optional: true, emit: ptms
+    tuple val(meta), path ("${meta.id}_iptm.tsv")           , optional: true, emit: iptms
+    path "versions.yml"                                     , emit: versions
 
     when:
     task.ext.when == null || task.ext.when
@@ -28,41 +34,66 @@ process COLABFOLD_BATCH {
         error("Local COLABFOLD_BATCH module does not support Conda. Please use Docker / Singularity / Podman instead.")
     }
     def args = task.ext.args ?: ''
-    def VERSION = '1.5.2' // WARN: Version information not provided by tool on CLI. Please update this string when bumping container versions.
 
     """
-    ln -r -s params/alphafold_params_*/* params/
+    if compgen -G "params/alphafold_params_*" >/dev/null; then
+        ln -s \$(realpath params/alphafold_params_*/*) params/
+    fi
+
+    touch params/download_finished.txt
+    touch params/download_complexes_multimer_v3_finished.txt
+    touch params/download_complexes_multimer_v2_finished.txt
+    touch params/download_complexes_multimer_v1_finished.txt
+
     colabfold_batch \\
         $args \\
         --num-recycle ${numRec} \\
         --data \$PWD \\
         --model-type ${colabfold_model_preset} \\
         ${fasta} \\
-        \$PWD
-    for i in `find *_relaxed_rank_001*.pdb`; do cp \$i `echo \$i | sed "s|_relaxed_rank_|\t|g" | cut -f1`"_colabfold.pdb"; done
-    for i in `find *.png -maxdepth 0`; do cp \$i \${i%'.png'}_mqc.png; done
-    cp *_relaxed_rank_001*.pdb ${meta.id}_colabfold.pdb
+        raw/
+
+    if [ ! -e `find raw/*_relaxed_rank_001_*.pdb` ]; then
+        prefix=relaxed
+        cp raw/*_relaxed_rank_001*.pdb ${meta.id}_colabfold.pdb
+    else
+        prefix=unrelaxed
+        cp raw/*_unrelaxed_rank_001*.pdb ${meta.id}_colabfold.pdb
+    fi
+
+    extract_metrics.py --name ${meta.id} \\
+        --colabfold_metrics_fns raw/*scores_rank*.json \\
+        --structs raw/*_\${prefix}_rank*.pdb \\
+        --paired_a3m raw/${meta.id}.a3m
+
+    cp raw/*_coverage.png ${meta.id}_seq_coverage.png
+    mv "${meta.id}_msa.tsv" "${meta.id}_colabfold_msa.tsv"
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        colabfold_batch: $VERSION
+        alphafold_colabfold: \$(pip list | grep "^alphafold-colabfold" | awk '{print \$2}' 2>/dev/null || echo "unknown")
+        colabfold_batch: \$(pip list | grep "^colabfold" | awk '{print \$2}' 2>/dev/null || echo "unknown")
     END_VERSIONS
     """
 
     stub:
-    def VERSION = '1.5.2' // WARN: Version information not provided by tool on CLI. Please update this string when bumping container versions.
     """
+    mkdir raw
     touch ./"${meta.id}"_colabfold.pdb
-    touch ./"${meta.id}"_mqc.png
-    touch ./${meta.id}_relaxed_rank_01.pdb
-    touch ./${meta.id}_relaxed_rank_02.pdb
-    touch ./${meta.id}_relaxed_rank_03.pdb
-    touch ./${meta.id}_coverage.png
-    touch ./${meta.id}_scores_rank.json
+    touch ./raw/${meta.id}_relaxed_rank_001_model_1_seed_000.pdb
+    touch ./raw/${meta.id}_relaxed_rank_002_model_2_seed_000.pdb
+    touch ./raw/${meta.id}_relaxed_rank_003_model_3_seed_000.pdb
+    touch ./${meta.id}_seq_coverage.png
+    touch ./raw/${meta.id}_scores_rank.json
+    touch ./${meta.id}_0_pae.tsv
+    touch ./${meta.id}_ptm.tsv
+    touch ./${meta.id}_plddt.tsv
+    touch ./${meta.id}_colabfold_msa.tsv
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        colabfold_batch: $VERSION
+        alphafold_colabfold: \$(pip list | grep "^alphafold-colabfold" | awk '{print \$2}' 2>/dev/null || echo "unknown")
+        colabfold_batch: \$(pip list | grep "^colabfold" | awk '{print \$2}' 2>/dev/null || echo "unknown")
     END_VERSIONS
     """
 }

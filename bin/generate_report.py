@@ -3,19 +3,60 @@
 import os
 import argparse
 from matplotlib import pyplot as plt
+import numpy as np
 from collections import OrderedDict
 import base64
 import plotly.graph_objects as go
 import re
 from Bio import PDB
 
+def generate_pae_plot(pae_path, out_dir, name, save_image=False):
+    #save_image=False because plotly needs a local install of Google Chrome to save images.....
+    """
+    Generate a Plotly heatmap for Predicted Aligned Error (PAE) data.
+
+    Args:
+        pae (2D array): The PAE matrix.
+    Returns:
+        fig: A Plotly figure object of the PAE heatmap in green color scale
+    """
+    pae = np.genfromtxt(pae_path, delimiter="\t")
+    fig = go.Figure()
+
+    # Add heatmap
+    fig.add_trace(
+        go.Heatmap(
+            z=pae,
+            colorscale="Greens_r",
+            zmin=0,
+            zmax=30,
+        )
+    )
+    fig.update_layout(
+        xaxis=dict(title="Scored Residue", minallowed=0, maxallowed=pae.shape[0]-1),
+        yaxis=dict(title="Aligned Residue", minallowed=0, maxallowed=pae.shape[1]-1, autorange="reversed"),
+        width=600,
+        height=600,
+    )
+
+    if save_image:
+            image_path = f"{out_dir}/{name+('_' if name else '')}PAE.png"
+            fig.write_image(image_path, width=800, height=800)
+
+    return fig
 
 def generate_output_images(msa_path, plddt_data, name, out_dir, in_type, generate_tsv, pdb):
     msa = []
-    if in_type.lower() != "colabfold" and not msa_path.endswith("NO_FILE"):
+    if not msa_path.endswith("NO_FILE"):
         with open(msa_path, "r") as in_file:
             for line in in_file:
                 msa.append([int(x) for x in line.strip().split()])
+
+        # Pad jagged MSAs to avoid shape errors in downstream plotting
+        if msa:
+            max_len = max(len(row) for row in msa)
+            if any(len(row) != max_len for row in msa):
+                msa = [row + [21] * (max_len - len(row)) for row in msa]
 
         seqid = []
         for sequence in msa:
@@ -44,8 +85,11 @@ def generate_output_images(msa_path, plddt_data, name, out_dir, in_type, generat
                 ]
             )
 
+        xaxis_size = len(final[0])
+        yaxis_size = len(final)
+
         # ##################################################################
-        plt.figure(figsize=(14, 14), dpi=100)
+        plt.figure(figsize=(16, 10), dpi=100)
         # ##################################################################
         plt.title("Sequence coverage", fontsize=30, pad=36)
         plt.imshow(
@@ -56,6 +100,7 @@ def generate_output_images(msa_path, plddt_data, name, out_dir, in_type, generat
             vmin=0,
             vmax=1,
             origin="lower",
+            extent=(0, xaxis_size, 0, yaxis_size)
         )
 
         column_counts = [0] * len(msa[0])
@@ -65,8 +110,8 @@ def generate_output_images(msa_path, plddt_data, name, out_dir, in_type, generat
                     column_counts[col] += 1
 
         plt.plot(column_counts, color="black")
-        plt.xlim(-0.5, len(msa[0]) - 0.5)
-        plt.ylim(-0.5, len(msa) - 0.5)
+        plt.xlim(0, len(msa[0]))
+        plt.ylim(0, len(msa))
 
         plt.tick_params(axis="both", which="both", labelsize=18)
 
@@ -75,7 +120,7 @@ def generate_output_images(msa_path, plddt_data, name, out_dir, in_type, generat
         cbar.ax.tick_params(labelsize=18)
         plt.xlabel("Positions", fontsize=24, labelpad=24)
         plt.ylabel("Sequences", fontsize=24, labelpad=36)
-        plt.savefig(f"{out_dir}/{name+('_' if name else '')}seq_coverage.png")
+        plt.savefig(f"{out_dir}/{name}_{in_type}_seq_coverage.png")
 
         # ##################################################################
 
@@ -109,13 +154,12 @@ def generate_output_images(msa_path, plddt_data, name, out_dir, in_type, generat
     fig.update_layout(
         title=dict(text="Predicted LDDT per position", x=0.5, xanchor="center"),
         xaxis=dict(
-            title="Positions", showline=True, linecolor="black", gridcolor="WhiteSmoke"
+            title="Positions", showline=True, linecolor="black", gridcolor="WhiteSmoke", minallowed=0, maxallowed=len(value_plddt)-1
         ),
         yaxis=dict(
             title="Predicted LDDT",
             range=[0, 100],
-            minallowed=0,
-            maxallowed=100,
+            fixedrange=True,
             showline=True,
             linecolor="black",
             gridcolor="WhiteSmoke",
@@ -137,6 +181,17 @@ def generate_output_images(msa_path, plddt_data, name, out_dir, in_type, generat
     ) as out_file:
         out_file.write(html_content)
 
+    if args.pae and not args.pae.endswith('NO_FILE_PAE'):
+        pae_fig = generate_pae_plot(args.pae, out_dir, name)
+        pae_html_content = pae_fig.to_html(
+            full_html=False,
+            include_plotlyjs="cdn",
+            config={"displayModeBar": True, "displaylogo": False, "scrollZoom": True},
+        )
+        with open(
+            f"{out_dir}/{name+('_' if name else '')}PAE.html", "w"
+        ) as pae_out_file:
+            pae_out_file.write(pae_html_content)
 
 def generate_plots(msa_path, plddt_paths, name, out_dir):
     msa = []
@@ -219,13 +274,14 @@ def align_structures(structures):
     ref_structure = structures[0]
 
     common_atoms = set(
-        f"{atom.get_parent().get_id()[1]}-{atom.name}"
-        for atom in ref_structure.get_atoms()
+        f"{atom.get_parent().get_parent().get_id()}-{atom.get_parent().get_id()[1]}-{atom.name}"
+        for atom in ref_structure.get_atoms() if not atom.element == 'H'
     )
+    #print(common_atoms)
     for i, structure in enumerate(structures[1:], start=1):
         common_atoms = common_atoms.intersection(
             set(
-                f"{atom.get_parent().get_id()[1]}-{atom.name}"
+                f"{atom.get_parent().get_parent().get_id()}-{atom.get_parent().get_id()[1]}-{atom.name}"
                 for atom in structure.get_atoms()
             )
         )
@@ -233,7 +289,7 @@ def align_structures(structures):
     ref_atoms = [
         atom
         for atom in ref_structure.get_atoms()
-        if f"{atom.get_parent().get_id()[1]}-{atom.name}" in common_atoms
+        if f"{atom.get_parent().get_parent().get_id()}-{atom.get_parent().get_id()[1]}-{atom.name}" in common_atoms
     ]
     # print(ref_atoms)
     super_imposer = PDB.Superimposer()
@@ -243,7 +299,7 @@ def align_structures(structures):
         target_atoms = [
             atom
             for atom in structure.get_atoms()
-            if f"{atom.get_parent().get_id()[1]}-{atom.name}" in common_atoms
+            if f"{atom.get_parent().get_parent().get_id()}-{atom.get_parent().get_id()[1]}-{atom.name}" in common_atoms
         ]
 
         super_imposer.set_atoms(ref_atoms, target_atoms)
@@ -286,8 +342,12 @@ def pdb_to_lddt(struct_files, generate_tsv):
                 res_atom_count +=1
                 res_pLDDT_tot += atom.get_bfactor()
 
-            plddt_values.append(res_pLDDT_tot/res_atom_count) #residue-level mean for ESMfold atom-level pLDDT
+            # Residue-level mean for ESMfold atom-level pLDDT
+            res_pLDDT_ave = res_pLDDT_tot/res_atom_count
 
+            if res_pLDDT_ave < 1.0:
+                res_pLDDT_ave *= 100
+            plddt_values.append(res_pLDDT_ave)
 
         # Calculate the average PLDDT value for the current file
         if plddt_values:
@@ -314,10 +374,12 @@ version = "1.0.0"
 model_name = {
     "esmfold": "ESMFold",
     "alphafold2": "AlphaFold2",
+    "alphafold3": "Alphafold3",
     "colabfold": "ColabFold",
-    "rosettafold_all_atom": "Rosettafold_All_Atom",
+    "rosettafold_all_atom": "RosettaFold All-Atom",
     "helixfold3": "HelixFold3",
-    "boltz": "Boltz-1"
+    "rosettafold2na": "RoseTTAFold2NA",
+    "boltz": "Boltz"
 }
 
 parser = argparse.ArgumentParser()
@@ -327,6 +389,7 @@ parser.add_argument(
 )
 parser.add_argument("--msa", dest="msa", default="NO_FILE")
 parser.add_argument("--pdb", dest="pdb", required=True, nargs="+")
+parser.add_argument("--pae", dest="pae", default="NO_FILE")
 parser.add_argument("--name", dest="name")
 parser.add_argument("--output_dir", dest="output_dir")
 parser.add_argument("--html_template", dest="html_template")
@@ -341,7 +404,6 @@ lddt_data, lddt_averages = pdb_to_lddt(args.pdb, args.generate_tsv)
 generate_output_images(
     args.msa, lddt_data, args.name, args.output_dir, args.in_type, args.generate_tsv, args.pdb
 )
-# generate_plots(args.msa, args.plddt, args.name, args.output_dir)
 
 print("generating html report...")
 structures = args.pdb
@@ -381,18 +443,14 @@ for structure in aligned_structures:
     i += 1
 
 if not args.msa.endswith("NO_FILE"):
-    image_path = (
-        f"{args.output_dir}/{args.msa}"
-        if args.in_type.lower() == "colabfold"
-        else f"{args.output_dir}/{args.name + ('_' if args.name else '')}seq_coverage.png"
-    )
+    image_path = f"{args.output_dir}/{args.name}_{args.in_type}_seq_coverage.png"
     with open(image_path, "rb") as in_file:
         proteinfold_template = proteinfold_template.replace(
             "seq_coverage.png",
             f"data:image/png;base64,{base64.b64encode(in_file.read()).decode('utf-8')}",
         )
 else:
-    pattern = r'<div id="seq_coverage_container".*?>.*?(<!--.*?-->.*?)*?</div>\s*</div>'
+    pattern = r'<div id="seq_coverage_container".*?>.*?(<!--.*?-->.*?)*?</div>\s*</div>\s*</div>\s*</div>'
     proteinfold_template = re.sub(pattern, "", proteinfold_template, flags=re.DOTALL)
 
 with open(
@@ -403,6 +461,19 @@ with open(
     proteinfold_template = proteinfold_template.replace(
         '<div id="lddt_placeholder"></div>', lddt_html
     )
+
+if not args.pae.endswith("NO_FILE_PAE"):
+    with open(
+        f"{args.output_dir}/{args.name + ('_' if args.name else '')}PAE.html",
+        "r",
+    ) as pae_in_file:
+        pae_html = pae_in_file.read()
+        proteinfold_template = proteinfold_template.replace(
+            '<div id="pae_placeholder"></div>', pae_html
+        )
+else:
+    pattern = r'<div id="pae_container".*?>.*?(<!--.*?-->.*?)*?</div>\s*</div>'
+    proteinfold_template = re.sub(pattern, "", proteinfold_template, flags=re.DOTALL)
 
 with open(
     f"{args.output_dir}/{args.name}_{args.in_type.lower()}_report.html", "w"

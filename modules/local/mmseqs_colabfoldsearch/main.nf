@@ -1,13 +1,14 @@
 process MMSEQS_COLABFOLDSEARCH {
     tag "$meta.id"
     label 'process_high_memory'
+    label 'process_high'
 
-    container "nf-core/proteinfold_colabfold:dev"
+    container "nf-core/proteinfold_mmseqs_colabfoldsearch:2.0.0"
 
     input:
     tuple val(meta), path(fasta)
-    path colabfold_db
-    path uniref30
+    path ('db/*')
+    path ('db/*')
 
     output:
     tuple val(meta), path("**.a3m"), emit: a3m
@@ -22,27 +23,23 @@ process MMSEQS_COLABFOLDSEARCH {
         error("Local MMSEQS_COLABFOLDSEARCH module does not support Conda. Please use Docker / Singularity / Podman instead.")
     }
     def args = task.ext.args ?: ''
-    def VERSION = '1.5.2' // WARN: Version information not provided by tool on CLI. Please update this string when bumping container versions.
 
     """
-    mkdir ./db
-    ln -r -s $uniref30/uniref30_* ./db
-    ln -r -s $colabfold_db/colabfold_envdb* ./db
-
-    /localcolabfold/colabfold-conda/bin/colabfold_search \\
+    colabfold_search \\
         $args \\
         --threads $task.cpus ${fasta} \\
         ./db \\
-        "result/"
+        --af3-json \\
+        "results/"
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        colabfold_search: $VERSION
+        colabfold_search: \$(pip list | grep "^colabfold" | awk '{print \$2}' 2>/dev/null || echo "unknown")
+        mmseqs: \$(mmseqs version)
     END_VERSIONS
     """
 
     stub:
-    def VERSION = '1.5.2' // WARN: Version information not provided by tool on CLI. Please update this string when bumping container versions.
     """
     mkdir results
     input_file="${fasta}"
@@ -62,7 +59,8 @@ process MMSEQS_COLABFOLDSEARCH {
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        colabfold_search: $VERSION
+        colabfold_search: \$(pip list | grep "^colabfold" | awk '{print \$2}' 2>/dev/null || echo "unknown")
+        mmseqs: \$(mmseqs version)
     END_VERSIONS
     """
 }

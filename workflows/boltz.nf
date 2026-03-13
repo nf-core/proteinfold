@@ -18,8 +18,8 @@
 // MODULE: Installed directly from nf-core/modules
 //
 include { MULTIQC } from '../modules/nf-core/multiqc/main'
-include { BOLTZ_FASTA } from '../modules/local/data_convertor/boltz_fasta'
-include { SPLIT_MSA } from '../modules/local/msa_manager/split_msa'
+include { BOLTZ_FASTA } from '../modules/local/boltz_fasta'
+include { SPLIT_MSA } from '../modules/local/split_msa'
 include { MMSEQS_COLABFOLDSEARCH } from '../modules/local/mmseqs_colabfoldsearch'
 //
 // SUBWORKFLOW: Consisting entirely of nf-core/modules
@@ -48,20 +48,42 @@ workflow BOLTZ {
     ch_versions     // channel: [ path(versions.yml) ]
     ch_boltz_ccd    // channel: [ path(boltz_ccd) ]
     ch_boltz_model  // channel: [ path(model) ]
+    ch_boltz2_aff   // channel: [ path(boltz2_aff) ]
+    ch_boltz2_conf  // channel: [ path(boltz2_conf) ]
+    ch_mols         // channel: [ path(mols) ]
     ch_colabfold_db // channel: [ path(colabfold_db) ]
     ch_uniref30     // channel: [ path(uniref30) ]
     msa_server
     mmseq_batch_size
 
     main:
-    ch_multiqc_files = Channel.empty()
-
     ch_samplesheet
-        .branch {
+        .branch { it ->
             fasta: it[1].extension == "fasta" || it[1].extension == "fa"
             yaml: it[1].extension == "yaml" || it[1].extension == "yml"
         }
         .set { ch_input_by_ext }
+
+    ch_input_by_ext.fasta
+        .join(
+            ch_input_by_ext.fasta
+                .map { meta, file ->
+                    [
+                        meta,
+                        file.text.findAll { letter -> letter == ">" }.size()
+                    ]
+                }
+        )
+        .map { it ->
+            def meta = it[0].clone()
+            meta.cnt = it[2]
+            [meta, it[1]]
+        }
+        .branch { it ->
+            multimer: it[0].cnt > 1
+            monomer: it[0].cnt == 1
+        }
+        .set{ch_input}
 
     if (!msa_server){
         MSA(
@@ -70,106 +92,92 @@ workflow BOLTZ {
             ch_uniref30,
             mmseq_batch_size
         )
-
         ch_versions = ch_versions.mix(MSA.out.versions)
-        MSA.out.formated_input
-        .branch{
-            multimer: it[0].cnt > 1
-            monomer: it[0].cnt == 1
-        }
-        .set{ch_input}
 
         SPLIT_MSA(
-            MSA.out.a3m.filter{it[0].cnt > 1}
+            MSA.out.a3m
         )
         ch_versions = ch_versions.mix(SPLIT_MSA.out.versions)
         ch_input.monomer
-            .join(MSA.out.a3m.filter{it[0].cnt == 1})
+            .join(SPLIT_MSA.out.msa_csv)
             .mix(
                 ch_input.multimer.join(SPLIT_MSA.out.msa_csv)
             ).set{ch_prepare_fasta}
 
     }else{
-        ch_input_by_ext.fasta
-            .join(
-                ch_input_by_ext.fasta
-                    .map { meta, file ->
-                        [
-                            meta,
-                            file.text.findAll { letter -> letter == ">" }.size()
-                        ]
-                    }
-            )
-
-        .map{
-            def meta = it[0].clone()
-            meta.cnt = it[2]
-            [meta, it[1]]
-        }
-        .branch{
-            multimer: it[0].cnt > 1
-            monomer: it[0].cnt == 1
-        }
-        .set{ch_input}
-
-        ch_input_by_ext.yaml.mix(
         ch_input
-        .multimer
-        .mix(ch_input
-        .monomer
-        )).map{[it[0], it[1], []]}
-        .set{ch_prepare_fasta}
+            .multimer
+            .mix(ch_input.monomer)
+            .map { it ->
+                [it[0], it[1], []]
+            }
+            .set{ch_prepare_fasta}
     }
 
     BOLTZ_FASTA(
-        ch_prepare_fasta
-    )
+            ch_prepare_fasta
+        )
 
-    def ch_yaml_indexed = ch_input_by_ext.yaml
-        .map { meta, file ->
-            [meta.id, [meta, file, []]]
-        }
-
-
-    def ch_fasta_indexed = BOLTZ_FASTA.out.formatted_fasta.map { meta, file, msa ->
-        [meta.id, [meta, file, msa]]
-    }
-
-    def ch_boltz_input_yaml_with_msa = ch_yaml_indexed
-        .join(ch_fasta_indexed, remainder: true)
-        .map { id, yamlEntry, fastaEntry ->
-            def (yamlMeta, yamlFile, unusedMsa) = yamlEntry ?: fastaEntry
-            def (unusedMeta, unusedFile, msa) = fastaEntry
-            [yamlMeta, yamlFile, msa]
-        }
-    .set { ch_boltz_input }
+    ch_input_by_ext.yaml
+        .map { meta, file -> [ meta, file, [] ] }  // already in YAML
+        .mix(BOLTZ_FASTA.out.formatted_fasta)    // newly converted from FASTA
+        .set { ch_boltz_input }
 
     RUN_BOLTZ(
-        ch_boltz_input.map{[it[0], it[1]]},
-        ch_boltz_input.map{it[2]},
+        ch_boltz_input.map { it -> [it[0], it[1]] },
+        ch_boltz_input.map { it -> it[2] },
         ch_boltz_model,
-        ch_boltz_ccd
+        ch_boltz_ccd,
+        ch_boltz2_aff,
+        ch_boltz2_conf,
+        ch_mols
     )
 
     RUN_BOLTZ
         .out
         .pdb
-        .map{it[0].model = "boltz"; it}
+        .map { it ->
+            it[0].model = "boltz"
+            it
+        }
         .set {ch_pdb}
 
     RUN_BOLTZ
         .out
-        .msa
-    .map{it[0].model = "boltz"; it}
+        .top_ranked_pdb
+        .map { it ->
+            it[0].model = "boltz"
+            it
+        }
+        .set {ch_top_ranked_pdb}
+
+    RUN_BOLTZ
+        .out
+        .msa_raw
+    .map { it ->
+        it[0].model = "boltz"
+        it
+    }
     .set {ch_msa}
 
     RUN_BOLTZ
         .out
+        .pae_raw
+    .map { it ->
+        it[0].model = "boltz"
+        it
+    }
+    .set {ch_pae}
+
+    RUN_BOLTZ
+        .out
         .multiqc
-        .map { it[1] }
+        .map { it -> it[1] }
         .collect(sort: true)
-        .map { [ [ "model": "boltz"], it.flatten() ] }
+        .map { it ->  [ [ "model": "boltz"], it.flatten() ] }
         .set { ch_multiqc_report  }
+
+    ch_versions       = ch_versions.mix(RUN_BOLTZ.out.versions)
 
     emit:
     versions        = ch_versions
@@ -177,5 +185,7 @@ workflow BOLTZ {
     structures      = RUN_BOLTZ.out.structures
     confidence      = RUN_BOLTZ.out.confidence
     multiqc_report  = ch_multiqc_report
+    top_ranked_pdb  = ch_top_ranked_pdb
     pdb             = ch_pdb
+    pae             = ch_pae
 }

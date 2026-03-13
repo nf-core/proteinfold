@@ -1,0 +1,6 @@
+name: fasta_to_alphafold3_json
+channels:
+  - conda-forge
+dependencies:
+  - conda-forge::python=3.13.7
+  - conda-forge::biopython=1.84

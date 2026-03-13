@@ -1,4 +1,7 @@
-Changes in module 'nf-core/foldseek/easysearch'
+Changes in component 'nf-core/foldseek/easysearch'
+'modules/nf-core/foldseek/easysearch/environment.yml' is unchanged
+'modules/nf-core/foldseek/easysearch/meta.yml' is unchanged
+Changes in 'foldseek/easysearch/main.nf':
 --- modules/nf-core/foldseek/easysearch/main.nf
 +++ modules/nf-core/foldseek/easysearch/main.nf
 @@ -12,7 +12,8 @@
@@ -11,7 +14,7 @@ Changes in module 'nf-core/foldseek/easysearch'
      path "versions.yml"                   , emit: versions
  
      when:
-@@ -21,12 +22,17 @@
+@@ -21,12 +22,16 @@
      script:
      def args = task.ext.args ?: ''
      def prefix = task.ext.prefix ?: "${meta.id}"
@@ -19,7 +22,6 @@ Changes in module 'nf-core/foldseek/easysearch'
 +    if (args.contains("--format-mode 3")){
 +        output_file = "${meta.id}_${meta.model.toLowerCase()}_foldseek.html"
 +    }
-+
      """
      foldseek \\
          easy-search \\
@@ -30,8 +32,8 @@ Changes in module 'nf-core/foldseek/easysearch'
          tmpFolder \\
          ${args}
  
-@@ -42,6 +48,7 @@
- 
+@@ -40,6 +45,7 @@
+     def prefix = task.ext.prefix ?: "${meta.id}"
      """
      touch ${prefix}.m8
 +    touch ${prefix}.html
@@ -39,4 +41,6 @@ Changes in module 'nf-core/foldseek/easysearch'
      cat <<-END_VERSIONS > versions.yml
      "${task.process}":
 
+'modules/nf-core/foldseek/easysearch/tests/main.nf.test.snap' is unchanged
+'modules/nf-core/foldseek/easysearch/tests/main.nf.test' is unchanged
 ************************************************************

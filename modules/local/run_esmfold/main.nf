@@ -1,8 +1,9 @@
 process RUN_ESMFOLD {
     tag "$meta.id"
     label 'process_medium'
+    label 'process_gpu'
 
-    container "nf-core/proteinfold_esmfold:dev"
+    container "nf-core/proteinfold_esmfold:2.0.0"
 
     input:
     tuple val(meta), path(fasta)
@@ -10,8 +11,9 @@ process RUN_ESMFOLD {
     val numRec
 
     output:
-    tuple val(meta), path ("${meta.id}_esmfold.pdb")  , emit: pdb
-    tuple val(meta), path ("${meta.id}_plddt_mqc.tsv"), emit: multiqc
+    tuple val(meta), path ("${meta.id}_esmfold.pdb")  , emit: top_ranked_pdb
+    tuple val(meta), path ("*.pdb")                   , emit: pdb
+    tuple val(meta), path ("${meta.id}_plddt.tsv")    , emit: multiqc
     path "versions.yml"                               , emit: versions
 
     when:
@@ -24,6 +26,8 @@ process RUN_ESMFOLD {
     def args = task.ext.args ?: ''
     def VERSION = '1.0.3' // WARN: Version information not provided by tool on CLI. Please update this string when bumping container versions.
 
+    // KR - note: removed the *.pdb -> tmp.pdb, tmp.pdb  -> esmfold.pdb. Why not just take directly?
+    // Only one .pdb per ESMFold run
     """
     esm-fold \
         -i ${fasta} \
@@ -32,28 +36,36 @@ process RUN_ESMFOLD {
         --num-recycles ${numRec} \
         $args
 
-    mv  *.pdb tmp.pdb
-    mv  tmp.pdb ${meta.id}_esmfold.pdb
+    mv  *.pdb ${meta.id}_esmfold.pdb
 
-    awk '{print \$2"\\t"\$3"\\t"\$4"\\t"\$6"\\t"\$11}' ${meta.id}_esmfold.pdb | grep -v 'N/A' | uniq > plddt.tsv
-    echo -e Atom_serial_number"\\t"Atom_name"\\t"Residue_name"\\t"Residue_sequence_number"\\t"pLDDT > header.tsv
-    cat header.tsv plddt.tsv > ${meta.id}_plddt_mqc.tsv
+    extract_metrics.py --name ${meta.id} \\
+        --structs ${meta.id}_esmfold.pdb
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         esm-fold: $VERSION
+        python: \$(python3 --version | sed 's/Python //g')
+        pytorch: \$(python3 -c "import torch; print(torch.__version__)" 2>/dev/null || echo "unknown")
+        openfold: \$(python -m pip show openfold | grep "^Version" | sed 's/.*Version: //' 2>/dev/null || echo "unknown")
+        numpy: \$(python3 -c "import numpy; print(numpy.__version__)" 2>/dev/null || echo "unknown")
+        biopython: \$(python3 -c "import Bio; print(Bio.__version__)" 2>/dev/null || echo "unknown")
     END_VERSIONS
     """
 
     stub:
     def VERSION = '1.0.3' // WARN: Version information not provided by tool on CLI. Please update this string when bumping container versions.
     """
-    touch ./${meta.id}_esmfold.pdb
-    touch ./${meta.id}_plddt_mqc.tsv
+    touch "${meta.id}_esmfold.pdb"
+    touch "${meta.id}_plddt.tsv"
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         esm-fold: $VERSION
+        python: \$(python3 --version 2>/dev/null | sed 's/Python //g' || echo "unknown")
+        pytorch: \$(python3 -c "import torch; print(torch.__version__)" 2>/dev/null || echo "unknown")
+        openfold: \$(python -m pip show openfold 2>/dev/null | grep "^Version" | sed 's/.*Version: //' || echo "unknown")
+        numpy: \$(python3 -c "import numpy; print(numpy.__version__)" 2>/dev/null || echo "unknown")
+        biopython: \$(python3 -c "import Bio; print(Bio.__version__)" 2>/dev/null || echo "unknown")
     END_VERSIONS
     """
 }

@@ -10,12 +10,14 @@
 include { COLABFOLD_BATCH        } from '../modules/local/colabfold_batch'
 include { MMSEQS_COLABFOLDSEARCH } from '../modules/local/mmseqs_colabfoldsearch'
 include { MULTIFASTA_TO_CSV      } from '../modules/local/multifasta_to_csv'
+
+include { modeChannel            } from '../subworkflows/local/utils_nfcore_proteinfold_pipeline'
+include { MSA                    } from '../subworkflows/local/msa'
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     IMPORT NF-CORE MODULES/SUBWORKFLOWS
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
-include { MSA                    } from '../subworkflows/local/msa'
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     RUN MAIN WORKFLOW
@@ -34,39 +36,29 @@ workflow COLABFOLD {
     num_recycles           // int: Number of recycles for esmfold
     mmseq_batch_size
     main:
-    ch_multiqc_report = Channel.empty()
+    ch_multiqc_report = channel.empty()
 
-    if (params.colabfold_server == 'webserver') {
+    if (params.use_msa_server) {
         //
         // MODULE: Run colabfold
         //
-        if (params.colabfold_model_preset != 'alphafold2_ptm' && params.colabfold_model_preset != 'alphafold2') {
-            MULTIFASTA_TO_CSV(
-                ch_samplesheet
-            )
-            ch_versions = ch_versions.mix(MULTIFASTA_TO_CSV.out.versions)
-            COLABFOLD_BATCH(
-                MULTIFASTA_TO_CSV.out.input_csv,
-                colabfold_model_preset,
-                ch_colabfold_params,
-                [],
-                [],
-                num_recycles
-            )
-            ch_versions = ch_versions.mix(COLABFOLD_BATCH.out.versions)
-        } else {
-            COLABFOLD_BATCH(
-                ch_samplesheet,
-                colabfold_model_preset,
-                ch_colabfold_params,
-                [],
-                [],
-                num_recycles
-            )
-            ch_versions = ch_versions.mix(COLABFOLD_BATCH.out.versions)
-        }
 
-    } else if (params.colabfold_server == 'local') {
+        MULTIFASTA_TO_CSV(
+            ch_samplesheet
+        )
+        ch_versions = ch_versions.mix(MULTIFASTA_TO_CSV.out.versions)
+
+        COLABFOLD_BATCH(
+            MULTIFASTA_TO_CSV.out.input_csv,
+            colabfold_model_preset,
+            ch_colabfold_params,
+            [],
+            [],
+            num_recycles
+        )
+        ch_versions = ch_versions.mix(COLABFOLD_BATCH.out.versions)
+
+    } else {
         //
         // MODULE: Run mmseqs
         //
@@ -95,44 +87,42 @@ workflow COLABFOLD {
     COLABFOLD_BATCH
         .out
         .top_ranked_pdb
-        .map{
-            meta = it[0].clone();
-            meta.model = "colabfold";
-            [meta, it[1]]
+        .map { it ->
+            def meta_clone = it[0].clone();
+            meta_clone.model = "colabfold";
+            [ meta_clone, it[1] ]
         }
         .set { ch_top_ranked_pdb }
 
     COLABFOLD_BATCH
         .out
         .pdb
-    .map{
-        meta = it[0].clone();
-        meta.model = "colabfold";
-        [meta, it[1]]
-    }
-    .set{ch_pdb_final}
+        .map { it ->
+            def meta = it[0].clone();
+            meta.model = "colabfold";
+            def files = (it[1] instanceof List) ? it[1] : [ it[1] ]
+            [ meta, files ]
+        }
+        .set { ch_pdb_final }
 
-    COLABFOLD_BATCH.out.msa
-    .map{
-        meta = it[0].clone();
-        meta.model = "colabfold";
-        [meta, it[1]]
-    }
-    .set{ch_msa_final}
+    modeChannel(COLABFOLD_BATCH.out.msa, "colabfold").set { ch_msa_final }
+    modeChannel(COLABFOLD_BATCH.out.pae, "colabfold").set { ch_pae_final }
 
     COLABFOLD_BATCH
         .out
         .multiqc
-        .map { it[1] }
+        .map { it -> it[1] }
         .toSortedList()
-        .map { [ [ "model":"colabfold"], it.flatten() ] }
+        .map { it ->
+            [ [ "model":"colabfold"], it.flatten() ]
+        }
         .set { ch_multiqc_report  }
 
-
     emit:
-    top_ranked_pdb = ch_top_ranked_pdb
-    pdb            = ch_pdb_final // channel: [ id, /path/to/*.pdb ]
-    msa            = ch_msa_final       // channel: [ meta, /path/to/*.pdb, /path/to/*_coverage.png ]
+    top_ranked_pdb = ch_top_ranked_pdb // channel: [ meta, /path/to/*.pdb ]
+    pdb            = ch_pdb_final      // channel: [ id, /path/to/*.pdb ]
+    msa            = ch_msa_final      // channel: [ meta, /path/to/*.pdb, /path/to/*_coverage.png ]
+    pae            = ch_pae_final      // channel: [ id, /path/to/*_pae.tsv ]
     multiqc_report = ch_multiqc_report // channel: /path/to/multiqc_report.html
     versions       = ch_versions       // channel: [ path(versions.yml) ]
 }

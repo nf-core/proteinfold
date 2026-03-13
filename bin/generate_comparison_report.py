@@ -77,13 +77,12 @@ def generate_output(plddt_data, name, out_dir, generate_tsv, pdb):
     fig.update_layout(
         title=dict(text="Predicted LDDT per position", x=0.5, xanchor="center"),
         xaxis=dict(
-            title="Positions", showline=True, linecolor="black", gridcolor="WhiteSmoke"
+            title="Positions", showline=True, linecolor="black", gridcolor="WhiteSmoke", minallowed=0, maxallowed=len(value_plddt)-1
         ),
         yaxis=dict(
             title="Predicted LDDT",
             range=[0, 100],
-            minallowed=0,
-            maxallowed=100,
+            fixedrange=True,
             showline=True,
             linecolor="black",
             gridcolor="WhiteSmoke",
@@ -122,22 +121,27 @@ def align_structures(structures):
 
     def get_atom_ids(structure):
         # Note: this is a *set* of atom_ids due to the {} surrounding the comprehension
-        return {(atom.get_parent().get_id(), atom.name) for atom in structure.get_atoms()}
+        return {(atom.get_parent().get_parent().get_id(), atom.get_parent().get_id(), atom.name) for atom in structure.get_atoms() if atom.element != 'H'}
 
-    # TODO: do we want to raise and error if the structures are not identical atomically, or keep the ability to sub-align?
-    # Update the atoms shared between structures with progressive intersections
+    # Find atoms common to all structures for sub-alignment
     common_atoms = get_atom_ids(ref_structure)
-    print("commons: ", len(common_atoms))
+    initial_atom_count = len(common_atoms)
     for structure in parsed_structures[1:]:
         common_atoms.intersection_update(get_atom_ids(structure))
-        print("commons: ", len(common_atoms))
+
+    if len(common_atoms) < initial_atom_count:
+        print(
+            f"WARNING: Structures are not atomically identical. "
+            f"Aligning using {len(common_atoms)} common atoms out of {initial_atom_count} "
+            f"in the reference structure ({initial_atom_count - len(common_atoms)} atoms excluded)."
+        )
 
     if not common_atoms:
         raise ValueError("No common atoms found between structures.")
-    #print(common_atoms)
+
     def extract_atoms(structure, atom_ids):
         # Note: this comprehension returns an atom *object* for each atom in the structure
-        return [atom for atom in structure.get_atoms() if (atom.get_parent().get_id(), atom.name) in atom_ids]
+        return [atom for atom in structure.get_atoms() if (atom.get_parent().get_parent().get_id(), atom.get_parent().get_id(), atom.name) in atom_ids]
 
     ref_atoms = extract_atoms(ref_structure, common_atoms)
     # The aligned structures will be the parsed structures aligned to the common atoms of the reference structure
@@ -149,7 +153,6 @@ def align_structures(structures):
             aligned_structures.append(structure)
             continue
         target_atoms = extract_atoms(structure, common_atoms)
-        print(len(ref_atoms), len(target_atoms), len(common_atoms))
         super_imposer.set_atoms(ref_atoms, target_atoms)
         super_imposer.apply(structure.get_atoms())
 
@@ -188,7 +191,12 @@ def pdb_to_lddt(struct_files, generate_tsv):
                 res_atom_count +=1
                 res_pLDDT_tot += atom.get_bfactor()
 
-            plddt_values.append(res_pLDDT_tot/res_atom_count) #residue-level mean for ESMfold atom-level pLDDT
+            # Residue-level mean for ESMfold atom-level pLDDT
+            res_pLDDT_ave = res_pLDDT_tot/res_atom_count
+
+            if res_pLDDT_ave < 1.0:
+                res_pLDDT_ave *= 100
+            plddt_values.append(res_pLDDT_ave)
 
         # Calculate the average PLDDT value for the current file
         if plddt_values:
