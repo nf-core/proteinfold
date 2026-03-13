@@ -912,6 +912,18 @@
                     "description": "Link to download CCD RDKit mol file",
                     "icon": "fas fa-link",
                     "default": "https://protenix.tos-cn-beijing.volces.com/common/components.cif.rdkit_mol.pkl"
+                },
+                "protenix_clusters_link": {
+                    "type": "string",
+                    "description": "Link to download Protenix clusters file",
+                    "icon": "fas fa-link",
+                    "default": "https://protenix.tos-cn-beijing.volces.com/common/clusters-by-entity-40.txt"
+                },
+                "protenix_obsolete_link": {
+                    "type": "string",
+                    "description": "Link to download Protenix obsolete release date file",
+                    "icon": "fas fa-link",
+                    "default": "https://protenix.tos-cn-beijing.volces.com/common/obsolete_release_date.csv"
                 }
             }
         },
@@ -943,6 +955,16 @@
                     "description": "Path to CCD RDKit mol file",
                     "icon": "fas folder-open",
                     "default": "null/params/components.cif.rdkit_mol.pkl"
+                },
+                "protenix_clusters_path": {
+                    "type": "string",
+                    "description": "Path to Protenix clusters file",
+                    "icon": "fas folder-open"
+                },
+                "protenix_obsolete_path": {
+                    "type": "string",
+                    "description": "Path to Protenix obsolete release date file",
+                    "icon": "fas folder-open"
                 }
             }
         },
