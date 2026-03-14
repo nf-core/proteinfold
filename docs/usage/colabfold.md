@@ -14,13 +14,9 @@ nextflow run nf-core/proteinfold \
     --outdir <OUTDIR> \
     --mode colabfold \
     --colabfold_db <null (default) | PATH> \
-    --colabfold_model_preset "<alphafold2_ptm/alphafold2_multimer_v1/alphafold2_multimer_v2/alphafold2_multimer_v3>" \
     --use_gpu \
     -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
 ```
-
-> [!WARNING]
-> `--colabfold_model_preset` is used to infer how to handle multi-entry fasta files. Choosing `alphafold2_ptm` will result in a multi-entry fasta being processed as a series of monomer entries rather than as a single oligomeric complex.
 
 By default, `--mode colabfold` will generate MSA files required for structure prediction using a local execution of the [ColabFold](https://github.com/sokrypton/ColabFold) search protocol. This protocol uses [MMseqs2](https://github.com/soedinglab/MMseqs2) to search a uniref30 expandable profile database and construct paired alignments using taxonomic labels. MSAs are enriched with additional unpaired sequences by searching an expandable profile databased of environmental sequences.
 
@@ -47,23 +43,23 @@ The file structure of `--colabfold_db` must be as follows:
 │   ├── uniref30_2302_db_aln.dbtype
 │   └── ...
 └── params/
-    └── alphafold_params_colab_2022-12-06/
+    └── alphafold_params_2022-12-06/
         ├── LICENSE
-        ├── params_model_1_multimer_v2.npz
         ├── params_model_1_multimer_v3.npz
         ├── params_model_1.npz
-        ├── params_model_2_multimer_v2.npz
+        ├── params_model_1_ptm.npz
         ├── params_model_2_multimer_v3.npz
         ├── params_model_2.npz
-        ├── params_model_3_multimer_v2.npz
+        ├── params_model_2_ptm.npz
         ├── params_model_3_multimer_v3.npz
         ├── params_model_3.npz
-        ├── params_model_4_multimer_v2.npz
+        ├── params_model_3_ptm.npz
         ├── params_model_4_multimer_v3.npz
         ├── params_model_4.npz
-        ├── params_model_5_multimer_v2.npz
+        ├── params_model_4_ptm.npz
         ├── params_model_5_multimer_v3.npz
-        └── params_model_5.npz
+        ├── params_model_5.npz
+        └── params_model_5_ptm.npz
 ```
 
 </details>
@@ -89,7 +85,6 @@ nextflow run nf-core/proteinfold \
     --outdir <OUTDIR> \
     --mode colabfold \
     --colabfold_db <PATH> \
-    --colabfold_model_preset <alphafold2_ptm/alphafold2_multimer_v1/alphafold2_multimer_v2/alphafold2_multimer_v3> \
     --use_msa_server \
     --use_gpu \
     -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
@@ -102,12 +97,13 @@ nextflow run nf-core/proteinfold \
 
 See the [ColabFold](https://github.com/sokrypton/ColabFold) documentation for a full description of additional arguments. The arguments supported by the proteinfold workflow are described briefly below:
 
-| Parameter                   | Default | Description                                                                                                                                                                                                                                                                                                                     |
-| --------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `--colabfold_num_recycles`  | `3`     | The AlphaFold2 model used by ColabFold provides initial structure predictions as a recycled model input in an iterative refinement process. This parameter controls the number of times model outputs are recycled. Increasing the number of recycles has been found to improve performance for some challening cases.          |
-| `--colabfold_use_amber`     | `true`  | ColabFold outputs will sometimes contain phsyical violations such as steric clashes. These clashes can be resolved by post-processing the outputs with a short relaxation using the Amber Force Field. Non-clashing atoms are pinned to starting coordinates such that the relaxation has a minimal impact on final structures. |
-| `--colabfold_db_load_mode`  | `0`     | Specify the way that MMSeqs2 will load the required databases in memory                                                                                                                                                                                                                                                         |
-| `--colabfold_use_templates` | `false` | Use PDB templates to support predictions. The ColabFold notebooks do not use templates by default.                                                                                                                                                                                                                              |
-| `--colabfold_create_index`  | `false` | Create index for ColabFold databases during setup. On network filesystems it can be more performant to re-compute the index on the fly                                                                                                                                                                                          |
+| Parameter                              | Default                       | Description                                                                                                                                                                                                                                                                                                                     |
+| -------------------------------------- | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--colabfold_num_recycles`             | `3`                           | The AlphaFold2 model used by ColabFold provides initial structure predictions as a recycled model input in an iterative refinement process. This parameter controls the number of times model outputs are recycled. Increasing the number of recycles has been found to improve performance for some challening cases.          |
+| `--colabfold_use_amber`                | `true`                        | ColabFold outputs will sometimes contain phsyical violations such as steric clashes. These clashes can be resolved by post-processing the outputs with a short relaxation using the Amber Force Field. Non-clashing atoms are pinned to starting coordinates such that the relaxation has a minimal impact on final structures. |
+| `--colabfold_db_load_mode`             | `0`                           | Specify the way that MMSeqs2 will load the required databases in memory                                                                                                                                                                                                                                                         |
+| `--colabfold_alphafold2_params_prefix` | `alphafold_params_2022-12-06` | Specify the alphafold2 params used for prediction.                                                                                                                                                                                                                                                                              |
+| `--colabfold_use_templates`            | `false`                       | Use PDB templates to support predictions. The ColabFold notebooks do not use templates by default.                                                                                                                                                                                                                              |
+| `--colabfold_create_index`             | `false`                       | Create index for ColabFold databases during setup. On network filesystems it can be more performant to re-compute the index on the fly                                                                                                                                                                                          |
 
 > You can override any of these parameters via the command line or a params file.
