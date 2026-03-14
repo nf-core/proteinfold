@@ -123,6 +123,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[PR #509](https://github.com/nf-core/proteinfold/pulls/509)] - Setup gpu environment for AWS full tests.
 - [[PR #525](https://github.com/nf-core/proteinfold/pulls/525)] - Reduce AlphaFold2 multimer full test to a single replicate.
 - [[PR #538](https://github.com/nf-core/proteinfold/pulls/538)] - Fix alphafold2_random_seed type.
+- [[PR #563](https://github.com/nf-core/proteinfold/pulls/563)] - Fix boltz csv sync.
 
 ### Parameters
 
