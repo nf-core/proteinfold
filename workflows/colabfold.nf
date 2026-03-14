@@ -12,7 +12,6 @@ include { MMSEQS_COLABFOLDSEARCH } from '../modules/local/mmseqs_colabfoldsearch
 include { MULTIFASTA_TO_CSV      } from '../modules/local/multifasta_to_csv'
 
 include { modeChannel            } from '../subworkflows/local/utils_nfcore_proteinfold_pipeline'
-include { resolveModelPresetByFastaEntities } from '../subworkflows/local/utils_nfcore_proteinfold_pipeline'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -38,12 +37,6 @@ workflow COLABFOLD {
 
     main:
     ch_multiqc_report = channel.empty()
-    ch_samplesheet
-        .map { meta, fasta ->
-            def resolved_model_preset = resolveModelPresetByFastaEntities(fasta, 'monomer', 'multimer')
-            [ meta, fasta, resolved_model_preset ]
-        }
-        .set{ ch_samplesheet_with_param_group }
 
     if (params.use_msa_server) {
         //
@@ -51,22 +44,13 @@ workflow COLABFOLD {
         //
 
         MULTIFASTA_TO_CSV(
-            ch_samplesheet_with_param_group.map { meta, fasta, _param_group ->
-                [ meta, fasta ]
-            }
+            ch_samplesheet
         )
         ch_versions = ch_versions.mix(MULTIFASTA_TO_CSV.out.versions)
 
         COLABFOLD_BATCH(
             MULTIFASTA_TO_CSV.out.input_csv
-                .join(ch_samplesheet_with_param_group.map { meta, _fasta, param_group -> [ meta, param_group ] })
-                .map { meta, input_csv, param_group ->
-                    [ param_group, meta, input_csv ]
-                }
-                .combine(ch_colabfold_params, by: 0)
-                .map { _preset_group, meta, input_csv, colabfold_params ->
-                    [ meta, input_csv, colabfold_params ]
-                },
+                .combine(ch_colabfold_params),
             [],
             [],
             num_recycles
@@ -77,11 +61,8 @@ workflow COLABFOLD {
         //
         // MODULE: Run mmseqs
         //
-        //Multimer mode
         MULTIFASTA_TO_CSV(
-            ch_samplesheet_with_param_group.map { meta, fasta, _param_group ->
-                [ meta, fasta ]
-            }
+            ch_samplesheet
         )
         ch_versions = ch_versions.mix(MULTIFASTA_TO_CSV.out.versions)
         MMSEQS_COLABFOLDSEARCH (
@@ -96,14 +77,7 @@ workflow COLABFOLD {
         //
         COLABFOLD_BATCH(
             MMSEQS_COLABFOLDSEARCH.out.a3m
-                .join(ch_samplesheet_with_param_group.map { meta, _fasta, param_group -> [ meta, param_group ] })
-                .map { meta, a3m, param_group ->
-                    [ param_group, meta, a3m ]
-                }
-                .combine(ch_colabfold_params, by: 0)
-                .map { _preset_group, meta, a3m, colabfold_params ->
-                    [ meta, a3m, colabfold_params ]
-                },
+                .combine(ch_colabfold_params),
             ch_colabfold_db,
             ch_uniref30,
             num_recycles
