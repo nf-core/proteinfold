@@ -178,7 +178,8 @@
                     "description": "Specify the way that MMSeqs2 will load the required databases in memory",
                     "fa_icon": "fas fa-download",
                     "enum": [0, 1, 2, 3],
-                    "errorMessage": "DB load mode must be 0, 1, 2, or 3"
+                    "errorMessage": "DB load mode must be 0, 1, 2, or 3",
+                    "default": 0
                 },
                 "colabfold_use_templates": {
                     "type": "boolean",
@@ -190,6 +191,18 @@
                     "type": "boolean",
                     "description": "Create databases indexes when running colabfold_local mode",
                     "fa_icon": "fas fa-bezier-curve"
+                },
+                "colabfold_params_prefix": {
+                    "type": "string",
+                    "default": "alphafold_params_2022-12-06",
+                    "description": "Alphafold2 parameters version",
+                    "enum": [
+                        "alphafold_params_2022-12-06",
+                        "alphafold_params_2022-03-02",
+                        "alphafold_params_2022-01-19",
+                        "alphafold_params_2021-07-14"
+                    ],
+                    "fa_icon": "fas fa-database"
                 }
             }
         },
@@ -685,17 +698,11 @@
                     "description": "Link to the UniRef30 database",
                     "fa_icon": "fas fa-link"
                 },
-                "colabfold_alphafold2_monomer_params_link": {
+                "colabfold_alphafold2_params_link": {
                     "type": "string",
                     "description": "Link to the Alphafold2 monomer parameters for ColabFold",
                     "fa_icon": "fas fa-link",
-                    "default": "https://storage.googleapis.com/alphafold/alphafold_params_2021-07-14.tar"
-                },
-                "colabfold_alphafold2_multimer_params_link": {
-                    "type": "string",
-                    "description": "Link to the Alphafold2 multimer parameters for ColabFold",
-                    "fa_icon": "fas fa-link",
-                    "default": "https://storage.googleapis.com/alphafold/alphafold_params_colab_2022-12-06.tar"
+                    "default": "https://storage.googleapis.com/alphafold/alphafold_params_2022-12-06.tar"
                 }
             }
         },
@@ -725,17 +732,11 @@
                     "fa_icon": "fas fa-folder-open",
                     "default": "null/colabfold_uniref30/*"
                 },
-                "colabfold_alphafold2_monomer_params_path": {
+                "colabfold_alphafold2_params_path": {
                     "type": "string",
-                    "description": "Path to the Alphafold2 monomer parameters for ColabFold",
+                    "description": "Path to the AlphaFold2 parameters for Colabfold",
                     "fa_icon": "fas fa-folder-open",
-                    "default": "null/params/alphafold_params_2021-07-14"
-                },
-                "colabfold_alphafold2_multimer_params_path": {
-                    "type": "string",
-                    "description": "Path to the Alphafold2 multimer parameters for ColabFold",
-                    "fa_icon": "fas fa-folder-open",
-                    "default": "null/params/alphafold_params_colab_2022-12-06"
+                    "default": "null/params/alphafold_params_2022-12-06"
                 }
             }
         },
