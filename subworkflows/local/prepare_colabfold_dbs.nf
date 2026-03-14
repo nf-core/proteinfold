@@ -42,6 +42,9 @@ workflow PREPARE_COLABFOLD_DBS {
         ch_params = ARIA2_COLABFOLD_PARAMS
                         .out
                         .db
+                        .map {
+                            dir -> dir.listFiles().findAll { it -> it.isFile() }
+                        }
 
         ch_versions = ch_versions.mix(ARIA2_COLABFOLD_PARAMS.out.versions)
 
