@@ -1,7 +1,7 @@
 {
     "-profile test_colabfold_download": {
         "content": [
-            11,
+            9,
             {
                 "ARIA2": {
                     "aria2": null
@@ -25,8 +25,7 @@
                 "DBs",
                 "DBs/colabfold",
                 "DBs/colabfold/params",
-                "DBs/colabfold/params/alphafold_params_2021-07-14",
-                "DBs/colabfold/params/alphafold_params_colab_2022-12-06",
+                "DBs/colabfold/params/alphafold_params_2022-12-06",
                 "colabfold",
                 "colabfold/T1024",
                 "colabfold/T1024/T1024_colabfold_msa.tsv",
@@ -58,9 +57,6 @@
                 [
                     "file.txt:md5,d41d8cd98f00b204e9800998ecf8427e"
                 ],
-                [
-                    "file.txt:md5,d41d8cd98f00b204e9800998ecf8427e"
-                ],
                 "T1024_colabfold_msa.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1024_plddt.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1024_ptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
@@ -79,6 +75,6 @@
             "nf-test": "0.9.2",
             "nextflow": "25.10.3"
         },
-        "timestamp": "2026-03-14T13:28:07.240167931"
+        "timestamp": "2026-03-14T15:51:28.137685059"
     }
 }
