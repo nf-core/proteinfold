@@ -178,8 +178,7 @@
                     "description": "Specify the way that MMSeqs2 will load the required databases in memory",
                     "fa_icon": "fas fa-download",
                     "enum": [0, 1, 2, 3],
-                    "errorMessage": "DB load mode must be 0, 1, 2, or 3",
-                    "default": 0
+                    "errorMessage": "DB load mode must be 0, 1, 2, or 3"
                 },
                 "colabfold_use_templates": {
                     "type": "boolean",
