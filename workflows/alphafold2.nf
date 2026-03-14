@@ -140,12 +140,6 @@ workflow ALPHAFOLD2 {
             }
             .set { ch_fasta_features }
 
-        ch_fasta_features
-            .map { meta, _fasta, features ->
-                [ meta, features ]
-            }
-            .set { ch_split_features }
-
         RUN_ALPHAFOLD2_PRED (
             ch_fasta_features,
             ch_alphafold2_params,
@@ -165,8 +159,8 @@ workflow ALPHAFOLD2 {
             RUN_ALPHAFOLD2_PRED
                 .out
                 .raw
-                .join(ch_split_features)
-                .map { meta, raw, features -> [ meta, raw, "alphafold2", features ] }
+                .join(ch_fasta_features)
+                .map { meta, raw, _fasta, features, _preset -> [ meta, raw, "alphafold2", features ] }
         )
 
         EXTRACT_METRICS_AF2_PRED
