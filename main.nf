@@ -236,12 +236,10 @@ workflow NFCORE_PROTEINFOLD {
         PREPARE_COLABFOLD_DBS_COLABFOLD (
             params.colabfold_db,
             params.use_msa_server,
-            params.colabfold_alphafold2_monomer_params_path,
-            params.colabfold_alphafold2_multimer_params_path,
+            params.colabfold_alphafold2_params_path,
             params.colabfold_envdb_path,
             params.colabfold_uniref30_path,
-            params.colabfold_alphafold2_monomer_params_link,
-            params.colabfold_alphafold2_multimer_params_link,
+            params.colabfold_alphafold2_params_link,
             params.colabfold_db_link,
             params.colabfold_uniref30_link,
             params.colabfold_create_index
@@ -521,12 +519,10 @@ workflow NFCORE_PROTEINFOLD {
         PREPARE_COLABFOLD_DBS_BOLTZ (
             params.colabfold_db,
             params.use_msa_server,
-            params.colabfold_alphafold2_monomer_params_path,
-            params.colabfold_alphafold2_multimer_params_path,
+            params.colabfold_alphafold2_params_path,
             params.colabfold_envdb_path,
             params.colabfold_uniref30_path,
-            params.colabfold_alphafold2_monomer_params_link,
-            params.colabfold_alphafold2_multimer_params_link,
+            params.colabfold_alphafold2_params_link,
             params.colabfold_db_link,
             params.colabfold_uniref30_link,
             params.colabfold_create_index
