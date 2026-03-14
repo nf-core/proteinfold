@@ -127,8 +127,7 @@ workflow BOLTZ {
         .set { ch_boltz_input }
 
     RUN_BOLTZ(
-        ch_boltz_input.map { it -> [it[0], it[1]] },
-        ch_boltz_input.map { it -> it[2] },
+        ch_boltz_input,
         ch_boltz_model,
         ch_boltz_ccd,
         ch_boltz2_aff,
