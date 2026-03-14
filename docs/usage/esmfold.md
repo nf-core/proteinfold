@@ -18,7 +18,6 @@ nextflow run nf-core/proteinfold \
     --input samplesheet.csv \
     --outdir <OUTDIR> \
     --mode esmfold \
-    --esmfold_model_preset <monomer/multimer> \
     --esmfold_db <null (default) | PATH> \
     --use_gpu \
     -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
@@ -26,9 +25,6 @@ nextflow run nf-core/proteinfold \
 
 > [!NOTE]
 > ESMFold does not require searching large sequence databases for sequences homologous to the prediction target and instead relies on a pre-trained protein language model (pLM) to inform predictions.
-
-> [!WARNING]
-> `--esmfold_model_preset` is used to infer how to handle multi-entry fasta files. Choosing `monomer` will result in a multi-entry fasta being processed as a series of monomer entries rather than as a single oligomeric complex.
 
 ## File Structure
 
