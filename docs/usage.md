@@ -33,7 +33,7 @@ The samplesheet can have as many columns as you desire, however, there is a stri
 
 An [example samplesheet](../assets/samplesheet.csv) has been provided with the pipeline.
 
-By default, AlphaFold2 and ESMFold now auto-detect monomer vs multimer mode based on FASTA headers: one sequence uses monomer mode, multiple sequences use multimer mode. You can still force mode manually via model preset parameters. To provide a FASTA file with multiple sequences for individual folding, use one or more FASTA files with the `--split_fasta` parameter. This will treat each sequence in the FASTA file as a separate entry, folding them individually and in parallel, as if each sequence were listed separately in the samplesheet.
+By default, AlphaFold2 and ESMFold auto-detect monomer vs multimer mode based on FASTA headers: one sequence uses monomer mode, while multiple sequences use multimer mode. To provide a FASTA file with multiple sequences for individual folding, use one or more FASTA files with the `--split_fasta` parameter. This will treat each sequence in the FASTA file as a separate entry, folding them individually and in parallel, as if each sequence were listed separately in the samplesheet.
 
 ## Running the pipeline
 
@@ -213,6 +213,8 @@ You can override Foldseek arguments with:
 
 ```bash
 --foldseek_easysearch_arg "<custom args>"
+```
+
 Pipeline settings can be provided in a `yaml` or `json` file via `-params-file <file>`.
 
 > [!WARNING]
