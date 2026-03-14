@@ -688,12 +688,14 @@
                 "colabfold_alphafold2_monomer_params_link": {
                     "type": "string",
                     "description": "Link to the Alphafold2 monomer parameters for ColabFold",
-                    "fa_icon": "fas fa-link"
+                    "fa_icon": "fas fa-link",
+                    "default": "https://storage.googleapis.com/alphafold/alphafold_params_2021-07-14.tar"
                 },
                 "colabfold_alphafold2_multimer_params_link": {
                     "type": "string",
                     "description": "Link to the Alphafold2 multimer parameters for ColabFold",
-                    "fa_icon": "fas fa-link"
+                    "fa_icon": "fas fa-link",
+                    "default": "https://storage.googleapis.com/alphafold/alphafold_params_colab_2022-12-06.tar"
                 }
             }
         },
@@ -726,12 +728,14 @@
                 "colabfold_alphafold2_monomer_params_path": {
                     "type": "string",
                     "description": "Path to the Alphafold2 monomer parameters for ColabFold",
-                    "fa_icon": "fas fa-folder-open"
+                    "fa_icon": "fas fa-folder-open",
+                    "default": "null/params/alphafold_params_2021-07-14"
                 },
                 "colabfold_alphafold2_multimer_params_path": {
                     "type": "string",
                     "description": "Path to the Alphafold2 multimer parameters for ColabFold",
-                    "fa_icon": "fas fa-folder-open"
+                    "fa_icon": "fas fa-folder-open",
+                    "default": "null/params/alphafold_params_colab_2022-12-06"
                 }
             }
         },
