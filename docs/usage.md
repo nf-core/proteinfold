@@ -33,7 +33,7 @@ The samplesheet can have as many columns as you desire, however, there is a stri
 
 An [example samplesheet](../assets/samplesheet.csv) has been provided with the pipeline.
 
-By default, AlphaFold2 and ESMFold now auto-detect monomer vs multimer mode based on FASTA headers: one sequence uses monomer mode, multiple sequences use multimer mode. To provide a FASTA file with multiple sequences for individual folding, use one or more FASTA files with the `--split_fasta` parameter. This will treat each sequence in the FASTA file as a separate entry, folding them individually and in parallel, as if each sequence were listed separately in the samplesheet.
+To provide a FASTA file with multiple sequences for individual folding, use one or more FASTA files with the `--split_fasta` parameter. This will treat each sequence in the FASTA file as a separate entry, folding them individually and in parallel, as if each sequence were listed separately in the samplesheet.
 
 ## Running the pipeline
 
@@ -83,7 +83,6 @@ Each mode has specific reference data requirements. To support all modes the `--
 │   ├── af3.bin
 │   ├── alphafold_params_2021-07-14
 │   ├── alphafold_params_2022-12-06
-│   ├── alphafold_params_colab_2022-12-06
 │   ├── boltz1_conf.ckpt
 │   ├── boltz2_aff.ckpt
 │   ├── boltz2_conf.ckpt
@@ -122,6 +121,14 @@ Each mode has specific reference data requirements. To support all modes the `--
 │   └── pdb_seqres.txt
 ├── rfam
 │   └── Rfam-14.9_rep_seq.fasta
+├── RNA
+│   ├── Rfam.full_region
+│   ├── Rfam.cm.*
+│   ├── id_mapping.tsv.gz
+│   ├── rfam_annotations.tsv.gz
+│   ├── rnacentral.fasta.*
+│   ├── nt.*
+│   └── ...
 ├── small_bfd
 │   └── bfd-first_non_consensus_sequences.fasta
 ├── uniprot
@@ -195,6 +202,7 @@ You can override Foldseek arguments with:
 ```bash
 --foldseek_easysearch_arg "<custom args>"
 Pipeline settings can be provided in a `yaml` or `json` file via `-params-file <file>`.
+```
 
 > [!WARNING]
 > Do not use `-c <file>` to specify parameters as this will result in errors. Custom config files specified with `-c` must only be used for [tuning process resource specifications](https://nf-co.re/docs/usage/configuration#tuning-workflow-resources), other infrastructural tweaks (such as output directories), or module arguments (args).

@@ -18,15 +18,11 @@ nextflow run nf-core/proteinfold \
       --mode alphafold2 \
       --alphafold2_db <null (default) | DB_PATH> \
       --use_gpu \
-      --alphafold2_model_preset <monomer_ptm/monomer/monomer_casp14/multimer> \
       -profile <docker/singularity/.../institute>
 ```
 
 > [!NOTE]
 > By default, this will run a fork of AlphaFold2 where MSA generation is split from the neural network inference. This enables more efficient utilization of resources by allowing the CPU-bound MSA generation to be executed without occupying an idle GPU. If you want to run the original implementation of AlphaFold2 you can use the `--alphafold2_mode standard`. However, please be advised that this will cause the allocated GPU to idle while MSAs are generated.
-
-> [!WARNING]
-> `--alphafold2_model_preset <monomer_ptm/monomer/monomer_casp14/multimer>` is used to infer how to handle multi-entry fasta files. Choosing `monomer_ptm`, `monomer` or `monomer_casp14` will result in a multi-entry fasta being processed as a series of monomer entries rather than as a single oligomeric complex.
 
 ## File Structure
 
@@ -132,11 +128,13 @@ Without setting the `--alphafold2_db` flag, all of the required data files will 
 
 See the [AlphaFold2](https://github.com/google-deepmind/alphafold) documentation for a full description of additional arguments. The arguments supported by the proteinfold workflow are described briefly below:
 
-| Parameter                        | Default      | Description                                                                                                                                                                                                                                                                                                                                                                             |
-| -------------------------------- | ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `--alphafold2_full_dbs`          | `false`      | bfd is a large environmental sequence database used to identify homologs. small bfd is a redundancy recuced version of the bfd database which can reduce the execution time of homolog search but may reduce the depth of the resulting MSA in some cases. `--alphafold2_full_dbs` ensures that the full version of bfd is used for search.                                             |
-| `--alphafold2_random_seed`       | `null`       | AlphaFold2 model inference is a stochastic process. Fixing a numerical random seed ensures that results are reproducible between runs.                                                                                                                                                                                                                                                  |
-| `--alphafold2_max_template_date` | `2038-01-19` | Structural templates from the PDB are used as additional context when making predictions. Molecules with solved structures in the PDB can be trivially predicted by using these structures as inputs. When benchmarking model performance it can be useful to restrict the use of templates to those deposited before a fixed date to ensure solved structures do not bias predictions. |
+| Parameter                        | Default                       | Description                                                                                                                                                                                                                                                                                                                                                                             |
+| -------------------------------- | ----------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--alphafold2_full_dbs`          | `false`                       | bfd is a large environmental sequence database used to identify homologs. small bfd is a redundancy recuced version of the bfd database which can reduce the execution time of homolog search but may reduce the depth of the resulting MSA in some cases. `--alphafold2_full_dbs` ensures that the full version of bfd is used for search.                                             |
+| `--alphafold2_random_seed`       | `null`                        | AlphaFold2 model inference is a stochastic process. Fixing a numerical random seed ensures that results are reproducible between runs                                                                                                                                                                                                                                                   |
+| `--alphafold2_max_template_date` | `2038-01-19`                  | Structural templates from the PDB are used as additional context when making predictions. Molecules with solved structures in the PDB can be trivially predicted by using these structures as inputs. When benchmarking model performance it can be useful to restrict the use of templates to those deposited before a fixed date to ensure solved structures do not bias predictions. |
+| `--alphafold2_params_prefix`     | `alphafold_params_2022-12-06` | Specify the alphafold2 params used for prediction                                                                                                                                                                                                                                                                                                                                       |
+| `--alphafold2_model_preset`      | `monomer_ptm`                 | Specify the alphafold2 monomer preset used for prediction.                                                                                                                                                                                                                                                                                                                              |
 
 > You can override any of these parameters via the command line or a params file.
 
