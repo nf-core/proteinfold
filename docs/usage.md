@@ -140,6 +140,8 @@ Each mode has specific reference data requirements. To support all modes the `--
     └── uniref90.fasta
 ```
 
+</details>
+
 Alternatively, the required data layout for each of the individual modes is described in the mode-specific usage documentation:
 
 - [AlphaFold2](./usage/alphafold2.md)
