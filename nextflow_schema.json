@@ -556,7 +556,7 @@
             }
         },
         "alphafold3_dbs_and_parameters_link_options": {
-            "title": "Alphafold3 DBs and parameters links options",
+            "title": "AlphaFold3 DBs and parameters links options",
             "type": "object",
             "fa_icon": "fas fa-database",
             "description": "Parameters used to provide the links to the DBs and parameters public resources to Alphafold3.",
@@ -626,7 +626,7 @@
             }
         },
         "alphafold3_dbs_and_parameters_path_options": {
-            "title": "Alphafold3 DBs and parameters links options",
+            "title": "AlphaFold3 DBs and parameters links options",
             "type": "object",
             "fa_icon": "fas fa-database",
             "description": "Parameters used to provide the paths to the DBs and parameters for Alphafold2.",

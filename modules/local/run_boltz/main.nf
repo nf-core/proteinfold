@@ -9,8 +9,7 @@ process RUN_BOLTZ {
     container "nf-core/proteinfold_boltz:2.0.0"
 
     input:
-    tuple val(meta), path(fasta)
-    path (files)
+    tuple val(meta), path(fasta), path(files)
     path ('boltz1_conf.ckpt')
     path ('ccd.pkl')
     path ('boltz2_aff.ckpt')
@@ -48,6 +47,8 @@ process RUN_BOLTZ {
     """
     mkdir -p ./home
     export HOME=./home
+
+    [ ! -f mols.tar ] && touch mols.tar
 
     if command -v nvidia-smi >/dev/null 2>&1 && nvidia-smi -L | grep -q "MIG"; then
         echo ">>> MIG mode detected. Mocking pynvml.nvmlDeviceGetNumGpuCores to avoid errors in Boltz. See https://github.com/nf-core/proteinfold/issues/417"
