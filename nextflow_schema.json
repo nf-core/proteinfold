@@ -185,6 +185,12 @@
                     "description": "Use Amber minimization to refine the predicted structures",
                     "fa_icon": "fas fa-compress-alt"
                 },
+                "colabfold_use_gpu_relax": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Use GPU for Amber relaxation in ColabFold",
+                    "fa_icon": "fas fa-microchip"
+                },
                 "colabfold_db_load_mode": {
                     "type": "integer",
                     "description": "Specify the way that MMSeqs2 will load the required databases in memory",
@@ -550,7 +556,7 @@
             }
         },
         "alphafold3_dbs_and_parameters_link_options": {
-            "title": "Alphafold3 DBs and parameters links options",
+            "title": "AlphaFold3 DBs and parameters links options",
             "type": "object",
             "fa_icon": "fas fa-database",
             "description": "Parameters used to provide the links to the DBs and parameters public resources to Alphafold3.",
@@ -620,7 +626,7 @@
             }
         },
         "alphafold3_dbs_and_parameters_path_options": {
-            "title": "Alphafold3 DBs and parameters links options",
+            "title": "AlphaFold3 DBs and parameters links options",
             "type": "object",
             "fa_icon": "fas fa-database",
             "description": "Parameters used to provide the paths to the DBs and parameters for Alphafold2.",

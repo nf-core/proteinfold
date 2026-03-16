@@ -34,7 +34,7 @@ workflow COLABFOLD {
     ch_colabfold_params    // channel: path(colabfold_params)
     ch_colabfold_db        // channel: path(colabfold_db)
     ch_uniref30            // channel: path(uniref30)
-    num_recycles           // int: Number of recycles for esmfold
+    num_recycles           // int: Number of recycles for colabfold
 
     main:
     ch_multiqc_report = channel.empty()
