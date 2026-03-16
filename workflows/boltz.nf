@@ -22,7 +22,7 @@ include { BOLTZ_FASTA } from '../modules/local/boltz_fasta'
 include { SPLIT_MSA } from '../modules/local/split_msa'
 include { MMSEQS_COLABFOLDSEARCH } from '../modules/local/mmseqs_colabfoldsearch'
 include { MULTIFASTA_TO_CSV      } from '../modules/local/multifasta_to_csv'
-include { EXTRACT_METRICS as EXTRACT_METRICS_BOLTZ } from '../modules/local/extract_metrics'
+include { EXTRACT_METRICS_BOLTZ } from '../modules/local/extract_metrics_boltz'
 //
 // SUBWORKFLOW: Consisting entirely of nf-core/modules
 //
@@ -137,16 +137,10 @@ workflow BOLTZ {
         ch_mols
     )
 
-    ch_no_file = channel.fromPath("$projectDir/assets/NO_FILE")
-
     EXTRACT_METRICS_BOLTZ(
         RUN_BOLTZ
             .out
             .intermediates
-            .join(ch_no_file)
-            .map { meta, raw, no_file ->
-                [ meta, raw, "boltz", no_file ]
-            }
     )
 
     RUN_BOLTZ
