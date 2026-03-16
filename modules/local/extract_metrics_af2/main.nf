@@ -5,7 +5,7 @@ process EXTRACT_METRICS_AF2 {
     tag "$meta.id"
     label 'process_single'
 
-    conda "${moduleDir}/environment.yml"
+    container "${params.alphafold2_mode == 'split_msa_prediction' ? 'nf-core/proteinfold_alphafold2_pred:2.0.0' : 'nf-core/proteinfold_alphafold2_standard:2.0.0'}"
 
     input:
     tuple val(meta), path(raw), path(features)

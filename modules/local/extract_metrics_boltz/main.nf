@@ -5,7 +5,7 @@ process EXTRACT_METRICS_BOLTZ {
     tag "$meta.id"
     label 'process_single'
 
-    conda "${moduleDir}/environment.yml"
+    container "nf-core/proteinfold_boltz:2.0.0"
 
     input:
     tuple val(meta), path(raw)
