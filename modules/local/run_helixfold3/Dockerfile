@@ -39,5 +39,3 @@ ENV PATH="/conda/bin:/app/helixfold3:./maxit_src/bin:/conda/envs/helixfold/bin:$
     PYTHON_BIN="/conda/envs/helixfold/bin/python3.9" \
     ENV_BIN="/conda/envs/helixfold/bin" \
     OBABEL_BIN="/conda/envs/helixfold/bin"
-
-ENTRYPOINT ["mamba", "run", "--name", "helixfold"]

@@ -121,8 +121,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[#503](https://github.com/nf-core/proteinfold/issues/503)] - Add checkIfExists validation to user-provided database paths across all prepare DB subworkflows.
 - [[#507](https://github.com/nf-core/proteinfold/issues/507)] - Implement missing full tests and check that the others work before release 2.0.0.
 - [[PR #509](https://github.com/nf-core/proteinfold/pulls/509)] - Setup gpu environment for AWS full tests.
+- [[#519](https://github.com/nf-core/proteinfold/issues/519)] - Fix AWS full test before release 2.0.0.
 - [[PR #525](https://github.com/nf-core/proteinfold/pulls/525)] - Reduce AlphaFold2 multimer full test to a single replicate.
-- [[PR #538](https://github.com/nf-core/proteinfold/pulls/538)] - Fix alphafold2_random_seed type.
+- [[PR #531](https://github.com/nf-core/proteinfold/pulls/531)] - Fix alphafold2_random_seed type.
+- [[PR #538](https://github.com/nf-core/proteinfold/pulls/538)] - Bump version 2.0.0 for release preparation.
 - [[PR #563](https://github.com/nf-core/proteinfold/pulls/563)] - Fix boltz csv sync.
 
 ### Parameters
@@ -169,6 +171,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 |                              | `--boltz2_mols_link`             |
 |                              | `--boltz_model_link`             |
 |                              | `--boltz_ccd_link`               |
+|                              | `--colabfold_use_gpu_relax`      |
 
 > **NB:** Parameter has been **updated** if both old and new parameter information is present.
 > **NB:** Parameter has been **added** if just the new parameter information is present.

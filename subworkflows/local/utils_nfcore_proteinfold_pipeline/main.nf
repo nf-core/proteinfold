@@ -63,7 +63,7 @@ ${colors.blue}        ___     __   __   __   ___     ${colors.green}/,-._.--~\'$
 ${colors.blue}  |\\ | |__  __ /  ` /  \\ |__) |__         ${colors.yellow}}  {${colors.reset}
 ${colors.blue}  | \\| |       \\__, \\__/ |  \\ |___     ${colors.green}\\`-._,-`-,${colors.reset}
                                         ${colors.green}`._,._,\'${colors.reset}
-${colors.purple}  nf-core/rnaseq ${workflow.manifest.version}${colors.reset}
+${colors.purple}  nf-core/proteinfold ${workflow.manifest.version}${colors.reset}
 -${colors.dim}----------------------------------------------------${colors.reset}-
 """
     after_text = """${workflow.manifest.doi ? "\n* The pipeline\n" : ""}${workflow.manifest.doi.tokenize(",").collect { doi -> "    https://doi.org/${doi.trim().replace('https://doi.org/','')}"}.join("\n")}${workflow.manifest.doi ? "\n" : ""}
