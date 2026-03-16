@@ -12,9 +12,9 @@ process EXTRACT_METRICS_BOLTZ {
 
     output:
     tuple val(meta), path("${meta.id}_plddt.tsv")          , emit: multiqc
-    tuple val(meta), path("${meta.id}_boltz_msa.tsv")      , optional: true, emit: boltz_msa
-    tuple val(meta), path("${meta.id}_*_pae.tsv")          , optional: true, emit: paes
-    tuple val(meta), path("${meta.id}_0_pae.tsv")          , optional: true, emit: pae
+    tuple val(meta), path("${meta.id}_boltz_msa.tsv")      , emit: boltz_msa
+    tuple val(meta), path("${meta.id}_*_pae.tsv")          , emit: paes
+    tuple val(meta), path("${meta.id}_0_pae.tsv")          , emit: pae
     tuple val(meta), path("${meta.id}_ptm.tsv")            , optional: true, emit: ptms
     tuple val(meta), path("${meta.id}_iptm.tsv")           , optional: true, emit: iptms
     tuple val(meta), path("${meta.id}_chainwise_ptm.tsv")  , optional: true, emit: chainwise_ptm
