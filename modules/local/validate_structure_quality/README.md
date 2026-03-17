@@ -1,7 +1,9 @@
 # Scientific Test Refactoring: Proper Library Usage
 
 ## Overview
+
 Refactored scientific tests to use proper libraries instead of manual string parsing:
+
 - **BioPython** for PDB structure parsing (not string manipulation)
 - **csv module** for TSV file parsing (not manual splits)
 - **NumPy** for statistical calculations
@@ -9,7 +11,9 @@ Refactored scientific tests to use proper libraries instead of manual string par
 ## Architecture
 
 ### Nextflow Tests (Orchestration Layer)
+
 Tests validate:
+
 - File existence and readability
 - Directory structure correctness
 - Workflow completion status
@@ -18,13 +22,17 @@ Tests validate:
 **Pattern: Tests focus on "what exists" not "what values are"**
 
 ### Python Utilities (Analysis Layer)
+
 `bin/compare_structures_fuzzy.py` handles detailed metric extraction:
+
 - BioPython PDBParser for structure analysis
 - Proper B-factor extraction with error handling
 - pLDDT score validation with proper parsing
 
 ### Validation Module
+
 `modules/local/validate_structure_quality`
+
 - Nextflow process wrapping the Python utility
 - Can be called from pipelines for automated quality checks
 - Produces JSON reports for downstream processing
@@ -32,6 +40,7 @@ Tests validate:
 ## Key Changes
 
 ### Before (Manual String Parsing ❌)
+
 ```groovy
 def scores = plddt_file.text.trim().split("\\n")
 def plddt_values = scores.collect { it.trim().isEmpty() ? null : Float.parseFloat(it) }
@@ -39,12 +48,14 @@ def avg_plddt = plddt_values.sum() / plddt_values.size()
 ```
 
 Problems:
+
 - Fragile to different line endings or spacing
 - No error handling for malformed TSV
 - Impossible to handle multi-column TSV properly
 - Duplicates parsing logic
 
 ### After (Proper Libraries ✓)
+
 ```groovy
 // Let Python handle it with csv module and BioPython
 // Tests just validate file exists and is non-empty
@@ -52,6 +63,7 @@ Problems:
 ```
 
 Benefits:
+
 - Single source of truth for parsing (Python script)
 - Proper error handling
 - Uses industry-standard libraries
@@ -61,6 +73,7 @@ Benefits:
 ## Usage Examples
 
 ### Running Tests
+
 ```bash
 # Tests now focus on structure validation
 nextflow test tests/alphafold2_scientific_validation.nf.test
@@ -68,6 +81,7 @@ nextflow test tests/alphafold2_reproducibility_advanced.nf.test
 ```
 
 ### Using Validation in Pipelines
+
 ```nextflow
 include { VALIDATE_STRUCTURE_QUALITY } from './modules/local/validate_structure_quality/main'
 
@@ -79,6 +93,7 @@ workflow {
 ```
 
 ### Direct Python Utility Usage
+
 ```bash
 # Validate structure quality using BioPython
 python bin/compare_structures_fuzzy.py validate structure.pdb \
@@ -95,20 +110,24 @@ python bin/compare_structures_fuzzy.py compare ref.pdb pred.pdb \
 ## Files Changed
 
 ### Tests Modified
+
 - `tests/alphafold2_scientific_validation.nf.test`: Removed manual TSV parsing
 - `tests/alphafold2_reproducibility_advanced.nf.test`: Removed manual PDB parsing
 
 ### New Files
+
 - `modules/local/validate_structure_quality/main.nf`: Validation process
 - `modules/local/validate_structure_quality/environment.yml`: Dependencies
 - `modules/local/validate_structure_quality/meta.yml`: Metadata
 
 ### Existing Files Updated
+
 - `bin/compare_structures_fuzzy.py`: Already using BioPython and csv module properly
 
 ## Best Practices
 
 ✓ **DO:**
+
 - Use BioPython for PDB file analysis
 - Use csv.reader for TSV/CSV parsing
 - Delegate detailed parsing to Python utilities
@@ -116,6 +135,7 @@ python bin/compare_structures_fuzzy.py compare ref.pdb pred.pdb \
 - Write detailed analysis in Python
 
 ✗ **DON'T:**
+
 - Manually parse PDB with string slicing
 - Use split() for TSV without csv module
 - Mix Groovy parsing with Python script logic

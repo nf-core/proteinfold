@@ -1,0 +1,107 @@
+/*
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    Minimal Mode Test Template (using base validation helpers)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    For simple stub tests, use the base validator helpers to check core outputs.
+    No duplicated validation logic across modes.
+
+    Replace TEMPLATE_MODE with actual mode name (alphafold2, boltz, esmfold, etc.)
+    Replace VARIANT_IF_APPLICABLE with any directory variant (split_msa_prediction, etc.)
+
+    Usage:
+    1. Copy this template
+    2. Replace TEMPLATE_MODE and variant
+    3. Uncomment optional validations if needed for your mode
+    4. Run: nf-test test tests/your_mode_test.nf.test
+*/
+
+nextflow_pipeline {
+
+    name "Test TEMPLATE_MODE mode with base output validation"
+    script "../main.nf"
+    tag "pipeline"
+    tag "test_TEMPLATE_MODE"
+    profile "test_TEMPLATE_MODE"
+
+    test("TEMPLATE_MODE: Core output validation (metrics + structures)") {
+
+        when {
+            params {
+                outdir = "$outputDir"
+            }
+        }
+
+        then {
+            assert workflow.success: "Workflow failed"
+
+            // CORE VALIDATIONS - These assertions apply to ALL modes
+            // All folding tools produce: pLDDT TSV, MSA TSV, PDB/CIF structures
+
+            // 1. Validate metrics files exist and are non-empty
+            assert validateModeMetrics(params.outdir, 'TEMPLATE_MODE'): \
+                "Metrics validation failed"
+
+            // 2. Validate structure files are well-formed
+            def structure_count = validateModeStructures(params.outdir, '.pdb')
+            assert structure_count > 0: "No structures found"
+
+            // 3. Get all output metadata for reproducibility snapshot
+            def metrics_output = getMetricsOutput(params.outdir)
+
+            // OPTIONAL: If mode produces PAE (multimer systems)
+            // Uncomment if your mode generates PAE files:
+            // def pae_result = validatePAEOutput(params.outdir)
+            // assert pae_result.exists : "PAE validation failed"
+
+            // SNAPSHOT: Verify outputs are stable across runs
+            // (Counts and file list, not content values)
+            assertAll(
+                { assert snapshot(
+                    workflow.trace.succeeded().size(),
+                    metrics_output.plddt_count,
+                    metrics_output.msa_count,
+                    structure_count
+                ).match() }
+            )
+        }
+    }
+
+    // OPTIONAL: Add this test if your mode has variant directory structure
+    test("TEMPLATE_MODE: Mode-specific output structure (VARIANT_IF_APPLICABLE)") {
+
+        when {
+            params {
+                outdir = "$outputDir"
+            }
+        }
+
+        then {
+            assert workflow.success: "Workflow failed"
+
+            // Validate mode-specific output directory layout
+            // Example: alphafold2/split_msa_prediction/{protein_id}/**
+            // Example: boltz/{protein_id}/**
+            // Example: esmfold/{protein_id}/**
+
+            def mode_structure = getModeOutputStructure(
+                params.outdir,
+                'TEMPLATE_MODE',
+                'VARIANT_IF_APPLICABLE'  // Remove this param if no variant directory
+            )
+
+            assert mode_structure.exists: "Mode output directory not found"
+            assert mode_structure.protein_count > 0: "No proteins processed"
+
+            // Snapshot the structure to ensure reproducibility
+            snapshot(
+                mode_structure.protein_count,
+                mode_structure.proteins.sort(),
+                mode_structure.file_count
+            ).match()
+        }
+    }
+
+    // OPTIONAL: For advanced reproducibility testing (deterministic seeds, etc.)
+    // Add additional tests as needed for your mode
+}

@@ -1,0 +1,104 @@
+/*
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    Scientific Validation: ColabFold Output Consistency
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    Tests for reproducibility and output structure validation.
+    Focus: Ensure outputs are consistent and well-formed (not quality assessment).
+
+    Tests:
+    - Core output validation (metrics + structures)
+    - Multiple proteins processing
+    - Multiple ColabFold variants (local, webserver, download)
+*/
+
+nextflow_pipeline {
+
+    name "Scientific validation: ColabFold output consistency"
+    script "../main.nf"
+    tag "scientific"
+    tag "colabfold"
+    tag "output_validation"
+
+    test("ColabFold (local): Core output validation") {
+        options "-profile test_colabfold_local"
+
+        when {
+            params {
+                outdir = "$outputDir"
+            }
+        }
+
+        then {
+            assert workflow.success: "ColabFold local workflow failed"
+
+            assert validateModeMetrics(params.outdir, 'colabfold'): \
+                "ColabFold failed to produce pLDDT/MSA metrics"
+
+            def struct_count = validateModeStructures(params.outdir, '.pdb')
+            assert struct_count > 0: "No PDB structures generated"
+
+            def metrics = getMetricsOutput(params.outdir)
+
+            snapshot(
+                workflow.trace.succeeded().size(),
+                metrics.plddt_count,
+                metrics.msa_count,
+                struct_count,
+                removeNextflowVersion("$outputDir/pipeline_info/nf_core_proteinfold_software_mqc_versions.yml")
+            ).match()
+        }
+    }
+
+    test("ColabFold (local): Multiple proteins") {
+        options "-profile test_colabfold_local"
+
+        when {
+            params {
+                outdir = "$outputDir"
+            }
+        }
+
+        then {
+            assert workflow.success
+
+            def pdb_files = file("${params.outdir}/**/*.pdb", relative: true)
+            def plddt_files = file("${params.outdir}/**/*plddt.tsv", relative: true)
+
+            assert pdb_files.size() >= 2: \
+                "Expected at least 2 PDB files, got ${pdb_files.size()}"
+            assert plddt_files.size() >= 2: \
+                "Expected at least 2 pLDDT files, got ${plddt_files.size()}"
+
+            snapshot(
+                pdb_files.collect { it.name }.sort(),
+                plddt_files.collect { it.name }.sort()
+            ).match()
+        }
+    }
+
+    test("ColabFold (download): Core output validation") {
+        options "-profile test_colabfold_download"
+
+        when {
+            params {
+                outdir = "$outputDir"
+            }
+        }
+
+        then {
+            assert workflow.success: "ColabFold download workflow failed"
+
+            assert validateModeMetrics(params.outdir, 'colabfold'): \
+                "ColabFold download failed to produce metrics"
+
+            def struct_count = validateModeStructures(params.outdir, '.pdb')
+            assert struct_count > 0: "No structures from download"
+
+            snapshot(
+                workflow.trace.succeeded().size(),
+                struct_count
+            ).match()
+        }
+    }
+}

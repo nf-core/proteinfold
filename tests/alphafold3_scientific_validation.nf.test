@@ -1,0 +1,75 @@
+/*
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    Scientific Validation: AlphaFold3 Output Consistency
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    Tests for reproducibility and output structure validation.
+    Focus: Ensure outputs are consistent and well-formed (not quality assessment).
+*/
+
+nextflow_pipeline {
+
+    name "Scientific validation: AlphaFold3 output consistency"
+    script "../main.nf"
+    tag "scientific"
+    tag "alphafold3"
+    tag "output_validation"
+
+    test("AlphaFold3: Core output validation") {
+        options "-profile test_alphafold3_standard"
+
+        when {
+            params {
+                outdir = "$outputDir"
+            }
+        }
+
+        then {
+            assert workflow.success: "AlphaFold3 workflow failed"
+
+            assert validateModeMetrics(params.outdir, 'alphafold3'): \
+                "AlphaFold3 failed to produce metrics"
+
+            // AlphaFold3 outputs CIF structures, not PDB
+            def struct_count = validateModeStructures(params.outdir, '.cif')
+            assert struct_count > 0: "No CIF structures generated"
+
+            def metrics = getMetricsOutput(params.outdir)
+
+            snapshot(
+                workflow.trace.succeeded().size(),
+                metrics.plddt_count,
+                metrics.msa_count,
+                struct_count,
+                removeNextflowVersion("$outputDir/pipeline_info/nf_core_proteinfold_software_mqc_versions.yml")
+            ).match()
+        }
+    }
+
+    test("AlphaFold3: Multiple proteins") {
+        options "-profile test_alphafold3_standard"
+
+        when {
+            params {
+                outdir = "$outputDir"
+            }
+        }
+
+        then {
+            assert workflow.success
+
+            def cif_files = file("${params.outdir}/**/*.cif", relative: true)
+            def plddt_files = file("${params.outdir}/**/*plddt.tsv", relative: true)
+
+            assert cif_files.size() >= 2: \
+                "Expected at least 2 CIF files, got ${cif_files.size()}"
+            assert plddt_files.size() >= 2: \
+                "Expected at least 2 pLDDT files, got ${plddt_files.size()}"
+
+            snapshot(
+                cif_files.collect { it.name }.sort(),
+                plddt_files.collect { it.name }.sort()
+            ).match()
+        }
+    }
+}

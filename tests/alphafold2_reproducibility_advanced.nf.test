@@ -3,12 +3,12 @@
     CI/CD Reproducibility Tests for AlphaFold2
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     Regression tests to ensure consistency as workflow code changes.
-    
+
     Tests for:
     - Fixed random seed reproducibility (same input + same seed → consistent output)
     - Output file generation and structure
     - Deterministic predictions with fixed seed
-    
+
     No quality assertions. Focus: workflow consistency, not prediction quality.
 */
 
@@ -20,7 +20,7 @@ nextflow_pipeline {
     tag "reproducibility"
 
     test("Structure quality metrics from B-factors") {
-        options "-profile test_alphafold_fixed_seed"
+        options "-profile test_alphafold2_split_fixed_seed"
 
         when {
             params {
@@ -32,7 +32,7 @@ nextflow_pipeline {
             assert workflow.success
 
             // PRIMARY: Validate pLDDT TSV output files (extract_metrics.py product)
-            def plddt_files = file("${params.outdir}/**/alphafold2/*/*/*plddt.tsv", relative: true)
+            def plddt_files = file("${params.outdir}/**/alphafold2/*/*/*plddt.tsv")
             assert plddt_files.size() > 0: "No pLDDT TSV files found"
 
             // Each TSV should have readable content
@@ -42,7 +42,7 @@ nextflow_pipeline {
             }
 
             // SECONDARY: Verify underlying PDB structures provide the B-factors to extract_metrics
-            def pdb_files = file("${params.outdir}/alphafold2/split_msa_prediction/*/*.pdb", relative: true)
+            def pdb_files = file("${params.outdir}/alphafold2/split_msa_prediction/*/*.pdb")
             assert pdb_files.size() > 0: "No PDB files found (input to extract_metrics.py)"
 
             pdb_files.each { pdb_file ->
@@ -59,8 +59,8 @@ nextflow_pipeline {
         }
     }
 
-    test("pLDDT score distribution validation") {
-        options "-profile test_alphafold_random_seed_fuzzy"
+    test("pLDDT score distribution with random seed") {
+        options "-profile test_alphafold2_split_random_seed_fuzzy"
 
         when {
             params {
@@ -71,44 +71,48 @@ nextflow_pipeline {
         then {
             assert workflow.success
 
-            // PRIMARY: Collect and validate pLDDT TSV files from extract_metrics.py
-            def plddt_files = file("${params.outdir}/**/alphafold2/*/*/*plddt.tsv", relative: true)
-            assert plddt_files.size() > 0: "No pLDDT TSV files found"
+            // With random seed: outputs will vary, so we validate structure not values
+            // Collect pLDDT TSV files (should exist and be readable)
+            def plddt_files = file("${params.outdir}/**/alphafold2/*/*/*plddt.tsv")
+            assert plddt_files.size() > 0: "No pLDDT TSV files found with random seed"
 
-            // Validate each TSV file is readable
-            // Detailed parsing with csv module happens in Python (not here)
-            def protein_scores = [:]
-            def total_files = 0
-
+            // Validate all TSV files are readable and non-empty
+            def protein_tsvs = [:]
             plddt_files.each { plddt_file ->
-                def content = plddt_file.text
-                assert !content.isEmpty(): "Empty pLDDT TSV: ${plddt_file}"
-                
-                // Extract protein ID from path for tracking
-                def path_parts = plddt_file.toString().split("/")
-                if (path_parts.size() > 0) {
-                    def protein_id = path_parts[-2]
-                    if (!protein_scores.containsKey(protein_id)) {
-                        protein_scores[protein_id] = []
-                    }
-                    protein_scores[protein_id].add(plddt_file.toString())
-                    total_files++
+                def lines = plddt_file.text.split('\n')
+                assert lines.size() > 0: "Empty pLDDT TSV: ${plddt_file.name}"
+
+                def protein_id = plddt_file.toString().split("/")[-2]
+                if (!protein_tsvs.containsKey(protein_id)) {
+                    protein_tsvs[protein_id] = 0
                 }
+                protein_tsvs[protein_id]++
             }
 
-            assert protein_scores.size() > 0: "No proteins found in pLDDT TSV files"
-            assert total_files > 0: "No pLDDT TSV files could be read"
+            assert protein_tsvs.size() > 0: "No proteins processed with random seed"
 
+            // Validate PDB structures are well-formed (not corrupted/failed)
+            def pdb_files = file("${params.outdir}/**/alphafold2/*/*/*alphafold2.pdb")
+            assert pdb_files.size() > 0: "No ranked PDB files found"
+
+            pdb_files.each { pdb_file ->
+                def content = pdb_file.text
+                assert content.contains("ATOM"): "No ATOM records in ${pdb_file.name} - structure may be invalid"
+                assert !content.isEmpty(): "Empty PDB file: ${pdb_file.name}"
+            }
+
+            // Snapshot counts and structure (not exact values since seed varies)
             snapshot(
                 plddt_files.size(),
-                protein_scores.keySet().sort(),
+                pdb_files.size(),
+                protein_tsvs.keySet().sort(),
                 workflow.trace.succeeded().size()
             ).match()
         }
     }
 
     test("PAE matrix structure and validity") {
-        options "-profile test_alphafold_fixed_seed"
+        options "-profile test_alphafold2_split_fixed_seed"
 
         when {
             params {
@@ -118,8 +122,8 @@ nextflow_pipeline {
 
         then {
             // Check for PAE TSV files (extract_metrics.py output for multi-chain systems)
-            def pae_files = file("${params.outdir}/**/alphafold2/*/*/*pae*.tsv", relative: true)
-            
+            def pae_files = file("${params.outdir}/**/alphafold2/*/*/*pae*.tsv")
+
             if (pae_files.size() > 0) {
                 // Validate PAE TSV files are readable
                 pae_files.each { pae_file ->
@@ -137,7 +141,7 @@ nextflow_pipeline {
     }
 
     test("Output directory structure validation") {
-        options "-profile test_alphafold_fixed_seed"
+        options "-profile test_alphafold2_split_fixed_seed"
 
         when {
             params {
@@ -150,25 +154,25 @@ nextflow_pipeline {
 
             // Validate complete output directory structure
             def output_dir = file(params.outdir)
-            
+
             // Should have alphafold2 results
             assert file("${params.outdir}/alphafold2").exists(): "No alphafold2 directory"
-            
+
             // Should have split_msa_prediction subdirectory
             assert file("${params.outdir}/alphafold2/split_msa_prediction").exists(): "No split_msa_prediction directory"
-            
+
             // Should have protein-specific directories
             def protein_dirs = file("${params.outdir}/alphafold2/split_msa_prediction").listFiles()
             assert protein_dirs.size() > 0: "No protein directories found"
-            
+
             // PRIMARY: Each protein directory should have TSV outputs (extract_metrics.py product)
             protein_dirs.each { protein_dir ->
                 if (protein_dir.isDirectory()) {
                     def plddt_tsvs = file("${protein_dir}/*plddt.tsv")
-                    
+
                     // Must have pLDDT TSV output
                     assert plddt_tsvs.size() > 0: "No pLDDT TSV in ${protein_dir.name}"
-                    
+
                     // Should also have PDB structures as input to extract_metrics
                     def pdb_files = file("${protein_dir}/*.pdb") + file("${protein_dir}/*.cif")
                     assert pdb_files.size() > 0: "No structures in ${protein_dir.name}"
@@ -183,7 +187,7 @@ nextflow_pipeline {
     }
 
     test("Deterministic output with fixed seed") {
-        options "-profile test_alphafold_fixed_seed"
+        options "-profile test_alphafold2_split_fixed_seed"
 
         when {
             params {
@@ -196,23 +200,35 @@ nextflow_pipeline {
 
             // When using fixed seed (42), outputs should be deterministic
             // PRIMARY: TSV outputs from extract_metrics.py should be consistent
-            def plddt_files = file("${params.outdir}/**/alphafold2/*/*/*.plddt.tsv", relative: true)
-            def pae_files = file("${params.outdir}/**/alphafold2/*/*/*.pae.tsv", relative: true)
+            def plddt_files = file("${params.outdir}/**/alphafold2/*/*/*.plddt.tsv")
+            def pae_files = file("${params.outdir}/**/alphafold2/*/*/*.pae.tsv")
 
             assert plddt_files.size() > 0: "No pLDDT TSV generated with fixed seed"
 
-            // Validate TSV files are well-formed
+            // Parse pLDDT values for exact deterministic comparison
+            def plddt_metrics = [:]
             plddt_files.each { plddt_file ->
-                def content = plddt_file.text
-                assert !content.isEmpty(): "Empty pLDDT TSV: ${plddt_file.name}"
-                // Content validation via Python csv parsing (not here)
+                def lines = plddt_file.text.split('\n')
+                assert lines.size() > 0: "Empty pLDDT TSV: ${plddt_file.name}"
+
+                // Store actual metric values for snapshot (exact reproducibility check)
+                def values = lines.findAll { it.trim() && !it.startsWith('#') }
+                    .collect {
+                        try {
+                            Double.parseDouble(it.trim())
+                        } catch (e) {
+                            it.trim()
+                        }
+                    }
+                plddt_metrics[plddt_file.name] = values
             }
 
             // SECONDARY: Verify underlying PDB structures exist
-            def pdb_files = file("${params.outdir}/**/alphafold2/*/*/*.pdb", relative: true)
+            def pdb_files = file("${params.outdir}/**/alphafold2/*/*/*.pdb")
             assert pdb_files.size() > 0: "No PDB structures generated with fixed seed"
 
             snapshot(
+                plddt_metrics,  // EXACT metric values for deterministic comparison
                 plddt_files.collect { it.name }.sort(),
                 pdb_files.size(),
                 workflow.trace.succeeded().size()

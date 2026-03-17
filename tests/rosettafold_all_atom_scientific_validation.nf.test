@@ -1,0 +1,74 @@
+/*
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    Scientific Validation: RoseTTAFold All-Atom Output Consistency
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    Tests for reproducibility and output structure validation.
+    Focus: Ensure outputs are consistent and well-formed (not quality assessment).
+*/
+
+nextflow_pipeline {
+
+    name "Scientific validation: RoseTTAFold All-Atom output consistency"
+    script "../main.nf"
+    tag "scientific"
+    tag "rosettafold_all_atom"
+    tag "output_validation"
+
+    test("RoseTTAFold All-Atom: Core output validation") {
+        options "-profile test_rosettafold_all_atom"
+
+        when {
+            params {
+                outdir = "$outputDir"
+            }
+        }
+
+        then {
+            assert workflow.success: "RoseTTAFold All-Atom workflow failed"
+
+            assert validateModeMetrics(params.outdir, 'rosettafold_all_atom'): \
+                "RoseTTAFold All-Atom failed to produce metrics"
+
+            def struct_count = validateModeStructures(params.outdir, '.pdb')
+            assert struct_count > 0: "No PDB structures generated"
+
+            def metrics = getMetricsOutput(params.outdir)
+
+            snapshot(
+                workflow.trace.succeeded().size(),
+                metrics.plddt_count,
+                metrics.msa_count,
+                struct_count,
+                removeNextflowVersion("$outputDir/pipeline_info/nf_core_proteinfold_software_mqc_versions.yml")
+            ).match()
+        }
+    }
+
+    test("RoseTTAFold All-Atom: Multiple proteins") {
+        options "-profile test_rosettafold_all_atom"
+
+        when {
+            params {
+                outdir = "$outputDir"
+            }
+        }
+
+        then {
+            assert workflow.success
+
+            def pdb_files = file("${params.outdir}/**/*.pdb", relative: true)
+            def plddt_files = file("${params.outdir}/**/*plddt.tsv", relative: true)
+
+            assert pdb_files.size() >= 2: \
+                "Expected at least 2 PDB files, got ${pdb_files.size()}"
+            assert plddt_files.size() >= 2: \
+                "Expected at least 2 pLDDT files, got ${plddt_files.size()}"
+
+            snapshot(
+                pdb_files.collect { it.name }.sort(),
+                plddt_files.collect { it.name }.sort()
+            ).match()
+        }
+    }
+}

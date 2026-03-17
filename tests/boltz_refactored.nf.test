@@ -1,0 +1,67 @@
+/*
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    Boltz Output Validation Test (using base helpers)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    Refactored to use base validation helpers.
+
+    BEFORE: Only snapshot comparison, no explicit validation
+    AFTER: Explicit core output validation + snapshot (gives better error messages)
+
+    This pattern applies to: boltz, esmfold, colabfold, rosettafold_all_atom, etc.
+    Modes that don't have many test variants can all use this pattern.
+*/
+
+nextflow_pipeline {
+
+    name "Test boltz mode"
+    script "../main.nf"
+    tag "pipeline"
+    tag "test_boltz"
+    profile "test_boltz"
+
+    test("-profile test_boltz (output validation)") {
+
+        when {
+            params {
+                outdir = "$outputDir"
+            }
+        }
+
+        then {
+            assert workflow.success
+
+            // CORE VALIDATIONS: All modes must produce these
+
+            // 1. Validate pLDDT and MSA metrics exist
+            assert validateModeMetrics(params.outdir, 'boltz'): \
+                "Boltz metrics validation failed"
+
+            // 2. Validate PDB structures are well-formed
+            def structure_count = validateModeStructures(params.outdir, '.pdb')
+            assert structure_count > 0: "No PDB structures found"
+
+            // 3. Get metrics output summary
+            def metrics_output = getMetricsOutput(params.outdir)
+
+            // OPTIONAL: Boltz produces PAE files (uncomment if needed)
+            // def pae_result = validatePAEOutput(params.outdir)
+
+            // SNAPSHOT: Standard file listing + version
+            def stable_name = getAllFilesFromDir(params.outdir, relative: true, includeDir: true, ignore: ['pipeline_info/*.{html,json,txt}'])
+            def stable_path = getAllFilesFromDir(params.outdir, ignoreFile: 'tests/.nftignore')
+
+            assertAll(
+                { assert snapshot(
+                    workflow.trace.succeeded().size(),
+                    removeNextflowVersion("$outputDir/pipeline_info/nf_core_proteinfold_software_mqc_versions.yml"),
+                    stable_name,
+                    stable_path,
+                    // ADD: Core metrics counts for validation
+                    metrics_output.plddt_count,
+                    metrics_output.msa_count,
+                    structure_count
+                ).match() }
+            )
+        }
+    }
+}

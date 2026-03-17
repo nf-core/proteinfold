@@ -1,0 +1,79 @@
+/*
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    Scientific Validation: ESMFold Output Consistency
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    Tests for reproducibility and output structure validation.
+    Focus: Ensure outputs are consistent and well-formed (not quality assessment).
+
+    Tests:
+    - Core output validation (metrics + structures)
+    - Multiple proteins processing
+*/
+
+nextflow_pipeline {
+
+    name "Scientific validation: ESMFold output consistency"
+    script "../main.nf"
+    tag "scientific"
+    tag "esmfold"
+    tag "output_validation"
+
+    test("ESMFold: Core output validation") {
+        options "-profile test_esmfold"
+
+        when {
+            params {
+                outdir = "$outputDir"
+            }
+        }
+
+        then {
+            assert workflow.success: "ESMFold workflow failed"
+
+            // Validate core outputs (metrics + structures)
+            assert validateModeMetrics(params.outdir, 'esmfold'): \
+                "ESMFold failed to produce pLDDT/MSA metrics"
+
+            def struct_count = validateModeStructures(params.outdir, '.pdb')
+            assert struct_count > 0: "No PDB structures generated"
+
+            def metrics = getMetricsOutput(params.outdir)
+
+            snapshot(
+                workflow.trace.succeeded().size(),
+                metrics.plddt_count,
+                metrics.msa_count,
+                struct_count,
+                removeNextflowVersion("$outputDir/pipeline_info/nf_core_proteinfold_software_mqc_versions.yml")
+            ).match()
+        }
+    }
+
+    test("ESMFold: Multiple proteins processing") {
+        options "-profile test_esmfold"
+
+        when {
+            params {
+                outdir = "$outputDir"
+            }
+        }
+
+        then {
+            assert workflow.success
+
+            def pdb_files = file("${params.outdir}/**/*.pdb", relative: true)
+            def plddt_files = file("${params.outdir}/**/*plddt.tsv", relative: true)
+
+            assert pdb_files.size() >= 2: \
+                "Expected at least 2 PDB files, got ${pdb_files.size()}"
+            assert plddt_files.size() >= 2: \
+                "Expected at least 2 pLDDT files, got ${plddt_files.size()}"
+
+            snapshot(
+                pdb_files.collect { it.name }.sort(),
+                plddt_files.collect { it.name }.sort()
+            ).match()
+        }
+    }
+}
