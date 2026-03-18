@@ -124,6 +124,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[PR #538](https://github.com/nf-core/proteinfold/pulls/538)] - Fix alphafold2_random_seed type.
 - [[PR #549](https://github.com/nf-core/proteinfold/pulls/549)] - Create `EXTRACT_METRICS` module and remove extract_metrics.py from AlphaFold2 module.
 - [[PR #527](https://github.com/nf-core/proteinfold/pulls/527)] - Auto-detect multimer vs monomer and validate unique split.
+- [[PR #566](https://github.com/nf-core/proteinfold/pulls/566)] - Remove extract_metrics.py from HelixFold3 module.
 
 ### Parameters
 
