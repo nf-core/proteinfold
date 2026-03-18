@@ -9,6 +9,7 @@
 //
 include { RUN_ESMFOLD               } from '../modules/local/run_esmfold'
 include { MULTIFASTA_TO_SINGLEFASTA } from '../modules/local/multifasta_to_singlefasta'
+include { EXTRACT_METRICS_ESMFOLD } from '../modules/local/extract_metrics_esmfold'
 include { countMolecularEntitiesInFasta } from '../subworkflows/local/utils_nfcore_proteinfold_pipeline'
 
 include { modeChannel               } from '../subworkflows/local/utils_nfcore_proteinfold_pipeline'
@@ -64,7 +65,13 @@ workflow ESMFOLD {
     )
     ch_versions = ch_versions.mix(RUN_ESMFOLD.out.versions)
 
-    RUN_ESMFOLD
+    EXTRACT_METRICS_ESMFOLD(
+        RUN_ESMFOLD
+            .out
+            .pdb
+    )
+
+    EXTRACT_METRICS_ESMFOLD
         .out
         .multiqc
         .map { it -> it[1] }
@@ -75,6 +82,7 @@ workflow ESMFOLD {
         .set { ch_multiqc_report  }
 
     modeChannel(RUN_ESMFOLD.out.pdb, "esmfold").set { ch_pdb_final }
+    ch_versions = ch_versions.mix(EXTRACT_METRICS_ESMFOLD.out.versions)
 
     emit:
     pdb            = ch_pdb_final      // channel: [ id, /path/to/*.pdb ]
