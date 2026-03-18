@@ -24,26 +24,9 @@ process EXTRACT_METRICS_AF2 {
 
     script:
     """
-    mapfile -t ranked_structs < <(find -L . -name "ranked*.pdb" | sort)
-    if [[ "${'$'}{#ranked_structs[@]}" -eq 0 ]]; then
-        echo "Could not find ranked AlphaFold2 structures in raw output" >&2
-        exit 1
-    fi
-
-    features_pkl=\$(find -L . -name "features.pkl" | head -n 1)
-    if [[ -z "\$features_pkl" && "${features}" != "NO_FILE" ]]; then
-        features_pkl="${features}"
-    fi
-    if [[ -z "\$features_pkl" ]]; then
-        echo "Could not find features.pkl in raw output or provided features input" >&2
-        exit 1
-    fi
-
-    mapfile -t pkl_files < <(find -L . -name "*.pkl" | sort)
-
-    python3 \$(command -v extract_metrics.py) --name ${meta.id} \
-        --pkls "\$features_pkl" "${'$'}{pkl_files[@]}" \
-        --structs "${'$'}{ranked_structs[@]}"
+    extract_metrics.py --name ${meta.id} \\
+        --pkls ${fasta.baseName}/features.pkl ${fasta.baseName}/*.pkl \\
+        --structs ${fasta.baseName}/ranked*.pdb
 
     mv "${meta.id}_msa.tsv" "${meta.id}_alphafold2_msa.tsv"
 

@@ -87,7 +87,6 @@ workflow ALPHAFOLD2 {
                 .out
                 .raw
                 .join(ch_no_file)
-                .map { meta, raw, no_file -> [ meta, raw, no_file ] }
         )
 
         EXTRACT_METRICS_AF2
@@ -156,8 +155,7 @@ workflow ALPHAFOLD2 {
             RUN_ALPHAFOLD2_PRED
                 .out
                 .raw
-                .join(ch_fasta_features)
-                .map { meta, raw, _fasta, features, _preset -> [ meta, raw, "alphafold2", features ] }
+                .join(ch_split_features)
         )
 
         EXTRACT_METRICS_AF2

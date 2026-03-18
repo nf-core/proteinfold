@@ -26,27 +26,22 @@ process EXTRACT_METRICS_BOLTZ {
 
     script:
     """
-    mapfile -t boltz_structs < <(find -L . -path "*boltz_results_*/predictions/${meta.id}/*.pdb" | sort)
-    mapfile -t boltz_jsons < <(find -L . -path "*boltz_results_*/predictions/${meta.id}/confidence_*_model_*.json" | sort)
-    mapfile -t boltz_npzs < <(find -L . -path "*boltz_results_*/predictions/${meta.id}/pae_*_model_*.npz" | sort)
-    mapfile -t boltz_csvs < <(find -L . -path "*boltz_results_*/msa/${meta.id}_*.csv" | sort)
-
-    if [[ "${'$'}{#boltz_structs[@]}" -eq 0 ]]; then
+    if ! compgen -G "boltz_results_*/predictions/${meta.id}/*.pdb" > /dev/null; then
         echo "Could not find Boltz predicted structures for ${meta.id}" >&2
         exit 1
     fi
 
-    cmd=(python3 "\$(command -v extract_metrics.py)" --name ${meta.id} --structs "${'$'}{boltz_structs[@]}")
-    if [[ "${'$'}{#boltz_jsons[@]}" -gt 0 ]]; then
-        cmd+=(--jsons "${'$'}{boltz_jsons[@]}")
+    csv_args=()
+    if compgen -G "boltz_results_*/msa/${meta.id}_*.csv" > /dev/null; then
+        cp boltz_results_*/msa/${meta.id}_*.csv ./
+        csv_args=(--csvs ${meta.id}_*.csv)
     fi
-    if [[ "${'$'}{#boltz_npzs[@]}" -gt 0 ]]; then
-        cmd+=(--npzs "${'$'}{boltz_npzs[@]}")
-    fi
-    if [[ "${'$'}{#boltz_csvs[@]}" -gt 0 ]]; then
-        cmd+=(--csvs "${'$'}{boltz_csvs[@]}")
-    fi
-    "${'$'}{cmd[@]}"
+
+    python3 "\$(command -v extract_metrics.py)" --name ${meta.id} \
+        --structs boltz_results_*/predictions/${meta.id}/*.pdb \
+        --jsons boltz_results_*/predictions/${meta.id}/confidence_*_model_*.json \
+        --npzs boltz_results_*/predictions/${meta.id}/pae_*_model_*.npz \
+        "${'$'}{csv_args[@]}"
 
     if [[ -f "${meta.id}_msa.tsv" ]]; then
         mv "${meta.id}_msa.tsv" "${meta.id}_boltz_msa.tsv"
