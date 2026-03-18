@@ -4,24 +4,24 @@
             11,
             {
                 "FASTA_TO_ALPHAFOLD3_JSON": {
-                    "python": "3.12.3"
+                    "python": "3.13.7"
                 },
                 "GENERATE_REPORT": {
-                    "python": "3.12.3",
-                    "generate_report.py": "Python 3.12.3"
+                    "python": "3.12.7",
+                    "generate_report.py": "Python 3.12.7"
                 },
                 "MMCIF2PDB_MODELS": {
-                    "python": "3.12.3"
+                    "python": "3.12.7"
                 },
                 "MMCIF2PDB_TOP_RANKED": {
-                    "python": "3.12.3"
+                    "python": "3.12.7"
                 },
                 "RUN_ALPHAFOLD3": {
-                    "python": "3.12.3",
+                    "python": "unknown",
                     "alphafold3": "unknown",
                     "jax": "unknown",
                     "jaxlib": "unknown",
-                    "numpy": "1.26.4",
+                    "numpy": "unknown",
                     "biopython": "unknown",
                     "hmmer": null,
                     "rdkit": "unknown"
@@ -106,8 +106,8 @@
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "25.10.3"
+            "nextflow": "25.10.4"
         },
-        "timestamp": "2026-03-18T17:45:43.69144209"
+        "timestamp": "2026-03-18T18:00:56.732629877"
     }
 }
