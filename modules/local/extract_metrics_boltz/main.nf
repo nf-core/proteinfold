@@ -15,9 +15,9 @@ process EXTRACT_METRICS_BOLTZ {
     tuple val(meta), path("${meta.id}_boltz_msa.tsv")      , emit: boltz_msa
     tuple val(meta), path("${meta.id}_*_pae.tsv")          , emit: paes
     tuple val(meta), path("${meta.id}_0_pae.tsv")          , emit: pae
-    tuple val(meta), path("${meta.id}_ptm.tsv")            , optional: true, emit: ptms
+    tuple val(meta), path("${meta.id}_ptm.tsv")            , emit: ptms
     tuple val(meta), path("${meta.id}_iptm.tsv")           , optional: true, emit: iptms
-    tuple val(meta), path("${meta.id}_chainwise_ptm.tsv")  , optional: true, emit: chainwise_ptm
+    tuple val(meta), path("${meta.id}_chainwise_ptm.tsv")  , emit: chainwise_ptm
     tuple val(meta), path("${meta.id}_chainwise_iptm.tsv") , optional: true, emit: chainwise_iptm
     path "versions.yml"                                    , emit: versions
 
@@ -26,26 +26,17 @@ process EXTRACT_METRICS_BOLTZ {
 
     script:
     """
-    if ! compgen -G "boltz_results_*/predictions/${meta.id}/*.pdb" > /dev/null; then
-        echo "Could not find Boltz predicted structures for ${meta.id}" >&2
-        exit 1
-    fi
-
-    csv_args=()
-    if compgen -G "boltz_results_*/msa/${meta.id}_*.csv" > /dev/null; then
+    if [ -f boltz_results_*/msa/${meta.id}_0.csv ]; then
         cp boltz_results_*/msa/${meta.id}_*.csv ./
-        csv_args=(--csvs ${meta.id}_*.csv)
     fi
 
-    python3 "\$(command -v extract_metrics.py)" --name ${meta.id} \
+    extract_metrics.py --name ${meta.id} \
         --structs boltz_results_*/predictions/${meta.id}/*.pdb \
         --jsons boltz_results_*/predictions/${meta.id}/confidence_*_model_*.json \
         --npzs boltz_results_*/predictions/${meta.id}/pae_*_model_*.npz \
-        "${'$'}{csv_args[@]}"
+        --csvs ${meta.id}_*.csv
 
-    if [[ -f "${meta.id}_msa.tsv" ]]; then
-        mv "${meta.id}_msa.tsv" "${meta.id}_boltz_msa.tsv"
-    fi
+    mv "${meta.id}_msa.tsv" "${meta.id}_boltz_msa.tsv"
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
