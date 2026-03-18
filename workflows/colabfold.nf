@@ -8,6 +8,7 @@
 // MODULE: Loaded from modules/local/
 //
 include { COLABFOLD_BATCH        } from '../modules/local/colabfold_batch'
+include { EXTRACT_METRICS_COLABFOLD } from '../modules/local/extract_metrics_colabfold'
 include { MMSEQS_COLABFOLDSEARCH } from '../modules/local/mmseqs_colabfoldsearch'
 include { MULTIFASTA_TO_CSV      } from '../modules/local/multifasta_to_csv'
 
@@ -85,6 +86,9 @@ workflow COLABFOLD {
         ch_versions    = ch_versions.mix(COLABFOLD_BATCH.out.versions)
     }
 
+    EXTRACT_METRICS_COLABFOLD(COLABFOLD_BATCH.out.raw)
+    ch_versions = ch_versions.mix(EXTRACT_METRICS_COLABFOLD.out.versions)
+
     COLABFOLD_BATCH
         .out
         .top_ranked_pdb
@@ -106,10 +110,10 @@ workflow COLABFOLD {
         }
         .set { ch_pdb_final }
 
-    modeChannel(COLABFOLD_BATCH.out.msa, "colabfold").set { ch_msa_final }
-    modeChannel(COLABFOLD_BATCH.out.pae, "colabfold").set { ch_pae_final }
+    modeChannel(EXTRACT_METRICS_COLABFOLD.out.msa, "colabfold").set { ch_msa_final }
+    modeChannel(EXTRACT_METRICS_COLABFOLD.out.pae, "colabfold").set { ch_pae_final }
 
-    COLABFOLD_BATCH
+    EXTRACT_METRICS_COLABFOLD
         .out
         .multiqc
         .map { it -> it[1] }
