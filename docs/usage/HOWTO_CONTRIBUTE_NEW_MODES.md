@@ -1,3 +1,9 @@
+---
+title: Contributing new modes
+subtitle: Adding structure prediction modes to nf-core/proteinfold
+weight: 100
+---
+
 # Adding structure prediction modes to nf-core/proteinfold
 
 This section provides guidance on adding new structure prediction modes, implemented via the `--mode` option, to nf-core/proteinfold.

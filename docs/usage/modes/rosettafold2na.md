@@ -1,3 +1,8 @@
+---
+title: RoseTTAFold2NA
+weight: 80
+---
+
 # RoseTTAFold2NA
 
 | Mode                                                       | Split MSA | RNA | Small-molecule | PTM | Constraints | pLM | Protein | MSA server |

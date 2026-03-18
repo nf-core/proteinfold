@@ -1,3 +1,8 @@
+---
+title: AlphaFold2
+weight: 10
+---
+
 # AlphaFold2
 
 | Mode                                                | Protein | RNA | Small-molecule | PTM | Constraints | pLM | MSA server | Split MSA |

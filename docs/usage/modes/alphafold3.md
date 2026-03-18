@@ -1,3 +1,8 @@
+---
+title: AlphaFold3
+weight: 20
+---
+
 # AlphaFold3
 
 | Mode                                                        | Protein | RNA | Small-molecule | PTM | Constraints | pLM | MSA server | Split MSA |

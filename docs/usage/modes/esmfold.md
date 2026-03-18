@@ -1,3 +1,8 @@
+---
+title: ESMFold
+weight: 50
+---
+
 # ESMFold
 
 | Mode                                               | Protein | RNA | Small-molecule | PTM | Constraints | pLM | MSA server | Split MSA |

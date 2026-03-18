@@ -142,14 +142,14 @@ Each mode has specific reference data requirements. To support all modes the `--
 
 Alternatively, the required data layout for each of the individual modes is described in the mode-specific usage documentation:
 
-- [AlphaFold2](./modes/alphafold2.md)
-- [AlphaFold3](./modes/alphafold3.md)
-- [Boltz](./modes/boltz.md)
-- [ColabFold](./modes/colabfold.md)
-- [ESMFold](./modes/esmfold.md)
-- [HelixFold3](./modes/helixfold3.md)
-- [RoseTTAFold-All-Atom](./modes/rosettafold_all_atom.md)
-- [RoseTTAFold2NA](./modes/rosettafold2na.md)
+- [AlphaFold2](./alphafold2.md)
+- [AlphaFold3](./alphafold3.md)
+- [Boltz](./boltz.md)
+- [ColabFold](./colabfold.md)
+- [ESMFold](./esmfold.md)
+- [HelixFold3](./helixfold3.md)
+- [RoseTTAFold-All-Atom](./rosettafold_all_atom.md)
+- [RoseTTAFold2NA](./rosettafold2na.md)
 
 > Omitting the `--db` flag will allow the pipeline to download the reference data required to execute the selected modes.
 

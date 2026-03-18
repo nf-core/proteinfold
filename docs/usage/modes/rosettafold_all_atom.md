@@ -1,3 +1,8 @@
+---
+title: RoseTTAFold-All-Atom
+weight: 70
+---
+
 # RoseTTAFold-All-Atom
 
 | Mode                                                                              | Protein | RNA | Small-molecule | PTM | Constraints | pLM | MSA server | Split MSA |
