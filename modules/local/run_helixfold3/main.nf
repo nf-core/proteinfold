@@ -26,17 +26,10 @@ process RUN_HELIXFOLD3 {
     path ('maxit_src')
 
     output:
-    path ("raw/**")                                         , emit: raw
+    tuple val(meta), path ("raw/**")                        , emit: raw
     tuple val(meta), path ("${meta.id}_helixfold3.pdb")     , emit: top_ranked_pdb
     tuple val(meta), path ("${meta.id}_helixfold3.cif")     , emit: main_cif
-    tuple val(meta), path ("raw/ranked*.pdb")    , emit: pdb
-    tuple val(meta), path ("${meta.id}_plddt.tsv")          , emit: multiqc
-    tuple val(meta), path ("${meta.id}_helixfold3_msa.tsv") , emit: msa
-    // If ${meta.id}-rank*/all_results.json" doesn't have PAE vales in the key, this will be empty
-    tuple val(meta), path ("${meta.id}_1_pae.tsv")          , emit: pae
-    tuple val(meta), path ("${meta.id}_*_pae.tsv")          , emit: paes
-    tuple val(meta), path ("${meta.id}_ptm.tsv")            , emit: ptms
-    tuple val(meta), path ("${meta.id}_iptm.tsv")           , optional: true, emit: iptms
+    tuple val(meta), path ("raw/ranked*.pdb")               , emit: pdb
     path ("versions.yml")                                   , emit: versions
 
     when:
@@ -83,17 +76,10 @@ process RUN_HELIXFOLD3 {
     cp "${fasta.baseName}/${fasta.baseName}-rank1/predicted_structure.pdb" "./${meta.id}_helixfold3.pdb"
     cp "${fasta.baseName}/${fasta.baseName}-rank1/predicted_structure.cif" "./${meta.id}_helixfold3.cif"
 
-    mamba run --name helixfold extract_metrics.py --name ${meta.id} \\
-        --structs ${fasta.baseName}/${fasta.baseName}-rank*/predicted_structure.pdb \\
-        --pkls "${fasta.baseName}/final_features.pkl" \\
-        --jsons ${fasta.baseName}/${fasta.baseName}-rank*/all_results.json
-
     mkdir -p raw
     for i in 1 2 3 4 5; do
         cp "${fasta.baseName}/${fasta.baseName}-rank\$i/predicted_structure.pdb" "raw/ranked_\$i.pdb"
     done
-
-    mv "${meta.id}_msa.tsv" "${meta.id}_helixfold3_msa.tsv"
     mv "${fasta.baseName}" raw/
 
     cat <<-END_VERSIONS > versions.yml
@@ -110,15 +96,6 @@ process RUN_HELIXFOLD3 {
     """
     touch "${meta.id}_helixfold3.cif"
     touch "${meta.id}_helixfold3.pdb"
-    touch "${meta.id}_plddt.tsv"
-    touch "${meta.id}_helixfold3_msa.tsv"
-    touch "${meta.id}_ptm.tsv"
-    touch "${meta.id}_iptm.tsv"
-    touch "${meta.id}_1_pae.tsv"
-    touch "${meta.id}_2_pae.tsv"
-    touch "${meta.id}_3_pae.tsv"
-    touch "${meta.id}_4_pae.tsv"
-    touch "${meta.id}_5_pae.tsv"
     mkdir -p raw
     touch "raw/ranked_1.pdb"
     touch "raw/ranked_2.pdb"

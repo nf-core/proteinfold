@@ -9,6 +9,7 @@
 //
 include { RUN_HELIXFOLD3 } from '../modules/local/run_helixfold3'
 include { FASTA2JSON     } from '../modules/local/fasta2json'
+include { EXTRACT_METRICS_HELIXFOLD3 } from '../modules/local/extract_metrics_helixfold3'
 
 include { modeChannel    } from '../subworkflows/local/utils_nfcore_proteinfold_pipeline'
 
@@ -77,7 +78,9 @@ workflow HELIXFOLD3 {
         ch_helixfold3_maxit_src
     )
 
-    RUN_HELIXFOLD3
+    EXTRACT_METRICS_HELIXFOLD3(RUN_HELIXFOLD3.out.raw)
+
+    EXTRACT_METRICS_HELIXFOLD3
         .out
         .multiqc
         .map { it ->  it[1] }
@@ -89,6 +92,7 @@ workflow HELIXFOLD3 {
 
     ch_pdb      = ch_pdb.mix(RUN_HELIXFOLD3.out.pdb)
     ch_versions = ch_versions.mix(RUN_HELIXFOLD3.out.versions)
+    ch_versions = ch_versions.mix(EXTRACT_METRICS_HELIXFOLD3.out.versions)
 
     RUN_HELIXFOLD3
         .out
@@ -111,8 +115,8 @@ workflow HELIXFOLD3 {
         }
         .set { ch_pdb_final }
 
-    modeChannel(RUN_HELIXFOLD3.out.msa, "helixfold3").set { ch_msa_final }
-    modeChannel(RUN_HELIXFOLD3.out.pae, "helixfold3").set { ch_pae_final }
+    modeChannel(EXTRACT_METRICS_HELIXFOLD3.out.msa, "helixfold3").set { ch_msa_final }
+    modeChannel(EXTRACT_METRICS_HELIXFOLD3.out.pae, "helixfold3").set { ch_pae_final }
 
     emit:
     top_ranked_pdb = ch_top_ranked_pdb // channel: [ meta, /path/to/*.pdb ]
