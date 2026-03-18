@@ -10,18 +10,18 @@
                     "aria2": null
                 },
                 "COMBINE_UNIPROT": {
-                    "sed": 4.9
+                    "sed": 4.7
                 },
                 "DOWNLOAD_PDBMMCIF": {
                     "sed": 4.9,
-                    "rsync": "3.2.7"
+                    "rsync": "3.3.0"
                 },
                 "RUN_ALPHAFOLD2": {
-                    "python": "3.12.3",
+                    "python": "unknown",
                     "alphafold2": "unknown",
                     "jax": "unknown",
                     "jaxlib": "unknown",
-                    "numpy": "1.26.4",
+                    "numpy": "unknown",
                     "biopython": "unknown"
                 },
                 "Workflow": {
@@ -90,8 +90,8 @@
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "25.10.3"
+            "nextflow": "25.10.4"
         },
-        "timestamp": "2026-03-18T17:57:13.069485846"
+        "timestamp": "2026-03-18T18:14:12.328460144"
     }
 }

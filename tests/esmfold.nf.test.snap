@@ -4,19 +4,19 @@
             7,
             {
                 "EXTRACT_METRICS_ESMFOLD": {
-                    "python": "3.12.3",
-                    "numpy": "1.26.4"
+                    "python": "3.9.23",
+                    "numpy": "1.23.5"
                 },
                 "GENERATE_REPORT": {
-                    "python": "3.12.3",
-                    "generate_report.py": "Python 3.12.3"
+                    "python": "3.12.7",
+                    "generate_report.py": "Python 3.12.7"
                 },
                 "RUN_ESMFOLD": {
                     "esm-fold": "1.0.3",
-                    "python": "3.12.3",
+                    "python": "unknown",
                     "pytorch": "unknown",
                     "openfold": "unknown",
-                    "numpy": "1.26.4",
+                    "numpy": "unknown",
                     "biopython": "unknown"
                 },
                 "Workflow": {
@@ -51,8 +51,8 @@
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "25.10.3"
+            "nextflow": "25.10.4"
         },
-        "timestamp": "2026-03-18T17:58:58.851016182"
+        "timestamp": "2026-03-18T18:16:46.279994744"
     }
 }

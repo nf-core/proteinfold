@@ -3,11 +3,11 @@
         "content": [
             {
                 "RUN_ALPHAFOLD2": {
-                    "python": "3.12.3",
+                    "python": "unknown",
                     "alphafold2": "unknown",
                     "jax": "unknown",
                     "jaxlib": "unknown",
-                    "numpy": "1.26.4",
+                    "numpy": "unknown",
                     "biopython": "unknown"
                 },
                 "Workflow": {
@@ -35,8 +35,8 @@
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "25.10.3"
+            "nextflow": "25.10.4"
         },
-        "timestamp": "2026-03-18T17:58:46.151141143"
+        "timestamp": "2026-03-18T18:16:29.500787156"
     }
 }
