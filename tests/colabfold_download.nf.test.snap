@@ -11,11 +11,11 @@
                     "colabfold_batch": "unknown"
                 },
                 "GENERATE_REPORT": {
-                    "python": "3.12.7",
-                    "generate_report.py": "Python 3.12.7"
+                    "python": "3.12.3",
+                    "generate_report.py": "Python 3.12.3"
                 },
                 "MULTIFASTA_TO_CSV": {
-                    "sed": 4.7
+                    "sed": 4.9
                 },
                 "Workflow": {
                     "nf-core/proteinfold": "v2.0.0"
@@ -75,6 +75,6 @@
             "nf-test": "0.9.2",
             "nextflow": "25.10.3"
         },
-        "timestamp": "2026-03-14T15:51:28.137685059"
+        "timestamp": "2026-03-18T18:08:35.788377516"
     }
 }
