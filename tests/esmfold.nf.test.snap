@@ -1,8 +1,12 @@
 {
     "-profile test_esmfold": {
         "content": [
-            5,
+            7,
             {
+                "EXTRACT_METRICS_ESMFOLD": {
+                    "python": "3.9.23",
+                    "numpy": "1.23.5"
+                },
                 "GENERATE_REPORT": {
                     "python": "3.12.7",
                     "generate_report.py": "Python 3.12.7"
@@ -46,9 +50,9 @@
             ]
         ],
         "meta": {
-            "nf-test": "0.9.3",
+            "nf-test": "0.9.2",
             "nextflow": "25.10.4"
         },
-        "timestamp": "2026-03-12T16:21:39.018391209"
+        "timestamp": "2026-03-18T18:16:46.279994744"
     }
 }

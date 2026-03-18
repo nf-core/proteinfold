@@ -13,7 +13,6 @@ process RUN_ESMFOLD {
     output:
     tuple val(meta), path ("${meta.id}_esmfold.pdb")  , emit: top_ranked_pdb
     tuple val(meta), path ("*.pdb")                   , emit: pdb
-    tuple val(meta), path ("${meta.id}_plddt.tsv")    , emit: multiqc
     path "versions.yml"                               , emit: versions
 
     when:
@@ -38,9 +37,6 @@ process RUN_ESMFOLD {
 
     mv  *.pdb ${meta.id}_esmfold.pdb
 
-    extract_metrics.py --name ${meta.id} \\
-        --structs ${meta.id}_esmfold.pdb
-
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         esm-fold: $VERSION
@@ -56,7 +52,6 @@ process RUN_ESMFOLD {
     def VERSION = '1.0.3' // WARN: Version information not provided by tool on CLI. Please update this string when bumping container versions.
     """
     touch "${meta.id}_esmfold.pdb"
-    touch "${meta.id}_plddt.tsv"
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
