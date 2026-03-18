@@ -24,16 +24,15 @@ process EXTRACT_METRICS_COLABFOLD {
 
     script:
     """
-    if [ ! -e `find raw/*_relaxed_rank_001_*.pdb` ]; then
+    prefix=unrelaxed
+    if ls *_relaxed_rank_001_*.pdb >/dev/null 2>&1; then
         prefix=relaxed
-    else
-        prefix=unrelaxed
     fi
 
     extract_metrics.py --name ${meta.id} \\
-        --colabfold_metrics_fns raw/*scores_rank*.json \\
-        --structs raw/*_\${prefix}_rank*.pdb \\
-        --paired_a3m raw/${meta.id}.a3m
+        --colabfold_metrics_fns *scores_rank*.json \\
+        --structs *_\${prefix}_rank*.pdb \\
+        --paired_a3m ${meta.id}.a3m
 
     mv "${meta.id}_msa.tsv" "${meta.id}_colabfold_msa.tsv"
 
