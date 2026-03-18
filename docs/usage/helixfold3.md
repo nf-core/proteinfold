@@ -1,3 +1,8 @@
+---
+title: HelixFold3
+weight: 60
+---
+
 # HelixFold3
 
 | Mode                                                                                               | Protein | RNA | Small-molecule | PTM | Constraints | pLM | MSA server | Split MSA |

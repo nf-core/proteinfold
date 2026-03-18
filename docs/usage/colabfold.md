@@ -1,3 +1,8 @@
+---
+title: ColabFold
+weight: 40
+---
+
 # ColabFold
 
 | Mode                                                | Protein | RNA | Small-molecule | PTM | Constraints | pLM | MSA server | Split MSA |

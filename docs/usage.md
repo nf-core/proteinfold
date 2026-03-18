@@ -6,8 +6,6 @@
 
 ## Introduction
 
-<!-- TODO nf-core: Add documentation about anything specific to running your pipeline. For general topics, please point to (and add to) the main nf-core website. -->
-
 ## Samplesheet input
 
 You will need to create a samplesheet with information about the sequences you would like to analyse before running the pipeline. Use this parameter to specify its location. It has to be a comma-separated file with 2 columns, and a header row as shown in the examples below.
@@ -145,13 +143,13 @@ Each mode has specific reference data requirements. To support all modes the `--
 Alternatively, the required data layout for each of the individual modes is described in the mode-specific usage documentation:
 
 - [AlphaFold2](./usage/alphafold2.md)
-- [ESMFold](./usage/esmfold.md)
-- [ColabFold](./usage/colabfold.md)
-- [RoseTTAFold2NA](./usage/rosettafold2na.md)
-- [RoseTTAFold-All-Atom](./usage/rosettafold_all_atom.md)
 - [AlphaFold3](./usage/alphafold3.md)
-- [HelixFold3](./usage/helixfold3.md)
 - [Boltz](./usage/boltz.md)
+- [ColabFold](./usage/colabfold.md)
+- [ESMFold](./usage/esmfold.md)
+- [HelixFold3](./usage/helixfold3.md)
+- [RoseTTAFold-All-Atom](./usage/rosettafold_all_atom.md)
+- [RoseTTAFold2NA](./usage/rosettafold2na.md)
 
 > Omitting the `--db` flag will allow the pipeline to download the reference data required to execute the selected modes.
 

@@ -1,6 +1,9 @@
 ARG CUDA_VERSION=12.9.1
 FROM nvidia/cuda:${CUDA_VERSION}-base-ubuntu24.04
-ARG CUDA_VERSION=12.9.1
+
+# FROM directive resets ARGS, so we specify again (the value is retained if
+# previously set).
+ARG CUDA_VERSION
 
 LABEL org.opencontainers.image.title="nf-core/proteinfold_colabfold" \
     org.opencontainers.image.description="Docker image containing all software requirements to run the COLABFOLD_BATCH module using the nf-core/proteinfold pipeline" \

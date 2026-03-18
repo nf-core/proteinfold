@@ -1,3 +1,8 @@
+---
+title: Boltz
+weight: 30
+---
+
 # Boltz
 
 | Mode                                         | Protein | RNA | Small-molecule | PTM | Constraints | pLM | MSA server | Split MSA |
