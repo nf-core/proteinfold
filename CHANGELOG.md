@@ -126,7 +126,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[PR #549](https://github.com/nf-core/proteinfold/pulls/549)] - Create `EXTRACT_METRICS` module and remove extract_metrics.py from AlphaFold2 module.
 - [[PR #553](https://github.com/nf-core/proteinfold/pulls/553)] - Remove extract_metrics.py from ESMFold module.
 
-
 ### Parameters
 
 | Old parameter                | New parameter                    |

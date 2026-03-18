@@ -4,14 +4,14 @@
             4,
             {
                 "GENERATE_REPORT": {
-                    "python": "3.12.7",
-                    "generate_report.py": "Python 3.12.7"
+                    "python": "3.12.3",
+                    "generate_report.py": "Python 3.12.3"
                 },
                 "ROSETTAFOLD2NA_FASTA": {
                     "python": "$(python3 --version 2>/dev/null | sed 's/Python //g' || echo \"unknown\")"
                 },
                 "RUN_ROSETTAFOLD2NA": {
-                    "python": "unknown",
+                    "python": "3.12.3",
                     "rosettafold2na": "v0.2"
                 },
                 "Workflow": {
@@ -48,9 +48,9 @@
             ]
         ],
         "meta": {
-            "nf-test": "0.9.3",
-            "nextflow": "25.10.4"
+            "nf-test": "0.9.2",
+            "nextflow": "25.10.3"
         },
-        "timestamp": "2026-03-12T16:23:41.931720663"
+        "timestamp": "2026-03-18T17:59:24.411935638"
     }
 }
