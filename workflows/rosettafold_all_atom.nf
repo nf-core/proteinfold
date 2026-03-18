@@ -9,6 +9,7 @@
 //
 include { RUN_ROSETTAFOLD_ALL_ATOM } from '../modules/local/run_rosettafold_all_atom'
 include { FASTA2YAML               } from '../modules/local/fasta2yaml'
+include { EXTRACT_METRICS_RFAA } from '../modules/local/extract_metrics_rfaa'
 
 include { modeChannel              } from '../subworkflows/local/utils_nfcore_proteinfold_pipeline'
 
@@ -64,7 +65,13 @@ workflow ROSETTAFOLD_ALL_ATOM {
     )
     ch_versions = ch_versions.mix(RUN_ROSETTAFOLD_ALL_ATOM.out.versions)
 
-    RUN_ROSETTAFOLD_ALL_ATOM
+    EXTRACT_METRICS_RFAA(
+        RUN_ROSETTAFOLD_ALL_ATOM
+            .out
+            .raw
+    )
+
+    EXTRACT_METRICS_RFAA
         .out
         .multiqc
         .map { it -> it[1] }
@@ -75,8 +82,9 @@ workflow ROSETTAFOLD_ALL_ATOM {
         .set { ch_multiqc_report }
 
     modeChannel(RUN_ROSETTAFOLD_ALL_ATOM.out.pdb, "rosettafold_all_atom").set { ch_pdb_final }
-    modeChannel(RUN_ROSETTAFOLD_ALL_ATOM.out.msa, "rosettafold_all_atom").set { ch_msa_final }
-    modeChannel(RUN_ROSETTAFOLD_ALL_ATOM.out.pae, "rosettafold_all_atom").set { ch_pae_final }
+    modeChannel(EXTRACT_METRICS_RFAA.out.msa, "rosettafold_all_atom").set { ch_msa_final }
+    modeChannel(EXTRACT_METRICS_RFAA.out.pae, "rosettafold_all_atom").set { ch_pae_final }
+    ch_versions = ch_versions.mix(EXTRACT_METRICS_RFAA.out.versions)
 
     emit:
     pdb            = ch_pdb_final      // channel: [ id, /path/to/*.pdb ]

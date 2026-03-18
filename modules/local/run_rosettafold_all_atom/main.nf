@@ -18,13 +18,8 @@ process RUN_ROSETTAFOLD_ALL_ATOM {
     path (fasta_files)
 
     output:
-    path ("raw/**")                                                     , emit: raw
+    tuple val(meta), path ("raw/**")                                    , emit: raw
     tuple val(meta), path ("${meta.id}_rosettafold_all_atom.pdb")       , emit: pdb
-    tuple val(meta), path ("${meta.id}_plddt.tsv")                      , emit: multiqc
-    tuple val(meta), path ("${meta.id}_rosettafold_all_atom_msa.tsv")   , emit: msa
-    // I think there should always be PAE from the .pt PyTorch model. extract_metrics.py has condition import torch to handle this
-    tuple val(meta), path ("${meta.id}_*_pae.tsv")                      , emit: paes
-    tuple val(meta), path ("${meta.id}_0_pae.tsv")                      , emit: pae
     path "versions.yml"                                                 , emit: versions
 
     when:
@@ -47,14 +42,8 @@ process RUN_ROSETTAFOLD_ALL_ATOM {
 
     cp "\$yaml_name".pdb "${meta.id}"_rosettafold_all_atom.pdb
 
-    mamba run --name RFAA extract_metrics.py --name ${meta.id} \\
-        --structs "${meta.id}_rosettafold_all_atom.pdb" \\
-        --a3ms "\$yaml_name"/*/t000_.msa0.a3m \\
-        --pts "\$yaml_name"_aux.pt
-
-    mv "${meta.id}_msa.tsv" "${meta.id}_rosettafold_all_atom_msa.tsv"
-
     mkdir -p raw
+    cp "${meta.id}"_rosettafold_all_atom.pdb raw/
     if [[ -d "\$yaml_name" ]]; then
         mv "\$yaml_name" raw/
     fi
@@ -73,11 +62,9 @@ process RUN_ROSETTAFOLD_ALL_ATOM {
     """
     touch "${meta.id}_rosettafold_all_atom.pdb"
     touch "${meta.id}.pdb"
-    touch "${meta.id}_plddt.tsv"
-    touch "${meta.id}_rosettafold_all_atom_msa.tsv"
-    touch "${meta.id}_0_pae.tsv"
     mkdir -p raw
     touch raw/${meta.id}_aux.pt
+    touch raw/${meta.id}_rosettafold_all_atom.pdb
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
