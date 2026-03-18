@@ -141,6 +141,11 @@ workflow BOLTZ {
         RUN_BOLTZ
             .out
             .intermediates
+            .map { meta, raw -> [ meta.id, meta, raw ] }
+            .join(
+                ch_boltz_input.map { meta, fasta, files -> [ meta.id, files ] }
+            )
+            .map { id, meta, raw, files -> [ meta, raw, files ] }
     )
 
     RUN_BOLTZ

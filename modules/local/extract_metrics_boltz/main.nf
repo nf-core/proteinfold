@@ -8,7 +8,7 @@ process EXTRACT_METRICS_BOLTZ {
     container "nf-core/proteinfold_boltz:2.0.0"
 
     input:
-    tuple val(meta), path(raw)
+    tuple val(meta), path(raw), path(files)
 
     output:
     tuple val(meta), path("${meta.id}_plddt.tsv")          , emit: multiqc
