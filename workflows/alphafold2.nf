@@ -82,22 +82,6 @@ workflow ALPHAFOLD2 {
             ch_uniprot
         )
 
-        EXTRACT_METRICS_AF2(
-            RUN_ALPHAFOLD2
-                .out
-                .raw
-                .join(ch_no_file)
-        )
-
-        EXTRACT_METRICS_AF2
-            .out
-            .multiqc
-            .map { it -> it[1] }
-            .toSortedList()
-            .map { it ->
-                [ [ "model": "alphafold2" ], it.flatten() ]
-            }
-            .set { ch_multiqc_report }
 
         ch_pdb            = ch_pdb.mix(RUN_ALPHAFOLD2.out.pdb)
         ch_top_ranked_pdb = ch_top_ranked_pdb.mix(RUN_ALPHAFOLD2.out.top_ranked_pdb)
@@ -151,22 +135,6 @@ workflow ALPHAFOLD2 {
             ch_uniprot
         )
 
-        EXTRACT_METRICS_AF2(
-            RUN_ALPHAFOLD2_PRED
-                .out
-                .raw
-                .join(ch_split_features)
-        )
-
-        EXTRACT_METRICS_AF2
-            .out
-            .multiqc
-            .map { it -> it[1] }
-            .toSortedList()
-            .map { it ->
-                [ [ "model": "alphafold2" ], it.flatten() ]
-            }
-            .set { ch_multiqc_report }
 
         ch_top_ranked_pdb = ch_top_ranked_pdb.mix(RUN_ALPHAFOLD2_PRED.out.top_ranked_pdb)
         ch_pdb            = ch_pdb.mix(RUN_ALPHAFOLD2_PRED.out.pdb)

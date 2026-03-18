@@ -539,20 +539,13 @@ workflow NFCORE_PROTEINFOLD {
             PREPARE_COLABFOLD_DBS.out.uniref30,
             params.use_msa_server
         )
-        ch_boltz_report_input = BOLTZ
-                                    .out
-                                    .pdb
-                                    .join(BOLTZ.out.msa, remainder: true)
-                                    .map { meta, pdb, msa ->
-                                        [ meta, pdb, msa ?: file("$projectDir/assets/NO_FILE") ]
-                                    }
-                                    .join(BOLTZ.out.pae, remainder: true)
-                                    .map { meta, pdb, msa, pae ->
-                                        [ meta, pdb, msa, pae ?: file("$projectDir/assets/NO_FILE_PAE") ]
-                                    }
         ch_multiqc                  = ch_multiqc.mix(BOLTZ.out.multiqc_report)
         ch_versions                 = ch_versions.mix(BOLTZ.out.versions)
-        ch_report_input             = ch_report_input.mix(ch_boltz_report_input)
+        ch_report_input             = ch_report_input.mix(
+            BOLTZ.out.pdb
+            .join(BOLTZ.out.msa)
+            .join(BOLTZ.out.pae)
+        )
         ch_top_ranked_model         = ch_top_ranked_model.mix(BOLTZ.out.top_ranked_pdb)
     }
     //
