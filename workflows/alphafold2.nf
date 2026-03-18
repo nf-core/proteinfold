@@ -52,7 +52,7 @@ workflow ALPHAFOLD2 {
     ch_msa            = channel.empty()
     ch_pae            = channel.empty()
     ch_multiqc_report = channel.empty()
-    ch_no_file        = channel.fromPath("$projectDir/assets/NO_FILE")
+    ch_extract_metrics_af2_input = channel.empty()
 
     ch_samplesheet
         .map { meta, fasta ->
@@ -82,13 +82,13 @@ workflow ALPHAFOLD2 {
             ch_uniprot
         )
 
+        ch_extract_metrics_af2_input = RUN_ALPHAFOLD2.out.raw.map { meta, raw ->
+            [ meta, raw, file("$projectDir/assets/NO_FILE") ]
+        }
 
         ch_pdb            = ch_pdb.mix(RUN_ALPHAFOLD2.out.pdb)
         ch_top_ranked_pdb = ch_top_ranked_pdb.mix(RUN_ALPHAFOLD2.out.top_ranked_pdb)
-        ch_msa            = ch_msa.mix(EXTRACT_METRICS_AF2.out.msa)
-        ch_pae            = ch_pae.mix(EXTRACT_METRICS_AF2.out.pae)
         ch_versions       = ch_versions.mix(RUN_ALPHAFOLD2.out.versions)
-        ch_versions       = ch_versions.mix(EXTRACT_METRICS_AF2.out.versions)
 
     } else if (alphafold2_mode == 'split_msa_prediction') {
         //
@@ -135,14 +135,28 @@ workflow ALPHAFOLD2 {
             ch_uniprot
         )
 
+        ch_extract_metrics_af2_input = RUN_ALPHAFOLD2_PRED.out.raw.join(RUN_ALPHAFOLD2_MSA.out.features)
 
         ch_top_ranked_pdb = ch_top_ranked_pdb.mix(RUN_ALPHAFOLD2_PRED.out.top_ranked_pdb)
         ch_pdb            = ch_pdb.mix(RUN_ALPHAFOLD2_PRED.out.pdb)
-        ch_msa            = ch_msa.mix(EXTRACT_METRICS_AF2.out.msa)
-        ch_pae            = ch_pae.mix(EXTRACT_METRICS_AF2.out.pae)
         ch_versions       = ch_versions.mix(RUN_ALPHAFOLD2_PRED.out.versions)
-        ch_versions       = ch_versions.mix(EXTRACT_METRICS_AF2.out.versions)
     }
+
+    EXTRACT_METRICS_AF2(ch_extract_metrics_af2_input)
+
+    EXTRACT_METRICS_AF2
+        .out
+        .multiqc
+        .map { it -> it[1] }
+        .toSortedList()
+        .map { it ->
+            [ [ "model": "alphafold2" ], it.flatten() ]
+        }
+        .set { ch_multiqc_report }
+
+    ch_msa      = ch_msa.mix(EXTRACT_METRICS_AF2.out.msa)
+    ch_pae      = ch_pae.mix(EXTRACT_METRICS_AF2.out.pae)
+    ch_versions = ch_versions.mix(EXTRACT_METRICS_AF2.out.versions)
 
     ch_pdb
         .map { it ->

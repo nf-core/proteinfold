@@ -24,9 +24,9 @@ process EXTRACT_METRICS_AF2 {
 
     script:
     """
-    extract_metrics.py --name ${meta.id} \\
-        --pkls ${fasta.baseName}/features.pkl ${fasta.baseName}/*.pkl \\
-        --structs ${fasta.baseName}/ranked*.pdb
+    python3 "\$(command -v extract_metrics.py)" --name ${meta.id} \\
+        --pkls "*.pkl" \\
+        --structs "ranked*.pdb"
 
     mv "${meta.id}_msa.tsv" "${meta.id}_alphafold2_msa.tsv"
 
