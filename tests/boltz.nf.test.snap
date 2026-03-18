@@ -1,8 +1,12 @@
 {
     "-profile test_boltz": {
         "content": [
-            11,
+            13,
             {
+                "EXTRACT_METRICS_BOLTZ": {
+                    "python": "3.12.12",
+                    "numpy": "1.26.4"
+                },
                 "GENERATE_REPORT": {
                     "python": "3.12.7",
                     "generate_report.py": "Python 3.12.7"
@@ -95,9 +99,9 @@
             ]
         ],
         "meta": {
-            "nf-test": "0.9.3",
+            "nf-test": "0.9.2",
             "nextflow": "25.10.4"
         },
-        "timestamp": "2026-03-12T16:15:43.464789542"
+        "timestamp": "2026-03-16T12:32:53.938610557"
     }
 }

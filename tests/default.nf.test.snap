@@ -2,6 +2,14 @@
     "-profile test": {
         "content": [
             {
+                "EXTRACT_METRICS_AF2": {
+                    "python": "3.11.14",
+                    "numpy": "1.24.3"
+                },
+                "GENERATE_REPORT": {
+                    "python": "3.12.7",
+                    "generate_report.py": "Python 3.12.7"
+                },
                 "RUN_ALPHAFOLD2": {
                     "python": "unknown",
                     "alphafold2": "unknown",
@@ -17,6 +25,20 @@
             [
                 "alphafold2",
                 "alphafold2/standard",
+                "alphafold2/standard/T1024",
+                "alphafold2/standard/T1024/T1024_alphafold2_msa.tsv",
+                "alphafold2/standard/T1024/T1024_iptm.tsv",
+                "alphafold2/standard/T1024/T1024_plddt.tsv",
+                "alphafold2/standard/T1024/T1024_ptm.tsv",
+                "alphafold2/standard/T1024/paes",
+                "alphafold2/standard/T1024/paes/T1024_0_pae.tsv",
+                "alphafold2/standard/T1026",
+                "alphafold2/standard/T1026/T1026_alphafold2_msa.tsv",
+                "alphafold2/standard/T1026/T1026_iptm.tsv",
+                "alphafold2/standard/T1026/T1026_plddt.tsv",
+                "alphafold2/standard/T1026/T1026_ptm.tsv",
+                "alphafold2/standard/T1026/paes",
+                "alphafold2/standard/T1026/paes/T1026_0_pae.tsv",
                 "alphafold2/standard/top_ranked_structures",
                 "alphafold2/standard/top_ranked_structures/T1024.pdb",
                 "alphafold2/standard/top_ranked_structures/T1026.pdb",
@@ -25,18 +47,31 @@
                 "multiqc/alphafold2_multiqc_plots",
                 "multiqc/alphafold2_multiqc_report.html",
                 "pipeline_info",
-                "pipeline_info/nf_core_proteinfold_software_mqc_versions.yml"
+                "pipeline_info/nf_core_proteinfold_software_mqc_versions.yml",
+                "reports",
+                "reports/test_alphafold2_report.html"
             ],
             [
+                "T1024_alphafold2_msa.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1024_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1024_plddt.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1024_ptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1024_0_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1026_alphafold2_msa.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1026_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1026_plddt.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1026_ptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1026_0_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1024.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1026.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "alphafold2_multiqc_report.html:md5,d41d8cd98f00b204e9800998ecf8427e"
+                "alphafold2_multiqc_report.html:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "test_alphafold2_report.html:md5,d41d8cd98f00b204e9800998ecf8427e"
             ]
         ],
         "meta": {
             "nf-test": "0.9.2",
             "nextflow": "25.10.4"
         },
-        "timestamp": "2026-03-13T12:20:19.924333101"
+        "timestamp": "2026-03-18T17:17:01.631522976"
     }
 }

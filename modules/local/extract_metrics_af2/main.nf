@@ -1,14 +1,14 @@
 /*
- * Extract metrics from structure prediction serialized outputs
+ * Extract metrics from AlphaFold2 outputs
  */
-process EXTRACT_METRICS {
+process EXTRACT_METRICS_AF2 {
     tag "$meta.id"
     label 'process_single'
 
-    conda "${moduleDir}/environment.yml"
+    container "${params.alphafold2_mode == 'split_msa_prediction' ? 'nf-core/proteinfold_alphafold2_pred:2.0.0' : 'nf-core/proteinfold_alphafold2_standard:2.0.0'}"
 
     input:
-    tuple val(meta), path(raw), val(mode), path(features)
+    tuple val(meta), path(raw), path(features)
 
     output:
     tuple val(meta), path("${meta.id}_plddt.tsv")          , emit: multiqc
@@ -24,32 +24,9 @@ process EXTRACT_METRICS {
 
     script:
     """
-    if [[ "${mode}" != "alphafold2" ]]; then
-        echo "Unsupported mode for EXTRACT_METRICS: ${mode}" >&2
-        exit 1
-    fi
-
-    # Handle both regular files and symlink-staged files from Nextflow work dirs.
-    mapfile -t ranked_structs < <(find -L . -name "ranked*.pdb" | sort)
-    if [[ "${'$'}{#ranked_structs[@]}" -eq 0 ]]; then
-        echo "Could not find ranked AlphaFold2 structures in raw output" >&2
-        exit 1
-    fi
-
-    features_pkl=\$(find -L . -name "features.pkl" | head -n 1)
-    if [[ -z "\$features_pkl" && "${features}" != "NO_FILE" ]]; then
-        features_pkl="${features}"
-    fi
-    if [[ -z "\$features_pkl" ]]; then
-        echo "Could not find features.pkl in raw output" >&2
-        exit 1
-    fi
-
-    mapfile -t pkl_files < <(find -L . -name "*.pkl" | sort)
-
-    extract_metrics.py --name ${meta.id} \
-        --pkls "\$features_pkl" "${'$'}{pkl_files[@]}" \
-        --structs "${'$'}{ranked_structs[@]}"
+    python3 "\$(command -v extract_metrics.py)" --name ${meta.id} \\
+        --pkls *.pkl \\
+        --structs ranked*.pdb
 
     mv "${meta.id}_msa.tsv" "${meta.id}_alphafold2_msa.tsv"
 
