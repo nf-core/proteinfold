@@ -1,7 +1,7 @@
 {
     "-profile test_boltz": {
         "content": [
-            11,
+            10,
             {
                 "GENERATE_REPORT": {
                     "python": "3.12.7",
@@ -25,24 +25,6 @@
                 "boltz",
                 "boltz/A.csv",
                 "boltz/B.csv",
-                "boltz/T1024",
-                "boltz/T1024/T1024_boltz_msa.tsv",
-                "boltz/T1024/T1024_chainwise_iptm.tsv",
-                "boltz/T1024/T1024_chainwise_ptm.tsv",
-                "boltz/T1024/T1024_iptm.tsv",
-                "boltz/T1024/T1024_plddt.tsv",
-                "boltz/T1024/T1024_ptm.tsv",
-                "boltz/T1024/paes",
-                "boltz/T1024/paes/T1024_0_pae.tsv",
-                "boltz/T1026",
-                "boltz/T1026/T1026_boltz_msa.tsv",
-                "boltz/T1026/T1026_chainwise_iptm.tsv",
-                "boltz/T1026/T1026_chainwise_ptm.tsv",
-                "boltz/T1026/T1026_iptm.tsv",
-                "boltz/T1026/T1026_plddt.tsv",
-                "boltz/T1026/T1026_ptm.tsv",
-                "boltz/T1026/paes",
-                "boltz/T1026/paes/T1026_0_pae.tsv",
                 "boltz/output_fasta",
                 "boltz/output_fasta/T1024.fasta",
                 "boltz/output_fasta/T1026.fasta",
@@ -53,10 +35,6 @@
                 "mmseqs/results",
                 "mmseqs/results/T1024.a3m",
                 "mmseqs/results/T1026.a3m",
-                "multiqc",
-                "multiqc/multiqc_data",
-                "multiqc/multiqc_plots",
-                "multiqc/multiqc_report.html",
                 "pipeline_info",
                 "pipeline_info/nf_core_proteinfold_software_mqc_versions.yml",
                 "reports",
@@ -69,20 +47,6 @@
             [
                 "A.csv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "B.csv:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "T1024_boltz_msa.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "T1024_chainwise_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "T1024_chainwise_ptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "T1024_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "T1024_plddt.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "T1024_ptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "T1024_0_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "T1026_boltz_msa.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "T1026_chainwise_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "T1026_chainwise_ptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "T1026_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "T1026_plddt.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "T1026_ptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "T1026_0_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1024.fasta:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1026.fasta:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1024.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
@@ -95,9 +59,9 @@
             ]
         ],
         "meta": {
-            "nf-test": "0.9.3",
+            "nf-test": "0.9.2",
             "nextflow": "25.10.4"
         },
-        "timestamp": "2026-03-12T16:15:43.464789542"
+        "timestamp": "2026-03-13T12:13:41.056359301"
     }
 }

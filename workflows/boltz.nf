@@ -22,6 +22,7 @@ include { BOLTZ_FASTA } from '../modules/local/boltz_fasta'
 include { SPLIT_MSA } from '../modules/local/split_msa'
 include { MMSEQS_COLABFOLDSEARCH } from '../modules/local/mmseqs_colabfoldsearch'
 include { MULTIFASTA_TO_CSV      } from '../modules/local/multifasta_to_csv'
+include { EXTRACT_METRICS as EXTRACT_METRICS_BOLTZ } from '../modules/local/extract_metrics'
 //
 // SUBWORKFLOW: Consisting entirely of nf-core/modules
 //
@@ -136,6 +137,18 @@ workflow BOLTZ {
         ch_mols
     )
 
+    ch_no_file = channel.fromPath("$projectDir/assets/NO_FILE")
+
+    EXTRACT_METRICS_BOLTZ(
+        RUN_BOLTZ
+            .out
+            .intermediates
+            .join(ch_no_file)
+            .map { meta, raw, no_file ->
+                [ meta, raw, "boltz", no_file ]
+            }
+    )
+
     RUN_BOLTZ
         .out
         .pdb
@@ -154,25 +167,25 @@ workflow BOLTZ {
         }
         .set {ch_top_ranked_pdb}
 
-    RUN_BOLTZ
+    EXTRACT_METRICS_BOLTZ
         .out
-        .msa_raw
+        .boltz_msa
     .map { it ->
         it[0].model = "boltz"
         it
     }
     .set {ch_msa}
 
-    RUN_BOLTZ
+    EXTRACT_METRICS_BOLTZ
         .out
-        .pae_raw
+        .pae
     .map { it ->
         it[0].model = "boltz"
         it
     }
     .set {ch_pae}
 
-    RUN_BOLTZ
+    EXTRACT_METRICS_BOLTZ
         .out
         .multiqc
         .map { it -> it[1] }
@@ -181,6 +194,7 @@ workflow BOLTZ {
         .set { ch_multiqc_report  }
 
     ch_versions       = ch_versions.mix(RUN_BOLTZ.out.versions)
+    ch_versions       = ch_versions.mix(EXTRACT_METRICS_BOLTZ.out.versions)
 
     emit:
     versions        = ch_versions
