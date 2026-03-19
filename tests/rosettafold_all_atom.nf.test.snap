@@ -4,11 +4,11 @@
             7,
             {
                 "GENERATE_REPORT": {
-                    "python": "3.12.3",
-                    "generate_report.py": "Python 3.12.3"
+                    "python": "3.12.7",
+                    "generate_report.py": "Python 3.12.7"
                 },
                 "RUN_ROSETTAFOLD_ALL_ATOM": {
-                    "python": "3.12.3",
+                    "python": "unknown",
                     "rosettafold-all-atom": "unknown"
                 },
                 "Workflow": {
@@ -63,8 +63,8 @@
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "25.10.3"
+            "nextflow": "25.10.4"
         },
-        "timestamp": "2026-03-18T18:10:06.866638086"
+        "timestamp": "2026-03-19T11:02:32.490601321"
     }
 }
