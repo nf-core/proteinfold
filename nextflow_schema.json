@@ -342,6 +342,12 @@
                     "type": "boolean",
                     "description": "Skip visualisation reports.",
                     "fa_icon": "fas fa-fast-forward"
+                },
+                "skip_dockq": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Skip DockQ structure quality evaluation against reference PDB.",
+                    "fa_icon": "fas fa-fast-forward"
                 }
             }
         },

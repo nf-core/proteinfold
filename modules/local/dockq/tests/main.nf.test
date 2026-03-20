@@ -1,0 +1,60 @@
+nextflow_process {
+
+    name "Test Process DOCKQ"
+    script "../main.nf"
+    process "DOCKQ"
+
+    tag "modules"
+    tag "modules_local"
+    tag "dockq"
+
+    test("proteomics - pdb") {
+
+        when {
+            process {
+                """
+                input[0] = [
+                    [ id:'test' ],
+                    file(params.modules_testdata_base_path + 'proteomics/pdb/8tim.pdb', checkIfExists: true),
+                    file(params.modules_testdata_base_path + 'proteomics/pdb/1tim.pdb', checkIfExists: true)
+                ]
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                { assert process.out.txt },
+                { assert process.out.versions }
+            )
+        }
+
+    }
+
+    test("proteomics - pdb - stub") {
+
+        options "-stub"
+
+        when {
+            process {
+                """
+                input[0] = [
+                    [ id:'test' ],
+                    file(params.modules_testdata_base_path + 'proteomics/pdb/8tim.pdb', checkIfExists: true),
+                    file(params.modules_testdata_base_path + 'proteomics/pdb/1tim.pdb', checkIfExists: true)
+                ]
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                { assert snapshot(process.out).match() }
+            )
+        }
+
+    }
+
+}

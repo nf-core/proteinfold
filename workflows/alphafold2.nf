@@ -10,6 +10,7 @@
 include { RUN_ALPHAFOLD2      } from '../modules/local/run_alphafold2'
 include { RUN_ALPHAFOLD2_MSA  } from '../modules/local/run_alphafold2_msa'
 include { RUN_ALPHAFOLD2_PRED } from '../modules/local/run_alphafold2_pred'
+include { DOCKQ               } from '../modules/local/dockq'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -192,12 +193,26 @@ workflow ALPHAFOLD2 {
                                     [ meta, it[1] ]
                                 }
 
+    //
+    // MODULE: Run DockQ if reference PDB is provided in the samplesheet
+    //
+    ch_dockq = channel.empty()
+    if (!params.skip_dockq) {
+        ch_top_ranked_pdb_final
+            .filter { meta, pdb -> meta.reference }
+            .map { meta, pdb -> [ meta, pdb, file(meta.reference) ] }
+            | DOCKQ
+        ch_dockq    = DOCKQ.out.txt
+        ch_versions = ch_versions.mix(DOCKQ.out.versions)
+    }
+
     emit:
     top_ranked_pdb = ch_top_ranked_pdb_final // channel: [ meta, /path/to/*.pdb ]
     pdb            = ch_pdb_final            // channel: [ meta, /path/to/*.pdb ]
     msa            = ch_msa_final            // channel: [ meta, /path/to/*.pdb, /path/to/*_coverage.png ]  // Would prefer channel: [ meta, /path/to/*_msa.tsv ]
     pae            = ch_pae_final            // channel: [ meta, /path/to/*_0_pae.tsv]
     multiqc_report = ch_multiqc_report       // channel: /path/to/multiqc_report.html
+    dockq          = ch_dockq               // channel: [ meta, /path/to/DockQ_*.txt ]
     versions       = ch_versions             // channel: [ path(versions.yml) ]
 }
 

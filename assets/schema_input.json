@@ -25,6 +25,14 @@
                 "exists": true,
                 "pattern": "^\\S+\\.(fa(sta)?|faa|yaml|yml|json)$",
                 "errorMessage": "Fasta, yaml or json file must be provided, cannot contain spaces and must have extension '.fa', '.faa', '.fasta', '.yaml', '.yml', or '.json'"
+            },
+            "reference": {
+                "type": "string",
+                "format": "file-path",
+                "exists": true,
+                "pattern": "^\\S+\\.pdb$",
+                "errorMessage": "Reference PDB file for DockQ evaluation, cannot contain spaces and must have extension '.pdb'",
+                "meta": ["reference"]
             }
         },
         "required": ["fasta"],

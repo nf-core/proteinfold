@@ -1,0 +1,60 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/nf-core/modules/master/modules/yaml-schema.json
+name: "dockq"
+description: Evaluate the quality of a docked protein complex model by comparing it to a reference structure using the DockQ score.
+keywords:
+  - docking
+  - protein
+  - structure
+  - quality
+  - scoring
+tools:
+  - "dockq":
+      description: "A Quality Measure for Protein, Nucleic Acids and Small Ligand Docking Models"
+      homepage: "https://github.com/bjornwallner/DockQ"
+      documentation: "https://github.com/bjornwallner/DockQ"
+      tool_dev_url: "https://github.com/bjornwallner/DockQ"
+      doi: "10.1371/journal.pcbi.1005659"
+      licence: ["MIT"]
+      identifier: biotools:dockq
+
+input:
+  - - meta:
+        type: map
+        description: |
+          Groovy Map containing sample information
+          e.g. `[ id:'test' ]`
+    - inputpdb:
+        type: file
+        description: Predicted/model protein complex structure in PDB format
+        pattern: "*.pdb"
+        ontologies: []
+    - reference:
+        type: file
+        description: Reference (native) protein complex structure in PDB format
+        pattern: "*.pdb"
+        ontologies: []
+
+output:
+  txt:
+    - - meta:
+          type: map
+          description: |
+            Groovy Map containing sample information
+            e.g. `[ id:'test' ]`
+      - "*.txt":
+          type: file
+          description: DockQ score report with interface RMSD, ligand RMSD, and DockQ score
+          pattern: "DockQ_*_vs_*.txt"
+          ontologies: []
+  versions:
+    - versions.yml:
+        type: file
+        description: File containing software versions
+        pattern: "versions.yml"
+        ontologies:
+          - edam: http://edamontology.org/format_3750 # YAML
+
+authors:
+  - "@ADamjanovski"
+maintainers:
+  - "@ADamjanovski"
