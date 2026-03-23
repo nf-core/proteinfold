@@ -134,13 +134,6 @@ workflow POST_PROCESSING {
         ch_multiqc_files = ch_multiqc_files.mix(ch_methods_description.collectFile(name: 'methods_description_mqc.yaml'))
         ch_multiqc_files = ch_multiqc_files.mix(ch_collated_versions)
 
-        ch_multiqc_rep
-            .combine(
-                ch_multiqc_files
-                    .collect()
-                    .map { it -> [it] }
-            )
-
         MULTIQC (
             ch_multiqc_rep
                 .combine(

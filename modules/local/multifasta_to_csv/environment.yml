@@ -1,4 +1,5 @@
 name: multifasta_to_csv
+channels:
   - conda-forge
   - bioconda
 dependencies:
