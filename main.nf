@@ -511,7 +511,7 @@ workflow NFCORE_PROTEINFOLD {
 
     // WORKFLOW: Run Boltz
     //
-    if (params.mode.toLowerCase().split(",").contains("boltz")) {
+    if (requested_modes.contains("boltz")) {
 
         PREPARE_BOLTZ_DBS(
             params.boltz_db,
