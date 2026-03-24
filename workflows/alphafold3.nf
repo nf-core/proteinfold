@@ -42,7 +42,6 @@ workflow ALPHAFOLD3 {
     ch_top_ranked_pdb = channel.empty()
     ch_msa_final      = channel.empty()
     ch_multiqc_report = channel.empty()
-    ch_versions       = channel.empty()
 
     FASTA_TO_ALPHAFOLD3_JSON(ch_samplesheet)
     ch_versions       = ch_versions.mix(FASTA_TO_ALPHAFOLD3_JSON.out.versions)

@@ -21,8 +21,10 @@ include { PREPARE_ESMFOLD_DBS              } from './subworkflows/local/prepare_
 include { PREPARE_ROSETTAFOLD_ALL_ATOM_DBS } from './subworkflows/local/prepare_rosettafold_all_atom_dbs'
 include { PREPARE_HELIXFOLD3_DBS           } from './subworkflows/local/prepare_helixfold3_dbs'
 include { PREPARE_BOLTZ_DBS                } from './subworkflows/local/prepare_boltz_dbs'
-include { PREPARE_COLABFOLD_DBS            } from './subworkflows/local/prepare_colabfold_dbs'
 include { PREPARE_ROSETTAFOLD2NA_DBS       } from './subworkflows/local/prepare_rosettafold2na_dbs'
+
+include { PREPARE_COLABFOLD_DBS  as PREPARE_COLABFOLD_DBS_COLABFOLD } from './subworkflows/local/prepare_colabfold_dbs'
+include { PREPARE_COLABFOLD_DBS  as PREPARE_COLABFOLD_DBS_BOLTZ     } from './subworkflows/local/prepare_colabfold_dbs'
 
 include { ALPHAFOLD2                       } from './workflows/alphafold2'
 include { ALPHAFOLD3                       } from './workflows/alphafold3'
@@ -242,7 +244,7 @@ workflow NFCORE_PROTEINFOLD {
         //
         // SUBWORKFLOW: Prepare Colabfold DBs
         //
-        PREPARE_COLABFOLD_DBS (
+        PREPARE_COLABFOLD_DBS_COLABFOLD (
             params.colabfold_db,
             params.use_msa_server,
             params.colabfold_alphafold2_params_path,
@@ -253,7 +255,7 @@ workflow NFCORE_PROTEINFOLD {
             params.colabfold_uniref30_link,
             params.colabfold_create_index
         )
-        ch_versions = ch_versions.mix(PREPARE_COLABFOLD_DBS.out.versions)
+        ch_versions = ch_versions.mix(PREPARE_COLABFOLD_DBS_COLABFOLD.out.versions)
 
         //
         // WORKFLOW: Run nf-core/colabfold workflow
@@ -262,9 +264,9 @@ workflow NFCORE_PROTEINFOLD {
             ch_samplesheet,
             ch_versions,
             params.colabfold_model_preset,
-            PREPARE_COLABFOLD_DBS.out.params,
-            PREPARE_COLABFOLD_DBS.out.colabfold_db,
-            PREPARE_COLABFOLD_DBS.out.uniref30,
+            PREPARE_COLABFOLD_DBS_COLABFOLD.out.params,
+            PREPARE_COLABFOLD_DBS_COLABFOLD.out.colabfold_db,
+            PREPARE_COLABFOLD_DBS_COLABFOLD.out.uniref30,
             params.colabfold_num_recycles
         )
 
@@ -509,7 +511,7 @@ workflow NFCORE_PROTEINFOLD {
 
     // WORKFLOW: Run Boltz
     //
-    if (params.mode.toLowerCase().split(",").contains("boltz")) {
+    if (requested_modes.contains("boltz")) {
 
         PREPARE_BOLTZ_DBS(
             params.boltz_db,
@@ -526,7 +528,7 @@ workflow NFCORE_PROTEINFOLD {
         )
         ch_versions = ch_versions.mix(PREPARE_BOLTZ_DBS.out.versions)
 
-        PREPARE_COLABFOLD_DBS (
+        PREPARE_COLABFOLD_DBS_BOLTZ (
             params.colabfold_db,
             params.use_msa_server,
             params.colabfold_alphafold2_params_path,
@@ -537,7 +539,7 @@ workflow NFCORE_PROTEINFOLD {
             params.colabfold_uniref30_link,
             params.colabfold_create_index
         )
-        ch_versions = ch_versions.mix(PREPARE_COLABFOLD_DBS.out.versions)
+        ch_versions = ch_versions.mix(PREPARE_COLABFOLD_DBS_BOLTZ.out.versions)
 
         BOLTZ(
             ch_samplesheet,
@@ -547,8 +549,8 @@ workflow NFCORE_PROTEINFOLD {
             PREPARE_BOLTZ_DBS.out.boltz2_aff,
             PREPARE_BOLTZ_DBS.out.boltz2_conf,
             PREPARE_BOLTZ_DBS.out.boltz2_mols,
-            PREPARE_COLABFOLD_DBS.out.colabfold_db,
-            PREPARE_COLABFOLD_DBS.out.uniref30,
+            PREPARE_COLABFOLD_DBS_BOLTZ.out.colabfold_db,
+            PREPARE_COLABFOLD_DBS_BOLTZ.out.uniref30,
             params.use_msa_server
         )
         ch_multiqc                  = ch_multiqc.mix(BOLTZ.out.multiqc_report)

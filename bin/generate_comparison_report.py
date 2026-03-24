@@ -206,7 +206,7 @@ def pdb_to_lddt(struct_files, generate_tsv):
             averages.append(0.0)
 
         if generate_tsv == "y":
-            output_file = f"{pdb_file.replace('.pdb', '')}_plddt.tsv"
+            output_file = f"{os.path.splitext(struct_file)[0]}_plddt.tsv"
             with open(output_file, "w") as outfile:
                 outfile.write(" ".join(map(str, plddt_values)) + "\n")
             output_lddt.append(output_file)
