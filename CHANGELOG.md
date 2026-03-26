@@ -3,7 +3,7 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [[2.0.0](https://github.com/nf-core/proteinfold/releases/tag/2.0.0)] - 2026-03-17
+## [[2.0.0](https://github.com/nf-core/proteinfold/releases/tag/2.0.0)] - 2026-03-27
 
 ### Enhancements & fixes
 
@@ -126,56 +126,150 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[PR #531](https://github.com/nf-core/proteinfold/pulls/531)] - Fix alphafold2_random_seed type.
 - [[PR #538](https://github.com/nf-core/proteinfold/pulls/538)] - Bump version 2.0.0 for release preparation.
 - [[PR #563](https://github.com/nf-core/proteinfold/pulls/563)] - Fix boltz csv sync.
+- [[PR #570](https://github.com/nf-core/proteinfold/pulls/570)] - Update parameters table in changelog.
 
 ### Parameters
 
-| Old parameter                | New parameter                    |
-| ---------------------------- | -------------------------------- |
-| `--small_bfd_link`           | `--alphafold2_small_bfd_link`    |
-| `--mgnify_link`              | `--alphafold2_mgnify_link`       |
-| `--pdb_mmcif_link`           | `--alphafold2_pdb_mmcif_link`    |
-| `--uniref30_alphafold2_link` | `--alphafold2_uniref30_link`     |
-| `--uniref90_link`            | `--alphafold2_uniref90_link`     |
-| `--pdb_seqres_link`          | `--alphafold2_pdb_seqres_link`   |
-| `--small_bfd_path`           | `--alphafold2_small_bfd_path`    |
-| `--mgnify_path_alphafold2`   | `--alphafold2_mgnify_path`       |
-| `--pdb_mmcif_path`           | `--alphafold2_pdb_mmcif_path`    |
-| `--uniref30_alphafold2_path` | `--alphafold2_uniref30_path`     |
-| `--uniref90_path`            | `--alphafold2_uniref90_path`     |
-| `--pdb_seqres_path`          | `--alphafold2_pdb_seqres_path`   |
-| `--uniprot_path`             | `--alphafold2_uniprot_path`      |
-| `--colabfold_server`         | `--use_msa_server`               |
-| `--host_url`                 | `--msa_server_url`               |
-|                              | `--alphafold2_pdb_obsolete_path` |
-|                              | `--alphafold3_small_bfd_link`    |
-|                              | `--alphafold3_mgnify_link`       |
-|                              | `--alphafold3_uniref90_link`     |
-|                              | `--alphafold3_pdb_seqres_link`   |
-|                              | `--alphafold3_uniprot_link`      |
-|                              | `--alphafold3_small_bfd_path`    |
-|                              | `--alphafold3_params_path`       |
-|                              | `--alphafold3_mgnify_path`       |
-|                              | `--alphafold3_pdb_mmcif_path`    |
-|                              | `--alphafold3_uniref90_path`     |
-|                              | `--alphafold3_pdb_seqres_path`   |
-|                              | `--alphafold3_uniprot_path`      |
-|                              | `--boltz_model`                  |
-|                              | `--boltz2_aff_path`              |
-|                              | `--boltz2_conf_path`             |
-|                              | `--boltz2_mols_path`             |
-|                              | `--boltz_model_path`             |
-|                              | `--boltz_ccd_path`               |
-|                              | `--boltz_db`                     |
-|                              | `--boltz2_aff_link`              |
-|                              | `--boltz2_conf_link`             |
-|                              | `--boltz2_mols_link`             |
-|                              | `--boltz_model_link`             |
-|                              | `--boltz_ccd_link`               |
-|                              | `--colabfold_use_gpu_relax`      |
+| Old parameter                | New parameter                               |
+| ---------------------------- | ------------------------------------------- |
+| `--max_template_date`        | `--alphafold2_max_template_date`            |
+| `--bfd_link`                 | `--alphafold2_bfd_link`                     |
+| `--small_bfd_link`           | `--alphafold2_small_bfd_link`               |
+| `--mgnify_link`              | `--alphafold2_mgnify_link`                  |
+| `--pdb70_link`               | `--alphafold2_pdb70_link`                   |
+| `--pdb_mmcif_link`           | `--alphafold2_pdb_mmcif_link`               |
+| `--pdb_obsolete_link`        | `--alphafold2_pdb_obsolete_link`            |
+| `--uniref30_alphafold2_link` | `--alphafold2_uniref30_link`                |
+| `--uniref90_link`            | `--alphafold2_uniref90_link`                |
+| `--pdb_seqres_link`          | `--alphafold2_pdb_seqres_link`              |
+| `--uniprot_sprot_link`       | `--alphafold2_uniprot_sprot_link`           |
+| `--uniprot_trembl_link`      | `--alphafold2_uniprot_trembl_link`          |
+| `--bfd_path`                 | `--alphafold2_bfd_path`                     |
+| `--small_bfd_path`           | `--alphafold2_small_bfd_path`               |
+| `--mgnify_path`              | `--alphafold2_mgnify_path`                  |
+| `--pdb70_path`               | `--alphafold2_pdb70_path`                   |
+| `--pdb_mmcif_path`           | `--alphafold2_pdb_mmcif_path`               |
+| `--uniref30_alphafold2_path` | `--alphafold2_uniref30_path`                |
+| `--uniref90_path`            | `--alphafold2_uniref90_path`                |
+| `--pdb_seqres_path`          | `--alphafold2_pdb_seqres_path`              |
+| `--uniprot_path`             | `--alphafold2_uniprot_path`                 |
+| `--colabfold_server`         | `--use_msa_server`                          |
+| `--host_url`                 | `--msa_server_url`                          |
+| `--uniref30_colabfold_link`  | `--colabfold_uniref30_link`                 |
+| `--uniref30_colabfold_path`  | `--colabfold_uniref30_path`                 |
+| `--colabfold_db_path`        | `--colabfold_envdb_path`                    |
+| `--create_colabfold_index`   | `--colabfold_create_index`                  |
+| `--use_amber`                | `--colabfold_use_amber`                     |
+| `--use_templates`            | `--colabfold_use_templates`                 |
+| `--db_load_mode`             | `--colabfold_db_load_mode`                  |
+| `--num_recycles_colabfold`   | `--colabfold_num_recycles`                  |
+| `--num_recycles_esmfold`     | `--esmfold_num_recycles`                    |
+|                              | `--save_intermediates`                      |
+|                              | `--split_fasta`                             |
+|                              | `--db`                                      |
+|                              | `--alphafold2_full_dbs`                     |
+|                              | `--uniref30_prefix`                         |
+|                              | `--skip_visualisation`                      |
+|                              | `--skip_foldseek`                           |
+|                              | `--foldseek_easysearch_arg`                 |
+|                              | `--alphafold2_random_seed`                  |
+|                              | `--alphafold2_pdb_obsolete_path`            |
+|                              | `--alphafold3_db`                           |
+|                              | `--alphafold3_small_bfd_link`               |
+|                              | `--alphafold3_small_bfd_path`               |
+|                              | `--alphafold3_mgnify_link`                  |
+|                              | `--alphafold3_mgnify_path`                  |
+|                              | `--alphafold3_pdb_mmcif_link`               |
+|                              | `--alphafold3_pdb_mmcif_path`               |
+|                              | `--alphafold3_uniref90_link`                |
+|                              | `--alphafold3_uniref90_path`                |
+|                              | `--alphafold3_pdb_seqres_link`              |
+|                              | `--alphafold3_pdb_seqres_path`              |
+|                              | `--alphafold3_uniprot_link`                 |
+|                              | `--alphafold3_uniprot_path`                 |
+|                              | `--alphafold3_params_path`                  |
+|                              | `--alphafold3_rnacentral_link`              |
+|                              | `--alphafold3_rnacentral_path`              |
+|                              | `--alphafold3_nt_rna_link`                  |
+|                              | `--alphafold3_nt_rna_path`                  |
+|                              | `--alphafold3_rfam_link`                    |
+|                              | `--alphafold3_rfam_path`                    |
+|                              | `--boltz_model`                             |
+|                              | `--boltz_use_potentials`                    |
+|                              | `--boltz_use_kernels`                       |
+|                              | `--boltz_ccd_link`                          |
+|                              | `--boltz_ccd_path`                          |
+|                              | `--boltz_model_link`                        |
+|                              | `--boltz_model_path`                        |
+|                              | `--boltz2_aff_link`                         |
+|                              | `--boltz2_aff_path`                         |
+|                              | `--boltz2_conf_link`                        |
+|                              | `--boltz2_conf_path`                        |
+|                              | `--boltz2_mols_link`                        |
+|                              | `--boltz2_mols_path`                        |
+|                              | `--boltz_db`                                |
+|                              | `--helixfold3_db`                           |
+|                              | `--helixfold3_precision`                    |
+|                              | `--helixfold3_infer_times`                  |
+|                              | `--helixfold3_max_template_date`            |
+|                              | `--helixfold3_uniclust30_link`              |
+|                              | `--helixfold3_uniclust30_path`              |
+|                              | `--helixfold3_ccd_preprocessed_link`        |
+|                              | `--helixfold3_ccd_preprocessed_path`        |
+|                              | `--helixfold3_rfam_link`                    |
+|                              | `--helixfold3_rfam_path`                    |
+|                              | `--helixfold3_init_models_link`             |
+|                              | `--helixfold3_init_models_path`             |
+|                              | `--helixfold3_bfd_link`                     |
+|                              | `--helixfold3_bfd_path`                     |
+|                              | `--helixfold3_small_bfd_link`               |
+|                              | `--helixfold3_small_bfd_path`               |
+|                              | `--helixfold3_uniprot_sprot_link`           |
+|                              | `--helixfold3_uniprot_trembl_link`          |
+|                              | `--helixfold3_uniprot_path`                 |
+|                              | `--helixfold3_pdb_seqres_link`              |
+|                              | `--helixfold3_pdb_seqres_path`              |
+|                              | `--helixfold3_uniref90_link`                |
+|                              | `--helixfold3_uniref90_path`                |
+|                              | `--helixfold3_mgnify_link`                  |
+|                              | `--helixfold3_mgnify_path`                  |
+|                              | `--helixfold3_pdb_mmcif_link`               |
+|                              | `--helixfold3_pdb_mmcif_path`               |
+|                              | `--helixfold3_obsolete_link`                |
+|                              | `--helixfold3_obsolete_path`                |
+|                              | `--helixfold3_maxit_src_link`               |
+|                              | `--helixfold3_maxit_src_path`               |
+|                              | `--rosettafold_all_atom_db`                 |
+|                              | `--rosettafold_all_atom_uniref30_link`      |
+|                              | `--rosettafold_all_atom_uniref30_path`      |
+|                              | `--rosettafold_all_atom_pdb100_link`        |
+|                              | `--rosettafold_all_atom_pdb100_path`        |
+|                              | `--rosettafold_all_atom_bfd_link`           |
+|                              | `--rosettafold_all_atom_bfd_path`           |
+|                              | `--rosettafold_all_atom_paper_weights_link` |
+|                              | `--rosettafold_all_atom_paper_weights_path` |
+|                              | `--rosettafold2na_db`                       |
+|                              | `--rosettafold2na_uniref30_link`            |
+|                              | `--rosettafold2na_uniref30_path`            |
+|                              | `--rosettafold2na_bfd_link`                 |
+|                              | `--rosettafold2na_bfd_path`                 |
+|                              | `--rosettafold2na_pdb100_link`              |
+|                              | `--rosettafold2na_pdb100_path`              |
+|                              | `--rosettafold2na_weights_link`             |
+|                              | `--rosettafold2na_weights_path`             |
+|                              | `--rosettafold2na_rna_path`                 |
+|                              | `--rfam_full_region_link`                   |
+|                              | `--rfam_cm_link`                            |
+|                              | `--rnacentral_rfam_annotations_link`        |
+|                              | `--rnacentral_id_mapping_link`              |
+|                              | `--rnacentral_sequences_link`               |
+| `--max_memory`               |                                             |
+| `--max_cpus`                 |                                             |
+| `--max_time`                 |                                             |
 
 > **NB:** Parameter has been **updated** if both old and new parameter information is present.
 > **NB:** Parameter has been **added** if just the new parameter information is present.
-> **NB:** Parameter has been **removed** if parameter information is
+> **NB:** Parameter has been **removed** if parameter information is present only for the old parameter.
 
 ## [[1.1.1](https://github.com/nf-core/proteinfold/releases/tag/1.1.1)] - 2025-07-30
 
