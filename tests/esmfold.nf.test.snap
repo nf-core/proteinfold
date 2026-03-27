@@ -16,7 +16,7 @@
                     "biopython": "unknown"
                 },
                 "Workflow": {
-                    "nf-core/proteinfold": "v2.0.0"
+                    "nf-core/proteinfold": "v2.1.0dev"
                 }
             },
             [
@@ -49,6 +49,6 @@
             "nf-test": "0.9.3",
             "nextflow": "25.10.4"
         },
-        "timestamp": "2026-03-12T16:21:39.018391209"
+        "timestamp": "2026-03-27T09:07:29.828926981"
     }
 }
