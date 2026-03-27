@@ -1,0 +1,92 @@
+{
+    "-profile test_helixfold3": {
+        "content": [
+            7,
+            {
+                "GENERATE_REPORT": {
+                    "python": "3.12.7",
+                    "generate_report.py": "Python 3.12.7"
+                },
+                "RUN_HELIXFOLD3": {
+                    "python": "unknown"
+                },
+                "Workflow": {
+                    "nf-core/proteinfold": "v2.0.0"
+                }
+            },
+            [
+                "fasta2json",
+                "fasta2json/T1024.json",
+                "fasta2json/T1026.json",
+                "helixfold3",
+                "helixfold3/T1024",
+                "helixfold3/T1024/T1024_helixfold3_msa.tsv",
+                "helixfold3/T1024/T1024_iptm.tsv",
+                "helixfold3/T1024/T1024_plddt.tsv",
+                "helixfold3/T1024/T1024_ptm.tsv",
+                "helixfold3/T1024/paes",
+                "helixfold3/T1024/paes/T1024_1_pae.tsv",
+                "helixfold3/T1024/paes/T1024_2_pae.tsv",
+                "helixfold3/T1024/paes/T1024_3_pae.tsv",
+                "helixfold3/T1024/paes/T1024_4_pae.tsv",
+                "helixfold3/T1024/paes/T1024_5_pae.tsv",
+                "helixfold3/T1026",
+                "helixfold3/T1026/T1026_helixfold3_msa.tsv",
+                "helixfold3/T1026/T1026_iptm.tsv",
+                "helixfold3/T1026/T1026_plddt.tsv",
+                "helixfold3/T1026/T1026_ptm.tsv",
+                "helixfold3/T1026/paes",
+                "helixfold3/T1026/paes/T1026_1_pae.tsv",
+                "helixfold3/T1026/paes/T1026_2_pae.tsv",
+                "helixfold3/T1026/paes/T1026_3_pae.tsv",
+                "helixfold3/T1026/paes/T1026_4_pae.tsv",
+                "helixfold3/T1026/paes/T1026_5_pae.tsv",
+                "helixfold3/top_ranked_structures",
+                "helixfold3/top_ranked_structures/T1024.cif",
+                "helixfold3/top_ranked_structures/T1024.pdb",
+                "helixfold3/top_ranked_structures/T1026.cif",
+                "helixfold3/top_ranked_structures/T1026.pdb",
+                "multiqc",
+                "multiqc/multiqc_data",
+                "multiqc/multiqc_plots",
+                "multiqc/multiqc_report.html",
+                "pipeline_info",
+                "pipeline_info/nf_core_proteinfold_software_mqc_versions.yml",
+                "reports",
+                "reports/test_alphafold2_report.html"
+            ],
+            [
+                "T1024.json:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1026.json:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1024_helixfold3_msa.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1024_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1024_plddt.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1024_ptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1024_1_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1024_2_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1024_3_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1024_4_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1024_5_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1026_helixfold3_msa.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1026_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1026_plddt.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1026_ptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1026_1_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1026_2_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1026_3_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1026_4_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1026_5_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1024.cif:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1024.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1026.cif:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1026.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "test_alphafold2_report.html:md5,d41d8cd98f00b204e9800998ecf8427e"
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.3",
+            "nextflow": "25.10.4"
+        },
+        "timestamp": "2026-03-12T16:22:20.586950258"
+    }
+}

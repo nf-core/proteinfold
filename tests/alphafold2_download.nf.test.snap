@@ -1,0 +1,128 @@
+{
+    "-profile test_alphafold2_download": {
+        "content": [
+            25,
+            {
+                "ARIA2": {
+                    "aria2": null
+                },
+                "ARIA2_PDB_SEQRES": {
+                    "aria2": null
+                },
+                "COMBINE_UNIPROT": {
+                    "sed": 4.7
+                },
+                "DOWNLOAD_PDBMMCIF": {
+                    "sed": 4.9,
+                    "rsync": "3.3.0"
+                },
+                "GENERATE_REPORT": {
+                    "python": "3.12.7",
+                    "generate_report.py": "Python 3.12.7"
+                },
+                "RUN_ALPHAFOLD2": {
+                    "python": "unknown",
+                    "alphafold2": "unknown",
+                    "jax": "unknown",
+                    "jaxlib": "unknown",
+                    "numpy": "unknown",
+                    "biopython": "unknown"
+                },
+                "Workflow": {
+                    "nf-core/proteinfold": "v2.0.0"
+                }
+            },
+            [
+                "DBs",
+                "DBs/alphafold2",
+                "DBs/alphafold2/mgnify",
+                "DBs/alphafold2/mgnify/mgy_clusters.fa",
+                "DBs/alphafold2/params",
+                "DBs/alphafold2/params/alphafold_params_2022-12-06",
+                "DBs/alphafold2/pdb70",
+                "DBs/alphafold2/pdb_mmcif",
+                "DBs/alphafold2/pdb_mmcif/mmcif_files",
+                "DBs/alphafold2/pdb_mmcif/obsolete.dat",
+                "DBs/alphafold2/pdb_seqres",
+                "DBs/alphafold2/pdb_seqres/pdb_seqres.txt",
+                "DBs/alphafold2/small_bfd",
+                "DBs/alphafold2/small_bfd/bfd-first_non_consensus_sequences.fasta",
+                "DBs/alphafold2/uniprot",
+                "DBs/alphafold2/uniprot/uniprot.fasta",
+                "DBs/alphafold2/uniprot_sprot.fasta",
+                "DBs/alphafold2/uniprot_trembl.fasta",
+                "DBs/alphafold2/uniref30",
+                "DBs/alphafold2/uniref90",
+                "DBs/alphafold2/uniref90/uniref90.fasta",
+                "alphafold2",
+                "alphafold2/standard",
+                "alphafold2/standard/T1024",
+                "alphafold2/standard/T1024/T1024_alphafold2_msa.tsv",
+                "alphafold2/standard/T1024/T1024_iptm.tsv",
+                "alphafold2/standard/T1024/T1024_plddt.tsv",
+                "alphafold2/standard/T1024/T1024_ptm.tsv",
+                "alphafold2/standard/T1024/paes",
+                "alphafold2/standard/T1024/paes/T1024_0_pae.tsv",
+                "alphafold2/standard/T1026",
+                "alphafold2/standard/T1026/T1026_alphafold2_msa.tsv",
+                "alphafold2/standard/T1026/T1026_iptm.tsv",
+                "alphafold2/standard/T1026/T1026_plddt.tsv",
+                "alphafold2/standard/T1026/T1026_ptm.tsv",
+                "alphafold2/standard/T1026/paes",
+                "alphafold2/standard/T1026/paes/T1026_0_pae.tsv",
+                "alphafold2/standard/top_ranked_structures",
+                "alphafold2/standard/top_ranked_structures/T1024.pdb",
+                "alphafold2/standard/top_ranked_structures/T1026.pdb",
+                "multiqc",
+                "multiqc/alphafold2_multiqc_data",
+                "multiqc/alphafold2_multiqc_plots",
+                "multiqc/alphafold2_multiqc_report.html",
+                "pipeline_info",
+                "pipeline_info/nf_core_proteinfold_software_mqc_versions.yml",
+                "reports",
+                "reports/test_alphafold2_report.html"
+            ],
+            [
+                "mgy_clusters.fa:md5,d41d8cd98f00b204e9800998ecf8427e",
+                [
+                    "file.txt:md5,d41d8cd98f00b204e9800998ecf8427e"
+                ],
+                [
+                    "file.txt:md5,d41d8cd98f00b204e9800998ecf8427e"
+                ],
+                [
+                    
+                ],
+                "obsolete.dat:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "pdb_seqres.txt:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "bfd-first_non_consensus_sequences.fasta:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "uniprot.fasta:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "uniprot_sprot.fasta:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "uniprot_trembl.fasta:md5,d41d8cd98f00b204e9800998ecf8427e",
+                [
+                    "file.txt:md5,d41d8cd98f00b204e9800998ecf8427e"
+                ],
+                "uniref90.fasta:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1024_alphafold2_msa.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1024_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1024_plddt.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1024_ptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1024_0_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1026_alphafold2_msa.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1026_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1026_plddt.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1026_ptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1026_0_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1024.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1026.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "alphafold2_multiqc_report.html:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "test_alphafold2_report.html:md5,d41d8cd98f00b204e9800998ecf8427e"
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.3",
+            "nextflow": "25.10.4"
+        },
+        "timestamp": "2026-03-12T16:09:42.635737909"
+    }
+}

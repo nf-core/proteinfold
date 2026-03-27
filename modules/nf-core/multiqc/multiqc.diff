@@ -1,14 +1,272 @@
 Changes in module 'nf-core/multiqc'
+--- modules/nf-core/multiqc/meta.yml
++++ modules/nf-core/multiqc/meta.yml
+@@ -1,5 +1,6 @@
+ name: multiqc
+-description: Aggregate results from bioinformatics analyses across many samples into a single report
++description: Aggregate results from bioinformatics analyses across many samples into
++  a single report
+ keywords:
+   - QC
+   - bioinformatics tools
+@@ -12,40 +13,59 @@
+       homepage: https://multiqc.info/
+       documentation: https://multiqc.info/docs/
+       licence: ["GPL-3.0-or-later"]
++      identifier: biotools:multiqc
+ input:
+-  - multiqc_files:
+-      type: file
+-      description: |
+-        List of reports / files recognised by MultiQC, for example the html and zip output of FastQC
+-  - multiqc_config:
+-      type: file
+-      description: Optional config yml for MultiQC
+-      pattern: "*.{yml,yaml}"
+-  - extra_multiqc_config:
+-      type: file
+-      description: Second optional config yml for MultiQC. Will override common sections in multiqc_config.
+-      pattern: "*.{yml,yaml}"
+-  - multiqc_logo:
+-      type: file
+-      description: Optional logo file for MultiQC
+-      pattern: "*.{png}"
++  - - multiqc_files:
++        type: file
++        description: |
++          List of reports / files recognised by MultiQC, for example the html and zip output of FastQC
++  - - multiqc_config:
++        type: file
++        description: Optional config yml for MultiQC
++        pattern: "*.{yml,yaml}"
++  - - extra_multiqc_config:
++        type: file
++        description: Second optional config yml for MultiQC. Will override common sections
++          in multiqc_config.
++        pattern: "*.{yml,yaml}"
++  - - multiqc_logo:
++        type: file
++        description: Optional logo file for MultiQC
++        pattern: "*.{png}"
++  - - replace_names:
++        type: file
++        description: |
++          Optional two-column sample renaming file. First column a set of
++          patterns, second column a set of corresponding replacements. Passed via
++          MultiQC's `--replace-names` option.
++        pattern: "*.{tsv}"
++  - - sample_names:
++        type: file
++        description: |
++          Optional TSV file with headers, passed to the MultiQC --sample_names
++          argument.
++        pattern: "*.{tsv}"
+ output:
+   - report:
+-      type: file
+-      description: MultiQC report file
+-      pattern: "multiqc_report.html"
++      - "*multiqc_report.html":
++          type: file
++          description: MultiQC report file
++          pattern: "multiqc_report.html"
+   - data:
+-      type: directory
+-      description: MultiQC data dir
+-      pattern: "multiqc_data"
++      - "*_data":
++          type: directory
++          description: MultiQC data dir
++          pattern: "multiqc_data"
+   - plots:
+-      type: file
+-      description: Plots created by MultiQC
+-      pattern: "*_data"
++      - "*_plots":
++          type: file
++          description: Plots created by MultiQC
++          pattern: "*_data"
+   - versions:
+-      type: file
+-      description: File containing software versions
+-      pattern: "versions.yml"
++      - versions.yml:
++          type: file
++          description: File containing software versions
++          pattern: "versions.yml"
+ authors:
+   - "@abhi18av"
+   - "@bunop"
+
 --- modules/nf-core/multiqc/main.nf
 +++ modules/nf-core/multiqc/main.nf
-@@ -7,7 +7,7 @@
-         'biocontainers/multiqc:1.21--pyhdfd78af_0' }"
- 
+@@ -3,14 +3,16 @@
+
+     conda "${moduleDir}/environment.yml"
+     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
+-        'https://depot.galaxyproject.org/singularity/multiqc:1.21--pyhdfd78af_0' :
+-        'biocontainers/multiqc:1.21--pyhdfd78af_0' }"
++        'https://depot.galaxyproject.org/singularity/multiqc:1.25.1--pyhdfd78af_0' :
++        'biocontainers/multiqc:1.25.1--pyhdfd78af_0' }"
+
      input:
 -    path  multiqc_files, stageAs: "?/*"
-+    path  multiqc_files
++    tuple val(meta), path(multiqc_files)
      path(multiqc_config)
      path(extra_multiqc_config)
      path(multiqc_logo)
++    path(replace_names)
++    path(sample_names)
+
+     output:
+     path "*multiqc_report.html", emit: report
+@@ -23,16 +25,22 @@
+
+     script:
+     def args = task.ext.args ?: ''
++    def prefix = task.ext.prefix ? "--filename ${task.ext.prefix}.html" : "--filename ${meta.model}_multiqc_report.html"
+     def config = multiqc_config ? "--config $multiqc_config" : ''
+     def extra_config = extra_multiqc_config ? "--config $extra_multiqc_config" : ''
+-    def logo = multiqc_logo ? /--cl-config 'custom_logo: "${multiqc_logo}"'/ : ''
++    def logo = multiqc_logo ? "--cl-config 'custom_logo: \"${multiqc_logo}\"'" : ''
++    def replace = replace_names ? "--replace-names ${replace_names}" : ''
++    def samples = sample_names ? "--sample-names ${sample_names}" : ''
+     """
+     multiqc \\
+         --force \\
+         $args \\
+         $config \\
++        $prefix \\
+         $extra_config \\
+         $logo \\
++        $replace \\
++        $samples \\
+         .
+
+     cat <<-END_VERSIONS > versions.yml
+@@ -44,7 +52,7 @@
+     stub:
+     """
+     mkdir multiqc_data
+-    touch multiqc_plots
++    mkdir multiqc_plots
+     touch multiqc_report.html
+
+     cat <<-END_VERSIONS > versions.yml
+
+--- modules/nf-core/multiqc/environment.yml
++++ modules/nf-core/multiqc/environment.yml
+@@ -1,7 +1,5 @@
+-name: multiqc
+ channels:
+   - conda-forge
+   - bioconda
+-  - defaults
+ dependencies:
+-  - bioconda::multiqc=1.21
++  - bioconda::multiqc=1.25.1
+
+--- modules/nf-core/multiqc/tests/main.nf.test.snap
++++ modules/nf-core/multiqc/tests/main.nf.test.snap
+@@ -2,14 +2,14 @@
+     "multiqc_versions_single": {
+         "content": [
+             [
+-                "versions.yml:md5,21f35ee29416b9b3073c28733efe4b7d"
++                "versions.yml:md5,41f391dcedce7f93ca188f3a3ffa0916"
+             ]
+         ],
+         "meta": {
+-            "nf-test": "0.8.4",
+-            "nextflow": "23.10.1"
++            "nf-test": "0.9.0",
++            "nextflow": "24.04.4"
+         },
+-        "timestamp": "2024-02-29T08:48:55.657331"
++        "timestamp": "2024-10-02T17:51:46.317523"
+     },
+     "multiqc_stub": {
+         "content": [
+@@ -17,25 +17,25 @@
+                 "multiqc_report.html",
+                 "multiqc_data",
+                 "multiqc_plots",
+-                "versions.yml:md5,21f35ee29416b9b3073c28733efe4b7d"
++                "versions.yml:md5,41f391dcedce7f93ca188f3a3ffa0916"
+             ]
+         ],
+         "meta": {
+-            "nf-test": "0.8.4",
+-            "nextflow": "23.10.1"
++            "nf-test": "0.9.0",
++            "nextflow": "24.04.4"
+         },
+-        "timestamp": "2024-02-29T08:49:49.071937"
++        "timestamp": "2024-10-02T17:52:20.680978"
+     },
+     "multiqc_versions_config": {
+         "content": [
+             [
+-                "versions.yml:md5,21f35ee29416b9b3073c28733efe4b7d"
++                "versions.yml:md5,41f391dcedce7f93ca188f3a3ffa0916"
+             ]
+         ],
+         "meta": {
+-            "nf-test": "0.8.4",
+-            "nextflow": "23.10.1"
++            "nf-test": "0.9.0",
++            "nextflow": "24.04.4"
+         },
+-        "timestamp": "2024-02-29T08:49:25.457567"
++        "timestamp": "2024-10-02T17:52:09.185842"
+     }
+ }
+--- modules/nf-core/multiqc/tests/main.nf.test
++++ modules/nf-core/multiqc/tests/main.nf.test
+@@ -8,6 +8,8 @@
+     tag "modules_nfcore"
+     tag "multiqc"
+
++    config "./nextflow.config"
++
+     test("sarscov2 single-end [fastqc]") {
+
+         when {
+@@ -17,6 +19,8 @@
+                 input[1] = []
+                 input[2] = []
+                 input[3] = []
++                input[4] = []
++                input[5] = []
+                 """
+             }
+         }
+@@ -41,6 +45,8 @@
+                 input[1] = Channel.of(file("https://github.com/nf-core/tools/raw/dev/nf_core/pipeline-template/assets/multiqc_config.yml", checkIfExists: true))
+                 input[2] = []
+                 input[3] = []
++                input[4] = []
++                input[5] = []
+                 """
+             }
+         }
+@@ -66,6 +72,8 @@
+                 input[1] = []
+                 input[2] = []
+                 input[3] = []
++                input[4] = []
++                input[5] = []
+                 """
+             }
+         }
+
+--- /dev/null
++++ modules/nf-core/multiqc/tests/nextflow.config
+@@ -0,0 +1,5 @@
++process {
++    withName: 'MULTIQC' {
++        ext.prefix = null
++    }
++}
 
 ************************************************************

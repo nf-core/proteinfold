@@ -1,5 +1,5 @@
 {
-    "$schema": "http://json-schema.org/draft-07/schema",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
     "$id": "https://raw.githubusercontent.com/nf-core/proteinfold/master/assets/schema_input.json",
     "title": "nf-core/proteinfold pipeline - params.input schema",
     "description": "Schema for the file provided with params.input",
@@ -11,16 +11,23 @@
                 "type": "string",
                 "pattern": "^\\S+$",
                 "errorMessage": "Sequence name must be provided and cannot contain spaces",
+                "meta": ["sequence"]
+            },
+            "id": {
+                "type": "string",
+                "pattern": "^\\S+$",
+                "errorMessage": "Sequence name must be provided and cannot contain spaces",
                 "meta": ["id"]
             },
             "fasta": {
                 "type": "string",
                 "format": "file-path",
                 "exists": true,
-                "pattern": "^\\S+\\.fa(sta)?$",
-                "errorMessage": "Fasta file must be provided, cannot contain spaces and must have extension '.fa' or '.fasta'"
+                "pattern": "^\\S+\\.(fa(sta)?|faa|yaml|yml|json)$",
+                "errorMessage": "Fasta, yaml or json file must be provided, cannot contain spaces and must have extension '.fa', '.faa', '.fasta', '.yaml', '.yml', or '.json'"
             }
         },
-        "required": ["sequence", "fasta"]
+        "required": ["fasta"],
+        "anyOf": [{ "required": ["sequence"] }, { "required": ["id"] }]
     }
 }

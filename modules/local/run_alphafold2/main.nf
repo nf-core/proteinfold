@@ -1,0 +1,124 @@
+/*
+ * Run Alphafold2
+ */
+process RUN_ALPHAFOLD2 {
+    tag   "$meta.id"
+    label 'process_medium'
+    label 'process_gpu'
+
+    container "nf-core/proteinfold_alphafold2_standard:2.0.0"
+
+    input:
+    tuple val(meta), path(fasta)
+    val   db_preset
+    val   alphafold2_model_preset
+    val   uniref30_prefix
+    path ('params/*')
+    path ('bfd/*')
+    path ('small_bfd/*')
+    path ('mgnify/*')
+    path ('pdb70/*')
+    path ('pdb_mmcif/mmcif_files')
+    path ('pdb_mmcif/*')
+    path ('uniref30/*')
+    path ('uniref90/*')
+    path ('pdb_seqres/*')
+    path ('uniprot/*')
+
+    output:
+    path ("raw/**")                                         , emit: raw
+    tuple val(meta), path ("${meta.id}_alphafold2.pdb")     , emit: top_ranked_pdb
+    tuple val(meta), path ("raw/ranked*.pdb")               , emit: pdb
+    tuple val(meta), path ("${meta.id}_plddt.tsv")          , emit: multiqc
+    tuple val(meta), path ("${meta.id}_alphafold2_msa.tsv") , emit: msa
+    // Note: alphafold2_model_preset == "monomer" the pae file won't exist, thus the optional
+    tuple val(meta), path ("${meta.id}_*_pae.tsv")          , optional: true, emit: paes
+    tuple val(meta), path ("${meta.id}_0_pae.tsv")          , optional: true, emit: pae
+    tuple val(meta), path ("${meta.id}_ptm.tsv")            , optional: true, emit: ptms
+    tuple val(meta), path ("${meta.id}_iptm.tsv")           , optional: true, emit: iptms
+    path "versions.yml"                                     , emit: versions
+
+    when:
+    task.ext.when == null || task.ext.when
+
+    script:
+    // Exit if running this module with -profile conda / -profile mamba
+    // Note: --pkls ${fasta.baseName}/*.pkl redundantly processes the features.pkl file. Just providing conceptual reminder of file types for future refactor
+    if (workflow.profile.tokenize(',').intersect(['conda', 'mamba']).size() >= 1) {
+        error("Local RUN_ALPHAFOLD2 module does not support Conda. Please use Docker / Singularity / Podman instead.")
+    }
+    def args = task.ext.args ?: ''
+    def db_preset_cmd = db_preset ? "full_dbs --bfd_database_path=./bfd/bfd_metaclust_clu_complete_id30_c90_final_seq.sorted_opt --uniref30_database_path=./uniref30/${uniref30_prefix}" :
+        "reduced_dbs --small_bfd_database_path=./small_bfd/bfd-first_non_consensus_sequences.fasta"
+    def extra_dbs = ""
+    if (alphafold2_model_preset == 'multimer') {
+        extra_dbs = " --pdb_seqres_database_path=./pdb_seqres/pdb_seqres.txt --uniprot_database_path=./uniprot/uniprot.fasta "
+    } else {
+        extra_dbs = " --pdb70_database_path=./pdb70/pdb70 "
+    }
+    """
+    fix_obsolete.py pdb_mmcif/obsolete.dat > clean_obsolete.dat
+
+    ## Handles multiple versions of mgnify database and selects the latest version
+    mgnify_db_path=\$(ls -v ./mgnify/mgy_clusters*.fa | tail -n 1)
+
+    python3 /app/alphafold/run_alphafold.py \
+        --fasta_paths=${fasta} \
+        --model_preset=${alphafold2_model_preset}${extra_dbs} \
+        --db_preset=${db_preset_cmd} \
+        --output_dir=\$PWD \
+        --data_dir=\$PWD \
+        --uniref90_database_path=./uniref90/uniref90.fasta \
+        --mgnify_database_path=\$mgnify_db_path \
+        --template_mmcif_dir=./pdb_mmcif/mmcif_files \
+        --obsolete_pdbs_path=./clean_obsolete.dat \
+        $args
+
+    cp "${fasta.baseName}"/ranked_0.pdb ./"${meta.id}"_alphafold2.pdb
+
+    extract_metrics.py --name ${meta.id} \\
+        --pkls ${fasta.baseName}/features.pkl ${fasta.baseName}/*.pkl \\
+        --structs ${fasta.baseName}/ranked*.pdb
+
+    mv "${meta.id}_msa.tsv" "${meta.id}_alphafold2_msa.tsv"
+
+    # Can't use fasta.baseName to batch outputs in publishDir
+    mv "${fasta.baseName}" raw/
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        python: \$(python3 --version | sed 's/Python //g')
+        alphafold2: \$(cd /app/alphafold && git rev-parse HEAD 2>/dev/null || echo "unknown")
+        jax: \$(python3 -c "import jax; print(jax.__version__)" 2>/dev/null || echo "unknown")
+        jaxlib: \$(python3 -c "import jaxlib; print(jaxlib.__version__)" 2>/dev/null || echo "unknown")
+        numpy: \$(python3 -c "import numpy; print(numpy.__version__)" 2>/dev/null || echo "unknown")
+        biopython: \$(python3 -c "import Bio; print(Bio.__version__)" 2>/dev/null || echo "unknown")
+    END_VERSIONS
+    """
+
+    stub:
+    """
+    touch "${meta.id}_alphafold2.pdb"
+    touch "${meta.id}_plddt.tsv"
+    touch "${meta.id}_alphafold2_msa.tsv"
+    touch "${meta.id}_0_pae.tsv"
+    touch "${meta.id}_ptm.tsv"
+    touch "${meta.id}_iptm.tsv"
+    mkdir "raw"
+    touch "raw/ranked_0.pdb"
+    touch "raw/ranked_1.pdb"
+    touch "raw/ranked_2.pdb"
+    touch "raw/ranked_3.pdb"
+    touch "raw/ranked_4.pdb"
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        python: \$(python3 --version 2>/dev/null | sed 's/Python //g' || echo "unknown")
+        alphafold2: \$(cd /app/alphafold && git rev-parse HEAD 2>/dev/null || echo "unknown")
+        jax: \$(python3 -c "import jax; print(jax.__version__)" 2>/dev/null || echo "unknown")
+        jaxlib: \$(python3 -c "import jaxlib; print(jaxlib.__version__)" 2>/dev/null || echo "unknown")
+        numpy: \$(python3 -c "import numpy; print(numpy.__version__)" 2>/dev/null || echo "unknown")
+        biopython: \$(python3 -c "import Bio; print(Bio.__version__)" 2>/dev/null || echo "unknown")
+    END_VERSIONS
+    """
+}

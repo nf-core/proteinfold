@@ -1,20 +1,25 @@
 name: nf-core AWS full size tests
-# This workflow is triggered on published releases.
+# This workflow is triggered on PRs opened against the main/master branch.
 # It can be additionally triggered manually with GitHub actions workflow dispatch button.
 # It runs the -profile 'test_full' on AWS batch
 
 on:
+  workflow_dispatch:
+  pull_request_review:
+    types: [submitted]
   release:
     types: [published]
-  workflow_dispatch:
+
 jobs:
   run-platform:
     name: Run AWS full tests
-    if: github.repository == 'nf-core/proteinfold'
+    # run only if the PR is approved by at least 2 reviewers and against the master/main branch or manually triggered
+    if: github.repository == 'nf-core/proteinfold' && github.event.review.state == 'approved' && (github.event.pull_request.base.ref == 'master' || github.event.pull_request.base.ref == 'main') || github.event_name == 'workflow_dispatch' || github.event_name == 'release'
     runs-on: ubuntu-latest
-    # Do a full-scale run on each of the mode
+    # Do a full test on each of the modes
     strategy:
       matrix:
+        compute_env: ["gpu"]
         mode:
           [
             "alphafold2_standard",
@@ -25,27 +30,43 @@ jobs:
             "colabfold_multimer",
             "esmfold",
             "esmfold_multimer",
+            "boltz",
+            "helixfold3",
+            "rosettafold_all_atom",
+            "rosettafold2na",
           ]
     steps:
+      - name: Set revision variable
+        id: revision
+        run: |
+          echo "revision=${{ (github.event_name == 'workflow_dispatch' || github.event_name == 'release') && github.sha || 'dev' }}" >> "$GITHUB_OUTPUT"
+
+      - name: Set compute environment
+        id: compute_env
+        run: |
+          echo "compute_env=${{ matrix.compute_env == 'gpu' && vars.TOWER_COMPUTE_ENV_GPU || vars.TOWER_COMPUTE_ENV }}" >> "$GITHUB_OUTPUT"
+          echo "Mode: ${{ matrix.mode }}"
+          echo "Compute env type: ${{ matrix.compute_env }}"
+
       - name: Launch workflow via Seqera Platform
         uses: seqeralabs/action-tower-launch@v2
         with:
-          workspace_id: ${{ secrets.TOWER_WORKSPACE_ID }}
+          workspace_id: ${{ vars.TOWER_WORKSPACE_ID }}
           access_token: ${{ secrets.TOWER_ACCESS_TOKEN }}
-          compute_env: ${{ secrets.TOWER_COMPUTE_ENV }}
-          revision: ${{ github.sha }}
-          workdir: s3://${{ secrets.AWS_S3_BUCKET }}/work/proteinfold/work-${{ github.sha }}
+          compute_env: ${{ steps.compute_env.outputs.compute_env }}
+          revision: ${{ steps.revision.outputs.revision }}
+          workdir: s3://${{ vars.AWS_S3_BUCKET }}/work/proteinfold/work-${{ steps.revision.outputs.revision }}
           parameters: |
             {
               "hook_url": "${{ secrets.MEGATESTS_ALERTS_SLACK_HOOK_URL }}",
-              "outdir": "s3://${{ secrets.AWS_S3_BUCKET }}/proteinfold/results-${{ github.sha }}/mode_${{ matrix.mode }}"
+              "outdir": "s3://${{ vars.AWS_S3_BUCKET }}/proteinfold/results-${{ steps.revision.outputs.revision }}",
+              "use_gpu": true
             }
           profiles: test_full_${{ matrix.mode }}
 
-      - uses: actions/upload-artifact@v4
-        if: success() || failure()
+      - uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
         with:
-          name: Seqera Platform debug log file
+          name: Seqera Platform debug log file ${{ matrix.mode }}
           path: |
-            seqera_platform_action_*.log
-            seqera_platform_action_*.json
+            tower_action_*.log
+            tower_action_*.json

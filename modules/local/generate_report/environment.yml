@@ -1,0 +1,9 @@
+name: generate_report
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - conda-forge::biopython=1.84
+  - conda-forge::matplotlib=3.9.2
+  - conda-forge::pip=24.2
+  - conda-forge::plotly=5.24.1
