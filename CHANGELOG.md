@@ -3,6 +3,18 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## v2.1.0dev - [date]
+
+### Enhancements & fixes
+
+| Old parameter | New parameter |
+| ------------- | ------------- |
+|               |               |
+
+> **NB:** Parameter has been **updated** if both old and new parameter information is present.
+> **NB:** Parameter has been **added** if just the new parameter information is present.
+> **NB:** Parameter has been **removed** if parameter information is present only for the old parameter.
+
 ## [[2.0.0](https://github.com/nf-core/proteinfold/releases/tag/2.0.0)] - 2026-03-27
 
 ### Enhancements & fixes
