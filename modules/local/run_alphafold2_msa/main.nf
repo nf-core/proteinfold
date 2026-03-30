@@ -8,9 +8,8 @@ process RUN_ALPHAFOLD2_MSA {
     container "nf-core/proteinfold_alphafold2_msa:2.0.0"
 
     input:
-    tuple val(meta), path(fasta)
+    tuple val(meta), path(fasta), val(alphafold2_model_preset)
     val   db_preset
-    val   alphafold2_model_preset
     val   uniref30_prefix
     path ('params/*')
     path ('bfd/*')

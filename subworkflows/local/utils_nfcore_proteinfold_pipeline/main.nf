@@ -108,16 +108,17 @@ ${colors.purple}  nf-core/rnaseq ${workflow.manifest.version}${colors.reset}
         }
 
     if (params.split_fasta) {
-        ch_samplesheet.map { _meta, fasta ->
+        ch_samplesheet = ch_samplesheet.map { meta, fasta ->
             validateFasta(fasta)
+            [meta, fasta]
         }
 
         // Split the fasta file into individual files for each sequence
         ch_samplesheet
-            .map { _meta,fasta -> fasta }
-            .splitFasta( record: [header: true, sequence: true] )
-            .collectFile { item ->
-                [ "${cleanHeader(item["header"])}.fa", ">" + cleanHeader(item["header"]) + '\n' +item["sequence"] ]
+            .map { meta, fasta -> [meta.id, fasta] }
+            .splitFasta( record: [header: true, sequence: true], elem: 1 )
+            .collectFile { sample_id, item ->
+                [ "${cleanHeader(sample_id.toString())}_${cleanHeader(item["header"])}.fa", ">" + cleanHeader(item["header"]) + '\n' +item["sequence"] ]
             }
             .map {
                 file -> [[id: file.baseName], file]
@@ -193,39 +194,22 @@ def validateInputParameters() {
     }
 }
 
-//
-// Get link to Colabfold Alphafold2 parameters
-//
-def getColabfoldAlphafold2Params() {
-    def link = null
-    if (params.colabfold_alphafold2_params_tags) {
-        if (params.colabfold_alphafold2_params_tags.containsKey(params.colabfold_model_preset.toString())) {
-            link = "https://storage.googleapis.com/alphafold/" + params.colabfold_alphafold2_params_tags[ params.colabfold_model_preset.toString() ] + '.tar'
-        }
-    }
-    return link
-}
-
-//
-// Get path to Colabfold Alphafold2 parameters
-//
-def getColabfoldAlphafold2ParamsPath() {
-    def path = null
-    params.colabfold_model_preset.toString()
-    if (params.colabfold_alphafold2_params_tags) {
-        if (params.colabfold_alphafold2_params_tags.containsKey(params.colabfold_model_preset.toString())) {
-            path = "${params.colabfold_db}/params/" + params.colabfold_alphafold2_params_tags[ params.colabfold_model_preset.toString() ]
-        }
-    }
-    return path
-}
-
 def modeChannel(ch, mode) {
     return ch.map { meta, value ->
         def meta_clone = meta.clone()
         meta_clone.model = mode
         [ meta_clone, value ]
     }
+}
+
+def countMolecularEntitiesInFasta(fasta) {
+    return fasta.text
+        .readLines()
+        .count { line -> line.trim().startsWith('>') }
+}
+
+def resolveModelPresetByFastaEntities(fasta, monomerPreset, multimerPreset = 'multimer') {
+    return countMolecularEntitiesInFasta(fasta) > 1 ? multimerPreset : monomerPreset
 }
 
 //
@@ -296,11 +280,13 @@ def cleanHeader(header) {
         .replaceAll("/","_")
         .replaceAll(",", "")
         .replaceAll(";","")
+        .replaceAll("\\|","_")
 }
 
 def validateFasta(fasta) {
+    def lines = fasta.text.readLines()
     // extract headers
-    def headers = fasta.findAll { it -> it.startsWith('>') }
+    def headers = lines.findAll { it -> it.startsWith('>') }
     // if headers are not unique, throw an error
     if (headers.size() != headers.unique().size()) {
         throw new Exception("Invalid FASTA file. The headers are not unique.")

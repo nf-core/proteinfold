@@ -30,11 +30,10 @@ workflow COLABFOLD {
     take:
     ch_samplesheet          // channel: samplesheet read in from --input
     ch_versions            // channel: [ path(versions.yml) ]
-    colabfold_model_preset // string: Specifies the model preset to use for colabfold
     ch_colabfold_params    // channel: path(colabfold_params)
     ch_colabfold_db        // channel: path(colabfold_db)
     ch_uniref30            // channel: path(uniref30)
-    num_recycles           // int: Number of recycles for esmfold
+    num_recycles           // int: Number of recycles for colabfold
 
     main:
     ch_multiqc_report = channel.empty()
@@ -50,9 +49,8 @@ workflow COLABFOLD {
         ch_versions = ch_versions.mix(MULTIFASTA_TO_CSV.out.versions)
 
         COLABFOLD_BATCH(
-            MULTIFASTA_TO_CSV.out.input_csv,
-            colabfold_model_preset,
-            ch_colabfold_params,
+            MULTIFASTA_TO_CSV.out.input_csv
+                .combine(ch_colabfold_params),
             [],
             [],
             num_recycles
@@ -63,7 +61,6 @@ workflow COLABFOLD {
         //
         // MODULE: Run mmseqs
         //
-        //Multimer mode
         MULTIFASTA_TO_CSV(
             ch_samplesheet
         )
@@ -79,9 +76,8 @@ workflow COLABFOLD {
         // MODULE: Run colabfold
         //
         COLABFOLD_BATCH(
-            MMSEQS_COLABFOLDSEARCH.out.a3m,
-            colabfold_model_preset,
-            ch_colabfold_params,
+            MMSEQS_COLABFOLDSEARCH.out.a3m
+                .combine(ch_colabfold_params),
             ch_colabfold_db,
             ch_uniref30,
             num_recycles
