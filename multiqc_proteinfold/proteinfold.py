@@ -22,8 +22,8 @@ class MultiqcModule(BaseMultiqcModule):
         - [HelixFold3](https://github.com/PaddlePaddle/PaddleHelix/tree/dev/apps/protein_folding/helixfold3)
         - [Boltz](https://github.com/jwohlwend/boltz)
 
-    This is intended to provide a summary of useful metrics for mass 'folding' a large set of proteins, either in terms of fishing for mulitmer interactions or comparing methods across whole proteomes.
-    It provides a visual 'at-a-glance' report of relevant metrics (average pLDDT, ipTM, *etc*) and does not replace the per-protein interactive plot from GENEREATE_REPORT in  nfcore/proteinfold
+    This is intended to provide a summary of useful metrics for mass 'folding' a large set of proteins, either in terms of fishing for multimer interactions or comparing methods across whole proteomes.
+    It provides a visual 'at-a-glance' report of relevant metrics (average pLDDT, ipTM, *etc*) and does not replace the per-protein interactive plot from GENERATE_REPORT in  nfcore/proteinfold
     """
 
     def __init__(self):
