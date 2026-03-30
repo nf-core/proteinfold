@@ -1,7 +1,7 @@
 {
     "-profile test_split_fasta": {
         "content": [
-            7,
+            9,
             {
                 "COLABFOLD_BATCH": {
                     "alphafold_colabfold": "unknown",
@@ -15,62 +15,60 @@
                     "colabfold_search": "unknown",
                     "mmseqs": null
                 },
+                "MULTIFASTA_TO_CSV": {
+                    "sed": 4.7
+                },
                 "Workflow": {
                     "nf-core/proteinfold": "v1.2.0dev"
                 }
             },
             [
                 "colabfold",
-                "colabfold/H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_1_127_residues_0_pae.tsv",
-                "colabfold/H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_1_127_residues_colabfold.pdb",
-                "colabfold/H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_1_127_residues_coverage.png",
-                "colabfold/H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_1_127_residues_mqc.png",
-                "colabfold/H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_1_127_residues_relaxed_rank_01.pdb",
-                "colabfold/H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_1_127_residues_relaxed_rank_02.pdb",
-                "colabfold/H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_1_127_residues_relaxed_rank_03.pdb",
-                "colabfold/H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_2_98_residues_0_pae.tsv",
-                "colabfold/H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_2_98_residues_colabfold.pdb",
-                "colabfold/H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_2_98_residues_coverage.png",
-                "colabfold/H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_2_98_residues_mqc.png",
-                "colabfold/H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_2_98_residues_relaxed_rank_01.pdb",
-                "colabfold/H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_2_98_residues_relaxed_rank_02.pdb",
-                "colabfold/H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_2_98_residues_relaxed_rank_03.pdb",
+                "colabfold/H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_1_127_residues",
+                "colabfold/H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_1_127_residues/H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_1_127_residues_colabfold_msa.tsv",
+                "colabfold/H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_1_127_residues/H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_1_127_residues_plddt.tsv",
+                "colabfold/H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_1_127_residues/H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_1_127_residues_ptm.tsv",
+                "colabfold/H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_1_127_residues/paes",
+                "colabfold/H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_1_127_residues/paes/H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_1_127_residues_0_pae.tsv",
+                "colabfold/H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_2_98_residues",
+                "colabfold/H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_2_98_residues/H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_2_98_residues_colabfold_msa.tsv",
+                "colabfold/H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_2_98_residues/H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_2_98_residues_plddt.tsv",
+                "colabfold/H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_2_98_residues/H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_2_98_residues_ptm.tsv",
+                "colabfold/H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_2_98_residues/paes",
+                "colabfold/H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_2_98_residues/paes/H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_2_98_residues_0_pae.tsv",
                 "colabfold/top_ranked_structures",
-                "generate",
-                "generate/test_LDDT.html",
-                "generate/test_alphafold2_report.html",
-                "generate/test_seq_coverage.png",
+                "colabfold/top_ranked_structures/H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_1_127_residues.pdb",
+                "colabfold/top_ranked_structures/H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_2_98_residues.pdb",
+                "multifasta",
+                "multifasta/input.csv",
                 "multiqc",
                 "multiqc/multiqc_data",
                 "multiqc/multiqc_plots",
                 "multiqc/multiqc_report.html",
                 "pipeline_info",
-                "pipeline_info/nf_core_proteinfold_software_mqc_versions.yml"
+                "pipeline_info/nf_core_proteinfold_software_mqc_versions.yml",
+                "reports",
+                "reports/test_alphafold2_report.html"
             ],
             [
+                "H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_1_127_residues_colabfold_msa.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_1_127_residues_plddt.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_1_127_residues_ptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_1_127_residues_0_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_1_127_residues_colabfold.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_1_127_residues_coverage.png:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_1_127_residues_mqc.png:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_1_127_residues_relaxed_rank_01.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_1_127_residues_relaxed_rank_02.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_1_127_residues_relaxed_rank_03.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_2_98_residues_colabfold_msa.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_2_98_residues_plddt.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_2_98_residues_ptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_2_98_residues_0_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_2_98_residues_colabfold.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_2_98_residues_coverage.png:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_2_98_residues_mqc.png:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_2_98_residues_relaxed_rank_01.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_2_98_residues_relaxed_rank_02.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_2_98_residues_relaxed_rank_03.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "test_LDDT.html:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "test_alphafold2_report.html:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "test_seq_coverage.png:md5,d41d8cd98f00b204e9800998ecf8427e"
+                "H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_1_127_residues.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_2_98_residues.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "input.csv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "test_alphafold2_report.html:md5,d41d8cd98f00b204e9800998ecf8427e"
             ]
         ],
         "meta": {
             "nf-test": "0.9.3",
-            "nextflow": "25.10.2"
+            "nextflow": "25.10.4"
         },
-        "timestamp": "2026-01-13T14:40:57.080135"
+        "timestamp": "2026-02-12T11:33:41.854887"
     }
 }

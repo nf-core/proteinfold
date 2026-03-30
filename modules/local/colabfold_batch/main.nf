@@ -14,12 +14,16 @@ process COLABFOLD_BATCH {
     val   numRec
 
     output:
-    tuple val(meta), path ("${meta.id}_colabfold.pdb"), emit: top_ranked_pdb
-    tuple val(meta), path ("*relaxed_rank_*.pdb")     , emit: pdb
-    tuple val(meta), path ("*_coverage.png")          , emit: msa
-    tuple val(meta), path ("*_mqc.png")               , emit: multiqc
-    tuple val(meta), path ("${meta.id}_0_pae.tsv")    , emit: pae
-    path "versions.yml"                               , emit: versions
+    path ("raw/**")                                         , emit: raw
+    tuple val(meta), path ("${meta.id}_colabfold.pdb")      , emit: top_ranked_pdb
+    tuple val(meta), path ("raw/*relaxed_rank_*.pdb")       , emit: pdb
+    tuple val(meta), path ("${meta.id}_colabfold_msa.tsv")  , emit: msa
+    tuple val(meta), path ("${meta.id}_plddt.tsv")          , emit: multiqc
+    tuple val(meta), path ("${meta.id}_*_pae.tsv")          , optional: true, emit: paes
+    tuple val(meta), path ("${meta.id}_0_pae.tsv")          , optional: true, emit: pae
+    tuple val(meta), path ("${meta.id}_ptm.tsv")            , optional: true, emit: ptms
+    tuple val(meta), path ("${meta.id}_iptm.tsv")           , optional: true, emit: iptms
+    path "versions.yml"                                     , emit: versions
 
     when:
     task.ext.when == null || task.ext.when
@@ -37,6 +41,9 @@ process COLABFOLD_BATCH {
     fi
 
     touch params/download_finished.txt
+    touch params/download_complexes_multimer_v3_finished.txt
+    touch params/download_complexes_multimer_v2_finished.txt
+    touch params/download_complexes_multimer_v1_finished.txt
 
     colabfold_batch \\
         $args \\
@@ -44,20 +51,23 @@ process COLABFOLD_BATCH {
         --data \$PWD \\
         --model-type ${colabfold_model_preset} \\
         ${fasta} \\
-        \$PWD
+        raw/
 
-    for i in `find *.png -maxdepth 0`; do cp \$i \${i%'.png'}_mqc.png; done
-    if [ ! -e `find *_relaxed_rank_001_*.pdb` ]; then
-        cp *_relaxed_rank_001*.pdb ${meta.id}_colabfold.pdb
+    if [ ! -e `find raw/*_relaxed_rank_001_*.pdb` ]; then
+        prefix=relaxed
+        cp raw/*_relaxed_rank_001*.pdb ${meta.id}_colabfold.pdb
     else
-        cp *_unrelaxed_rank_001*.pdb ${meta.id}_colabfold.pdb
+        prefix=unrelaxed
+        cp raw/*_unrelaxed_rank_001*.pdb ${meta.id}_colabfold.pdb
     fi
 
-    #Note: only multimer prefix is meta.id
     extract_metrics.py --name ${meta.id} \\
-        --colabfold_pae *_predicted_aligned_error_v1.json
+        --colabfold_metrics_fns raw/*scores_rank*.json \\
+        --structs raw/*_\${prefix}_rank*.pdb \\
+        --paired_a3m raw/${meta.id}.a3m
 
-    mv *_coverage.png ${meta.id}_seq_coverage.png
+    cp raw/*_coverage.png ${meta.id}_seq_coverage.png
+    mv "${meta.id}_msa.tsv" "${meta.id}_colabfold_msa.tsv"
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
@@ -68,14 +78,17 @@ process COLABFOLD_BATCH {
 
     stub:
     """
+    mkdir raw
     touch ./"${meta.id}"_colabfold.pdb
-    touch ./"${meta.id}"_mqc.png
-    touch ./${meta.id}_relaxed_rank_01.pdb
-    touch ./${meta.id}_relaxed_rank_02.pdb
-    touch ./${meta.id}_relaxed_rank_03.pdb
-    touch ./${meta.id}_coverage.png
-    touch ./${meta.id}_scores_rank.json
+    touch ./raw/${meta.id}_relaxed_rank_001_model_1_seed_000.pdb
+    touch ./raw/${meta.id}_relaxed_rank_002_model_2_seed_000.pdb
+    touch ./raw/${meta.id}_relaxed_rank_003_model_3_seed_000.pdb
+    touch ./${meta.id}_seq_coverage.png
+    touch ./raw/${meta.id}_scores_rank.json
     touch ./${meta.id}_0_pae.tsv
+    touch ./${meta.id}_ptm.tsv
+    touch ./${meta.id}_plddt.tsv
+    touch ./${meta.id}_colabfold_msa.tsv
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

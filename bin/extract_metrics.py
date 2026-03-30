@@ -144,9 +144,11 @@ def read_pkl(name, pkl_files):
         if pkl_file.endswith("final_features.pkl"): # HelixFold3 - This one must be first
             write_tsv(f"{name}_msa.tsv", format_msa_rows(data["feat"]["msa"]))
         elif pkl_file.endswith("features.pkl"): # AlphaFold2.3
-            # TODO: AlphaFold2.3 fills end rows with 0s in AlpahFold muliter for an alanine  nf-core/proteinfold Issue #300
-            write_tsv(f"{name}_msa.tsv", format_msa_rows(data["msa"]))
-    # AlphaFold2.3 non-summary, for each pkl. TODO: Need to either read in ranking_debug.json to get the ranking order, or do it later in the workflow.
+            try:
+                N = data["num_alignments"][0] #monomer
+            except:
+                N = data["num_alignments"] #multimer
+            write_tsv(f"{name}_msa.tsv", format_msa_rows(data["msa"][:N]))
         else:
             model_info = os.path.basename(pkl_file).replace("result_", "").replace(".pkl", "")
             #TODO: Make this explicit input
@@ -161,21 +163,21 @@ def read_pkl(name, pkl_files):
             if 'ptm' not in data.keys():
                 print(f"No pTM/iPTM output in {pkl_file}, it was likely a monomer calculation")
             else:
-                #with open(f"{name}_{model_id}_ptm.tsv", 'w') as f:
-                #    f.write(f"{np.round(data['ptm'],3)}\n")
-                #with open(f"{name}_{model_id}_iptm.tsv", 'w') as f:
-                #    f.write(f"{np.round(data['iptm'],3)}\n")
-                ptm_data[f"{model_id}"] = f"{np.round(data['ptm'],3)}\n"
-                iptm_data[f"{model_id}"] = f"{np.round(data.get('iptm',0.),3)}\n"
+                ptm_data[model_id] = f"{np.round(data['ptm'],3)}\n"
+
+            if 'iptm' in data:
+                iptm_data[model_id] = f"{np.round(data['iptm'],3)}\n"
     if ptm_data:
-        ptm_rows = [[k, v.strip()] for k, v in ptm_data.items()]
+        ptm_rows = sorted([[k, v.strip()] for k, v in ptm_data.items()], key=lambda x: x[0])
         write_tsv(f"{name}_ptm.tsv", ptm_rows)
 
     if iptm_data:
-        iptm_rows = [[k, v.strip()] for k, v in iptm_data.items()]
+        iptm_rows = sorted([[k, v.strip()] for k, v in iptm_data.items()], key=lambda x: x[0])
         write_tsv(f"{name}_iptm.tsv", iptm_rows)
 
-
+def read_paired_a3m(name, a3m_file):
+    msa_rows = a3m_to_int(a3m_file)
+    write_tsv(f"{name}_msa.tsv", format_msa_rows(msa_rows))
 
 def read_a3m(name, a3m_files):
     # RosettaFold-All-Atom
@@ -423,20 +425,35 @@ def read_pt(name, pt_files):
                 write_tsv(f"{name}_0_pae.tsv", format_pae_rows(np.squeeze(data["pae"].numpy())))
         break
 
-def read_colabfold_paes(name, colabfold_pae_fn):
-    with open(colabfold_pae_fn) as f:
-        data = json.load(f)
-    pae = data["predicted_aligned_error"]
-    write_tsv(f"{name}_0_pae.tsv", format_pae_rows(pae))
+def read_colabfold_metrics(name, colabfold_metrics_fns):
+    ptm_rows = []
+    iptm_rows = []
+    for fn in colabfold_metrics_fns:
+        with open(fn) as f:
+            data = json.load(f)
+        rank_id = int(fn.split("rank_")[1].split("_")[0])-1
+        model_id = int(fn.split("model_")[1].split("_")[0])
+        seed_id = int(fn.split("seed_")[1].split(".")[0])
+        if "pae" in data:
+            write_tsv(f"{name}_{rank_id}_pae.tsv", format_pae_rows(data["pae"]))
+        if "ptm" in data:
+            ptm_rows.append((f"{rank_id}", data["ptm"]))
+        if "iptm" in data:
+            iptm_rows.append((f"{rank_id}", data["iptm"]))
+    if len(ptm_rows)>0:
+        write_tsv(f"{name}_ptm.tsv", sorted(ptm_rows, key = lambda x: x[0]))
+    if len(iptm_rows)>0:
+        write_tsv(f"{name}_iptm.tsv", sorted(iptm_rows, key = lambda x: x[0]))
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--pkls", dest="pkls", required=False, nargs="+") # For reading both HelixFold3 and AlphaFold2 MSA formats
     parser.add_argument("--npzs", dest="npzs", required=False, nargs="+") # For reading the Boltz-1 PAE formats. TODO: Boltz-1 MSA not implemented (go straight to .a3m file), implement
-    parser.add_argument("--a3ms", dest="a3ms", required=False, nargs="+") # For reading the RosettaFold-All-Atom, ColabFold MSA formats
+    parser.add_argument("--a3ms", dest="a3ms", required=False, nargs="+") # For reading the RosettaFold-All-Atom MSA formats
+    parser.add_argument("--paired_a3m", dest="paired_a3m", required=False) # For reading the ColabFold MSA format
     parser.add_argument("--csvs", dest="csvs", required=False, nargs="+") # For reading boltz csvs
     parser.add_argument("--jsons", dest="jsons", required=False, nargs="+") # For reading the AF3 MSA & PAE, HF3 PAE
-    parser.add_argument("--colabfold_pae_fn", required=False)
+    parser.add_argument("--colabfold_metrics_fns", required=False, nargs="+")
     parser.add_argument("--pts", dest="pts", required=False, nargs="+") # For read RFAA pytorch model to get PAE data
     parser.add_argument("--structs", dest="structs", required=False, nargs="+")
     parser.add_argument("--name", default="untitled", dest="name") # might need a --name $meta.id
@@ -446,6 +463,8 @@ def main():
         read_pkl(args.name, args.pkls)
     if args.a3ms:
         read_a3m(args.name, args.a3ms)
+    if args.paired_a3m:
+        read_paired_a3m(args.name, args.paired_a3m)
     if args.csvs:
         read_csv(args.name, args.csvs)
     if args.npzs:
@@ -456,8 +475,8 @@ def main():
         read_pt(args.name, args.pts)
     if args.structs:
         extract_structs_plddt_to_tsv(args.name, args.structs)
-    if args.colabfold_pae_fn:
-        read_colabfold_paes(args.name, args.colabfold_pae_fn)
+    if args.colabfold_metrics_fns:
+        read_colabfold_metrics(args.name, args.colabfold_metrics_fns)
 
 if __name__ == "__main__":
     main()

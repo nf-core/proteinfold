@@ -16,41 +16,34 @@
             },
             [
                 "esmfold",
-                "esmfold/default",
-                "esmfold/default/T1024_esmfold.pdb",
-                "esmfold/default/T1024_plddt.tsv",
-                "esmfold/default/T1026_esmfold.pdb",
-                "esmfold/default/T1026_plddt.tsv",
-                "esmfold/default/top_ranked_structures",
-                "esmfold/default/top_ranked_structures/T1024.pdb",
-                "esmfold/default/top_ranked_structures/T1026.pdb",
-                "generate",
-                "generate/test_LDDT.html",
-                "generate/test_alphafold2_report.html",
-                "generate/test_seq_coverage.png",
+                "esmfold/T1024",
+                "esmfold/T1024/T1024_plddt.tsv",
+                "esmfold/T1026",
+                "esmfold/T1026/T1026_plddt.tsv",
+                "esmfold/top_ranked_structures",
+                "esmfold/top_ranked_structures/T1024.pdb",
+                "esmfold/top_ranked_structures/T1026.pdb",
                 "multiqc",
                 "multiqc/multiqc_data",
                 "multiqc/multiqc_plots",
                 "multiqc/multiqc_report.html",
                 "pipeline_info",
-                "pipeline_info/nf_core_proteinfold_software_mqc_versions.yml"
+                "pipeline_info/nf_core_proteinfold_software_mqc_versions.yml",
+                "reports",
+                "reports/test_alphafold2_report.html"
             ],
             [
-                "T1024_esmfold.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1024_plddt.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "T1026_esmfold.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1026_plddt.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1024.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1026.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "test_LDDT.html:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "test_alphafold2_report.html:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "test_seq_coverage.png:md5,d41d8cd98f00b204e9800998ecf8427e"
+                "test_alphafold2_report.html:md5,d41d8cd98f00b204e9800998ecf8427e"
             ]
         ],
         "meta": {
             "nf-test": "0.9.3",
-            "nextflow": "25.10.2"
+            "nextflow": "25.10.3"
         },
-        "timestamp": "2026-01-13T14:39:38.718156"
+        "timestamp": "2026-02-12T18:09:13.544553"
     }
 }

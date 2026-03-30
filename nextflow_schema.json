@@ -44,6 +44,11 @@
                     "description": "Run on CPUs (default) or GPUs",
                     "fa_icon": "fas fa-microchip"
                 },
+                "save_intermediates": {
+                    "type": "boolean",
+                    "description": "Keep raw intermediate files",
+                    "fa_icon": "fas fa-microchip"
+                },
                 "split_fasta": {
                     "type": "boolean",
                     "description": "Split input multi-fasta file in separated fasta files each of them containing one sequence to be folded",
@@ -189,7 +194,7 @@
                 },
                 "colabfold_use_templates": {
                     "type": "boolean",
-                    "default": true,
+                    "default": false,
                     "description": "Use PDB templates",
                     "fa_icon": "fas fa-paste"
                 },
@@ -248,6 +253,11 @@
                 "boltz_use_potentials": {
                     "type": "boolean",
                     "description": "run Boltz-2 using inference time potentials"
+                },
+                "boltz_use_kernels": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Use optimized Triton-based CUDA kernels for Boltz inference"
                 },
                 "boltz_model": {
                     "type": "string",

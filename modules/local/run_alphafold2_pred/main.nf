@@ -24,9 +24,9 @@ process RUN_ALPHAFOLD2_PRED {
     path ('uniprot/*')
 
     output:
-    path ("${fasta.baseName}*")
+    path ("raw/**")                                         , emit: raw
     tuple val(meta), path ("${meta.id}_alphafold2.pdb")     , emit: top_ranked_pdb
-    tuple val(meta), path ("${fasta.baseName}/ranked*.pdb") , emit: pdb
+    tuple val(meta), path ("raw/ranked*.pdb")               , emit: pdb
     tuple val(meta), path ("${meta.id}_alphafold2_msa.tsv") , emit: msa
     // TODO: re-label multiqc -> plddt so multiqc channel can take in all metrics
     tuple val(meta), path ("${meta.id}_plddt.tsv")          , emit: multiqc
@@ -62,6 +62,9 @@ process RUN_ALPHAFOLD2_PRED {
 
     mv "${meta.id}_msa.tsv" "${meta.id}_alphafold2_msa.tsv"
 
+    # Can't use fasta.baseName to batch outputs in publishDir
+    mv "${fasta.baseName}" raw/
+
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         python: \$(python3 --version | sed 's/Python //g')
@@ -79,12 +82,12 @@ process RUN_ALPHAFOLD2_PRED {
     touch "${meta.id}_plddt.tsv"
     touch "${meta.id}_alphafold2_msa.tsv"
     touch "${meta.id}_0_pae.tsv"
-    mkdir "${fasta.baseName}"
-    touch "${fasta.baseName}/ranked_0.pdb"
-    touch "${fasta.baseName}/ranked_1.pdb"
-    touch "${fasta.baseName}/ranked_2.pdb"
-    touch "${fasta.baseName}/ranked_3.pdb"
-    touch "${fasta.baseName}/ranked_4.pdb"
+    mkdir "raw/"
+    touch "raw/ranked_0.pdb"
+    touch "raw/ranked_1.pdb"
+    touch "raw/ranked_2.pdb"
+    touch "raw/ranked_3.pdb"
+    touch "raw/ranked_4.pdb"
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

@@ -1,7 +1,7 @@
 {
     "-profile test_colabfold_webserver": {
         "content": [
-            5,
+            7,
             {
                 "COLABFOLD_BATCH": {
                     "alphafold_colabfold": "unknown",
@@ -11,62 +11,60 @@
                     "python": "3.12.7",
                     "generate_report.py": "Python 3.12.7"
                 },
+                "MULTIFASTA_TO_CSV": {
+                    "sed": 4.7
+                },
                 "Workflow": {
                     "nf-core/proteinfold": "v1.2.0dev"
                 }
             },
             [
                 "colabfold",
-                "colabfold/T1024_0_pae.tsv",
-                "colabfold/T1024_colabfold.pdb",
-                "colabfold/T1024_coverage.png",
-                "colabfold/T1024_mqc.png",
-                "colabfold/T1024_relaxed_rank_01.pdb",
-                "colabfold/T1024_relaxed_rank_02.pdb",
-                "colabfold/T1024_relaxed_rank_03.pdb",
-                "colabfold/T1026_0_pae.tsv",
-                "colabfold/T1026_colabfold.pdb",
-                "colabfold/T1026_coverage.png",
-                "colabfold/T1026_mqc.png",
-                "colabfold/T1026_relaxed_rank_01.pdb",
-                "colabfold/T1026_relaxed_rank_02.pdb",
-                "colabfold/T1026_relaxed_rank_03.pdb",
+                "colabfold/T1024",
+                "colabfold/T1024/T1024_colabfold_msa.tsv",
+                "colabfold/T1024/T1024_plddt.tsv",
+                "colabfold/T1024/T1024_ptm.tsv",
+                "colabfold/T1024/paes",
+                "colabfold/T1024/paes/T1024_0_pae.tsv",
+                "colabfold/T1026",
+                "colabfold/T1026/T1026_colabfold_msa.tsv",
+                "colabfold/T1026/T1026_plddt.tsv",
+                "colabfold/T1026/T1026_ptm.tsv",
+                "colabfold/T1026/paes",
+                "colabfold/T1026/paes/T1026_0_pae.tsv",
                 "colabfold/top_ranked_structures",
-                "generate",
-                "generate/test_LDDT.html",
-                "generate/test_alphafold2_report.html",
-                "generate/test_seq_coverage.png",
+                "colabfold/top_ranked_structures/T1024.pdb",
+                "colabfold/top_ranked_structures/T1026.pdb",
+                "multifasta",
+                "multifasta/input.csv",
                 "multiqc",
                 "multiqc/multiqc_data",
                 "multiqc/multiqc_plots",
                 "multiqc/multiqc_report.html",
                 "pipeline_info",
-                "pipeline_info/nf_core_proteinfold_software_mqc_versions.yml"
+                "pipeline_info/nf_core_proteinfold_software_mqc_versions.yml",
+                "reports",
+                "reports/test_alphafold2_report.html"
             ],
             [
+                "T1024_colabfold_msa.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1024_plddt.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1024_ptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1024_0_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "T1024_colabfold.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "T1024_coverage.png:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "T1024_mqc.png:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "T1024_relaxed_rank_01.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "T1024_relaxed_rank_02.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "T1024_relaxed_rank_03.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1026_colabfold_msa.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1026_plddt.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1026_ptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1026_0_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "T1026_colabfold.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "T1026_coverage.png:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "T1026_mqc.png:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "T1026_relaxed_rank_01.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "T1026_relaxed_rank_02.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "T1026_relaxed_rank_03.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "test_LDDT.html:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "test_alphafold2_report.html:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "test_seq_coverage.png:md5,d41d8cd98f00b204e9800998ecf8427e"
+                "T1024.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1026.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "input.csv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "test_alphafold2_report.html:md5,d41d8cd98f00b204e9800998ecf8427e"
             ]
         ],
         "meta": {
             "nf-test": "0.9.3",
-            "nextflow": "25.10.2"
+            "nextflow": "25.10.4"
         },
-        "timestamp": "2026-01-13T14:38:07.818121"
+        "timestamp": "2026-02-12T10:51:03.271168"
     }
 }

@@ -25,9 +25,9 @@ process RUN_ALPHAFOLD2_MSA {
     path ('uniprot/*')
 
     output:
-    path ("${fasta.baseName}*")
-    tuple val(meta), path ("${fasta.baseName}/features.pkl"), emit: features
-    path "versions.yml"                                     , emit: versions
+    path ("raw/**")                           , emit: raw
+    tuple val(meta), path ("raw/features.pkl"), emit: features
+    path "versions.yml"                       , emit: versions
 
     when:
     task.ext.when == null || task.ext.when
@@ -64,6 +64,9 @@ process RUN_ALPHAFOLD2_MSA {
         --obsolete_pdbs_path=./clean_obsolete.dat \
         $args
 
+    # Can't use fasta.baseName to batch outputs in publishDir
+    mv "${fasta.baseName}" raw/
+
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         python: \$(python3 --version | sed 's/Python //g')
@@ -75,8 +78,8 @@ process RUN_ALPHAFOLD2_MSA {
 
     stub:
     """
-    mkdir ./"${fasta.baseName}"
-    touch ./"${fasta.baseName}"/features.pkl
+    mkdir ./raw
+    touch ./raw/features.pkl
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
