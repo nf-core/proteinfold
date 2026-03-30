@@ -214,7 +214,7 @@ class MultiqcModule(BaseMultiqcModule):
         if has_iptm:
             headers["iptm"] = {
                 "title": "Interface accuracy (ipTM)",
-                "description": "Accuracy of the relative positions of two protein subunits from a mulitmer calcuation - from the ipTM (interface predicted Template Modelling) score",
+                "description": "Accuracy of the relative positions of two protein subunits from a multimer calculation - from the ipTM (interface predicted Template Modelling) score",
                 "max": 1,
                 "min": 0,
                 "format": "{:,.2f}",
