@@ -7,7 +7,8 @@ setup(
     author_email='k.rowell@unsw.edu.au',
     description='MultiQC plugin for proteinfold pipeline metric tsv outputs',
     url='https://github.com/nf-core/proteinfold',
-    packages={"multiqc_proteinfold": ["*.yaml"]},
+    packages=["multiqc_proteinfold"],
+    package_data={"multiqc_proteinfold": ["*.yaml"]},
     include_package_data=True,
     entry_points={
         'multiqc.modules.v1': [

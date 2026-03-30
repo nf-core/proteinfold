@@ -154,7 +154,7 @@ class MultiqcModule(BaseMultiqcModule):
         """
         Put protein structure prediction metrics into a general table for all different Deep Learning methods
         """
-        # Check for empy metrics to drop those columns where not appropriate
+        # Check for empty metrics to drop those columns where not appropriate
 
         has_iptm = any(
             sample_data.get("iptm") and sample_data.get("iptm") != 0.0 for sample_data in self.proteinfold_data.values()
