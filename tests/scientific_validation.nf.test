@@ -40,9 +40,8 @@ nextflow_pipeline {
     // ==================== Samplesheet parser ====================
     // Used to match ids to workflow success checks later
     def parseSamplesheet = { String samplesheet_path ->
-        def f = file(samplesheet_path)
-        assert f.exists(): "Samplesheet not found: ${samplesheet_path}"
-        def lines = f.readLines().drop(1)
+        def content = new URL(samplesheet_path).text
+        def lines = content.readLines().drop(1)
         assert lines.size() > 0: "Samplesheet is empty: ${samplesheet_path}"
         lines.collect { it.split(',')[0].trim() }.findAll { it }
     }
@@ -178,7 +177,7 @@ except Exception as e:
 
         // Explicitly capture as final locals - GString interpolation inside
         // nested closures can fail to resolve delegate-scoped variables in nf-test
-        // params.mode captures the routing based on fold_tool so can load the particlar config
+        // params.mode is the existing folding tool routing param
         final def _name    = modeName.toString()
         final def _display = modeDisplay.toString()
         final def _ext     = modeExt.toString()
@@ -191,7 +190,7 @@ except Exception as e:
 
             when {
                 params {
-                    input  = "$projectDir/assets/samplesheet.csv"
+                    input  = "https://raw.githubusercontent.com/nf-core/test-datasets/proteinfold/testdata/samplesheet/v2.0/samplesheet.csv"
                     outdir = "$outputDir"
                     mode = _name
                 }
@@ -347,6 +346,9 @@ except Exception as e:
                 println "  - PAE matrices: ${pae_files.size()} files"
                 println "  - Multiple proteins: ${struct_files.size()} structures, ${plddt_files.size()} metrics"
                 println "═══════════════════════════════════════════════════════════"
+
+                // nf-test requires versions.yml to be explicitly handled
+                assert path("$outputDir/pipeline_info/software_versions.yml").exists()
             }
         }
     }
