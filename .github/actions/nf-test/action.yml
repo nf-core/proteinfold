@@ -29,6 +29,10 @@ runs:
       with:
         python-version: "3.14"
 
+    - name: Install BioPython for proper structure parsing and validation
+      shell: bash
+      run: pip install -r tests/requirements.txt
+
     - name: Install nf-test
       uses: nf-core/setup-nf-test@v1
       with:
