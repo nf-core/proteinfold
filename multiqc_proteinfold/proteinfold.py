@@ -58,34 +58,11 @@ class MultiqcModule(BaseMultiqcModule):
             config.table_sample_merge = {}
 
         # Some codes generated 5 inferences for 5 models and all 25 are processed. If a user sets more they're an expert and can custom handle
-        config.table_sample_merge = {
-            "rank_0": ["_rank_0"],
-            "rank_1": ["_rank_1"],
-            "rank_2": ["_rank_2"],
-            "rank_3": ["_rank_3"],
-            "rank_4": ["_rank_4"],
-            "rank_5": ["_rank_5"],
-            "rank_6": ["_rank_6"],
-            "rank_7": ["_rank_7"],
-            "rank_8": ["_rank_8"],
-            "rank_9": ["_rank_9"],
-            "rank_10": ["_rank_10"],
-            "rank_11": ["_rank_11"],
-            "rank_12": ["_rank_12"],
-            "rank_13": ["_rank_13"],
-            "rank_14": ["_rank_14"],
-            "rank_15": ["_rank_15"],
-            "rank_16": ["_rank_16"],
-            "rank_17": ["_rank_17"],
-            "rank_18": ["_rank_18"],
-            "rank_19": ["_rank_19"],
-            "rank_20": ["_rank_20"],
-            "rank_21": ["_rank_21"],
-            "rank_22": ["_rank_22"],
-            "rank_23": ["_rank_23"],
-            "rank_24": ["_rank_24"],
-        }
-
+        rank_merge = {f"rank_{i}": [f"_rank_{i}"] for i in range(25)}
+        
+        # Load user sample merge config in preference to rank_N default ranking, if user config exists
+        config.table_sample_merge = {**rank_merge, **getattr(config, "table_sample_merge", {})}
+        
         mode_dict = {
             "alphafold2": "AlphaFold2",
             "alphafold3": "AlphaFold3",
@@ -103,7 +80,7 @@ class MultiqcModule(BaseMultiqcModule):
         for f in self.find_log_files("proteinfold"):
             self.add_data_source(f)
 
-            raw_samplename = f["s_name"].split("_")[0]
+            raw_samplename = f["s_name"].split("rank_")[0]
             filepath = Path(f["root"]) / f["fn"]
             mode = "UNKNOWN"
             for parent in filepath.parents:
