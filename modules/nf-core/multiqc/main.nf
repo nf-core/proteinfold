@@ -29,12 +29,17 @@ process MULTIQC {
     def samples = sample_names ? "--sample-names ${sample_names}" : ''
     """
 <<<<<<< HEAD
+<<<<<<< HEAD
     pip install --target "\$PWD/.multiqc_plugins" ${workflow.projectDir}
     PYTHONPATH="\$PWD/.multiqc_plugins" multiqc \\
 =======
     pip install --target "$PWD/.multiqc_plugins" ${workflow.projectDir}
     PYTHONPATH="$PWD/.multiqc_plugins" multiqc \\
 >>>>>>> d98df483 (PYTHONPATH with pip install target)
+=======
+    pip install --target "\$PWD/.multiqc_plugins" ${workflow.projectDir}
+    PYTHONPATH="\$PWD/.multiqc_plugins" multiqc \\
+>>>>>>> ca43a8a0 (docker container doesn't like shell substitution without escape chars)
         --force \\
         ${args} \\
         ${config} \\
