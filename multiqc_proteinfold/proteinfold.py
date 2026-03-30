@@ -81,7 +81,7 @@ class MultiqcModule(BaseMultiqcModule):
             "rank_19": ["_rank_19"],
             "rank_20": ["_rank_20"],
             "rank_21": ["_rank_21"],
-            "ranmodek_22": ["_rank_22"],
+            "rank_22": ["_rank_22"],
             "rank_23": ["_rank_23"],
             "rank_24": ["_rank_24"],
         }
