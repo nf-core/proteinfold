@@ -28,8 +28,13 @@ process MULTIQC {
     def replace = replace_names ? "--replace-names ${replace_names}" : ''
     def samples = sample_names ? "--sample-names ${sample_names}" : ''
     """
+<<<<<<< HEAD
     pip install --target "\$PWD/.multiqc_plugins" ${workflow.projectDir}
     PYTHONPATH="\$PWD/.multiqc_plugins" multiqc \\
+=======
+    pip install --target "$PWD/.multiqc_plugins" ${workflow.projectDir}
+    PYTHONPATH="$PWD/.multiqc_plugins" multiqc \\
+>>>>>>> d98df483 (PYTHONPATH with pip install target)
         --force \\
         ${args} \\
         ${config} \\
