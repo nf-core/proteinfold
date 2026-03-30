@@ -59,10 +59,10 @@ class MultiqcModule(BaseMultiqcModule):
 
         # Some codes generated 5 inferences for 5 models and all 25 are processed. If a user sets more they're an expert and can custom handle
         rank_merge = {f"rank_{i}": [f"_rank_{i}"] for i in range(25)}
-        
+
         # Load user sample merge config in preference to rank_N default ranking, if user config exists
         config.table_sample_merge = {**rank_merge, **getattr(config, "table_sample_merge", {})}
-        
+
         mode_dict = {
             "alphafold2": "AlphaFold2",
             "alphafold3": "AlphaFold3",
