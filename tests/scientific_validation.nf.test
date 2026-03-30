@@ -177,6 +177,15 @@ except Exception as e:
         def modeExt     = mode.ext
         def modeTags    = mode.tags
 
+        // Explicitly capture as final locals - GString interpolation inside
+        // nested closures can fail to resolve delegate-scoped variables in nf-test
+        // Doing this as there's no mode routing param but I want to avoid all lack of base file duplication for each mode
+        final def _profile = modeProfile.toString()
+        final def _name    = modeName.toString()
+        final def _display = modeDisplay.toString()
+        final def _ext     = modeExt.toString()
+        final def _tags    = modeTags.collect { it.toString() }
+
         test("${modeDisplay}: BioPython structure validation") {
             tag "${modeName}"
             modeTags.each { t -> tag t }
