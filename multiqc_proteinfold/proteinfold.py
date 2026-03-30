@@ -113,8 +113,8 @@ class MultiqcModule(BaseMultiqcModule):
 
             mode_samplename = f"{raw_samplename}_{mode}"
             samplename = self.clean_s_name(mode_samplename, f)
-            print(filepath)
-            print(samplename)
+            self.log.debug(filepath)
+            self.log.debug(samplename)
 
             self.proteinfold_data.setdefault(samplename, {})  # Set default creates if doesn't already exist
 
