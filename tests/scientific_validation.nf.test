@@ -19,7 +19,7 @@ nextflow_pipeline {
         [name: 'colabfold', displayName: 'ColabFold', profile: 'test_full_colabfold_local', ext: '.pdb', tags: ['colabfold']],
         [name: 'boltz', displayName: 'Boltz', profile: 'test_full_boltz', ext: '.pdb', tags: ['boltz']],
         [name: 'rosettafold2na', displayName: 'RoseTTAFold2NA', profile: 'test_full_rosettafold2na', ext: '.pdb', tags: ['rosettafold2na']],
-        // I've kept the RF2NA logic the same but didn't run through in the hackathon as I didn't have working DB and weight files.  
+        // I've kept the RF2NA logic the same but didn't run through in the hackathon as I didn't have working DB and weight files.
         [name: 'rosettafold_all_atom', displayName: 'RoseTTAFold-AA', profile: 'test_full_rosettafold_all_atom', ext: '.pdb', tags: ['rosettafold_all_atom', 'rosettafold']],
         [name: 'helixfold3', displayName: 'HelixFold3', profile: 'test_full_helixfold3', ext: '.pdb', tags: ['helixfold3']],
         // Applied PR #561 manually to get HelixFold3 test running on the hackathon_march_2026 branch
@@ -301,7 +301,7 @@ except Exception as e:
                         "Mean pLDDT is ${mean_plddt.round(2)} in ${f.name} - suspiciously low, prediction may have failed silently"
                     println "✓ pLDDT validation passed: ${f.name} (${lines.size() - 1} positions, mean=${mean_plddt.round(1)})"
                 }
-                
+
                 // ===== PAE Validation (if present) =====
                 def pae_files = modeOutputDir.listFiles().findAll { it.isDirectory() }.collect { proteinDir ->
                     def paeDir = new File("${proteinDir}/paes")
