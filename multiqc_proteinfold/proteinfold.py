@@ -1,8 +1,8 @@
 from pathlib import Path
 import pandas as pd
 
-from multiqc.base_module import BaseMultiqcModule, ModuleNoSamplesFound
-from multiqc.plots import bargraph, linegraph
+from multiqc.base_module import BaseMultiqcModule
+from multiqc.plots import linegraph
 from multiqc import config  # I want the ranks to merge by default, not a user problem
 from multiqc.plots.table_object import ColumnDict
 
