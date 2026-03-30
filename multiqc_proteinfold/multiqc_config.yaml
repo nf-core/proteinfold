@@ -2,6 +2,6 @@ sp:
   proteinfold:
     fn: "*_{plddt,msa,ptm,iptm,pae}.tsv"
 
-custom_logo: "/srv/scratch/z3374843/MultiQC/multiqc/logo/SBF_logo.png"
+custom_logo: "path/to/custom/logo.png"
 custom_logo_url: "https://doi.org/10.26190/4KQF-M552"
 custom_logo_title: "Structural Biology Facility - Mark Wainwright Analytical Centre - University of New South Wales"

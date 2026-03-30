@@ -1,8 +1,8 @@
 from pathlib import Path
 import pandas as pd
 
-from multiqc.base_module import BaseMultiqcModule, ModuleNoSamplesFound
-from multiqc.plots import bargraph, linegraph
+from multiqc.base_module import BaseMultiqcModule
+from multiqc.plots import linegraph
 from multiqc import config  # I want the ranks to merge by default, not a user problem
 from multiqc.plots.table_object import ColumnDict
 
@@ -22,8 +22,8 @@ class MultiqcModule(BaseMultiqcModule):
         - [HelixFold3](https://github.com/PaddlePaddle/PaddleHelix/tree/dev/apps/protein_folding/helixfold3)
         - [Boltz](https://github.com/jwohlwend/boltz)
 
-    This is intended to provide a summary of useful metrics for mass 'folding' a large set of proteins, either in terms of fishing for mulitmer interactions or comparing methods across whole proteomes.
-    It provides a visual 'at-a-glance' report of relevant metrics (average pLDDT, ipTM, *etc*) and does not replace the per-protein interactive plot from GENEREATE_REPORT in  nfcore/proteinfold
+    This is intended to provide a summary of useful metrics for mass 'folding' a large set of proteins, either in terms of fishing for multimer interactions or comparing methods across whole proteomes.
+    It provides a visual 'at-a-glance' report of relevant metrics (average pLDDT, ipTM, *etc*) and does not replace the per-protein interactive plot from GENERATE_REPORT in  nfcore/proteinfold
     """
 
     def __init__(self):
@@ -81,7 +81,7 @@ class MultiqcModule(BaseMultiqcModule):
             "rank_19": ["_rank_19"],
             "rank_20": ["_rank_20"],
             "rank_21": ["_rank_21"],
-            "ranmodek_22": ["_rank_22"],
+            "rank_22": ["_rank_22"],
             "rank_23": ["_rank_23"],
             "rank_24": ["_rank_24"],
         }
@@ -113,8 +113,8 @@ class MultiqcModule(BaseMultiqcModule):
 
             mode_samplename = f"{raw_samplename}_{mode}"
             samplename = self.clean_s_name(mode_samplename, f)
-            print(filepath)
-            print(samplename)
+            self.log.debug(filepath)
+            self.log.debug(samplename)
 
             self.proteinfold_data.setdefault(samplename, {})  # Set default creates if doesn't already exist
 
@@ -214,7 +214,7 @@ class MultiqcModule(BaseMultiqcModule):
         if has_iptm:
             headers["iptm"] = {
                 "title": "Interface accuracy (ipTM)",
-                "description": "Accuracy of the relative positions of two protein subunits from a mulitmer calcuation - from the ipTM (interface predicted Template Modelling) score",
+                "description": "Accuracy of the relative positions of two protein subunits from a multimer calculation - from the ipTM (interface predicted Template Modelling) score",
                 "max": 1,
                 "min": 0,
                 "format": "{:,.2f}",
