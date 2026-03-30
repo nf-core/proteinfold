@@ -10,17 +10,18 @@
                     "aria2": null
                 },
                 "COMBINE_UNIPROT": {
-                    "awk": null
+                    "sed": 4.7
                 },
                 "DOWNLOAD_PDBMMCIF": {
-                    "awk": null
+                    "sed": 4.9,
+                    "rsync": "3.3.0"
                 },
                 "GENERATE_REPORT": {
                     "python": "3.12.7",
                     "generate_report.py": "Python 3.12.7"
                 },
                 "RUN_ALPHAFOLD2": {
-                    "python": null,
+                    "python": "unknown",
                     "alphafold2": "unknown",
                     "jax": "unknown",
                     "jaxlib": "unknown",
@@ -28,23 +29,31 @@
                     "biopython": "unknown"
                 },
                 "Workflow": {
-                    "nf-core/proteinfold": "v1.2.0dev"
+                    "nf-core/proteinfold": "v2.1.0dev"
                 }
             },
             [
                 "DBs",
                 "DBs/alphafold2",
-                "DBs/alphafold2/bfd-first_non_consensus_sequences.fasta",
-                "DBs/alphafold2/mgy_clusters.fa",
-                "DBs/alphafold2/mmcif_files",
+                "DBs/alphafold2/mgnify",
+                "DBs/alphafold2/mgnify/mgy_clusters.fa",
                 "DBs/alphafold2/params",
+                "DBs/alphafold2/params/alphafold_params_2022-12-06",
                 "DBs/alphafold2/pdb70",
-                "DBs/alphafold2/pdb_seqres.txt",
-                "DBs/alphafold2/uniprot.fasta",
+                "DBs/alphafold2/pdb_mmcif",
+                "DBs/alphafold2/pdb_mmcif/mmcif_files",
+                "DBs/alphafold2/pdb_mmcif/obsolete.dat",
+                "DBs/alphafold2/pdb_seqres",
+                "DBs/alphafold2/pdb_seqres/pdb_seqres.txt",
+                "DBs/alphafold2/small_bfd",
+                "DBs/alphafold2/small_bfd/bfd-first_non_consensus_sequences.fasta",
+                "DBs/alphafold2/uniprot",
+                "DBs/alphafold2/uniprot/uniprot.fasta",
                 "DBs/alphafold2/uniprot_sprot.fasta",
                 "DBs/alphafold2/uniprot_trembl.fasta",
                 "DBs/alphafold2/uniref30",
-                "DBs/alphafold2/uniref90.fasta",
+                "DBs/alphafold2/uniref90",
+                "DBs/alphafold2/uniref90/uniref90.fasta",
                 "alphafold2",
                 "alphafold2/standard",
                 "alphafold2/standard/T1024",
@@ -74,18 +83,19 @@
                 "reports/test_alphafold2_report.html"
             ],
             [
-                "bfd-first_non_consensus_sequences.fasta:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "mgy_clusters.fa:md5,d41d8cd98f00b204e9800998ecf8427e",
+                [
+                    "file.txt:md5,d41d8cd98f00b204e9800998ecf8427e"
+                ],
+                [
+                    "file.txt:md5,d41d8cd98f00b204e9800998ecf8427e"
+                ],
                 [
                     
                 ],
-                [
-                    "file.txt:md5,d41d8cd98f00b204e9800998ecf8427e"
-                ],
-                [
-                    "file.txt:md5,d41d8cd98f00b204e9800998ecf8427e"
-                ],
+                "obsolete.dat:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "pdb_seqres.txt:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "bfd-first_non_consensus_sequences.fasta:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "uniprot.fasta:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "uniprot_sprot.fasta:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "uniprot_trembl.fasta:md5,d41d8cd98f00b204e9800998ecf8427e",
@@ -113,6 +123,6 @@
             "nf-test": "0.9.3",
             "nextflow": "25.10.4"
         },
-        "timestamp": "2026-02-12T10:46:14.365206"
+        "timestamp": "2026-03-27T08:42:46.521360256"
     }
 }

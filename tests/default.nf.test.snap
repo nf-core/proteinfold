@@ -7,7 +7,7 @@
                     "generate_report.py": "Python 3.12.7"
                 },
                 "RUN_ALPHAFOLD2": {
-                    "python": null,
+                    "python": "unknown",
                     "alphafold2": "unknown",
                     "jax": "unknown",
                     "jaxlib": "unknown",
@@ -15,7 +15,7 @@
                     "biopython": "unknown"
                 },
                 "Workflow": {
-                    "nf-core/proteinfold": "v1.2.0dev"
+                    "nf-core/proteinfold": "v2.1.0dev"
                 }
             },
             [
@@ -68,6 +68,6 @@
             "nf-test": "0.9.3",
             "nextflow": "25.10.4"
         },
-        "timestamp": "2026-02-12T10:52:01.757925"
+        "timestamp": "2026-03-27T08:35:24.77961009"
     }
 }

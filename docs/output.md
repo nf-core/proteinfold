@@ -2,231 +2,173 @@
 
 ## Introduction
 
-This document describes the output produced by the pipeline.
-
-Most of the plots are taken from the MultiQC report, which summarises results at the end of the pipeline.
+This document describes the user-facing output produced by the pipeline.
 
 ## Pipeline overview
 
 The pipeline is built using [Nextflow](https://www.nextflow.io/) and predicts protein structures using the following methods:
 
-- [AlphaFold2](https://github.com/deepmind/alphafold)
-- [ColabFold](https://github.com/sokrypton/ColabFold) - MMseqs2 (API server or local search) followed by ColabFold
+- [AlphaFold2](https://github.com/google-deepmind/alphafold)
+- [AlphaFold3](https://github.com/google-deepmind/alphafold3)
+- [Boltz](https://github.com/jwohlwend/boltz)
+- [ColabFold](https://github.com/sokrypton/ColabFold)
 - [ESMFold](https://github.com/facebookresearch/esm)
+- [RoseTTAFold2NA](https://github.com/uw-ipd/RoseTTAFold2NA)
 - [RoseTTAFold-All-Atom](https://github.com/baker-laboratory/RoseTTAFold-All-Atom/)
 - [HelixFold3](https://github.com/PaddlePaddle/PaddleHelix/tree/dev/apps/protein_folding/helixfold3)
-- [RosettaFold2NA](https://github.com/uw-ipd/RoseTTAFold2NA)
 
 See main [README.md](https://github.com/nf-core/proteinfold/blob/master/README.md) for a condensed overview of the steps in the pipeline, and the bioinformatics tools used at each step.
 
 The directories listed below will be created in the output directory after the pipeline has finished. All paths are relative to the top-level results directory.
 
-### AlphaFold2
+Exact subdirectories depend on the selected mode(s). In a multi-mode run (for example `alphafold2,boltz,rosettafold_all_atom`) you will typically see top-level directories such as `alphafold2/`, `boltz/`, `rosettafold_all_atom/`, `multiqc/`, `reports/`, `compare/`, and `pipeline_info/`.
+
+### Prediction outputs (all modes)
+
+User-facing outputs are largely consistent across modes.
+
+<details markdown="1">
+<summary>Common output patterns</summary>
+
+- `<MODE>/top_ranked_structures/<SEQUENCE NAME>.pdb`
+- `<MODE>/<SEQUENCE NAME>/<SEQUENCE NAME>_plddt.tsv`
+- `<MODE>/<SEQUENCE NAME>/paes/<SEQUENCE NAME>_<RANK>_pae.tsv` (when available)
+- `<MODE>/<SEQUENCE NAME>/<SEQUENCE NAME>_<MODE>_msa.tsv` (mode-specific MSA summary)
+- `<MODE>/<SEQUENCE NAME>/<SEQUENCE NAME>_{ptm,iptm}.tsv` and chainwise summaries (where applicable)
+
+</details>
+
+### pLDDT (`{meta.id}_plddt.tsv`)
+
+Confidence values per residue, rounded to 2 decimal places. Each ranked result gets its own column (for all-atom modules, atomic token confidences are processed to a naive mean value across the residue).
+
+```
+Positions	rank_0	rank_1	rank_2	rank_3	rank_4
+0	83.58	85.27	88.41	86.22	84.91
+1	97.99	97.81	97.39	97.49	97.32
+2	98.22	98.42	98.16	97.88	97.81
+3	98.06	98.15	97.94	97.56	97.4
+4	98.67	98.56	98.3	98.38	98.29
+5	98.81	98.77	98.62	98.61	98.54
+6	98.79	98.74	98.57	98.59	98.52
+...
+```
+
+### MSA (`{meta.id}_{meta.mode}_msa.tsv`)
+
+The amino acid characters are converted to integers `0-19`, unknown as 20, **integer `21`** represents the gap character.
+
+```
+19	5	5	4	10	16	15	3	8	15	13	16	12	9	17	16	9	4	8	11	0	7	7	8	11	0	19	8	8	5	3
+19	5	5	4	10	16	15	3	8	15	13	16	12	9	17	16	9	4	8	11	0	7	7	8	11	0	6	8	8	5	13
+19	5	5	4	10	5	15	13	14	0	14	16	12	9	17	16	9	4	14	11	0	7	5	8	15	4	5	8	3	5	21
+19	5	5	4	10	16	15	3	8	15	13	16	12	9	17	16	9	4	8	11	0	7	7	8	11	0	19	8	8	5	21
+19	5	5	4	10	16	15	3	8	15	13	16	12	9	17	16	9	4	8	11	0	7	7	8	11	0	19	8	8	5	13
+19	5	5	4	10	16	15	3	8	15	13	16	12	9	7	16	9	4	8	11	0	7	7	8	11	0	6	8	8	5	13
+```
+
+This allows easy sequence indentity calculation when processing as a `numpy` array.
+
+### (i)pTM (`{meta.id}_[i]ptm.tsv`)
+
+(i)pTM scores, rounded to 3 decimal places, listed by the rank number (currently unsorted - to reflect models and seeds where appropriate).
+
+```
+17  0.552
+22  0.529
+21  0.532
+20  0.541
+23  0.523
+3 0.606
+2 0.610
+4 0.606
+1 0.616
+0 0.617
+12  0.580
+9 0.588
+13  0.580
+11  0.583
+14  0.570
+15  0.565
+24  0.517
+16  0.560
+18  0.550
+19  0.550
+10  0.588
+5 0.600
+6 0.597
+7 0.596
+8 0.595
+```
+
+### chain-wise (i)pTM (`{meta.id}_chainwise_[i]ptm.tsv`)
+
+(Asymmetrical) ipTM scores, rounded to 4 decimal places, with chain pair lettering as the row (`X:Y`), and the rank number as the column. A pTM value is a chain's own predicted Template Modelling score so lettering will be `X:X`.
+
+```
+0	1	2
+A:B	0.2880	0.2750	0.2900
+B:A	0.2904	0.2801	0.2915
+```
+
+### PAE (`{meta.id}_{rank_number}_pae.tsv`)
+
+Predicted alignment error of residues `j` aligned by residue `i`, rounded to 4 decimal places.
+The row number gives you the index of residue `i` and the column value within the row gives the index of residue `j` for the 2D PAE matrix.
+
+Each model prediction generates a separate file containing the rank number. The `_0_pae.tsv` file corresponds to the top ranked model, other ranked results are stored within the `paes/` folder.
+
+```
+0.2500	1.5710	3.9037	6.2177	8.4471	11.4583	12.9679	15.1237	18.0263	18.3868	18.9381	20.5747	19.3314	20.1825	21.6145	23.2190
+2.2177	0.2500	1.5559	4.0327	6.3151	7.6372	10.1969	11.3626	14.9366	16.1303	17.9119	19.1877	21.2715	20.9531	20.1760	19.4087
+3.4270	1.5284	0.2500	2.1333	3.5351	5.1049	6.6521	8.2317	12.1379	13.7185	14.9523	16.6154	19.6988	21.7614	18.6592	17.9619
+6.1051	5.4206	2.5987	0.2500	2.0724	5.1454	6.7492	9.5538	9.6285	12.3868	13.8527	16.3586	17.2605	20.6381	19.9987	19.3295
+7.3512	6.4947	5.5435	2.6740	0.2500	1.7561	4.9041	6.3923	8.9735	8.9272	12.3419	14.6005	15.9820	17.6358	20.5190	19.1028
+7.4734	7.0899	5.8128	5.7512	2.0439	0.2500	1.8352	5.1064	6.4225	9.2098	10.5136	12.9404	14.3152	16.8122	18.6336	17.7382
+```
+
+#### Example report plots
+
+The report exports include key visualisations such as sequence coverage, predicted Local Distance Difference Test (pLDDT), and Predicted Aligned Error (PAE).
+
+##### Sequence coverage
+
+![Sequence coverage](images/sequence_coverage_proteinfold-v2.png?raw=true "Example sequence coverage plot")
+
+##### predicted Local Distance Difference Test (pLDDT)
+
+![pLDDT](images/plddt_proteinfold-v2.png?raw=true "Example pLDDT plot")
+
+##### Predicted Aligned Error (PAE)
+
+![PAE](images/pae_proteinfold-v2.png?raw=true "Example PAE plot")
+
+### Per-mode reports and comparisons
 
 <details markdown="1">
 <summary>Output files</summary>
 
-- `alphafold2/standard/` or `alphafold2/split_msa_prediction/` based on the selected mode. It contains the computed MSAs, unrelaxed structures, relaxed structures, ranked structures, raw model outputs, prediction metadata, and section timings. Specifically, `<SEQUENCE NAME>_plddt.tsv` presents the pLDDT scores per residue for each of the 5 predicted models.
-  - `top_ranked_structures/<SEQUENCE NAME>.pdb` that is the structure with the highest pLDDT score per input (ranked first)
-- `DBs/` that contains symbolic links to the downloaded database and parameter files
+- `reports/`
+  - `<SEQUENCE NAME>_<MODE>_report.html` (single-mode report per sequence/mode)
+- `compare/`
+  - `<SEQUENCE NAME>_comparison_report.html` (present when running multiple modes)
 
 </details>
 
-Below you can find an indicative example of the TSV file with the pLDDT scores per residue for each of the 5 predicted models produced by AlphaFold2, which is included in the MultiQC report:
+### Foldseek structural similarity search
 
-| Positions | rank_0 | rank_1 | rank_2 | rank_3 | rank_4 |
-| --------- | ------ | ------ | ------ | ------ | ------ |
-| 1         | 66.17  | 60.61  | 60.32  | 64.20  | 65.31  |
-| 2         | 78.01  | 74.20  | 73.11  | 77.36  | 78.46  |
-| 3         | 82.16  | 78.16  | 76.70  | 80.20  | 80.68  |
-| 4         | 86.03  | 82.78  | 81.88  | 82.19  | 83.93  |
-| 5         | 88.08  | 84.38  | 84.73  | 85.58  | 87.70  |
-| 6         | 89.37  | 86.06  | 86.31  | 86.84  | 88.52  |
-| 7         | 91.27  | 88.27  | 88.09  | 87.01  | 88.67  |
-| 8         | 91.28  | 89.42  | 90.17  | 87.47  | 90.07  |
-| 9         | 93.10  | 90.09  | 92.86  | 90.70  | 93.41  |
-| 10        | 93.23  | 91.42  | 93.07  | 90.13  | 92.91  |
-| 11        | 94.12  | 92.44  | 93.00  | 89.90  | 92.97  |
-| 12        | 95.15  | 93.63  | 94.25  | 92.66  | 94.38  |
-| 13        | 95.09  | 93.75  | 94.36  | 92.54  | 94.95  |
-| 14        | 94.08  | 92.72  | 93.43  | 90.31  | 93.63  |
-| 15        | 94.34  | 93.77  | 93.31  | 91.72  | 93.57  |
-| 16        | 95.56  | 94.62  | 94.46  | 93.55  | 95.20  |
-| 17        | 95.54  | 94.75  | 94.65  | 93.61  | 95.37  |
-| 18        | 93.91  | 93.89  | 93.30  | 91.33  | 92.95  |
-| 19        | 95.48  | 95.78  | 94.48  | 93.95  | 95.05  |
-| 20        | 95.96  | 95.46  | 95.14  | 94.01  | 95.83  |
-| 21        | 94.06  | 94.06  | 93.13  | 91.69  | 93.54  |
-| 22        | 92.98  | 93.28  | 91.14  | 88.80  | 91.25  |
-| 23        | 95.28  | 95.13  | 93.39  | 91.48  | 93.56  |
-| 24        | 93.41  | 93.38  | 92.32  | 89.85  | 92.40  |
-| 25        | 90.88  | 91.40  | 88.60  | 85.67  | 87.65  |
-| 26        | 89.30  | 88.90  | 84.58  | 83.11  | 84.52  |
-| 27        | 91.96  | 90.95  | 89.04  | 86.42  | 87.77  |
-| 28        | 91.20  | 90.68  | 88.71  | 86.43  | 87.62  |
-| 29        | 88.01  | 87.53  | 85.83  | 83.11  | 84.95  |
-| 30        | 81.29  | 83.72  | 77.75  | 75.76  | 74.84  |
-| 31        | 87.14  | 86.92  | 82.10  | 82.32  | 78.74  |
-| 32        | 92.34  | 90.13  | 89.04  | 88.31  | 86.49  |
-| 33        | 91.70  | 88.94  | 85.52  | 85.94  | 81.75  |
-| 34        | 90.11  | 88.23  | 84.33  | 85.47  | 80.01  |
-| 35        | 93.35  | 91.49  | 90.60  | 89.40  | 87.10  |
-| 36        | 94.15  | 92.47  | 90.17  | 90.48  | 86.77  |
-| 37        | 93.40  | 92.01  | 86.38  | 87.84  | 80.11  |
-| 38        | 92.79  | 89.97  | 89.31  | 88.55  | 85.15  |
-| 39        | 94.66  | 91.29  | 92.74  | 90.67  | 90.30  |
-| 40        | 95.98  | 93.58  | 94.30  | 91.69  | 90.73  |
-| 41        | 94.94  | 92.57  | 88.31  | 88.40  | 80.33  |
-| 42        | 92.89  | 91.03  | 84.03  | 85.31  | 74.66  |
-| 43        | 94.54  | 93.44  | 86.50  | 84.91  | 76.68  |
-| 44        | 96.93  | 95.23  | 92.42  | 91.98  | 86.11  |
-| 45        | 94.40  | 92.27  | 87.40  | 89.02  | 79.44  |
-| 46        | 91.74  | 90.94  | 81.35  | 84.88  | 74.93  |
-| 47        | 96.19  | 94.46  | 90.51  | 89.82  | 84.51  |
-| 48        | 94.84  | 93.04  | 91.02  | 91.57  | 87.72  |
-| 49        | 91.23  | 89.34  | 86.10  | 87.63  | 82.12  |
-| 50        | 91.64  | 89.58  | 84.93  | 85.88  | 79.38  |
-
-### ColabFold
+If Foldseek is enabled (`--skip_foldseek false`), results are written to:
 
 <details markdown="1">
 <summary>Output files</summary>
 
-- `colabfold/webserver/` or `colabfold/local/` based on the selected mode. It contains the computed MSAs, unrelaxed structures, relaxed structures, ranked structures, raw model outputs, prediction metadata, and section timings. Specifically, `<SEQUENCE NAME>_plddt.tsv` presents the pLDDT scores per residue for each of the 5 predicted models.
-  - `top_ranked_structures/<SEQUENCE NAME>.pdb` that is the structure with the highest pLDDT score per input (ranked first)
-- `DBs/` that contains symbolic links to the downloaded database and parameter files
+- `foldseek_easysearch/`
+  - `<SEQUENCE NAME>_<MODE>_foldseek.html` (default output format)
+  - `<SEQUENCE NAME>.m8` (tabular output when `--foldseek_easysearch_arg` does not include `--format-mode 3`)
 
 </details>
 
-Below you can find some indicative examples of the output images produced by ColabFold, which are included in the MultiQC report:
-
-#### Sequence coverage
-
-![Alt text](../docs/images/T1024_LmrP____408_residues__coverage_mqc.png?raw=true "T1024_coverage")
-
-#### predicted Local Distance Difference Test (pLDDT)
-
-![Alt text](../docs/images/T1024_LmrP____408_residues__plddt_mqc.png?raw=true "T1024_coverage")
-
-#### Predicted Aligned Error (PAE)
-
-![Alt text](../docs/images/T1024_LmrP____408_residues__PAE_mqc.png?raw=true "T1024_coverage")
-
-### ESMFold
-
-<details markdown="1">
-<summary>Output files</summary>
-
-- `esmfold/default`
-  contains the predicted structures. Specifically, `<SEQUENCE NAME>_plddt.tsv` presents the pLDDT scores per residue for each of the predicted models.
-  - `top_ranked_structures/<SEQUENCE NAME>.pdb` that is the structure with the highest pLDDT score per input (ranked first)
-- `DBs/` that contains symbolic links to the downloaded database and parameter files
-
-</details>
-
-Below you can find an indicative example of the TSV file with the pLDDT scores per atom for predicted model produced by ESMFold, which is included in the MultiQC report:
-
-| Atom_serial_number | Atom_name | Residue_name | Residue_sequence_number | pLDDT |
-| ------------------ | --------- | ------------ | ----------------------- | ----- |
-| 1                  | N         | VAL          | 1                       | 44.77 |
-| 2                  | CA        | VAL          | 1                       | 47.23 |
-| 3                  | C         | VAL          | 1                       | 46.66 |
-| 4                  | CB        | VAL          | 1                       | 41.88 |
-| 5                  | O         | VAL          | 1                       | 45.75 |
-| 6                  | CG1       | VAL          | 1                       | 39.15 |
-| 7                  | CG2       | VAL          | 1                       | 39.59 |
-| 8                  | N         | THR          | 2                       | 49.89 |
-| 9                  | CA        | THR          | 2                       | 51.41 |
-| 10                 | C         | THR          | 2                       | 50.21 |
-| 11                 | CB        | THR          | 2                       | 43.84 |
-| 12                 | O         | THR          | 2                       | 47.36 |
-| 13                 | CG2       | THR          | 2                       | 35.32 |
-| 14                 | OG1       | THR          | 2                       | 40.12 |
-| 15                 | N         | VAL          | 3                       | 51.40 |
-| 16                 | CA        | VAL          | 3                       | 54.38 |
-| 17                 | C         | VAL          | 3                       | 52.10 |
-| 18                 | CB        | VAL          | 3                       | 48.50 |
-| 19                 | O         | VAL          | 3                       | 52.58 |
-| 20                 | CG1       | VAL          | 3                       | 38.75 |
-| 21                 | CG2       | VAL          | 3                       | 39.26 |
-| 22                 | N         | ASP          | 4                       | 52.00 |
-| 23                 | CA        | ASP          | 4                       | 53.92 |
-| 24                 | C         | ASP          | 4                       | 52.33 |
-| 25                 | CB        | ASP          | 4                       | 46.82 |
-| 26                 | O         | ASP          | 4                       | 51.28 |
-| 27                 | CG        | ASP          | 4                       | 42.89 |
-| 28                 | OD1       | ASP          | 4                       | 45.89 |
-| 29                 | OD2       | ASP          | 4                       | 53.61 |
-| 30                 | N         | ASP          | 5                       | 56.10 |
-| 31                 | CA        | ASP          | 5                       | 56.97 |
-| 32                 | C         | ASP          | 5                       | 55.75 |
-| 33                 | CB        | ASP          | 5                       | 50.34 |
-| 34                 | O         | ASP          | 5                       | 54.18 |
-| 35                 | CG        | ASP          | 5                       | 45.82 |
-| 36                 | OD1       | ASP          | 5                       | 50.03 |
-| 37                 | OD2       | ASP          | 5                       | 58.01 |
-| 38                 | N         | LEU          | 6                       | 56.50 |
-| 39                 | CA        | LEU          | 6                       | 58.34 |
-| 40                 | C         | LEU          | 6                       | 55.81 |
-| 41                 | CB        | LEU          | 6                       | 52.46 |
-| 42                 | O         | LEU          | 6                       | 54.42 |
-| 43                 | CG        | LEU          | 6                       | 49.17 |
-| 44                 | CD1       | LEU          | 6                       | 44.31 |
-| 45                 | CD2       | LEU          | 6                       | 47.07 |
-| 46                 | N         | VAL          | 7                       | 57.23 |
-| 47                 | CA        | VAL          | 7                       | 57.68 |
-| 48                 | C         | VAL          | 7                       | 57.39 |
-| 49                 | CB        | VAL          | 7                       | 52.74 |
-| 50                 | O         | VAL          | 7                       | 56.46 |
-
-### RoseTTAFold-All-Atom
-
-<details markdown="1">
-<summary>Output files</summary>
-
-- `run/`
-  - `<SEQUENCE NAME>_rosettafold_all_atom.pdb` that is the structure with the highest pLDDT score (ranked first)
-  - `<SEQUENCE NAME>_plddt.tsv` that presents the pLDDT scores per residue for the predicted model
-  - `<SEQUENCE NAME>_aux.pt` pytorch file with confidence metrics stored (can load with torch.load(file, map_location="cpu"))
-  - `<SEQUENCE NAME>/` that contains the computed MSAs, prediction metadata
-
-</details>
-
-### HelixFold3
-
-<details markdown="1">
-<summary>Output files</summary>
-
-- `run/`
-  - `<SEQUENCE NAME>_helixfold3.pdb` that is the structure with the highest pLDDT score (ranked first)
-  - `<SEQUENCE NAME>_plddt.tsv` that presents the pLDDT scores per residue for the predicted model
-  - `<SEQUENCE NAME>/` that contains the computed MSAs, prediction metadata, ranked structures, raw model outputs etc.
-
-</details>
-
-### RosettaFold2NA
-
-<details markdown="1">
-<summary>Output files</summary>
-
-- `rosettafold2na/`
-  - `models/`: Directory containing the model outputs
-    - `model_00.pdb`: The predicted structure with estimated per-residue LDDT in the B-factor column
-    - `model_00.npz`: A numpy file containing predicted distogram, per-residue LDDT, and predicted aligned error
-  - Computed MSAs, prediction metadata, and other output files
-
-</details>
-
-RosettaFold2NA produces the following key outputs:
-
-1. A PDB file (`model_00.pdb`) with the predicted structure. The B-factor column contains the estimated per-residue LDDT (Local Distance Difference Test) scores, indicating the confidence of the model for each residue.
-
-2. A numpy file (`model_00.npz`) containing three tables:
-   - `dist` (L x L x 37): The predicted distogram
-   - `lddt` (L): The per-residue predicted LDDT
-   - `pae` (L x L): The predicted aligned error for each residue pair
-
-   Where L is the length of the complex.
+Foldseek runs on top-ranked structures from each selected mode and sequence. By default, the pipeline uses `--format-mode 3` and publishes HTML reports.
 
 ### MultiQC report
 
@@ -234,17 +176,14 @@ RosettaFold2NA produces the following key outputs:
 <summary>Output files</summary>
 
 - `multiqc`
-  - `<MODE>_multiqc_report.html`: A standalone HTML file that can be viewed in your web browser.
-  - `<MODE>_multiqc_data/`: Directory containing parsed statistics from the different tools used in the pipeline.
-  - `<MODE>_multiqc_plots/`: Directory containing static images from the report in various formats.
+  - `*_multiqc_report.html`: Standalone HTML report(s) that can be viewed in your web browser.
+  - `*_multiqc_report_data/`: Parsed report data for each corresponding MultiQC report.
 
 </details>
 
-[MultiQC](https://multiqc.info/docs/) is a visualisation tool that generates a single HTML report summarising all samples in your project. Most of the pipeline QC results are visualised in the report and further statistics are available within the report data directory.
+[MultiQC](https://multiqc.info/docs/) is a visualisation tool that generates HTML report(s) summarising samples in your project. Most QC results are visualised in the report and further statistics are available within each corresponding `*_multiqc_report_data/` directory.
 
-Results generated by MultiQC collate pipeline QC from AlphaFold2 or ColabFold.
-
-Results generated by MultiQC collate pipeline QC from supported tools e.g. FastQC. The pipeline has special steps which also allow the software versions to be reported in the MultiQC output for future traceability. For more information about how to use MultiQC reports, see <http://multiqc.info>.
+Results generated by MultiQC collate QC metrics from the selected structure-prediction mode(s), and the software versions for traceability. For more information about how to use MultiQC reports, see <http://multiqc.info>.
 
 ### Pipeline information
 
@@ -260,3 +199,36 @@ Results generated by MultiQC collate pipeline QC from supported tools e.g. FastQ
 </details>
 
 [Nextflow](https://www.nextflow.io/docs/latest/tracing.html) provides excellent functionality for generating various reports relevant to the running and execution of the pipeline. This will allow you to troubleshoot errors with the running of the pipeline, and also provide you with other information such as launch commands, run times and resource usage.
+
+### Additional intermediate outputs
+
+Depending on the selected mode(s) and options, additional top-level directories may be present, for example:
+
+- `fasta2yaml/` (for YAML conversion inputs/outputs)
+- `mmseqs/results/` (for MMseqs2 outputs such as `.a3m` files)
+- `split/output_msa/` (for split-MSA intermediate CSV outputs)
+
+### `--save_intermediates`
+
+If `--save_intermediates` is enabled, extra raw intermediate files are published in mode-specific `raw/` directories.
+
+Examples include:
+
+- `alphafold2/<MODE>/<SEQUENCE NAME>/raw/`
+- `colabfold/<SEQUENCE NAME>/raw/`
+- `boltz/<SEQUENCE NAME>/boltz_results_*/`
+- `rosettafold_all_atom/<SEQUENCE NAME>/raw/`
+- `alphafold3/<SEQUENCE NAME>/raw/`
+- `helixfold3/<SEQUENCE NAME>/raw/`
+- `rosettafold2na/<SEQUENCE NAME>/raw/`
+
+These raw outputs are intended for advanced debugging, reproducibility and method-specific downstream analyses. For detailed, canonical tool-specific native output specifications, see:
+
+- [AlphaFold2](https://github.com/google-deepmind/alphafold?tab=readme-ov-file#alphafold-output)
+- [AlphaFold3](https://github.com/google-deepmind/alphafold3/blob/main/docs/output.md)
+- [Boltz](https://github.com/jwohlwend/boltz/blob/main/docs/prediction.md#output)
+- [ColabFold](https://www.ebi.ac.uk/training/online/courses/alphafold/advanced-modeling-and-applications-of-predicted-protein-structures/customising-alphafold-structure-predictions/outputs-from-colabfold/)
+- [ESMFold](https://github.com/facebookresearch/esm)
+- [RosettaFold2NA](https://github.com/uw-ipd/RoseTTAFold2NA?tab=readme-ov-file#expected-outputs)
+- [RoseTTAFold-All-Atom](https://github.com/baker-laboratory/RoseTTAFold-All-Atom/?tab=readme-ov-file#understanding-model-outputs)
+- [HelixFold3](https://github.com/PaddlePaddle/PaddleHelix/tree/dev/apps/protein_folding/helixfold3#-understanding-model-output)

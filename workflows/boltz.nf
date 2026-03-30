@@ -127,8 +127,7 @@ workflow BOLTZ {
         .set { ch_boltz_input }
 
     RUN_BOLTZ(
-        ch_boltz_input.map { it -> [it[0], it[1]] },
-        ch_boltz_input.map { it -> it[2] },
+        ch_boltz_input,
         ch_boltz_model,
         ch_boltz_ccd,
         ch_boltz2_aff,
@@ -140,8 +139,9 @@ workflow BOLTZ {
         .out
         .pdb
         .map { it ->
-            it[0].model = "boltz"
-            it
+            def meta = it[0].clone();
+            meta.model = "boltz"
+            [ meta, it[1] ]
         }
         .set {ch_pdb}
 
@@ -149,28 +149,31 @@ workflow BOLTZ {
         .out
         .top_ranked_pdb
         .map { it ->
-            it[0].model = "boltz"
-            it
+            def meta = it[0].clone();
+            meta.model = "boltz"
+            [ meta, it[1] ]
         }
-        .set {ch_top_ranked_pdb}
+        .set { ch_top_ranked_pdb }
 
     RUN_BOLTZ
         .out
         .msa_raw
-    .map { it ->
-        it[0].model = "boltz"
-        it
-    }
-    .set {ch_msa}
+        .map { it ->
+            def meta = it[0].clone();
+            meta.model = "boltz"
+            [ meta, it[1] ]
+        }
+        .set { ch_msa }
 
     RUN_BOLTZ
         .out
         .pae_raw
-    .map { it ->
-        it[0].model = "boltz"
-        it
-    }
-    .set {ch_pae}
+        .map { it ->
+            def meta = it[0].clone();
+            meta.model = "boltz"
+            [ meta, it[1] ]
+        }
+        .set { ch_pae }
 
     RUN_BOLTZ
         .out

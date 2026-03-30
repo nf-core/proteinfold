@@ -24,8 +24,9 @@ workflow POST_PROCESSING {
     ch_report_input
     ch_report_template
     ch_comparison_template
-    foldseek_search
-    ch_foldseek_db
+    skip_foldseek
+    foldseek_db
+    foldseek_db_path
     skip_multiqc
     outdir
     ch_versions
@@ -94,7 +95,13 @@ workflow POST_PROCESSING {
         }
     }
 
-    if (foldseek_search == "easysearch"){
+    if (!skip_foldseek) {
+        ch_foldseek_db = channel.value([
+            [
+                id: foldseek_db,
+            ],
+            file(foldseek_db_path, checkIfExists: true)
+        ])
         FOLDSEEK_EASYSEARCH(
             ch_top_ranked_model,
             ch_foldseek_db
@@ -126,13 +133,6 @@ workflow POST_PROCESSING {
         ch_multiqc_files = ch_multiqc_files.mix(ch_workflow_summary.collectFile(name: 'workflow_summary_mqc.yaml'))
         ch_multiqc_files = ch_multiqc_files.mix(ch_methods_description.collectFile(name: 'methods_description_mqc.yaml'))
         ch_multiqc_files = ch_multiqc_files.mix(ch_collated_versions)
-
-        ch_multiqc_rep
-            .combine(
-                ch_multiqc_files
-                    .collect()
-                    .map { it -> [it] }
-            )
 
         MULTIQC (
             ch_multiqc_rep

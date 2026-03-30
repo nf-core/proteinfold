@@ -1,10 +1,12 @@
 FROM ubuntu:24.04
 ARG MMSEQS2_VERSION=18-8cc5c
 
-LABEL Author="Joshua Storm Caley" \
-    title="nf-core/proteinfold_mmseqs_colabfoldsearch" \
-    Version="2.0.0dev" \
-    description="Lightweight Docker image containing all software requirements to run the MMSEQS_COLABFOLDSEARCH module using the nf-core/proteinfold pipeline"
+LABEL org.opencontainers.image.title="nf-core/proteinfold_mmseqs_colabfoldsearch" \
+    org.opencontainers.image.description="Lightweight Docker image containing all software requirements to run the MMSEQS_COLABFOLDSEARCH module using the nf-core/proteinfold pipeline" \
+    org.opencontainers.image.version="2.0.0" \
+    org.opencontainers.image.authors="Joshua Storm Caley <j.caley@unsw.edu.au>" \
+    org.opencontainers.image.source="https://github.com/nf-core/proteinfold" \
+    org.opencontainers.image.licenses="MIT"
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \

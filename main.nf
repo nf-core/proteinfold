@@ -21,8 +21,10 @@ include { PREPARE_ESMFOLD_DBS              } from './subworkflows/local/prepare_
 include { PREPARE_ROSETTAFOLD_ALL_ATOM_DBS } from './subworkflows/local/prepare_rosettafold_all_atom_dbs'
 include { PREPARE_HELIXFOLD3_DBS           } from './subworkflows/local/prepare_helixfold3_dbs'
 include { PREPARE_BOLTZ_DBS                } from './subworkflows/local/prepare_boltz_dbs'
-include { PREPARE_COLABFOLD_DBS            } from './subworkflows/local/prepare_colabfold_dbs'
 include { PREPARE_ROSETTAFOLD2NA_DBS       } from './subworkflows/local/prepare_rosettafold2na_dbs'
+
+include { PREPARE_COLABFOLD_DBS  as PREPARE_COLABFOLD_DBS_COLABFOLD } from './subworkflows/local/prepare_colabfold_dbs'
+include { PREPARE_COLABFOLD_DBS  as PREPARE_COLABFOLD_DBS_BOLTZ     } from './subworkflows/local/prepare_colabfold_dbs'
 
 include { ALPHAFOLD2                       } from './workflows/alphafold2'
 include { ALPHAFOLD3                       } from './workflows/alphafold3'
@@ -68,7 +70,6 @@ workflow NFCORE_PROTEINFOLD {
     ch_multiqc           = channel.empty()
     ch_versions          = channel.empty()
     ch_report_input      = channel.empty()
-    ch_foldseek_db       = channel.empty()
     ch_top_ranked_model  = channel.empty()
     requested_modes      = params.mode.toLowerCase().split(",")
     requested_modes_size = requested_modes.size()
@@ -243,7 +244,7 @@ workflow NFCORE_PROTEINFOLD {
         //
         // SUBWORKFLOW: Prepare Colabfold DBs
         //
-        PREPARE_COLABFOLD_DBS (
+        PREPARE_COLABFOLD_DBS_COLABFOLD (
             params.colabfold_db,
             params.use_msa_server,
             params.colabfold_alphafold2_params_path,
@@ -254,7 +255,7 @@ workflow NFCORE_PROTEINFOLD {
             params.colabfold_uniref30_link,
             params.colabfold_create_index
         )
-        ch_versions = ch_versions.mix(PREPARE_COLABFOLD_DBS.out.versions)
+        ch_versions = ch_versions.mix(PREPARE_COLABFOLD_DBS_COLABFOLD.out.versions)
 
         //
         // WORKFLOW: Run nf-core/colabfold workflow
@@ -263,9 +264,9 @@ workflow NFCORE_PROTEINFOLD {
             ch_samplesheet,
             ch_versions,
             params.colabfold_model_preset,
-            PREPARE_COLABFOLD_DBS.out.params,
-            PREPARE_COLABFOLD_DBS.out.colabfold_db,
-            PREPARE_COLABFOLD_DBS.out.uniref30,
+            PREPARE_COLABFOLD_DBS_COLABFOLD.out.params,
+            PREPARE_COLABFOLD_DBS_COLABFOLD.out.colabfold_db,
+            PREPARE_COLABFOLD_DBS_COLABFOLD.out.uniref30,
             params.colabfold_num_recycles
         )
 
@@ -510,7 +511,7 @@ workflow NFCORE_PROTEINFOLD {
 
     // WORKFLOW: Run Boltz
     //
-    if (params.mode.toLowerCase().split(",").contains("boltz")) {
+    if (requested_modes.contains("boltz")) {
 
         PREPARE_BOLTZ_DBS(
             params.boltz_db,
@@ -527,7 +528,7 @@ workflow NFCORE_PROTEINFOLD {
         )
         ch_versions = ch_versions.mix(PREPARE_BOLTZ_DBS.out.versions)
 
-        PREPARE_COLABFOLD_DBS (
+        PREPARE_COLABFOLD_DBS_BOLTZ (
             params.colabfold_db,
             params.use_msa_server,
             params.colabfold_alphafold2_params_path,
@@ -538,7 +539,7 @@ workflow NFCORE_PROTEINFOLD {
             params.colabfold_uniref30_link,
             params.colabfold_create_index
         )
-        ch_versions = ch_versions.mix(PREPARE_COLABFOLD_DBS.out.versions)
+        ch_versions = ch_versions.mix(PREPARE_COLABFOLD_DBS_BOLTZ.out.versions)
 
         BOLTZ(
             ch_samplesheet,
@@ -548,8 +549,8 @@ workflow NFCORE_PROTEINFOLD {
             PREPARE_BOLTZ_DBS.out.boltz2_aff,
             PREPARE_BOLTZ_DBS.out.boltz2_conf,
             PREPARE_BOLTZ_DBS.out.boltz2_mols,
-            PREPARE_COLABFOLD_DBS.out.colabfold_db,
-            PREPARE_COLABFOLD_DBS.out.uniref30,
+            PREPARE_COLABFOLD_DBS_BOLTZ.out.colabfold_db,
+            PREPARE_COLABFOLD_DBS_BOLTZ.out.uniref30,
             params.use_msa_server
         )
         ch_multiqc                  = ch_multiqc.mix(BOLTZ.out.multiqc_report)
@@ -564,19 +565,6 @@ workflow NFCORE_PROTEINFOLD {
     //
     // POST PROCESSING: generate visualisation reports
     //
-    // TODO: we need to validate the rest of foldseek parameters if foldseek is set to run
-    // TODO: maybe create a parameter that is run_foldseek or skip_foldsee instead as there are no more mode than can be use now
-
-    // TODO move it to pdb.config? asign as in prepare dbs
-    if (params.foldseek_search == "easysearch"){
-        ch_foldseek_db = channel.value([
-            [
-                id: params.foldseek_db,
-            ],
-            file(params.foldseek_db_path, checkIfExists: true)
-        ])
-    }
-
     ch_multiqc_config        = channel.fromPath("$projectDir/assets/multiqc_config.yml", checkIfExists: true).first()
     ch_multiqc_custom_config = params.multiqc_config ? channel.fromPath( params.multiqc_config ).first()  : channel.fromPath("${projectDir}/multiqc_proteinfold/multiqc_proteinfold_config.yml")
     ch_multiqc_logo          = params.multiqc_logo   ? channel.fromPath( params.multiqc_logo ).first()    : channel.empty()
@@ -590,8 +578,9 @@ workflow NFCORE_PROTEINFOLD {
         ch_report_input,
         ch_report_template,
         ch_comparison_template,
-        params.foldseek_search,
-        ch_foldseek_db,
+        params.skip_foldseek,
+        params.foldseek_db,
+        params.foldseek_db_path,
         params.skip_multiqc,
         params.outdir,
         ch_versions,

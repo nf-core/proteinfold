@@ -19,7 +19,7 @@
                     "sed": 4.7
                 },
                 "Workflow": {
-                    "nf-core/proteinfold": "v1.2.0dev"
+                    "nf-core/proteinfold": "v2.1.0dev"
                 }
             },
             [
@@ -69,6 +69,6 @@
             "nf-test": "0.9.3",
             "nextflow": "25.10.4"
         },
-        "timestamp": "2026-02-12T11:33:41.854887"
+        "timestamp": "2026-03-27T09:19:28.818804127"
     }
 }

@@ -30,8 +30,6 @@ process RUN_ROSETTAFOLD_ALL_ATOM {
     when:
     task.ext.when == null || task.ext.when
 
-
-    // TODO: I'm not convinced --a3ms to chain /A/msa is entirely what I want here, but the MSA isn't easily stored elsewhere
     script:
     // Exit if running this module with -profile conda / -profile mamba
     if (workflow.profile.tokenize(',').intersect(['conda', 'mamba']).size() >= 1) {
@@ -67,6 +65,7 @@ process RUN_ROSETTAFOLD_ALL_ATOM {
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         python: \$(python3 --version | sed 's/Python //g')
+        rosettafold-all-atom: \$(cd /app/RoseTTAFold-All-Atom && git rev-parse HEAD 2>/dev/null || echo "unknown")
     END_VERSIONS
     """
 
@@ -82,7 +81,8 @@ process RUN_ROSETTAFOLD_ALL_ATOM {
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        python: \$(python3 --version | sed 's/Python //g')
+        python: \$(python3 --version 2>/dev/null | sed 's/Python //g' || echo "unknown")
+        rosettafold-all-atom: \$(cd /app/RoseTTAFold-All-Atom && git rev-parse HEAD 2>/dev/null || echo "unknown")
     END_VERSIONS
     """
 }

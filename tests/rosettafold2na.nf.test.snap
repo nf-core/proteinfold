@@ -8,14 +8,14 @@
                     "generate_report.py": "Python 3.12.7"
                 },
                 "ROSETTAFOLD2NA_FASTA": {
-                    "python": "$(python3 --version | sed 's/Python //g')"
+                    "python": "$(python3 --version 2>/dev/null | sed 's/Python //g' || echo \"unknown\")"
                 },
                 "RUN_ROSETTAFOLD2NA": {
-                    "python": null,
+                    "python": "unknown",
                     "rosettafold2na": "v0.2"
                 },
                 "Workflow": {
-                    "nf-core/proteinfold": "v1.2.0dev"
+                    "nf-core/proteinfold": "v2.1.0dev"
                 }
             },
             [
@@ -49,8 +49,8 @@
         ],
         "meta": {
             "nf-test": "0.9.3",
-            "nextflow": "25.10.3"
+            "nextflow": "25.10.4"
         },
-        "timestamp": "2026-02-12T18:36:36.584359"
+        "timestamp": "2026-03-27T09:13:14.502746624"
     }
 }

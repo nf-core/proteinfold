@@ -1,11 +1,16 @@
 ARG CUDA_VERSION=12.9.1
 FROM nvidia/cuda:${CUDA_VERSION}-base-ubuntu24.04
-ARG CUDA_VERSION=12.9.1
 
-LABEL Author="Joshua Storm Caley" \
-    title="nf-core/proteinfold_colabfold" \
-    Version="2.0.0dev" \
-    description="Docker image containing all software requirements to run the COLABFOLD_BATCH module using the nf-core/proteinfold pipeline"
+# FROM directive resets ARGS, so we specify again (the value is retained if
+# previously set).
+ARG CUDA_VERSION
+
+LABEL org.opencontainers.image.title="nf-core/proteinfold_colabfold" \
+    org.opencontainers.image.description="Docker image containing all software requirements to run the COLABFOLD_BATCH module using the nf-core/proteinfold pipeline" \
+    org.opencontainers.image.version="2.0.0" \
+    org.opencontainers.image.authors="Joshua Storm Caley <j.caley@unsw.edu.au>" \
+    org.opencontainers.image.source="https://github.com/nf-core/proteinfold" \
+    org.opencontainers.image.licenses="MIT"
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends --no-install-suggests \

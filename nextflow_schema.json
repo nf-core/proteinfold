@@ -135,7 +135,7 @@
                     "fa_icon": "fas fa-stream"
                 },
                 "alphafold2_random_seed": {
-                    "type": "string",
+                    "type": "integer",
                     "description": "Random seed to control stochastic alphafold inference."
                 },
                 "alphafold2_params_prefix": {
@@ -184,6 +184,12 @@
                     "default": true,
                     "description": "Use Amber minimization to refine the predicted structures",
                     "fa_icon": "fas fa-compress-alt"
+                },
+                "colabfold_use_gpu_relax": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Use GPU for Amber relaxation in ColabFold",
+                    "fa_icon": "fas fa-microchip"
                 },
                 "colabfold_db_load_mode": {
                     "type": "integer",
@@ -271,11 +277,11 @@
             "fa_icon": "fas fa-coins",
             "description": "Foldseek options.",
             "properties": {
-                "foldseek_search": {
-                    "type": "string",
-                    "enum": [null, "easysearch"],
-                    "description": "Specifies the mode of foldseek search.",
-                    "fa_icon": "fas fa-search"
+                "skip_foldseek": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Skip foldseek structural similarity search.",
+                    "fa_icon": "fas fa-fast-forward"
                 },
                 "foldseek_db": {
                     "type": "string",
@@ -550,7 +556,7 @@
             }
         },
         "alphafold3_dbs_and_parameters_link_options": {
-            "title": "Alphafold3 DBs and parameters links options",
+            "title": "AlphaFold3 DBs and parameters links options",
             "type": "object",
             "fa_icon": "fas fa-database",
             "description": "Parameters used to provide the links to the DBs and parameters public resources to Alphafold3.",
@@ -620,7 +626,7 @@
             }
         },
         "alphafold3_dbs_and_parameters_path_options": {
-            "title": "Alphafold3 DBs and parameters links options",
+            "title": "AlphaFold3 DBs and parameters links options",
             "type": "object",
             "fa_icon": "fas fa-database",
             "description": "Parameters used to provide the paths to the DBs and parameters for Alphafold2.",
@@ -634,8 +640,7 @@
                 "alphafold3_params_path": {
                     "type": "string",
                     "description": "Path to the Alphafold3 parameters",
-                    "fa_icon": "fas fa-folder-open",
-                    "default": "null/params/*"
+                    "fa_icon": "fas fa-folder-open"
                 },
                 "alphafold3_mgnify_path": {
                     "type": "string",
@@ -946,7 +951,6 @@
                 }
             }
         },
-
         "generic_options": {
             "title": "Generic options",
             "type": "object",

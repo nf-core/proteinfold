@@ -123,17 +123,22 @@ def align_structures(structures):
         # Note: this is a *set* of atom_ids due to the {} surrounding the comprehension
         return {(atom.get_parent().get_parent().get_id(), atom.get_parent().get_id(), atom.name) for atom in structure.get_atoms() if atom.element != 'H'}
 
-    # TODO: do we want to raise and error if the structures are not identical atomically, or keep the ability to sub-align?
-    # Update the atoms shared between structures with progressive intersections
+    # Find atoms common to all structures for sub-alignment
     common_atoms = get_atom_ids(ref_structure)
-    print("commons: ", len(common_atoms))
+    initial_atom_count = len(common_atoms)
     for structure in parsed_structures[1:]:
         common_atoms.intersection_update(get_atom_ids(structure))
-        print("commons: ", len(common_atoms))
+
+    if len(common_atoms) < initial_atom_count:
+        print(
+            f"WARNING: Structures are not atomically identical. "
+            f"Aligning using {len(common_atoms)} common atoms out of {initial_atom_count} "
+            f"in the reference structure ({initial_atom_count - len(common_atoms)} atoms excluded)."
+        )
 
     if not common_atoms:
         raise ValueError("No common atoms found between structures.")
-    #print(common_atoms)
+
     def extract_atoms(structure, atom_ids):
         # Note: this comprehension returns an atom *object* for each atom in the structure
         return [atom for atom in structure.get_atoms() if (atom.get_parent().get_parent().get_id(), atom.get_parent().get_id(), atom.name) in atom_ids]
@@ -148,7 +153,6 @@ def align_structures(structures):
             aligned_structures.append(structure)
             continue
         target_atoms = extract_atoms(structure, common_atoms)
-        print(len(ref_atoms), len(target_atoms), len(common_atoms))
         super_imposer.set_atoms(ref_atoms, target_atoms)
         super_imposer.apply(structure.get_atoms())
 
@@ -202,7 +206,7 @@ def pdb_to_lddt(struct_files, generate_tsv):
             averages.append(0.0)
 
         if generate_tsv == "y":
-            output_file = f"{pdb_file.replace('.pdb', '')}_plddt.tsv"
+            output_file = f"{os.path.splitext(struct_file)[0]}_plddt.tsv"
             with open(output_file, "w") as outfile:
                 outfile.write(" ".join(map(str, plddt_values)) + "\n")
             output_lddt.append(output_file)

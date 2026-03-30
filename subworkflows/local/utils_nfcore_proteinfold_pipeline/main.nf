@@ -63,7 +63,7 @@ ${colors.blue}        ___     __   __   __   ___     ${colors.green}/,-._.--~\'$
 ${colors.blue}  |\\ | |__  __ /  ` /  \\ |__) |__         ${colors.yellow}}  {${colors.reset}
 ${colors.blue}  | \\| |       \\__, \\__/ |  \\ |___     ${colors.green}\\`-._,-`-,${colors.reset}
                                         ${colors.green}`._,._,\'${colors.reset}
-${colors.purple}  nf-core/rnaseq ${workflow.manifest.version}${colors.reset}
+${colors.purple}  nf-core/proteinfold ${workflow.manifest.version}${colors.reset}
 -${colors.dim}----------------------------------------------------${colors.reset}-
 """
     after_text = """${workflow.manifest.doi ? "\n* The pipeline\n" : ""}${workflow.manifest.doi.tokenize(",").collect { doi -> "    https://doi.org/${doi.trim().replace('https://doi.org/','')}"}.join("\n")}${workflow.manifest.doi ? "\n" : ""}
@@ -108,8 +108,6 @@ ${colors.purple}  nf-core/rnaseq ${workflow.manifest.version}${colors.reset}
         }
 
     if (params.split_fasta) {
-        // TODO: here we have to validate that the ids are unique and valid as an extra step
-        // since it is not done with the samplesheet schema (they are all in the same file)
         ch_samplesheet.map { _meta, fasta ->
             validateFasta(fasta)
         }
