@@ -4,10 +4,6 @@ channels:
   - conda-forge
   - bioconda
 dependencies:
-<<<<<<< HEAD
   - bioconda::multiqc=1.34
   - pip
     - ${projectDir} # Install proteinfold_multiqc as a local plugin
-=======
-  - bioconda::multiqc=1.32
->>>>>>> 67ae996f (pip install of the proteinfold multiqc version happens in the pipeline main.nf itself)
