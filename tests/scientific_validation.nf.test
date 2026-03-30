@@ -191,7 +191,7 @@ except Exception as e:
             modeTags.each { t -> tag t }
             tag "structure_validation"
 
-            profile "${modeProfile}"
+            profile _profile 
 
             when {
                 params {
