@@ -1,0 +1,3 @@
+sp:
+  proteinfold:
+    fn: "*_{plddt,msa,ptm,iptm,pae}.tsv"
