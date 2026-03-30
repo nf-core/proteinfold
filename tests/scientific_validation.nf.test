@@ -178,13 +178,13 @@ except Exception as e:
 
         // Explicitly capture as final locals - GString interpolation inside
         // nested closures can fail to resolve delegate-scoped variables in nf-test
-        // Doing this as there's no mode routing param but I want to avoid all lack of base file duplication for each mode
+        // params.mode captures the routing based on fold_tool so can load the particlar config
         final def _name    = modeName.toString()
         final def _display = modeDisplay.toString()
         final def _ext     = modeExt.toString()
         final def _tags    = modeTags.collect { it.toString() }
 
-        test("${modeDisplay}: BioPython structure validation") {
+        test("${_display}: BioPython structure validation") {
             tag _name
             _tags.each { t -> tag t }
             tag "structure_validation"
@@ -193,7 +193,7 @@ except Exception as e:
                 params {
                     input  = "$projectDir/assets/samplesheet.csv"
                     outdir = "$outputDir"
-                    fold_tool = _name
+                    mode = _name
                 }
             }
 
@@ -207,24 +207,24 @@ except Exception as e:
                    // workflow.trace is disabled
                    // println "Failed processes: ${workflow.trace.failed().collect { "${it.process} [${it.exit}]" }}"
                 }
-                assert workflow.success: "${modeDisplay} workflow failed - exit status: ${workflow.exitStatus}"
+                assert workflow.success: "${_display} workflow failed - exit status: ${workflow.exitStatus}"
 
                 def input_ids = parseSamplesheet(params.input)
                 println "Input sequences from samplesheet: ${input_ids}"
 
-                def modeOutputDir = file("${params.outdir}/${modeName}")
-                assert modeOutputDir.exists(): "${modeDisplay} output directory does not exist: ${modeOutputDir}\n"
+                def modeOutputDir = file("${params.outdir}/${_name}")
+                assert modeOutputDir.exists(): "${_display} output directory does not exist: ${modeOutputDir}\n"
 
-                def structDir     = file("${params.outdir}/${modeName}/top_ranked_structures")
-                assert structDir.exists(): "${modeDisplay} structure directory does not exist: ${structDir}\n"
-                def struct_files  = structDir.exists() ? structDir.listFiles().findAll { it.name.endsWith(modeExt) } : []
+                def structDir     = file("${params.outdir}/${_name}/top_ranked_structures")
+                assert structDir.exists(): "${_display} structure directory does not exist: ${structDir}\n"
+                def struct_files  = structDir.exists() ? structDir.listFiles().findAll { it.name.endsWith(_ext) } : []
 
-                assert struct_files.size() > 0: "${modeDisplay} produced no structure files"
+                assert struct_files.size() > 0: "${_display} produced no structure files"
 
                 // Every input sequence must have a corresponding output structure
                 input_ids.each { seq_id ->
                     assert struct_files.any { it.name.contains(seq_id) }: \
-                        "${modeDisplay} produced no output structure for input sequence '${seq_id}'.\n" +
+                        "${_display} produced no output structure for input sequence '${seq_id}'.\n" +
                         "All outputs: ${struct_files*.name}\n"
                 }
 
@@ -269,11 +269,11 @@ except Exception as e:
                 def plddt_files = modeOutputDir.listFiles().findAll { it.isDirectory() }.collect { proteinDir ->
                     proteinDir.listFiles()?.findAll { it.name.endsWith('plddt.tsv') } ?: []
                 }.flatten()
-                assert plddt_files.size() > 0: "${modeDisplay} failed to produce any pLDDT metric files"
+                assert plddt_files.size() > 0: "${_display} failed to produce any pLDDT metric files"
 
                 input_ids.each { seq_id ->
                     assert plddt_files.any { it.name.contains(seq_id) }: \
-                        "${modeDisplay} produced no pLDDT file for input sequence '${seq_id}'.\n" +
+                        "${_display} produced no pLDDT file for input sequence '${seq_id}'.\n" +
                         "All pLDDT files: ${plddt_files*.name}"
                 }
 
@@ -338,7 +338,7 @@ except Exception as e:
 
                 println ""
                 println "═══════════════════════════════════════════════════════════"
-                println "✓ ALL VALIDATIONS PASSED for ${modeDisplay}"
+                println "✓ ALL VALIDATIONS PASSED for ${_display}"
                 println "  - Canary (parser soundness): 3/3 checks passed ✓"
                 println "  - Input sequences: ${input_ids.size()} (${input_ids.join(', ')})"
                 println "  - Output structures: ${struct_files.size()} files (all inputs accounted for ✓)"
