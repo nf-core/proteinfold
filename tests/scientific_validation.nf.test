@@ -179,29 +179,27 @@ except Exception as e:
         // Explicitly capture as final locals - GString interpolation inside
         // nested closures can fail to resolve delegate-scoped variables in nf-test
         // Doing this as there's no mode routing param but I want to avoid all lack of base file duplication for each mode
-        //final def _name    = modeName.toString()
-        //final def _display = modeDisplay.toString()
-        //final def _ext     = modeExt.toString()
-        //final def _tags    = modeTags.collect { it.toString() }
+        final def _name    = modeName.toString()
+        final def _display = modeDisplay.toString()
+        final def _ext     = modeExt.toString()
+        final def _tags    = modeTags.collect { it.toString() }
 
         test("${modeDisplay}: BioPython structure validation") {
-            tag "${modeName}"
-            modeTags.each { t -> tag t }
+            tag _name
+            _tags.each { t -> tag t }
             tag "structure_validation"
-
-            profile _profile
 
             when {
                 params {
                     input  = "$projectDir/assets/samplesheet.csv"
                     outdir = "$outputDir"
-                    fold_tool = name
+                    fold_tool = _name
                 }
             }
 
             then {
                 // ===== CANARY: must run first - if parser is broken, nothing below can be trusted =====
-                assertParserIsSound(modeName)
+                assertParserIsSound(_name)
 
                 // ===== Workflow success =====
                 if (!workflow.success) {
