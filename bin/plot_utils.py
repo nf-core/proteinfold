@@ -80,7 +80,7 @@ def align_structures(structures):
 
     def get_atom_ids(structure):
         # Note: this is a *set* of atom_ids due to the {} surrounding the comprehension
-        return {(atom.get_parent().get_id(), atom.name) for atom in structure.get_atoms()}
+        return {(atom.get_parent().get_parent().get_id(), atom.get_parent().get_id(), atom.name) for atom in structure.get_atoms() if atom.element != 'H'}
 
     # Find common atoms across all structures (progressive intersection)
     # This allows alignment even if structures are incomplete or have different atom coverage
