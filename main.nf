@@ -136,10 +136,11 @@ workflow NFCORE_PROTEINFOLD {
             PREPARE_ALPHAFOLD2_DBS.out.pdb_seqres,
             PREPARE_ALPHAFOLD2_DBS.out.uniprot
         )
-        ch_multiqc          = ch_multiqc.mix(ALPHAFOLD2.out.multiqc_report.collect())
-        ch_versions         = ch_versions.mix(ALPHAFOLD2.out.versions)
-        ch_report_input     = ch_report_input
-                                .mix(ALPHAFOLD2.out.pdb
+        ch_multiqc      = ch_multiqc.mix(ALPHAFOLD2.out.multiqc_report.collect())
+        ch_versions     = ch_versions.mix(ALPHAFOLD2.out.versions)
+        ch_report_input = ch_report_input
+                            .mix(
+                                ALPHAFOLD2.out.pdb
                                 .join(ALPHAFOLD2.out.msa)
                                 .join(ALPHAFOLD2.out.pae)
                             )
@@ -241,8 +242,9 @@ workflow NFCORE_PROTEINFOLD {
 
         ch_multiqc          = ch_multiqc.mix(COLABFOLD.out.multiqc_report)
         ch_versions         = ch_versions.mix(COLABFOLD.out.versions)
-        ch_report_input     = ch_report_input
-                                .mix(COLABFOLD.out.pdb
+        ch_report_input = ch_report_input
+                            .mix(
+                                COLABFOLD.out.pdb
                                 .join(COLABFOLD.out.msa)
                                 .join(COLABFOLD.out.pae)
                             )
@@ -279,11 +281,12 @@ workflow NFCORE_PROTEINFOLD {
 
         ch_multiqc      = ch_multiqc.mix(ESMFOLD.out.multiqc_report.collect())
         ch_versions     = ch_versions.mix(ESMFOLD.out.versions)
-        ch_report_input = ch_report_input.mix(
-            ESMFOLD.out.pdb
-                .combine(ch_dummy_msa)
-                .combine(ch_dummy_pae)
-        )
+        ch_report_input = ch_report_input
+                            .mix(
+                                ESMFOLD.out.pdb.map { meta, pdb -> [meta, [pdb]] }
+                                .combine(ch_dummy_msa)
+                                .combine(ch_dummy_pae)
+                            )
         ch_top_ranked_model = ch_top_ranked_model.mix(ESMFOLD.out.pdb)
     }
 
@@ -321,13 +324,15 @@ workflow NFCORE_PROTEINFOLD {
             PREPARE_ROSETTAFOLD_ALL_ATOM_DBS.out.pdb100,
             PREPARE_ROSETTAFOLD_ALL_ATOM_DBS.out.rfaa_paper_weights
         )
-        ch_multiqc                              = ch_multiqc.mix(ROSETTAFOLD_ALL_ATOM.out.multiqc_report.collect())
-        ch_versions                             = ch_versions.mix(ROSETTAFOLD_ALL_ATOM.out.versions)
-        ch_report_input                         = ch_report_input.mix(ROSETTAFOLD_ALL_ATOM.out.pdb
-                                                                    .join(ROSETTAFOLD_ALL_ATOM.out.msa)
-                                                                    .join(ROSETTAFOLD_ALL_ATOM.out.pae)
-                                                                    )
-        ch_top_ranked_model                     = ch_top_ranked_model.mix(ROSETTAFOLD_ALL_ATOM.out.pdb)
+        ch_multiqc      = ch_multiqc.mix(ROSETTAFOLD_ALL_ATOM.out.multiqc_report.collect())
+        ch_versions     = ch_versions.mix(ROSETTAFOLD_ALL_ATOM.out.versions)
+        ch_report_input = ch_report_input
+                            .mix(
+                                ROSETTAFOLD_ALL_ATOM.out.pdb.map { meta, pdb -> [meta, [pdb]] }
+                                .join(ROSETTAFOLD_ALL_ATOM.out.msa)
+                                .join(ROSETTAFOLD_ALL_ATOM.out.pae)
+                            )
+        ch_top_ranked_model = ch_top_ranked_model.mix(ROSETTAFOLD_ALL_ATOM.out.pdb)
     }
 
     //
@@ -391,10 +396,11 @@ workflow NFCORE_PROTEINFOLD {
             PREPARE_HELIXFOLD3_DBS.out.helixfold3_init_models,
             PREPARE_HELIXFOLD3_DBS.out.helixfold3_maxit_src
         )
-        ch_multiqc          = ch_multiqc.mix(HELIXFOLD3.out.multiqc_report.collect())
-        ch_versions         = ch_versions.mix(HELIXFOLD3.out.versions)
-        ch_report_input     = ch_report_input
-                                .mix(HELIXFOLD3.out.pdb
+        ch_multiqc      = ch_multiqc.mix(HELIXFOLD3.out.multiqc_report.collect())
+        ch_versions     = ch_versions.mix(HELIXFOLD3.out.versions)
+        ch_report_input = ch_report_input
+                            .mix(
+                                HELIXFOLD3.out.pdb
                                 .join(HELIXFOLD3.out.msa)
                                 .join(HELIXFOLD3.out.pae)
                             )
@@ -440,18 +446,15 @@ workflow NFCORE_PROTEINFOLD {
             PREPARE_ROSETTAFOLD2NA_DBS.out.rna,
             PREPARE_ROSETTAFOLD2NA_DBS.out.rosettafold2na_weights
         )
-        ch_multiqc                              = ch_multiqc.mix(ROSETTAFOLD2NA.out.multiqc_report.collect())
-        ch_versions                             = ch_versions.mix(ROSETTAFOLD2NA.out.versions)
-        ch_report_input                         = ch_report_input
-                                                    .mix(
-                                                        ROSETTAFOLD2NA
-                                                            .out
-                                                            .pdb
-                                                            .map { meta, pdb -> [ meta, [ pdb ] ] }
-                                                            .join(ROSETTAFOLD2NA.out.msa)
-                                                            .join(ROSETTAFOLD2NA.out.pae)
-                                                    )
-        ch_top_ranked_model                     = ch_top_ranked_model.mix(ROSETTAFOLD2NA.out.pdb)
+        ch_multiqc      = ch_multiqc.mix(ROSETTAFOLD2NA.out.multiqc_report.collect())
+        ch_versions     = ch_versions.mix(ROSETTAFOLD2NA.out.versions)
+        ch_report_input = ch_report_input
+                            .mix(
+                                ROSETTAFOLD2NA.out.pdb.map { meta, pdb -> [meta, [pdb]] }
+                                .join(ROSETTAFOLD2NA.out.msa)
+                                .join(ROSETTAFOLD2NA.out.pae)
+                            )
+        ch_top_ranked_model = ch_top_ranked_model.mix(ROSETTAFOLD2NA.out.pdb)
     }
 
     // WORKFLOW: Run Boltz
@@ -498,14 +501,15 @@ workflow NFCORE_PROTEINFOLD {
             PREPARE_COLABFOLD_DBS_BOLTZ.out.uniref30,
             params.use_msa_server
         )
-        ch_multiqc                  = ch_multiqc.mix(BOLTZ.out.multiqc_report)
-        ch_versions                 = ch_versions.mix(BOLTZ.out.versions)
-        ch_report_input             = ch_report_input.mix(
-            BOLTZ.out.pdb
-            .join(BOLTZ.out.msa)
-            .join(BOLTZ.out.pae)
-        )
-        ch_top_ranked_model         = ch_top_ranked_model.mix(BOLTZ.out.top_ranked_pdb)
+        ch_multiqc      = ch_multiqc.mix(BOLTZ.out.multiqc_report)
+        ch_versions     = ch_versions.mix(BOLTZ.out.versions)
+        ch_report_input = ch_report_input
+                            .mix(
+                                BOLTZ.out.pdb
+                                .join(BOLTZ.out.msa)
+                                .join(BOLTZ.out.pae)
+                            )
+        ch_top_ranked_model = ch_top_ranked_model.mix(BOLTZ.out.top_ranked_pdb)
     }
     //
     // POST PROCESSING: generate visualisation reports
