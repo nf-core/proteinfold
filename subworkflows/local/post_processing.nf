@@ -40,53 +40,43 @@ workflow POST_PROCESSING {
     ch_comparison_report_files = channel.empty()
 
     if (!skip_visualisation){
+        ch_report_input
+            .multiMap { meta, pdbs, msa, pae ->
+                full:     [meta, pdbs, msa, pae]
+                msa_only: [meta, msa]
+            }
+            .set { ch_report_split }
+
         GENERATE_REPORT(
-            ch_report_input,
+            ch_report_split.full,
             ch_report_template
         )
         ch_versions = ch_versions.mix(GENERATE_REPORT.out.versions)
 
         if (requested_modes_size > 1){
-            // Multi-mode comparison: group structures and coverage data from all modes
+            // Multi-mode comparison: group top-ranked structures and MSA data from all modes
             ch_top_ranked_model
-                .map { meta, pdb ->
-                    [["id": meta.id], meta, pdb]
+                .join(ch_report_split.msa_only)
+                .map { meta, pdb, msa ->
+                    [["id": meta.id], meta, pdb, msa]
                 }
-                .join(
-                    GENERATE_REPORT.out.sequence_coverage,
-                    by: [0],
-                    remainder: true  // Include models without coverage (e.g., ESMFold)
-                )
                 .groupTuple(by: [0], size: requested_modes_size)
-                .map { key, model_meta_list, coverage_list ->
-                    key.models = model_meta_list.collect { meta, pdb -> meta.model }.join(',')
-                    [key, model_meta_list.collect { meta, pdb -> pdb }, coverage_list]
+                .map { key, model_meta_list, pdbs, msas ->
+                    def models_str = model_meta_list.collect { it.model }.join(',')
+                    [key + [models: models_str], pdbs, msas]
                 }
-                .set { ch_comparison_report_input }
-
-            // Separate channel components for clarity
-            ch_comparison_report_input
-                .map { meta, structures, coverage ->
-                    [meta, structures.collect { f -> f.name }]
+                .multiMap { meta, pdbs, msas ->
+                    def valid_msas = msas.findAll { !it.name.startsWith("DUMMY_") }
+                    pdbs:     [meta, pdbs.collect { it.name }]
+                    msas:     [meta, valid_msas.collect { it.name }]
+                    allfiles: (pdbs + valid_msas).unique()
                 }
-                .set { ch_pdb_input }
-
-            ch_comparison_report_input
-                .map { meta, structures, coverage ->
-                    [meta, coverage.findAll { f -> f != null }.collect { f -> f.name }]
-                }
-                .set { ch_msa_input }
-
-            ch_comparison_report_input
-                .map { meta, structures, coverage ->
-                    (structures + coverage.findAll { f -> f != null }).unique()
-                }
-                .set { ch_all_files }
+                .set { ch_split }
 
             COMPARE_STRUCTURES(
-                ch_pdb_input,
-                ch_msa_input,
-                ch_all_files,
+                ch_split.pdbs,
+                ch_split.msas,
+                ch_split.allfiles,
                 ch_report_template
             )
             ch_versions = ch_versions.mix(COMPARE_STRUCTURES.out.versions)
@@ -127,26 +117,21 @@ workflow POST_PROCESSING {
         ch_workflow_summary      = channel.value(paramsSummaryMultiqc(summary_params))
         ch_methods_description   = channel.value(methodsDescriptionText(ch_multiqc_methods_description))
 
-        ch_multiqc_files = channel.empty()
-        ch_multiqc_files = ch_multiqc_files.mix(ch_workflow_summary.collectFile(name: 'workflow_summary_mqc.yaml'))
-        ch_multiqc_files = ch_multiqc_files.mix(ch_methods_description.collectFile(name: 'methods_description_mqc.yaml'))
-        ch_multiqc_files = ch_multiqc_files.mix(ch_collated_versions)
+        ch_multiqc_files = ch_workflow_summary.collectFile(name: 'workflow_summary_mqc.yaml')
+            .mix(ch_methods_description.collectFile(name: 'methods_description_mqc.yaml'))
+            .mix(ch_collated_versions)
 
         MULTIQC (
             ch_multiqc_rep
                 .combine(
                     ch_multiqc_files
                         .collect()
-                        .map { it -> [it] }
+                        .map { [it] }
                 )
                 .map { meta, report_files, multiqc_files -> [ meta, report_files + multiqc_files ] },
             ch_multiqc_config,
-            ch_multiqc_custom_config
-                .collect()
-                .ifEmpty([]),
-            ch_multiqc_logo
-                .collect()
-                .ifEmpty([]),
+            ch_multiqc_custom_config.toList(),
+            ch_multiqc_logo.toList(),
             [],
             []
         )

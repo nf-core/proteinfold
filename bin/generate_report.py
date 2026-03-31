@@ -40,7 +40,7 @@ def get_template_path():
     
     return str(template_path)
 
-def generate_report(name, out_dir, structures, num_structs_limit=5, msa_files=None, pae_files=None, prog="proteinfold", type="standard", html_template=None, write_htmls=True):
+def generate_report(name, out_dir, structures, num_structs_limit=5, msa_files=None, pae_files=None, prog="proteinfold", type="standard", html_template=None):
 
     PLOTLY_CONFIG = {"displayModeBar": True, "displaylogo": False, "scrollZoom": True}
 
@@ -122,13 +122,6 @@ def generate_report(name, out_dir, structures, num_structs_limit=5, msa_files=No
     else:
         html = re.sub(r'<!-- BEGIN_PAE_SECTION -->.*?<!-- END_PAE_SECTION -->', '', html, flags=re.DOTALL)
 
-    if write_htmls:
-        with open(f"{out_dir}/{name}_coverage_pLDDT.html", "w") as out_file:
-            out_file.write(plddt_html)
-        if seq_cov_html:
-            with open(f"{out_dir}/{name}_coverage_MSA.html", "w") as out_file:
-                out_file.write(seq_cov_html)
-
     # Write the final HTML report
     with open(f"{out_dir}/{name}_{type}_report.html", "w") as out_file:
         out_file.write(html)
@@ -143,7 +136,6 @@ def main():
     parser.add_argument("--prog", default="proteinfold", choices=["proteinfold", "alphafold2", "alphafold3", "esmfold", "colabfold", "rosettafold-all-atom", "rosettafold2na", "helixfold3", "boltz", "comparison"], type=str.lower, help="The program used to generate the structures.")
     parser.add_argument("--type", default="standard", choices=["standard", "comparison"], help="The type of report to generate.")
     parser.add_argument("--html_template", default=None, help="Path to the HTML report template.")
-    parser.add_argument("--write_htmls", default=True, help="Write out separate files for each html plot.")
 
     args = parser.parse_args()
 
@@ -172,7 +164,6 @@ def main():
         prog=args.prog,
         type=args.type,
         html_template=html_template,
-        write_htmls=args.write_htmls,
     )
 
 if __name__ == "__main__":
