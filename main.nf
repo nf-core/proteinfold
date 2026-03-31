@@ -74,8 +74,8 @@ workflow NFCORE_PROTEINFOLD {
     requested_modes      = params.mode.toLowerCase().split(",")
     requested_modes_size = requested_modes.size()
 
-    ch_dummy_file = channel.fromPath("$projectDir/assets/NO_FILE")
-    ch_dummy_file_pae = channel.fromPath("$projectDir/assets/NO_FILE_PAE")
+    ch_dummy_msa = channel.fromPath("$projectDir/assets/DUMMY_MSA")
+    ch_dummy_pae = channel.fromPath("$projectDir/assets/DUMMY_PAE")
 
     //
     // WORKFLOW: Run alphafold2
@@ -324,8 +324,8 @@ workflow NFCORE_PROTEINFOLD {
         ch_versions     = ch_versions.mix(ESMFOLD.out.versions)
         ch_report_input = ch_report_input.mix(
             ESMFOLD.out.pdb
-                .combine(ch_dummy_file)
-                .combine(ch_dummy_file_pae)
+                .combine(ch_dummy_msa)
+                .combine(ch_dummy_pae)
         )
         ch_top_ranked_model = ch_top_ranked_model.mix(ESMFOLD.out.pdb)
     }

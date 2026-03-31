@@ -8,7 +8,6 @@ from plot_utils import (
     generate_pae_plot,
     generate_sequence_coverage_plot,
 )
-from bs4 import BeautifulSoup
 import json
 import argparse
 import os
@@ -66,9 +65,9 @@ def generate_report(name, out_dir, structures, num_structs_limit=5, msa_files=No
 
     print("Structures:", structure_paths)
 
-    # Parse HTML template with BeautifulSoup
+    # Read HTML template
     with open(html_template, "r") as f:
-        soup = BeautifulSoup(f.read(), "html.parser")
+        html = f.read()
 
     # Build configuration JSON for JavaScript
     config = {
@@ -77,23 +76,13 @@ def generate_report(name, out_dir, structures, num_structs_limit=5, msa_files=No
         "programName": prog_name_mapping.get(prog, prog),
         "structFormat": struct_format,
         "models": [f"Rank {idx+1}" for idx, _ in enumerate(parsed_structures)],
-        "lddt_averages": [round(plddt_from_struct_b_factor(s).mean(), 2) for s in parsed_structures],
+        "plddt_averages": [round(plddt_from_struct_b_factor(s).mean(), 2) for s in parsed_structures],
         "models_data": [open(s, "r").read().replace("\n", "\\n") for s in structure_paths],
     }
 
-    # Inject configuration as JSON into a script tag
-    config_script = soup.new_tag("script", type="application/json", attrs={"id": "report-config"})
-    config_script.string = json.dumps(config)
-    
-    # Find or create head section and add config script
-    head = soup.find("head")
-    if head:
-        head.append(config_script)
-    else:
-        # Fallback: add before first script tag
-        first_script = soup.find("script")
-        if first_script:
-            first_script.insert_before(config_script)
+    # Inject configuration as a JSON script tag before </head>
+    config_script = f'<script type="application/json" id="report-config">{json.dumps(config)}</script>'
+    html = html.replace('</head>', f'{config_script}\n</head>', 1)
 
     # Generate sequence coverage plot from first MSA file
     seq_cov_html = None
@@ -105,10 +94,9 @@ def generate_report(name, out_dir, structures, num_structs_limit=5, msa_files=No
             config=PLOTLY_CONFIG,
         )
 
-    # Replace placeholder divs with content using BeautifulSoup
-    seq_cov_placeholder = soup.find("div", attrs={"id": "seq_cov_placeholder"})
-    if seq_cov_placeholder and seq_cov_html:
-        seq_cov_placeholder.replace_with(BeautifulSoup(seq_cov_html, "html.parser"))
+    # Replace placeholder divs with plot HTML
+    if seq_cov_html:
+        html = html.replace('<div id="seq_cov_placeholder"></div>', seq_cov_html, 1)
 
     # Generate the pLDDT plot and convert to HTML
     plddt_fig = generate_plddt_plot(parsed_structures)
@@ -117,9 +105,7 @@ def generate_report(name, out_dir, structures, num_structs_limit=5, msa_files=No
         include_plotlyjs="cdn",
         config=PLOTLY_CONFIG,
     )
-    lddt_placeholder = soup.find("div", attrs={"id": "lddt_placeholder"})
-    if lddt_placeholder:
-        lddt_placeholder.replace_with(BeautifulSoup(plddt_html, "html.parser"))
+    html = html.replace('<div id="plddt_placeholder"></div>', plddt_html, 1)
 
     # Generate PAE plot from first PAE file (TODO: toggle PAE with model selection)
     if pae_files:
@@ -129,9 +115,7 @@ def generate_report(name, out_dir, structures, num_structs_limit=5, msa_files=No
             include_plotlyjs="cdn",
             config=PLOTLY_CONFIG,
         )
-        pae_placeholder = soup.find("div", attrs={"id": "pae_placeholder"})
-        if pae_placeholder:
-            pae_placeholder.replace_with(BeautifulSoup(pae_html, "html.parser"))
+        html = html.replace('<div id="pae_placeholder"></div>', pae_html, 1)
 
     if write_htmls:
         with open(f"{out_dir}/{name}_coverage_pLDDT.html", "w") as out_file:
@@ -142,7 +126,7 @@ def generate_report(name, out_dir, structures, num_structs_limit=5, msa_files=No
 
     # Write the final HTML report
     with open(f"{out_dir}/{name}_{type}_report.html", "w") as out_file:
-        out_file.write(str(soup))
+        out_file.write(html)
 
 def main():
     parser = argparse.ArgumentParser(description="Generate protein structure reports.")
@@ -163,10 +147,15 @@ def main():
     html_template = args.html_template or get_template_path()
 
     # Both these values could be missing - ESMFold for MSA, many others for PAE
-    if args.msa and os.path.basename(args.msa[0]) == "NO_FILE":
+    if args.msa and os.path.basename(args.msa[0]).startswith("DUMMY_"):
         args.msa = None
-    if args.pae and os.path.basename(args.pae[0]) == "NO_FILE":
+    if args.pae and os.path.basename(args.pae[0]).startswith("DUMMY_"):
         args.pae = None
+    # Catch-all for any future optional metric args, if we have plots for pTM or other missing values. The above two are more common and explicit
+    for attr in vars(args):
+        val = getattr(args, attr)
+        if isinstance(val, list) and val and os.path.basename(val[0]).startswith("DUMMY_"):
+            setattr(args, attr, None)
 
     generate_report(
         name=args.name,

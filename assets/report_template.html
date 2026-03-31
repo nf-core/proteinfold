@@ -249,7 +249,7 @@
               </div>
               <div>
                 Average pLDDT:
-                <span id="lddt-average" class="font-normal"></span>
+                <span id="plddt-average" class="font-normal"></span>
               </div>
             </div>
           </div>
@@ -396,7 +396,7 @@
             Residue confidence - pLDDT
           </div>
           <div class="p-4 xl:p-6 bg-white shadow-md rounded">
-            <div id="lddt_placeholder"></div>
+            <div id="plddt_placeholder"></div>
           </div>
         </div>
 
@@ -508,7 +508,7 @@
       structFormat: "pdb",
       models: [],
       models_data: [],
-      lddt_averages: [],
+      plddt_averages: [],
     };
 
     // Load report configuration from embedded JSON
@@ -524,7 +524,7 @@
 
     const MODELS = config.models;
     const MODELS_DATA = config.models_data;
-    const LDDT_AVERAGES = config.lddt_averages;
+    const PLDDT_AVERAGES = config.plddt_averages;
     const PROGRAM_NAME = config.programName;
     const SAMPLE_NAME = config.sampleName;
     const STRUCT_FORMAT = config.structFormat;
@@ -560,7 +560,7 @@
       // Handle window resizing
       window.addEventListener("resize", () => stage.handleResize());
 
-      document.getElementById("lddt-average").textContent = LDDT_AVERAGES[0];
+      document.getElementById("plddt-average").textContent = PLDDT_AVERAGES[0];
 
       loadModel();
       loadModelImage();
@@ -581,7 +581,7 @@
 
     const setModel = (ix) => {
       state.model = ix;
-      document.getElementById("lddt-average").textContent = LDDT_AVERAGES[ix];
+      document.getElementById("plddt-average").textContent = PLDDT_AVERAGES[ix];
       stage.removeComponent(state.modelObject);
       setLoading(1);
 

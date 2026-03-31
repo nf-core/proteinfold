@@ -76,7 +76,7 @@ def generate_report(name, out_dir, structures, num_structs_limit=5, msa_files=No
         "programName": prog_name_mapping.get(prog, prog),
         "structFormat": struct_format,
         "models": [f"Rank {idx+1}" for idx, _ in enumerate(parsed_structures)],
-        "lddt_averages": [round(plddt_from_struct_b_factor(s).mean(), 2) for s in parsed_structures],
+        "plddt_averages": [round(plddt_from_struct_b_factor(s).mean(), 2) for s in parsed_structures],
         "models_data": [open(s, "r").read().replace("\n", "\\n") for s in structure_paths],
     }
 
@@ -105,7 +105,7 @@ def generate_report(name, out_dir, structures, num_structs_limit=5, msa_files=No
         include_plotlyjs="cdn",
         config=PLOTLY_CONFIG,
     )
-    html = html.replace('<div id="lddt_placeholder"></div>', plddt_html, 1)
+    html = html.replace('<div id="plddt_placeholder"></div>', plddt_html, 1)
 
     # Generate PAE plot from first PAE file (TODO: toggle PAE with model selection)
     if pae_files:
@@ -147,11 +147,14 @@ def main():
     html_template = args.html_template or get_template_path()
 
     # Both these values could be missing - ESMFold for MSA, many others for PAE
-    if args.msa and os.path.basename(args.msa[0]) == "NO_FILE":
+    if args.msa and os.path.basename(args.msa[0]).startswith("DUMMY_MSA"):
         args.msa = None
-    if args.pae and os.path.basename(args.pae[0]) == "NO_FILE":
-        args.pae = None
-
+    if args.pae and os.path.basename(args.pae[0]).startswith("DUMMY_PAE"):
+        args.pae = None    # Catch-all for any future optional metric args
+    for attr in vars(args):
+        val = getattr(args, attr)
+        if isinstance(val, list) and val and os.path.basename(val[0]).startswith("DUMMY_"):
+            setattr(args, attr, None)
     generate_report(
         name=args.name,
         out_dir=args.output_dir,
