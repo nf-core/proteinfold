@@ -27,19 +27,6 @@ prog_name_mapping = {
     "comparison": "Comparison",
 }
 
-def get_template_path():
-    # Get directory where this script lives: modules/local/generate_report/
-    script_dir = Path(__file__).parent.parent.parent  # Go up to modules/local/
-    template_path = script_dir / "assets" / "report_template.html"
-
-    if not template_path.exists():
-        raise FileNotFoundError(
-            f"Template not found: {template_path}\n"
-            f"Expected: {script_dir}/assets/report_template.html"
-        )
-
-    return str(template_path)
-
 def generate_report(name, out_dir, structures, num_structs_limit=5, msa_files=None, pae_files=None, prog="proteinfold", type="standard", html_template=None):
 
     PLOTLY_CONFIG = {"displayModeBar": True, "displaylogo": False, "scrollZoom": True}

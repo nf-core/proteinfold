@@ -180,9 +180,8 @@ def generate_plddt_plot(structures):
             )
         )
     fig.update_layout(
-        title=dict(text="pLDDT per position", x=0.5, xanchor="center"),
         xaxis=dict(
-            title="Positions", showline=True, linecolor="black", gridcolor="WhiteSmoke"
+            title="Residue position", showline=True, linecolor="black", gridcolor="WhiteSmoke"
         ),
         yaxis=dict(
             title="pLDDT",
@@ -195,8 +194,7 @@ def generate_plddt_plot(structures):
             yanchor="bottom", y=0.02, xanchor="right", x=1, bordercolor="Black", borderwidth=1
         ),
         plot_bgcolor="white",
-        width=600,
-        height=600,
+        autosize=True,
     )
 
     return fig
@@ -268,9 +266,8 @@ def generate_sequence_coverage_plot(msa_path, out_dir, name, save_image=False):
     )
 
     fig.update_layout(
-        title=dict(text="Sequence coverage", x=0.5, xanchor="center"),
         xaxis=dict(
-            title="Positions",
+            title="Residue position",
             showline=True,
             linecolor="black",
             gridcolor="WhiteSmoke",
@@ -286,8 +283,7 @@ def generate_sequence_coverage_plot(msa_path, out_dir, name, save_image=False):
         ),
         plot_bgcolor="white",
         legend=dict(yanchor="bottom", y=0.02, xanchor="right", x=0.98),
-        width=800,
-        height=600,
+        autosize=True,
     )
 
     if save_image:
@@ -302,7 +298,7 @@ def generate_pae_plot(pae_path, out_dir, name, save_image=False):
     Generate an interactive Plotly heatmap for Predicted Aligned Error (PAE) data.
     """
     pae = np.genfromtxt(pae_path, delimiter="\t")
-    max_pae = np.max(pae)
+    max_pae = 31.75 # Capped from AlphaFold's value 
     fig = go.Figure()
 
     # Add heatmap with green colorscale
@@ -320,8 +316,7 @@ def generate_pae_plot(pae_path, out_dir, name, save_image=False):
         title=dict(text="Predicted Aligned Error", x=0.5, xanchor="center"),
         xaxis=dict(title="Scored Residue"),
         yaxis=dict(title="Aligned Residue"),
-        width=800,
-        height=800,
+        autosize=True,
     )
 
     if save_image:
