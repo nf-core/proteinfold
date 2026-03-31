@@ -79,27 +79,8 @@ workflow HELIXFOLD3 {
     ch_pdb      = ch_pdb.mix(RUN_HELIXFOLD3.out.pdb)
     ch_versions = ch_versions.mix(RUN_HELIXFOLD3.out.versions)
 
-    RUN_HELIXFOLD3
-        .out
-        .top_ranked_pdb
-        .map { it ->
-            def meta = it[0].clone();
-            meta.model = "helixfold3";
-            [ meta, it[1] ]
-        }
-        .set { ch_top_ranked_pdb }
-
-    RUN_HELIXFOLD3
-        .out
-        .pdb
-        .map { it ->
-            def meta = it[0].clone();
-            meta.model = "helixfold3";
-            def files = (it[1] instanceof List) ? it[1] : [ it[1] ]
-            [ meta, files ]
-        }
-        .set { ch_pdb_final }
-
+    modeChannel(RUN_HELIXFOLD3.out.top_ranked_pdb, "helixfold3").set { ch_top_ranked_pdb }
+    modeChannel(RUN_HELIXFOLD3.out.pdb, "helixfold3", true).set { ch_pdb_final }
     modeChannel(RUN_HELIXFOLD3.out.msa, "helixfold3").set { ch_msa_final }
     modeChannel(RUN_HELIXFOLD3.out.pae, "helixfold3").set { ch_pae_final }
 

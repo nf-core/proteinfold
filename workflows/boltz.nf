@@ -29,6 +29,7 @@ include { paramsSummaryMap       } from 'plugin/nf-schema'
 include { paramsSummaryMultiqc   } from '../subworkflows/nf-core/utils_nfcore_pipeline'
 include { softwareVersionsToYAML } from '../subworkflows/nf-core/utils_nfcore_pipeline'
 include { methodsDescriptionText } from '../subworkflows/local/utils_nfcore_proteinfold_pipeline'
+include { modeChannel            } from '../subworkflows/local/utils_nfcore_proteinfold_pipeline'
 
 //
 // MODULE: Boltz
@@ -135,45 +136,10 @@ workflow BOLTZ {
         ch_mols
     )
 
-    RUN_BOLTZ
-        .out
-        .pdb
-        .map { it ->
-            def meta = it[0].clone();
-            meta.model = "boltz"
-            [ meta, it[1] ]
-        }
-        .set {ch_pdb}
-
-    RUN_BOLTZ
-        .out
-        .top_ranked_pdb
-        .map { it ->
-            def meta = it[0].clone();
-            meta.model = "boltz"
-            [ meta, it[1] ]
-        }
-        .set { ch_top_ranked_pdb }
-
-    RUN_BOLTZ
-        .out
-        .msa_raw
-        .map { it ->
-            def meta = it[0].clone();
-            meta.model = "boltz"
-            [ meta, it[1] ]
-        }
-        .set { ch_msa }
-
-    RUN_BOLTZ
-        .out
-        .pae_raw
-        .map { it ->
-            def meta = it[0].clone();
-            meta.model = "boltz"
-            [ meta, it[1] ]
-        }
-        .set { ch_pae }
+    modeChannel(RUN_BOLTZ.out.pdb, "boltz").set { ch_pdb }
+    modeChannel(RUN_BOLTZ.out.top_ranked_pdb, "boltz").set { ch_top_ranked_pdb }
+    modeChannel(RUN_BOLTZ.out.msa_raw, "boltz").set { ch_msa }
+    modeChannel(RUN_BOLTZ.out.pae_raw, "boltz").set { ch_pae }
 
     ch_versions       = ch_versions.mix(RUN_BOLTZ.out.versions)
 

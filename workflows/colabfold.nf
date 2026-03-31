@@ -88,27 +88,8 @@ workflow COLABFOLD {
         ch_versions    = ch_versions.mix(COLABFOLD_BATCH.out.versions)
     }
 
-    COLABFOLD_BATCH
-        .out
-        .top_ranked_pdb
-        .map { it ->
-            def meta_clone = it[0].clone();
-            meta_clone.model = "colabfold";
-            [ meta_clone, it[1] ]
-        }
-        .set { ch_top_ranked_pdb }
-
-    COLABFOLD_BATCH
-        .out
-        .pdb
-        .map { it ->
-            def meta = it[0].clone();
-            meta.model = "colabfold";
-            def files = (it[1] instanceof List) ? it[1] : [ it[1] ]
-            [ meta, files ]
-        }
-        .set { ch_pdb_final }
-
+    modeChannel(COLABFOLD_BATCH.out.top_ranked_pdb, "colabfold").set { ch_top_ranked_pdb }
+    modeChannel(COLABFOLD_BATCH.out.pdb, "colabfold", true).set { ch_pdb_final }
     modeChannel(COLABFOLD_BATCH.out.msa, "colabfold").set { ch_msa_final }
     modeChannel(COLABFOLD_BATCH.out.pae, "colabfold").set { ch_pae_final }
 
