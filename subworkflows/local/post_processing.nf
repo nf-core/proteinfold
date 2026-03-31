@@ -19,26 +19,16 @@ include { MULTIQC             } from '../../modules/nf-core/multiqc/main'
 workflow POST_PROCESSING {
 
     take:
-    skip_visualisation
     requested_modes_size
     ch_report_input
     ch_report_template
-    skip_foldseek
-    foldseek_db
-    foldseek_db_path
-    skip_multiqc
-    outdir
     ch_versions
-    ch_multiqc_config
-    ch_multiqc_custom_config
-    ch_multiqc_logo
-    ch_multiqc_methods_description
     ch_top_ranked_model
 
     main:
     ch_comparison_report_files = channel.empty()
 
-    if (!skip_visualisation){
+    if (!params.skip_visualisation){
         ch_report_input
             .multiMap { meta, pdbs, msa, pae ->
                 full:     [meta, pdbs, msa, pae]
@@ -82,12 +72,12 @@ workflow POST_PROCESSING {
         }
     }
 
-    if (!skip_foldseek) {
+    if (!params.skip_foldseek) {
         ch_foldseek_db = channel.value([
             [
-                id: foldseek_db,
+                id: params.foldseek_db,
             ],
-            file(foldseek_db_path, checkIfExists: true)
+            file(params.foldseek_db_path, checkIfExists: true)
         ])
         FOLDSEEK_EASYSEARCH(
             ch_top_ranked_model,
@@ -100,7 +90,7 @@ workflow POST_PROCESSING {
     //
     softwareVersionsToYAML(ch_versions)
         .collectFile(
-            storeDir: "${outdir}/pipeline_info",
+            storeDir: "${params.outdir}/pipeline_info",
             name: 'nf_core_'  +  'proteinfold_software_'  + 'mqc_'  + 'versions.yml',
             sort: true,
             newLine: true
@@ -111,17 +101,22 @@ workflow POST_PROCESSING {
     //
     ch_multiqc_report = channel.empty()
 
-    if (!skip_multiqc) {
-        summary_params           = paramsSummaryMap(workflow, parameters_schema: "nextflow_schema.json")
-        ch_workflow_summary      = channel.value(paramsSummaryMultiqc(summary_params))
-        ch_methods_description   = channel.value(methodsDescriptionText(ch_multiqc_methods_description))
+    if (!params.skip_multiqc) {
+        ch_multiqc_config        = channel.fromPath("$projectDir/assets/multiqc_config.yml", checkIfExists: true).first()
+        ch_multiqc_custom_config = params.multiqc_config   ? channel.fromPath(params.multiqc_config).first()                                                                       : channel.empty()
+        ch_multiqc_logo          = params.multiqc_logo     ? channel.fromPath(params.multiqc_logo).first()                                                                         : channel.empty()
+        ch_multiqc_methods_desc  = params.multiqc_methods_description ? file(params.multiqc_methods_description, checkIfExists: true) : file("$projectDir/assets/methods_description_template.yml", checkIfExists: true)
+
+        summary_params         = paramsSummaryMap(workflow, parameters_schema: "nextflow_schema.json")
+        ch_workflow_summary    = channel.value(paramsSummaryMultiqc(summary_params))
+        ch_methods_description = channel.value(methodsDescriptionText(ch_multiqc_methods_desc))
 
         ch_multiqc_files = ch_workflow_summary.collectFile(name: 'workflow_summary_mqc.yaml')
             .mix(ch_methods_description.collectFile(name: 'methods_description_mqc.yaml'))
             .mix(ch_collated_versions)
 
         MULTIQC (
-            ch_multiqc_files.collect().map { [[id: "proteinfold", model: "proteinfold"], it] },
+            ch_multiqc_files.collect().map { [[id: 'proteinfold', model: 'proteinfold'], it] },
             ch_multiqc_config,
             ch_multiqc_custom_config.toList(),
             ch_multiqc_logo.toList(),
