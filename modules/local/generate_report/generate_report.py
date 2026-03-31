@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from plot_utils import (
     reset_residue_numbers,
     sort_structures_by_rank,
@@ -7,159 +8,149 @@ from plot_utils import (
     generate_pae_plot,
     generate_sequence_coverage_plot,
 )
-import base64
+import json
 import argparse
+import os
+from pathlib import Path
 
-# TODO: Barcelona team to implement AF3, others
 prog_name_mapping = {
     "proteinfold": "ProteinFold",
     "alphafold2": "AlphaFold2",
+    "alphafold3": "AlphaFold3",
     "esmfold": "ESMFold",
     "colabfold": "ColabFold",
     "rosettafold-all-atom": "RoseTTAFold-All-Atom",
+    "rosettafold2na": "RoseTTAFold2NA",
     "helixfold3": "HelixFold3",
-    "boltz1": "Boltz1",
+    "boltz": "Boltz",
+    "comparison": "Comparison",
 }
 
-def generate_report(name, out_dir, structures, num_structs_limit=5, msa_files=None, pae_files=None, prog="ProteinFold", type="standard", html_template=None, write_htmls=True, seq_cov_as_html=False):
+def get_template_path():
+    # Get directory where this script lives: modules/local/generate_report/
+    script_dir = Path(__file__).parent.parent.parent  # Go up to modules/local/
+    template_path = script_dir / "assets" / "report_template.html"
+    
+    if not template_path.exists():
+        raise FileNotFoundError(
+            f"Template not found: {template_path}\n"
+            f"Expected: {script_dir}/assets/report_template.html"
+        )
+    
+    return str(template_path)
 
-    # Change this to not just be ESMFold. HF3 resets on chainbreaks. Have structure res sequential just in case
-    for structure in structures:
-        structure = reset_residue_numbers(structure)
+def generate_report(name, out_dir, structures, num_structs_limit=5, msa_files=None, pae_files=None, prog="proteinfold", type="standard", html_template=None, write_htmls=True):
 
-    # Sort structures by name and limit to set set number
+    PLOTLY_CONFIG = {"displayModeBar": True, "displaylogo": False, "scrollZoom": True}
+
+    # Sort structures by name and limit to set number
     if len(structures) > num_structs_limit:
         print(f"Warning: More than {num_structs_limit} structures provided. Sorting and using only the first {num_structs_limit} structures.")
         sorted_structures = sort_structures_by_rank(structures, prog)
         structures = sorted_structures[:num_structs_limit]
 
-    # Replace structures with aligned versions
+    # Keep original file paths for reading structure data and NGL viewer
+    structure_paths = list(structures)
+
+    # Detect structure format for NGL viewer
+    struct_format = "cif" if structure_paths[0].endswith(".cif") else "pdb"
+
+    # Parse structures into BioPython objects with sequential residue numbering
+    # (ESMFold, HF3 etc. restart numbering per chain — renumber to be sequential)
+    parsed_structures = [reset_residue_numbers(s) for s in structure_paths]
+
+    # For comparison mode, re-parse and align structures
     if type == "comparison":
-        aligned_structures = align_structures(structures, save_ref_structure=True)
-        structures = aligned_structures
+        parsed_structures = align_structures(structure_paths)
 
-    # Keeping for parsing visibility purposes
-    print("Structures:", structures)
+    print("Structures:", structure_paths)
 
-    #TODO: should really use a proper HTML parser for this, like BeautifulSoup or html5lib. strings prone to failure
-    #However, most replacements are simple and this is faster
-    template = open(html_template, "r").read()
-    template = template.replace("*sample_name*", name)
-    template = template.replace("*prog_name*", prog_name_mapping[prog])
+    # Read HTML template
+    with open(html_template, "r") as f:
+        html = f.read()
 
-    lddt_averages = []
-    for structure in structures:
-        lddt_averages.append(round(plddt_from_struct_b_factor(structure).mean(), 2))
-    averages_js_array = f"const LDDT_AVERAGES = {lddt_averages};"
-    template = template.replace("const LDDT_AVERAGES = [];", averages_js_array)
+    # Build configuration JSON for JavaScript
+    config = {
+        "reportType": type,
+        "sampleName": name,
+        "programName": prog_name_mapping.get(prog, prog),
+        "structFormat": struct_format,
+        "models": [f"Rank {idx+1}" for idx, _ in enumerate(parsed_structures)],
+        "lddt_averages": [round(plddt_from_struct_b_factor(s).mean(), 2) for s in parsed_structures],
+        "models_data": [open(s, "r").read().replace("\n", "\\n") for s in structure_paths],
+    }
 
-    # Populate MODELS into the HTML templat
-    rank_names = [f"Rank {idx+1}" for idx, _ in enumerate(structures)]
-    model_names_js = ("const MODELS = [" + ",\n".join([f'"{model}"' for model in rank_names]) + "];")
-    template = template.replace("const MODELS = [];", model_names_js)
+    # Inject configuration as a JSON script tag before </head>
+    config_script = f'<script type="application/json" id="report-config">{json.dumps(config)}</script>'
+    html = html.replace('</head>', f'{config_script}\n</head>', 1)
 
-    # Populate MODELS_DATA with the content of the PDB files
-    # TODO: If the .cif string is written as a literal in the report, will it still render? Probably, not be see the logic
-    pdb_strings = [open(structure, "r").read().replace("\n", "\\n") for structure in structures]
-    models_data = ",\n".join([f'"{pdb_string}"' for pdb_string in pdb_strings])
-    models_data_js = f"const MODELS_DATA = [{models_data}];"
-    template = template.replace("const MODELS_DATA = [];", models_data_js)
-
-    # Generate sequence coverage plots and convert to HTML
+    # Generate sequence coverage plot from first MSA file
+    seq_cov_html = None
     if msa_files:
-        for msa_file in msa_files:
-            seq_cov_fig, seq_cov_img_path = generate_sequence_coverage_plot(msa_file, out_dir, name, save_image=True)
-            seq_cov_img_encoded = base64.b64encode(open(seq_cov_img_path, "rb").read()).decode("utf-8")
-            seq_cov_img_tag = f'<img src="data:image/png;base64,{seq_cov_img_encoded}" alt="Sequence Coverage Image">'
+        seq_cov_fig = generate_sequence_coverage_plot(msa_files[0], out_dir, name)
+        seq_cov_html = seq_cov_fig.to_html(
+            full_html=False,
+            include_plotlyjs="cdn",
+            config=PLOTLY_CONFIG,
+        )
 
-            seq_cov_html = seq_cov_fig.to_html(
-                full_html=False,
-                include_plotlyjs="cdn",
-                config={"displayModeBar": True, "displaylogo": False, "scrollZoom": True},
-            )
-    if seq_cov_as_html == True:
-        template = template.replace('<div id="seq_cov_placeholder"></div>', seq_cov_html)
-    else:
-        template = template.replace('<div id="seq_cov_placeholder"></div>', seq_cov_img_tag)
+    # Replace placeholder divs with plot HTML
+    if seq_cov_html:
+        html = html.replace('<div id="seq_cov_placeholder"></div>', seq_cov_html, 1)
 
     # Generate the pLDDT plot and convert to HTML
-    plddt_fig = generate_plddt_plot(structures)
+    plddt_fig = generate_plddt_plot(parsed_structures)
     plddt_html = plddt_fig.to_html(
         full_html=False,
         include_plotlyjs="cdn",
-        config={"displayModeBar": True, "displaylogo": False, "scrollZoom": True},
+        config=PLOTLY_CONFIG,
     )
-    template = template.replace('<div id="lddt_placeholder"></div>', plddt_html)
+    html = html.replace('<div id="lddt_placeholder"></div>', plddt_html, 1)
 
-   #Generate PAE plot and conver to HTML TODO: currently onlt the first
+    # Generate PAE plot from first PAE file (TODO: toggle PAE with model selection)
     if pae_files:
-        pae_figs = []
-        for pae_file in pae_files:
-            # TODO: ensure PAE files are sorted and limited to num_structs_limit
-            pae_figs.append(generate_pae_plot(pae_file, out_dir, name, save_image=True))
-        pae_html = pae_figs[0].to_html(
+        pae_fig = generate_pae_plot(pae_files[0], out_dir, name)
+        pae_html = pae_fig.to_html(
             full_html=False,
             include_plotlyjs="cdn",
-            config={"displayModeBar": True, "displaylogo": False, "scrollZoom": True},
+            config=PLOTLY_CONFIG,
         )
-        template = template.replace('<div id="pae_placeholder"></div>', pae_html)
-    # TODO: need logic to keep PAEs in sync with structure upon click
-    # TODO: look at the Sequence coverage approach (e.g. ESMFold has none)
-    else:
-        pass
-        # TODO: Remove the PAE div if no PAE files are provided.
-        # The below approach will remove the div but needs dynamic resizing in the report
-        # pae_section_text = """
-        # <div id="pae-title" class="text-4xl font-bold tracking-tight mb-6">PAE</div>
-        # <div class="p-6 bg-white shadow-md rounded">
-        #   <div id="pae_container" class="w-[660px] min-h-[600px] flex justify-center items-center mx-auto">
-            # <div id="pae_placeholder"></div>
-        #   </div>
-        # </div>
-        # """
-        # template = template.replace(pae_section_text.strip(), "")
+        html = html.replace('<div id="pae_placeholder"></div>', pae_html, 1)
 
     if write_htmls:
         with open(f"{out_dir}/{name}_coverage_pLDDT.html", "w") as out_file:
             out_file.write(plddt_html)
-        with open(f"{out_dir}/{name}_coverage_MSA.html", "w") as out_file:
-            out_file.write(seq_cov_html)
+        if seq_cov_html:
+            with open(f"{out_dir}/{name}_coverage_MSA.html", "w") as out_file:
+                out_file.write(seq_cov_html)
 
     # Write the final HTML report
     with open(f"{out_dir}/{name}_{type}_report.html", "w") as out_file:
-        out_file.write(template)
+        out_file.write(html)
 
 def main():
     parser = argparse.ArgumentParser(description="Generate protein structure reports.")
     parser.add_argument("--name", required=True, help="Name of the report.")
     parser.add_argument("--output_dir", required=True, help="Output directory for the report.")
-    parser.add_argument("--structs", required=True, nargs="+", help="List of structure file paths.")
-    parser.add_argument("--msa", nargs="+", default=None, help="MSA file path.")
-    parser.add_argument("--paes", nargs="+", default=None, help="List of PAE file paths (optional).")
-    parser.add_argument("--prog", default="proteinfold", choices=["alphafold2", "esmfold", "colabfold", "rosettafold-all-atom", "helixfold3", "boltz1"], type=str.lower, help="The program used to generate the structures, can be called in the workflow")
-    parser.add_argument("--type", default="standard", choices=["standard", "comparison"], help="The type of report file generated .") # TODO: change to --type with options in case there are other reports
-    #TODO: remove --html_template as this is already determined by the type
-    parser.add_argument("--html_template", default=None, help="Path to the HTML template for comparison (optional).")
-    parser.add_argument("--write_htmls", default=True, help="Write out seperate files for each html plot (optional).")
+    parser.add_argument("--structs", required=True, nargs="+", help="List of structure file paths (.pdb or .cif).")
+    parser.add_argument("--msa", nargs="+", default=None, help="MSA file path(s).")
+    parser.add_argument("--pae", nargs="+", default=None, help="PAE file path(s).")
+    parser.add_argument("--prog", default="proteinfold", choices=["proteinfold", "alphafold2", "alphafold3", "esmfold", "colabfold", "rosettafold-all-atom", "rosettafold2na", "helixfold3", "boltz", "comparison"], type=str.lower, help="The program used to generate the structures.")
+    parser.add_argument("--type", default="standard", choices=["standard", "comparison"], help="The type of report to generate.")
+    parser.add_argument("--html_template", default=None, help="Path to the HTML report template.")
+    parser.add_argument("--write_htmls", default=True, help="Write out separate files for each html plot.")
 
     args = parser.parse_args()
 
     print("Generating report.....")
 
-    # TODO: want a better way of pathing this
-    if args.type == "comparison":
-        html_template = "../.../assets/comparison_template.html"
-    elif args.type == "standard":
-        html_template = "../../assets/report_template.html"
-    else:
-        html_template = args.html_template
+    html_template = args.html_template or get_template_path()
 
-
-    # Both these values could be missing - EMSFold for MSA, many others for PAE
-    if os.path.basename(args.msa) == "NO_FILE":
-        args.peas=None
-    if os.path.basename(args.paes) == "NO_FILE":
-        args.peas=None
+    # Both these values could be missing - ESMFold for MSA, many others for PAE
+    if args.msa and os.path.basename(args.msa[0]) == "NO_FILE":
+        args.msa = None
+    if args.pae and os.path.basename(args.pae[0]) == "NO_FILE":
+        args.pae = None
 
     generate_report(
         name=args.name,
@@ -167,12 +158,11 @@ def main():
         structures=args.structs,
         num_structs_limit=5,
         msa_files=args.msa,
-        pae_files=args.paes,
+        pae_files=args.pae,
         prog=args.prog,
         type=args.type,
         html_template=html_template,
         write_htmls=args.write_htmls,
-        seq_cov_as_html=False,
     )
 
 if __name__ == "__main__":

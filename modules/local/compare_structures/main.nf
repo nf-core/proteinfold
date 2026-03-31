@@ -24,9 +24,11 @@ process COMPARE_STRUCTURES {
     def args = task.ext.args ?: ''
 
     """
-    generate_comparison_report.py \\
+    generate_report.py \\
+        --type comparison \\
+        --prog comparison \\
         --msa ${msa.join(' ')} \\
-        --pdb ${pdb.join(' ')} \\
+        --structs ${pdb.join(' ')} \\
         --html_template ${template} \\
         --output_dir ./ \\
         --name ${meta.id} \\
@@ -35,7 +37,7 @@ process COMPARE_STRUCTURES {
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         python: \$(python3 --version | sed 's/Python //g')
-        generate_comparison_report.py: \$(python3 --version)
+        generate_report.py: \$(python3 --version)
     END_VERSIONS
     """
 

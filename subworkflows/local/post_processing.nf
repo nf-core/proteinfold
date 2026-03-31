@@ -23,7 +23,6 @@ workflow POST_PROCESSING {
     requested_modes_size
     ch_report_input
     ch_report_template
-    ch_comparison_template
     skip_foldseek
     foldseek_db
     foldseek_db_path
@@ -48,48 +47,47 @@ workflow POST_PROCESSING {
         ch_versions = ch_versions.mix(GENERATE_REPORT.out.versions)
 
         if (requested_modes_size > 1){
-            ch_dummy_file = channel.fromPath("$projectDir/assets/NO_FILE")
-
-            def esm = ch_top_ranked_model.filter { it ->it[0].model == 'esmfold' }
-            def not_esm = ch_top_ranked_model.filter { it -> it[0].model != 'esmfold' }
-
-            esm = esm
-                    .map { it ->
-                        [it[0], it[1]]
-                    }
-                    .merge(ch_dummy_file)
-
-            not_esm = not_esm
-                        .map { it ->  [it[0], it[1]] }
-                        .join(GENERATE_REPORT.out.sequence_coverage)
-
-            not_esm.mix(esm).set{ch_comparison_report_files}
-
-            ch_comparison_report_files
-                .map { it ->
-                    [["id": it[0].id], it[0], it[1], it[2]]
+            // Multi-mode comparison: group structures and coverage data from all modes
+            ch_top_ranked_model
+                .map { meta, pdb ->
+                    [["id": meta.id], meta, pdb]
                 }
+                .join(
+                    GENERATE_REPORT.out.sequence_coverage,
+                    by: [0],
+                    remainder: true  // Include models without coverage (e.g., ESMFold)
+                )
                 .groupTuple(by: [0], size: requested_modes_size)
-                .map { it ->
-                    it[0].models=it[1].join(',');
-                    [it[0], it[2], it[3]]
+                .map { key, model_meta_list, coverage_list ->
+                    key.models = model_meta_list.collect { meta, pdb -> meta.model }.join(',')
+                    [key, model_meta_list.collect { meta, pdb -> pdb }, coverage_list]
                 }
                 .set { ch_comparison_report_input }
 
+            // Separate channel components for clarity
+            ch_comparison_report_input
+                .map { meta, structures, coverage ->
+                    [meta, structures.collect { f -> f.name }]
+                }
+                .set { ch_pdb_input }
+
+            ch_comparison_report_input
+                .map { meta, structures, coverage ->
+                    [meta, coverage.findAll { f -> f != null }.collect { f -> f.name }]
+                }
+                .set { ch_msa_input }
+
+            ch_comparison_report_input
+                .map { meta, structures, coverage ->
+                    (structures + coverage.findAll { f -> f != null }).unique()
+                }
+                .set { ch_all_files }
+
             COMPARE_STRUCTURES(
-                ch_comparison_report_input
-                    .map { it ->
-                        [it[0], it[1].collect { file -> file.name} ]
-                    },
-                ch_comparison_report_input
-                    .map { it ->
-                        [ it[0], it[2].collect { file -> file.name } ]
-                    },
-                ch_comparison_report_input
-                    .map { it ->
-                        (it[1] + it[2]).unique()
-                    },
-                ch_comparison_template
+                ch_pdb_input,
+                ch_msa_input,
+                ch_all_files,
+                ch_report_template
             )
             ch_versions = ch_versions.mix(COMPARE_STRUCTURES.out.versions)
         }

@@ -14,7 +14,7 @@ process GENERATE_REPORT {
     output:
     tuple val(meta), path ("*report.html")     , emit: report
     tuple val(meta), path ("*seq_coverage.png"), optional: true, emit: sequence_coverage
-    tuple val(meta), path ("*_LDDT.html")      , emit: plddt
+    tuple val(meta), path ("*_pLDDT.html")     , emit: plddt
     path "versions.yml"                        , emit: versions
 
     when:
@@ -25,14 +25,15 @@ process GENERATE_REPORT {
 
     """
     generate_report.py \\
-        --type ${meta.model} \\
+        --type standard \\
+        --prog ${meta.model} \\
         --msa ${msa} \\
         --pae ${pae} \\
-        --pdb ${pdb.join(' ')} \\
+        --structs ${pdb.join(' ')} \\
         --html_template ${template} \\
         --output_dir ./ \\
         --name ${meta.id} \\
-        $args \\
+        $args
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
@@ -45,7 +46,7 @@ process GENERATE_REPORT {
     """
     touch test_alphafold2_report.html
     touch test_seq_coverage.png
-    touch test_LDDT.html
+    touch test_pLDDT.html
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

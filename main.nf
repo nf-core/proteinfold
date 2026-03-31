@@ -570,14 +570,12 @@ workflow NFCORE_PROTEINFOLD {
     ch_multiqc_logo          = params.multiqc_logo   ? channel.fromPath( params.multiqc_logo ).first()    : channel.empty()
     ch_multiqc_methods_description = params.multiqc_methods_description ? file(params.multiqc_methods_description, checkIfExists: true) : file("$projectDir/assets/methods_description_template.yml", checkIfExists: true)
     ch_report_template     = channel.value(file("$projectDir/assets/report_template.html", checkIfExists: true))
-    ch_comparison_template = channel.value(file("$projectDir/assets/comparison_template.html", checkIfExists: true))
 
     POST_PROCESSING(
         params.skip_visualisation,
         requested_modes_size,
         ch_report_input,
         ch_report_template,
-        ch_comparison_template,
         params.skip_foldseek,
         params.foldseek_db,
         params.foldseek_db_path,
