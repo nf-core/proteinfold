@@ -21,7 +21,7 @@ process RUN_BOLTZ {
     tuple val(meta), path ("boltz_results_*/processed/msa/*.npz")               , emit: msa
     tuple val(meta), path ("boltz_results_*/processed/structures/*.npz")        , emit: structures
     tuple val(meta), path ("boltz_results_*/predictions/*/confidence*.json")    , emit: confidence
-    tuple val(meta), path ("${meta.id}_plddt.tsv")                              , emit: multiqc
+    tuple val(meta), path ("${meta.id}_plddt.tsv")                              , emit: plddt
     tuple val(meta), path ("${meta.id}_boltz.pdb")                              , emit: top_ranked_pdb
     tuple val(meta), path ("boltz_results_*/predictions/*/*.pdb")               , emit: pdb
     tuple val(meta), path ("boltz_results_*/predictions/*/plddt_*model_0.npz")  , emit: plddt

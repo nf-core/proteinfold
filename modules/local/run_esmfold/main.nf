@@ -13,7 +13,7 @@ process RUN_ESMFOLD {
     output:
     tuple val(meta), path ("${meta.id}_esmfold.pdb")  , emit: top_ranked_pdb
     tuple val(meta), path ("*.pdb")                   , emit: pdb
-    tuple val(meta), path ("${meta.id}_plddt.tsv")    , emit: multiqc
+    tuple val(meta), path ("${meta.id}_plddt.tsv")    , emit: plddt
     path "versions.yml"                               , emit: versions
 
     when:

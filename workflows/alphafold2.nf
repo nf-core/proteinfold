@@ -49,7 +49,6 @@ workflow ALPHAFOLD2 {
     ch_top_ranked_pdb = channel.empty()
     ch_msa            = channel.empty()
     ch_pae            = channel.empty()
-    ch_multiqc_report = channel.empty()
 
     if (alphafold2_model_preset != 'multimer') {
         ch_samplesheet
@@ -82,16 +81,6 @@ workflow ALPHAFOLD2 {
             ch_pdb_seqres,
             ch_uniprot
         )
-
-        RUN_ALPHAFOLD2
-            .out
-            .multiqc
-            .map { it -> it[1] }
-            .toSortedList()
-            .map { it ->
-                [ [ "model": "alphafold2" ], it.flatten() ]
-            }
-            .set { ch_multiqc_report }
 
         ch_pdb            = ch_pdb.mix(RUN_ALPHAFOLD2.out.pdb)
         ch_top_ranked_pdb = ch_top_ranked_pdb.mix(RUN_ALPHAFOLD2.out.top_ranked_pdb)
@@ -143,16 +132,6 @@ workflow ALPHAFOLD2 {
             ch_uniprot
         )
 
-        RUN_ALPHAFOLD2_PRED
-            .out
-            .multiqc
-            .map { it -> it[1] }
-            .toSortedList()
-            .map { it ->
-                [ [ "model": "alphafold2" ], it.flatten() ]
-            }
-            .set { ch_multiqc_report }
-
         ch_top_ranked_pdb = ch_top_ranked_pdb.mix(RUN_ALPHAFOLD2_PRED.out.top_ranked_pdb)
         ch_pdb            = ch_pdb.mix(RUN_ALPHAFOLD2_PRED.out.pdb)
         ch_msa            = ch_msa.mix(RUN_ALPHAFOLD2_PRED.out.msa)
@@ -197,7 +176,6 @@ workflow ALPHAFOLD2 {
     pdb            = ch_pdb_final            // channel: [ meta, /path/to/*.pdb ]
     msa            = ch_msa_final            // channel: [ meta, /path/to/*.pdb, /path/to/*_coverage.png ]  // Would prefer channel: [ meta, /path/to/*_msa.tsv ]
     pae            = ch_pae_final            // channel: [ meta, /path/to/*_0_pae.tsv]
-    multiqc_report = ch_multiqc_report       // channel: /path/to/multiqc_report.html
     versions       = ch_versions             // channel: [ path(versions.yml) ]
 }
 

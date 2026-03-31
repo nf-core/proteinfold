@@ -47,7 +47,6 @@ workflow HELIXFOLD3 {
     main:
     ch_pdb            = channel.empty()
     ch_top_ranked_pdb = channel.empty()
-    ch_multiqc_report = channel.empty()
 
     //
     // SUBWORKFLOW: Run helixfold3
@@ -76,16 +75,6 @@ workflow HELIXFOLD3 {
         ch_helixfold3_init_models,
         ch_helixfold3_maxit_src
     )
-
-    RUN_HELIXFOLD3
-        .out
-        .multiqc
-        .map { it ->  it[1] }
-        .toSortedList()
-        .map { it ->
-            [ [ "model": "helixfold3" ], it.flatten() ]
-        }
-        .set { ch_multiqc_report }
 
     ch_pdb      = ch_pdb.mix(RUN_HELIXFOLD3.out.pdb)
     ch_versions = ch_versions.mix(RUN_HELIXFOLD3.out.versions)
@@ -119,7 +108,6 @@ workflow HELIXFOLD3 {
     pdb            = ch_pdb_final      // channel: [ id, /path/to/*.pdb ]
     msa            = ch_msa_final      // channel: [ id, /path/to/*_msa.tsv ]
     pae            = ch_pae_final      // channel: [ id, /path/to/*_pae.tsv ]
-    multiqc_report = ch_multiqc_report // channel: /path/to/multiqc_report.html
     versions       = ch_versions       // channel: [ path(versions.yml) ]
 }
 

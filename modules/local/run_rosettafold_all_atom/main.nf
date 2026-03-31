@@ -20,7 +20,7 @@ process RUN_ROSETTAFOLD_ALL_ATOM {
     output:
     path ("raw/**")                                                     , emit: raw
     tuple val(meta), path ("${meta.id}_rosettafold_all_atom.pdb")       , emit: pdb
-    tuple val(meta), path ("${meta.id}_plddt.tsv")                      , emit: multiqc
+    tuple val(meta), path ("${meta.id}_plddt.tsv")                      , emit: plddt
     tuple val(meta), path ("${meta.id}_rosettafold_all_atom_msa.tsv")   , emit: msa
     // I think there should always be PAE from the .pt PyTorch model. extract_metrics.py has condition import torch to handle this
     tuple val(meta), path ("${meta.id}_*_pae.tsv")                      , emit: paes

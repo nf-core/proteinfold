@@ -30,7 +30,7 @@ process RUN_HELIXFOLD3 {
     tuple val(meta), path ("${meta.id}_helixfold3.pdb")     , emit: top_ranked_pdb
     tuple val(meta), path ("${meta.id}_helixfold3.cif")     , emit: main_cif
     tuple val(meta), path ("raw/ranked*.pdb")    , emit: pdb
-    tuple val(meta), path ("${meta.id}_plddt.tsv")          , emit: multiqc
+    tuple val(meta), path ("${meta.id}_plddt.tsv")          , emit: plddt
     tuple val(meta), path ("${meta.id}_helixfold3_msa.tsv") , emit: msa
     // If ${meta.id}-rank*/all_results.json" doesn't have PAE vales in the key, this will be empty
     tuple val(meta), path ("${meta.id}_1_pae.tsv")          , emit: pae

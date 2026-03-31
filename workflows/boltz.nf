@@ -175,14 +175,6 @@ workflow BOLTZ {
         }
         .set { ch_pae }
 
-    RUN_BOLTZ
-        .out
-        .multiqc
-        .map { it -> it[1] }
-        .collect(sort: true)
-        .map { it ->  [ [ "model": "boltz"], it.flatten() ] }
-        .set { ch_multiqc_report  }
-
     ch_versions       = ch_versions.mix(RUN_BOLTZ.out.versions)
 
     emit:
@@ -190,7 +182,6 @@ workflow BOLTZ {
     msa             = ch_msa
     structures      = RUN_BOLTZ.out.structures
     confidence      = RUN_BOLTZ.out.confidence
-    multiqc_report  = ch_multiqc_report
     top_ranked_pdb  = ch_top_ranked_pdb
     pdb             = ch_pdb
     pae             = ch_pae

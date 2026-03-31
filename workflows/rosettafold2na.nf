@@ -28,7 +28,6 @@ workflow ROSETTAFOLD2NA {
     ch_rosettafold2na_weights // channel: path(rosettafold2na_weights)
 
     main:
-    ch_multiqc_report = channel.empty()
 
     ROSETTAFOLD2NA_FASTA(
         ch_samplesheet
@@ -44,16 +43,6 @@ workflow ROSETTAFOLD2NA {
         ch_rosettafold2na_weights
     )
     ch_versions = ch_versions.mix(RUN_ROSETTAFOLD2NA.out.versions)
-
-    RUN_ROSETTAFOLD2NA
-        .out
-        .multiqc
-        .map { it -> it[1] }
-        .toSortedList()
-        .map { it ->
-            [ [ "model": "rosettafold2na" ], it.flatten() ]
-        }
-        .set { ch_multiqc_report }
 
     RUN_ROSETTAFOLD2NA
         .out
@@ -89,7 +78,6 @@ workflow ROSETTAFOLD2NA {
     pdb            = ch_pdb_final      // channel: [ id, /path/to/*.pdb ]
     pae            = ch_pae_final      // channel: [ id, /path/to/*_pae.tsv ]
     msa            = ch_msa_final      // channel: [ id, /path/to/*_msa.tsv ]
-    multiqc_report = ch_multiqc_report // channel: /path/to/multiqc_report.html
     versions       = ch_versions       // channel: [ path(versions.yml) ]
 }
 

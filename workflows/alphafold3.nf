@@ -41,7 +41,6 @@ workflow ALPHAFOLD3 {
     ch_pdb_final      = channel.empty()
     ch_top_ranked_pdb = channel.empty()
     ch_msa_final      = channel.empty()
-    ch_multiqc_report = channel.empty()
 
     FASTA_TO_ALPHAFOLD3_JSON(ch_samplesheet)
     ch_versions       = ch_versions.mix(FASTA_TO_ALPHAFOLD3_JSON.out.versions)
@@ -124,17 +123,6 @@ workflow ALPHAFOLD3 {
         }
         .set { ch_msa_final }
 
-    // Prepare report input
-    RUN_ALPHAFOLD3
-        .out
-        .multiqc
-        .map { it -> it[1] }
-        .toSortedList()
-        .map { it ->
-            [ [ "model": "alphafold3" ], it.flatten() ]
-        }
-        .set { ch_multiqc_report }
-
     // Prepare dummy pae input
     RUN_ALPHAFOLD3
         .out
@@ -151,7 +139,6 @@ workflow ALPHAFOLD3 {
     pdb            = ch_pdb_final      // channel: [ meta, /path/to/*.pdb, ...,/path/to/*.pdb ]
     msa            = ch_msa_final      // channel: [ meta, /path/to/*.pdb, /path/to/*_coverage.png ]
     pae            = ch_pae_final      // channel: [ meta, path/to/*_pae.tsv ]
-    multiqc_report = ch_multiqc_report // channel: /path/to/multiqc_report.html
     versions       = ch_versions       // channel: [ path(versions.yml) ]
 }
 

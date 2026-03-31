@@ -29,7 +29,6 @@ workflow POST_PROCESSING {
     skip_multiqc
     outdir
     ch_versions
-    ch_multiqc_rep
     ch_multiqc_config
     ch_multiqc_custom_config
     ch_multiqc_logo
@@ -122,13 +121,7 @@ workflow POST_PROCESSING {
             .mix(ch_collated_versions)
 
         MULTIQC (
-            ch_multiqc_rep
-                .combine(
-                    ch_multiqc_files
-                        .collect()
-                        .map { [it] }
-                )
-                .map { meta, report_files, multiqc_files -> [ meta, report_files + multiqc_files ] },
+            ch_multiqc_files.collect().map { [[id: "proteinfold", model: "proteinfold"], it] },
             ch_multiqc_config,
             ch_multiqc_custom_config.toList(),
             ch_multiqc_logo.toList(),

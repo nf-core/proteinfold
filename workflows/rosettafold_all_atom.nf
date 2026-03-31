@@ -36,7 +36,6 @@ workflow ROSETTAFOLD_ALL_ATOM {
     ch_rfaa_paper_weights   // channel: path(rfaa_paper_weightsch_dummy_file           // channel: path(NO_file)
 
     main:
-    ch_multiqc_report = channel.empty()
 
     ch_samplesheet.branch { it ->
         fasta: it[1].extension == "fasta" || it[1].extension == "fa"
@@ -64,16 +63,6 @@ workflow ROSETTAFOLD_ALL_ATOM {
     )
     ch_versions = ch_versions.mix(RUN_ROSETTAFOLD_ALL_ATOM.out.versions)
 
-    RUN_ROSETTAFOLD_ALL_ATOM
-        .out
-        .multiqc
-        .map { it -> it[1] }
-        .toSortedList()
-        .map { it ->
-            [ [ "model": "rosettafold_all_atom" ], it.flatten() ]
-        }
-        .set { ch_multiqc_report }
-
     modeChannel(RUN_ROSETTAFOLD_ALL_ATOM.out.pdb, "rosettafold_all_atom").set { ch_pdb_final }
     modeChannel(RUN_ROSETTAFOLD_ALL_ATOM.out.msa, "rosettafold_all_atom").set { ch_msa_final }
     modeChannel(RUN_ROSETTAFOLD_ALL_ATOM.out.pae, "rosettafold_all_atom").set { ch_pae_final }
@@ -82,7 +71,6 @@ workflow ROSETTAFOLD_ALL_ATOM {
     pdb            = ch_pdb_final      // channel: [ id, /path/to/*.pdb ]
     msa            = ch_msa_final      // channel: [ id, /path/to/*_msa.tsv ]
     pae            = ch_pae_final      // channel: [ id, /path/to/*_pae.tsv ]
-    multiqc_report = ch_multiqc_report // channel: /path/to/multiqc_report.html
     versions       = ch_versions       // channel: [ path(versions.yml) ]
 }
 

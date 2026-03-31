@@ -37,7 +37,6 @@ workflow COLABFOLD {
     num_recycles           // int: Number of recycles for colabfold
 
     main:
-    ch_multiqc_report = channel.empty()
 
     if (params.use_msa_server) {
         //
@@ -113,22 +112,11 @@ workflow COLABFOLD {
     modeChannel(COLABFOLD_BATCH.out.msa, "colabfold").set { ch_msa_final }
     modeChannel(COLABFOLD_BATCH.out.pae, "colabfold").set { ch_pae_final }
 
-    COLABFOLD_BATCH
-        .out
-        .multiqc
-        .map { it -> it[1] }
-        .toSortedList()
-        .map { it ->
-            [ [ "model":"colabfold"], it.flatten() ]
-        }
-        .set { ch_multiqc_report  }
-
     emit:
     top_ranked_pdb = ch_top_ranked_pdb // channel: [ meta, /path/to/*.pdb ]
     pdb            = ch_pdb_final      // channel: [ id, /path/to/*.pdb ]
     msa            = ch_msa_final      // channel: [ meta, /path/to/*.pdb, /path/to/*_coverage.png ]
     pae            = ch_pae_final      // channel: [ id, /path/to/*_pae.tsv ]
-    multiqc_report = ch_multiqc_report // channel: /path/to/multiqc_report.html
     versions       = ch_versions       // channel: [ path(versions.yml) ]
 }
 
