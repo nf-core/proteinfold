@@ -11,11 +11,11 @@
                     "colabfold_batch": "unknown"
                 },
                 "GENERATE_REPORT": {
-                    "python": "3.12.7",
-                    "generate_report.py": "Python 3.12.7"
+                    "python": "3.10.8",
+                    "generate_report.py": "Python 3.10.8"
                 },
                 "MULTIFASTA_TO_CSV": {
-                    "sed": 4.7
+                    "sed": 4.5
                 },
                 "Workflow": {
                     "nf-core/proteinfold": "v2.1.0dev"
@@ -28,13 +28,19 @@
                 "DBs/colabfold/params/alphafold_params_2021-07-14",
                 "colabfold",
                 "colabfold/T1024",
+                "colabfold/T1024/T1024_chainwise_iptm.tsv",
+                "colabfold/T1024/T1024_chainwise_ptm.tsv",
                 "colabfold/T1024/T1024_colabfold_msa.tsv",
+                "colabfold/T1024/T1024_iptm.tsv",
                 "colabfold/T1024/T1024_plddt.tsv",
                 "colabfold/T1024/T1024_ptm.tsv",
                 "colabfold/T1024/paes",
                 "colabfold/T1024/paes/T1024_0_pae.tsv",
                 "colabfold/T1026",
+                "colabfold/T1026/T1026_chainwise_iptm.tsv",
+                "colabfold/T1026/T1026_chainwise_ptm.tsv",
                 "colabfold/T1026/T1026_colabfold_msa.tsv",
+                "colabfold/T1026/T1026_iptm.tsv",
                 "colabfold/T1026/T1026_plddt.tsv",
                 "colabfold/T1026/T1026_ptm.tsv",
                 "colabfold/T1026/paes",
@@ -57,11 +63,17 @@
                 [
                     "file.txt:md5,d41d8cd98f00b204e9800998ecf8427e"
                 ],
+                "T1024_chainwise_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1024_chainwise_ptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1024_colabfold_msa.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1024_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1024_plddt.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1024_ptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1024_0_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1026_chainwise_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1026_chainwise_ptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1026_colabfold_msa.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1026_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1026_plddt.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1026_ptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1026_0_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
@@ -71,10 +83,10 @@
                 "test_alphafold2_report.html:md5,d41d8cd98f00b204e9800998ecf8427e"
             ]
         ],
+        "timestamp": "2026-03-31T18:11:05.362798594",
         "meta": {
-            "nf-test": "0.9.3",
+            "nf-test": "0.9.5",
             "nextflow": "25.10.4"
-        },
-        "timestamp": "2026-03-27T08:56:29.675960575"
+        }
     }
 }

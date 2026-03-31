@@ -3,11 +3,11 @@
         "content": [
             {
                 "GENERATE_REPORT": {
-                    "python": "3.12.7",
-                    "generate_report.py": "Python 3.12.7"
+                    "python": "3.10.8",
+                    "generate_report.py": "Python 3.10.8"
                 },
                 "RUN_ALPHAFOLD2": {
-                    "python": "unknown",
+                    "python": "3.10.8",
                     "alphafold2": "unknown",
                     "jax": "unknown",
                     "jaxlib": "unknown",
@@ -23,6 +23,8 @@
                 "alphafold2/standard",
                 "alphafold2/standard/T1024",
                 "alphafold2/standard/T1024/T1024_alphafold2_msa.tsv",
+                "alphafold2/standard/T1024/T1024_chainwise_iptm.tsv",
+                "alphafold2/standard/T1024/T1024_chainwise_ptm.tsv",
                 "alphafold2/standard/T1024/T1024_iptm.tsv",
                 "alphafold2/standard/T1024/T1024_plddt.tsv",
                 "alphafold2/standard/T1024/T1024_ptm.tsv",
@@ -30,6 +32,8 @@
                 "alphafold2/standard/T1024/paes/T1024_0_pae.tsv",
                 "alphafold2/standard/T1026",
                 "alphafold2/standard/T1026/T1026_alphafold2_msa.tsv",
+                "alphafold2/standard/T1026/T1026_chainwise_iptm.tsv",
+                "alphafold2/standard/T1026/T1026_chainwise_ptm.tsv",
                 "alphafold2/standard/T1026/T1026_iptm.tsv",
                 "alphafold2/standard/T1026/T1026_plddt.tsv",
                 "alphafold2/standard/T1026/T1026_ptm.tsv",
@@ -49,11 +53,15 @@
             ],
             [
                 "T1024_alphafold2_msa.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1024_chainwise_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1024_chainwise_ptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1024_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1024_plddt.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1024_ptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1024_0_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1026_alphafold2_msa.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1026_chainwise_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1026_chainwise_ptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1026_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1026_plddt.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1026_ptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
@@ -64,10 +72,10 @@
                 "test_alphafold2_report.html:md5,d41d8cd98f00b204e9800998ecf8427e"
             ]
         ],
+        "timestamp": "2026-03-31T18:11:43.889059596",
         "meta": {
-            "nf-test": "0.9.3",
+            "nf-test": "0.9.5",
             "nextflow": "25.10.4"
-        },
-        "timestamp": "2026-03-27T08:35:24.77961009"
+        }
     }
 }

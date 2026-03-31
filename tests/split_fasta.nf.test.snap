@@ -8,15 +8,15 @@
                     "colabfold_batch": "unknown"
                 },
                 "GENERATE_REPORT": {
-                    "python": "3.12.7",
-                    "generate_report.py": "Python 3.12.7"
+                    "python": "3.10.8",
+                    "generate_report.py": "Python 3.10.8"
                 },
                 "MMSEQS_COLABFOLDSEARCH": {
                     "colabfold_search": "unknown",
                     "mmseqs": null
                 },
                 "MULTIFASTA_TO_CSV": {
-                    "sed": 4.7
+                    "sed": 4.5
                 },
                 "Workflow": {
                     "nf-core/proteinfold": "v2.1.0dev"
@@ -25,13 +25,19 @@
             [
                 "colabfold",
                 "colabfold/H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_1_127_residues",
+                "colabfold/H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_1_127_residues/H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_1_127_residues_chainwise_iptm.tsv",
+                "colabfold/H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_1_127_residues/H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_1_127_residues_chainwise_ptm.tsv",
                 "colabfold/H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_1_127_residues/H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_1_127_residues_colabfold_msa.tsv",
+                "colabfold/H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_1_127_residues/H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_1_127_residues_iptm.tsv",
                 "colabfold/H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_1_127_residues/H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_1_127_residues_plddt.tsv",
                 "colabfold/H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_1_127_residues/H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_1_127_residues_ptm.tsv",
                 "colabfold/H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_1_127_residues/paes",
                 "colabfold/H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_1_127_residues/paes/H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_1_127_residues_0_pae.tsv",
                 "colabfold/H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_2_98_residues",
+                "colabfold/H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_2_98_residues/H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_2_98_residues_chainwise_iptm.tsv",
+                "colabfold/H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_2_98_residues/H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_2_98_residues_chainwise_ptm.tsv",
                 "colabfold/H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_2_98_residues/H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_2_98_residues_colabfold_msa.tsv",
+                "colabfold/H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_2_98_residues/H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_2_98_residues_iptm.tsv",
                 "colabfold/H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_2_98_residues/H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_2_98_residues_plddt.tsv",
                 "colabfold/H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_2_98_residues/H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_2_98_residues_ptm.tsv",
                 "colabfold/H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_2_98_residues/paes",
@@ -51,11 +57,17 @@
                 "reports/test_alphafold2_report.html"
             ],
             [
+                "H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_1_127_residues_chainwise_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_1_127_residues_chainwise_ptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_1_127_residues_colabfold_msa.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_1_127_residues_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_1_127_residues_plddt.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_1_127_residues_ptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_1_127_residues_0_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_2_98_residues_chainwise_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_2_98_residues_chainwise_ptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_2_98_residues_colabfold_msa.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_2_98_residues_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_2_98_residues_plddt.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_2_98_residues_ptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_2_98_residues_0_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
@@ -65,10 +77,10 @@
                 "test_alphafold2_report.html:md5,d41d8cd98f00b204e9800998ecf8427e"
             ]
         ],
+        "timestamp": "2026-03-31T18:12:46.840268898",
         "meta": {
-            "nf-test": "0.9.3",
+            "nf-test": "0.9.5",
             "nextflow": "25.10.4"
-        },
-        "timestamp": "2026-03-27T09:19:28.818804127"
+        }
     }
 }

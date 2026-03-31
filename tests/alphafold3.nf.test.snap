@@ -4,20 +4,20 @@
             11,
             {
                 "FASTA_TO_ALPHAFOLD3_JSON": {
-                    "python": "3.13.7"
+                    "python": "3.10.8"
                 },
                 "GENERATE_REPORT": {
-                    "python": "3.12.7",
-                    "generate_report.py": "Python 3.12.7"
+                    "python": "3.10.8",
+                    "generate_report.py": "Python 3.10.8"
                 },
                 "MMCIF2PDB_MODELS": {
-                    "python": "3.12.7"
+                    "python": "3.10.8"
                 },
                 "MMCIF2PDB_TOP_RANKED": {
-                    "python": "3.12.7"
+                    "python": "3.10.8"
                 },
                 "RUN_ALPHAFOLD3": {
-                    "python": "unknown",
+                    "python": "3.10.8",
                     "alphafold3": "unknown",
                     "jax": "unknown",
                     "jaxlib": "unknown",
@@ -34,6 +34,8 @@
                 "alphafold3",
                 "alphafold3/T1024",
                 "alphafold3/T1024/T1024_alphafold3_msa.tsv",
+                "alphafold3/T1024/T1024_chainwise_iptm.tsv",
+                "alphafold3/T1024/T1024_chainwise_ptm.tsv",
                 "alphafold3/T1024/T1024_iptm.tsv",
                 "alphafold3/T1024/T1024_plddt.tsv",
                 "alphafold3/T1024/T1024_ptm.tsv",
@@ -41,6 +43,8 @@
                 "alphafold3/T1024/paes/T1024_0_pae.tsv",
                 "alphafold3/T1026",
                 "alphafold3/T1026/T1026_alphafold3_msa.tsv",
+                "alphafold3/T1026/T1026_chainwise_iptm.tsv",
+                "alphafold3/T1026/T1026_chainwise_ptm.tsv",
                 "alphafold3/T1026/T1026_iptm.tsv",
                 "alphafold3/T1026/T1026_plddt.tsv",
                 "alphafold3/T1026/T1026_ptm.tsv",
@@ -76,11 +80,15 @@
             ],
             [
                 "T1024_alphafold3_msa.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1024_chainwise_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1024_chainwise_ptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1024_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1024_plddt.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1024_ptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1024_0_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1026_alphafold3_msa.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1026_chainwise_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1026_chainwise_ptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1026_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1026_plddt.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1026_ptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
@@ -104,10 +112,10 @@
                 "test_alphafold2_report.html:md5,d41d8cd98f00b204e9800998ecf8427e"
             ]
         ],
+        "timestamp": "2026-03-31T18:10:37.500286431",
         "meta": {
-            "nf-test": "0.9.3",
+            "nf-test": "0.9.5",
             "nextflow": "25.10.4"
-        },
-        "timestamp": "2026-03-27T08:49:12.687346079"
+        }
     }
 }

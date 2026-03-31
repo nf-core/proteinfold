@@ -94,7 +94,7 @@ process RUN_BOLTZ {
     touch boltz_results_${meta.id}/predictions/${meta.id}/pae_${meta.id}_model_0.npz
 
     touch "${meta.id}_boltz.pdb"
-    touch "${meta.id}_boltz_plddt.tsv"
+    touch "${meta.id}_plddt.tsv"
     touch "${meta.id}_boltz_msa.tsv"
     touch "${meta.id}_0_pae.tsv"
     touch "${meta.id}_ptm.tsv"

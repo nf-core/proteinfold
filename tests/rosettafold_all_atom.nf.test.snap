@@ -4,11 +4,11 @@
             7,
             {
                 "GENERATE_REPORT": {
-                    "python": "3.12.7",
-                    "generate_report.py": "Python 3.12.7"
+                    "python": "3.10.8",
+                    "generate_report.py": "Python 3.10.8"
                 },
                 "RUN_ROSETTAFOLD_ALL_ATOM": {
-                    "python": "unknown",
+                    "python": "3.10.8",
                     "rosettafold-all-atom": "unknown"
                 },
                 "Workflow": {
@@ -61,10 +61,10 @@
                 "T1026.pdb:md5,d41d8cd98f00b204e9800998ecf8427e"
             ]
         ],
+        "timestamp": "2026-03-31T18:12:32.445481634",
         "meta": {
-            "nf-test": "0.9.3",
+            "nf-test": "0.9.5",
             "nextflow": "25.10.4"
-        },
-        "timestamp": "2026-03-27T09:16:06.423724852"
+        }
     }
 }
