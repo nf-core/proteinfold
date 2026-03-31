@@ -78,7 +78,7 @@ def generate_report(name, out_dir, structures, num_structs_limit=5, msa_files=No
         "structFormat": struct_format,
         "models": [f"Rank {idx+1}" for idx, _ in enumerate(parsed_structures)],
         "plddt_averages": [round(plddt_from_struct_b_factor(s).mean(), 2) for s in parsed_structures],
-        "models_data": [open(s, "r").read().replace("\n", "\\n") for s in structure_paths],
+        "models_data": [open(s, "r").read() for s in structure_paths],
     }
 
     # Inject configuration as a JSON script tag before </head>
