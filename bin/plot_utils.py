@@ -274,6 +274,7 @@ def generate_sequence_coverage_plot(msa_path, out_dir, name, save_image=False):
             showline=True,
             linecolor="black",
             gridcolor="WhiteSmoke",
+            fixedrange=True,
         ),
         yaxis=dict(
             title="Sequences",
@@ -281,6 +282,7 @@ def generate_sequence_coverage_plot(msa_path, out_dir, name, save_image=False):
             showline=True,
             linecolor="black",
             gridcolor="WhiteSmoke",
+            fixedrange=True,
         ),
         plot_bgcolor="white",
         legend=dict(yanchor="bottom", y=0.02, xanchor="right", x=0.98),
