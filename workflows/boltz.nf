@@ -138,15 +138,15 @@ workflow BOLTZ {
 
     modeChannel(RUN_BOLTZ.out.pdb, "boltz").set { ch_pdb }
     modeChannel(RUN_BOLTZ.out.top_ranked_pdb, "boltz").set { ch_top_ranked_pdb }
-    modeChannel(RUN_BOLTZ.out.msa_raw, "boltz").set { ch_msa }
-    modeChannel(RUN_BOLTZ.out.pae_raw, "boltz").set { ch_pae }
+    modeChannel(RUN_BOLTZ.out.msa, "boltz").set { ch_msa }
+    modeChannel(RUN_BOLTZ.out.pae, "boltz").set { ch_pae }
 
     ch_versions       = ch_versions.mix(RUN_BOLTZ.out.versions)
 
     emit:
     versions        = ch_versions
     msa             = ch_msa
-    structures      = RUN_BOLTZ.out.structures
+    structures_npz     = RUN_BOLTZ.out.structures_npz
     confidence      = RUN_BOLTZ.out.confidence
     top_ranked_pdb  = ch_top_ranked_pdb
     pdb             = ch_pdb
