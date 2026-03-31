@@ -139,7 +139,7 @@ workflow POST_PROCESSING {
                         .collect()
                         .map { it -> [it] }
                 )
-                .map { it -> [ it[0], it[1] + it[2] ] },
+                .map { meta, report_files, multiqc_files -> [ meta, report_files + multiqc_files ] },
             ch_multiqc_config,
             ch_multiqc_custom_config
                 .collect()

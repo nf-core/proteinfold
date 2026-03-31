@@ -139,22 +139,7 @@ workflow NFCORE_PROTEINFOLD {
         ch_multiqc          = ch_multiqc.mix(ALPHAFOLD2.out.multiqc_report.collect())
         ch_versions         = ch_versions.mix(ALPHAFOLD2.out.versions)
         ch_report_input     = ch_report_input
-                                .mix(ALPHAFOLD2
-                                .out
-                                .pdb
-                                .map { it ->
-                                    [ it[0],
-                                        it[1].sort { path ->
-                                            def filename = path.name
-                                            def matcher = filename =~ /ranked_(\d+)\.pdb/
-                                            if (matcher.matches()) {
-                                                return matcher[0][1].toInteger()
-                                            } else {
-                                                return 0  // fallback if no match
-                                            }
-                                        }.subList(0, Math.min(5, it[1].size() as int))
-                                    ]
-                                }
+                                .mix(ALPHAFOLD2.out.pdb
                                 .join(ALPHAFOLD2.out.msa)
                                 .join(ALPHAFOLD2.out.pae)
                             )
@@ -213,23 +198,7 @@ workflow NFCORE_PROTEINFOLD {
         ch_versions     = ch_versions.mix(ALPHAFOLD3.out.versions)
         ch_report_input = ch_report_input
                             .mix(
-                                ALPHAFOLD3
-                                    .out
-                                    .pdb
-                                    .map { it ->
-                                        [
-                                            it[0],
-                                            it[1].sort { path ->
-                                                def filename = path.name
-                                                def matcher = filename =~ /.*_ranked_(\d+)\.pdb/
-                                                if (matcher.matches()) {
-                                                    return matcher[0][1].toInteger()
-                                                } else {
-                                                    return 0  // fallback if no match
-                                                }
-                                            }.subList(0, Math.min(5, it[1].size() as int))
-                                        ]
-                                    }
+                                ALPHAFOLD3.out.pdb
                                 .join(ALPHAFOLD3.out.msa)
                                 .join(ALPHAFOLD3.out.pae)
                             )
@@ -273,19 +242,7 @@ workflow NFCORE_PROTEINFOLD {
         ch_multiqc          = ch_multiqc.mix(COLABFOLD.out.multiqc_report)
         ch_versions         = ch_versions.mix(COLABFOLD.out.versions)
         ch_report_input     = ch_report_input
-                                .mix(COLABFOLD.out.pdb.map { it ->
-                                    [ it[0],
-                                        it[1].sort { path ->
-                                            def filename = path.name
-                                            def matcher = filename =~ /_relaxed_rank_(\d+)\.pdb/
-                                            if (matcher.matches()) {
-                                                return matcher[0][1].toInteger()
-                                            } else {
-                                                return 0  // fallback if no match
-                                            }
-                                        }.subList(0, Math.min(5, it[1].size() as int))
-                                    ]
-                                }
+                                .mix(COLABFOLD.out.pdb
                                 .join(COLABFOLD.out.msa)
                                 .join(COLABFOLD.out.pae)
                             )
@@ -437,19 +394,7 @@ workflow NFCORE_PROTEINFOLD {
         ch_multiqc          = ch_multiqc.mix(HELIXFOLD3.out.multiqc_report.collect())
         ch_versions         = ch_versions.mix(HELIXFOLD3.out.versions)
         ch_report_input     = ch_report_input
-                                .mix(HELIXFOLD3.out.pdb.map { it ->
-                                    [ it[0],
-                                        it[1].sort { path ->
-                                            def filename = path.name
-                                            def matcher = filename =~ /ranked_(\d+)\.pdb/
-                                            if (matcher.matches()) {
-                                                return matcher[0][1].toInteger()
-                                            } else {
-                                                return 0  // fallback if no match
-                                            }
-                                        }.subList(0, Math.min(5, it[1].size() as int))
-                                    ]
-                                }
+                                .mix(HELIXFOLD3.out.pdb
                                 .join(HELIXFOLD3.out.msa)
                                 .join(HELIXFOLD3.out.pae)
                             )
