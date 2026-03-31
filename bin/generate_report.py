@@ -11,6 +11,7 @@ from plot_utils import (
 import json
 import argparse
 import os
+import re
 from pathlib import Path
 
 prog_name_mapping = {
@@ -94,9 +95,11 @@ def generate_report(name, out_dir, structures, num_structs_limit=5, msa_files=No
             config=PLOTLY_CONFIG,
         )
 
-    # Replace placeholder divs with plot HTML
+    # Replace or remove optional sections
     if seq_cov_html:
         html = html.replace('<div id="seq_cov_placeholder"></div>', seq_cov_html, 1)
+    else:
+        html = re.sub(r'<!-- BEGIN_MSA_SECTION -->.*?<!-- END_MSA_SECTION -->', '', html, flags=re.DOTALL)
 
     # Generate the pLDDT plot and convert to HTML
     plddt_fig = generate_plddt_plot(parsed_structures)
@@ -116,6 +119,8 @@ def generate_report(name, out_dir, structures, num_structs_limit=5, msa_files=No
             config=PLOTLY_CONFIG,
         )
         html = html.replace('<div id="pae_placeholder"></div>', pae_html, 1)
+    else:
+        html = re.sub(r'<!-- BEGIN_PAE_SECTION -->.*?<!-- END_PAE_SECTION -->', '', html, flags=re.DOTALL)
 
     if write_htmls:
         with open(f"{out_dir}/{name}_coverage_pLDDT.html", "w") as out_file:
