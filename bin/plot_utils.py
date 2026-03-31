@@ -32,7 +32,7 @@ def reset_residue_numbers(structure):
 def sort_structures_by_rank(structures, prog):
     """
     Sorts a list of structures based on their rank. Handles different program naming conventions.
-    
+
     Returns:
         List of structure files sorted by rank (always returns list, even for single structures)
     """
@@ -61,7 +61,7 @@ def align_structures(structures):
     """
     Align multiple structures against the first (reference) structure.
     Uses common atoms for superimposition (handles cases where structures aren't complete).
-    
+
     Returns:
         List of BioPython structure objects aligned to the first structure
     """
@@ -228,7 +228,7 @@ def generate_sequence_coverage_plot(msa_path, out_dir, name, save_image=False):
 
     # Create interactive Plotly figure
     fig = go.Figure()
-    
+
     # Add heatmap for sequence coverage
     fig.add_trace(
         go.Heatmap(
@@ -240,7 +240,7 @@ def generate_sequence_coverage_plot(msa_path, out_dir, name, save_image=False):
             name="",
         )
     )
-    
+
     # Add black line for sequence coverage depth as secondary trace
     fig.add_trace(
         go.Scatter(
@@ -252,7 +252,7 @@ def generate_sequence_coverage_plot(msa_path, out_dir, name, save_image=False):
             yaxis="y2",
         )
     )
-    
+
     # Update layout with dual y-axes
     fig.update_layout(
         title=dict(text="Sequence coverage", x=0.5, xanchor="center"),
@@ -292,7 +292,7 @@ def generate_pae_plot(pae_path, out_dir, name, save_image=False):
             colorbar={"title": "PAE (Å)"},
         )
     )
-    
+
     fig.update_layout(
         title=dict(text="Predicted Aligned Error", x=0.5, xanchor="center"),
         xaxis=dict(title="Scored Residue"),
