@@ -63,7 +63,7 @@ workflow ROSETTAFOLD_ALL_ATOM {
     )
     ch_versions = ch_versions.mix(RUN_ROSETTAFOLD_ALL_ATOM.out.versions)
 
-    modeChannel(RUN_ROSETTAFOLD_ALL_ATOM.out.pdb, "rosettafold_all_atom").set { ch_pdb_final }
+    modeChannel(RUN_ROSETTAFOLD_ALL_ATOM.out.pdb, "rosettafold_all_atom", true).set { ch_pdb_final }
     modeChannel(RUN_ROSETTAFOLD_ALL_ATOM.out.msa, "rosettafold_all_atom").set { ch_msa_final }
     modeChannel(RUN_ROSETTAFOLD_ALL_ATOM.out.pae, "rosettafold_all_atom").set { ch_pae_final }
 

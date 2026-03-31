@@ -278,7 +278,7 @@ workflow NFCORE_PROTEINFOLD {
         ch_versions     = ch_versions.mix(ESMFOLD.out.versions)
         ch_report_input = ch_report_input
                             .mix(
-                                ESMFOLD.out.pdb.map { meta, pdb -> [meta, [pdb]] }
+                                ESMFOLD.out.pdb
                                 .combine(ch_dummy_msa)
                                 .combine(ch_dummy_pae)
                             )
@@ -322,7 +322,7 @@ workflow NFCORE_PROTEINFOLD {
         ch_versions     = ch_versions.mix(ROSETTAFOLD_ALL_ATOM.out.versions)
         ch_report_input = ch_report_input
                             .mix(
-                                ROSETTAFOLD_ALL_ATOM.out.pdb.map { meta, pdb -> [meta, [pdb]] }
+                                ROSETTAFOLD_ALL_ATOM.out.pdb
                                 .join(ROSETTAFOLD_ALL_ATOM.out.msa)
                                 .join(ROSETTAFOLD_ALL_ATOM.out.pae)
                             )
@@ -442,7 +442,7 @@ workflow NFCORE_PROTEINFOLD {
         ch_versions     = ch_versions.mix(ROSETTAFOLD2NA.out.versions)
         ch_report_input = ch_report_input
                             .mix(
-                                ROSETTAFOLD2NA.out.pdb.map { meta, pdb -> [meta, [pdb]] }
+                                ROSETTAFOLD2NA.out.pdb
                                 .join(ROSETTAFOLD2NA.out.msa)
                                 .join(ROSETTAFOLD2NA.out.pae)
                             )

@@ -46,7 +46,7 @@ workflow ROSETTAFOLD2NA {
     )
     ch_versions = ch_versions.mix(RUN_ROSETTAFOLD2NA.out.versions)
 
-    modeChannel(RUN_ROSETTAFOLD2NA.out.pdb, "rosettafold2na").set { ch_pdb_final }
+    modeChannel(RUN_ROSETTAFOLD2NA.out.pdb, "rosettafold2na", true).set { ch_pdb_final }
     modeChannel(RUN_ROSETTAFOLD2NA.out.pae, "rosettafold2na").set { ch_pae_final }
     modeChannel(RUN_ROSETTAFOLD2NA.out.msa, "rosettafold2na").set { ch_msa_final }
 

@@ -56,7 +56,7 @@ workflow ESMFOLD {
         ch_versions = ch_versions.mix(RUN_ESMFOLD.out.versions)
     }
 
-    modeChannel(RUN_ESMFOLD.out.pdb, "esmfold").set { ch_pdb_final }
+    modeChannel(RUN_ESMFOLD.out.pdb, "esmfold", true).set { ch_pdb_final }
 
     emit:
     pdb            = ch_pdb_final      // channel: [ id, /path/to/*.pdb ]
