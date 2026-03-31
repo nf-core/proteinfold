@@ -223,46 +223,67 @@ def generate_sequence_coverage_plot(msa_path, out_dir, name, save_image=False):
     """
     Generate an interactive Plotly heatmap for sequence coverage with depth overlay.
     """
+    # Pastel rainbow_r: matplotlib rainbow_r colours blended ~60% with white
+    PASTEL_RAINBOW_R = [
+        [0.00, "#CC99FF"],  # pale violet  (low identity)
+        [0.17, "#9999FF"],  # pale blue
+        [0.33, "#99FFFF"],  # pale cyan
+        [0.50, "#99FF99"],  # pale green
+        [0.67, "#FFFF99"],  # pale yellow
+        [0.83, "#FFCC99"],  # pale orange
+        [1.00, "#FF9999"],  # pale red     (high identity)
+    ]
+
     final_msas, non_gaps_msas = process_msas(msa_path)
+    n_seqs = final_msas.shape[0]
     seq_depth_counts = np.sum(~np.isnan(non_gaps_msas), axis=0)
 
-    # Create interactive Plotly figure
     fig = go.Figure()
 
-    # Add heatmap for sequence coverage
+    # Heatmap — sequence identity, NaN gaps rendered as white
     fig.add_trace(
         go.Heatmap(
             z=final_msas,
-            colorscale="Rainbow_r",
+            colorscale=PASTEL_RAINBOW_R,
             zmin=0,
             zmax=1,
-            colorbar={"title": "Sequence<br>identity"},
+            colorbar=dict(
+                title=dict(text="Sequence<br>identity", side="right"),
+                thickness=15,
+                len=0.75,
+            ),
             name="",
         )
     )
 
-    # Add black line for sequence coverage depth as secondary trace
+    # Coverage depth line — same y-axis as heatmap (both in units of sequences)
     fig.add_trace(
         go.Scatter(
             x=list(range(len(seq_depth_counts))),
             y=seq_depth_counts,
             mode="lines",
-            line=dict(color="black", width=2),
-            name="Coverage Depth",
-            yaxis="y2",
+            line=dict(color="black", width=1.5),
+            name="Coverage depth",
         )
     )
 
-    # Update layout with dual y-axes
     fig.update_layout(
         title=dict(text="Sequence coverage", x=0.5, xanchor="center"),
-        xaxis_title="Positions",
-        yaxis_title="Sequences",
-        yaxis2=dict(
-            title="Coverage Depth",
-            overlaying="y",
-            side="right",
+        xaxis=dict(
+            title="Positions",
+            showline=True,
+            linecolor="black",
+            gridcolor="WhiteSmoke",
         ),
+        yaxis=dict(
+            title="Sequences",
+            range=[0, n_seqs],
+            showline=True,
+            linecolor="black",
+            gridcolor="WhiteSmoke",
+        ),
+        plot_bgcolor="white",
+        legend=dict(yanchor="bottom", y=0.02, xanchor="right", x=0.98),
         width=800,
         height=600,
     )
