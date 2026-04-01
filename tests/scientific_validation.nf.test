@@ -348,7 +348,7 @@ except Exception as e:
                 println "═══════════════════════════════════════════════════════════"
 
                 // nf-test requires versions.yml to be explicitly handled
-                assert path("$outputDir/pipeline_info/software_versions.yml").exists()
+                assert snapshot(path("${params.outdir}/pipeline_info/versions.yml")).match()
             }
         }
     }
