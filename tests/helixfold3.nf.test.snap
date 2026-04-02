@@ -20,8 +20,6 @@
                 "fasta2json/T1026.json",
                 "helixfold3",
                 "helixfold3/T1024",
-                "helixfold3/T1024/T1024_chainwise_iptm.tsv",
-                "helixfold3/T1024/T1024_chainwise_ptm.tsv",
                 "helixfold3/T1024/T1024_helixfold3_msa.tsv",
                 "helixfold3/T1024/T1024_iptm.tsv",
                 "helixfold3/T1024/T1024_plddt.tsv",
@@ -33,8 +31,6 @@
                 "helixfold3/T1024/paes/T1024_4_pae.tsv",
                 "helixfold3/T1024/paes/T1024_5_pae.tsv",
                 "helixfold3/T1026",
-                "helixfold3/T1026/T1026_chainwise_iptm.tsv",
-                "helixfold3/T1026/T1026_chainwise_ptm.tsv",
                 "helixfold3/T1026/T1026_helixfold3_msa.tsv",
                 "helixfold3/T1026/T1026_iptm.tsv",
                 "helixfold3/T1026/T1026_plddt.tsv",
@@ -62,8 +58,6 @@
             [
                 "T1024.json:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1026.json:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "T1024_chainwise_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "T1024_chainwise_ptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1024_helixfold3_msa.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1024_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1024_plddt.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
@@ -73,8 +67,6 @@
                 "T1024_3_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1024_4_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1024_5_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "T1026_chainwise_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "T1026_chainwise_ptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1026_helixfold3_msa.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1026_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1026_plddt.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
@@ -91,7 +83,7 @@
                 "test_alphafold2_report.html:md5,d41d8cd98f00b204e9800998ecf8427e"
             ]
         ],
-        "timestamp": "2026-03-31T18:12:08.202726818",
+        "timestamp": "2026-04-02T15:33:05.481348845",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "25.10.4"

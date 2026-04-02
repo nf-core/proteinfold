@@ -25,8 +25,6 @@
             [
                 "colabfold",
                 "colabfold/T1024",
-                "colabfold/T1024/T1024_chainwise_iptm.tsv",
-                "colabfold/T1024/T1024_chainwise_ptm.tsv",
                 "colabfold/T1024/T1024_colabfold_msa.tsv",
                 "colabfold/T1024/T1024_iptm.tsv",
                 "colabfold/T1024/T1024_plddt.tsv",
@@ -34,8 +32,6 @@
                 "colabfold/T1024/paes",
                 "colabfold/T1024/paes/T1024_0_pae.tsv",
                 "colabfold/T1026",
-                "colabfold/T1026/T1026_chainwise_iptm.tsv",
-                "colabfold/T1026/T1026_chainwise_ptm.tsv",
                 "colabfold/T1026/T1026_colabfold_msa.tsv",
                 "colabfold/T1026/T1026_iptm.tsv",
                 "colabfold/T1026/T1026_plddt.tsv",
@@ -57,15 +53,11 @@
                 "reports/test_alphafold2_report.html"
             ],
             [
-                "T1024_chainwise_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "T1024_chainwise_ptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1024_colabfold_msa.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1024_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1024_plddt.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1024_ptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1024_0_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "T1026_chainwise_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "T1026_chainwise_ptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1026_colabfold_msa.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1026_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1026_plddt.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
@@ -77,7 +69,7 @@
                 "test_alphafold2_report.html:md5,d41d8cd98f00b204e9800998ecf8427e"
             ]
         ],
-        "timestamp": "2026-03-31T18:11:19.013097051",
+        "timestamp": "2026-04-02T15:31:17.651387259",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "25.10.4"
