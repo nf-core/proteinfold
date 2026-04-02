@@ -23,8 +23,8 @@ process RUN_ALPHAFOLD3 {
     tuple val(meta), path ("raw/*ranked_*.cif")             , emit: cif
     tuple val(meta), path ("${meta.id}_plddt.tsv")          , emit: plddt
     tuple val(meta), path ("${meta.id}_alphafold3_msa.tsv") , emit: msa
-    tuple val(meta), path ("${meta.id}_0_pae.tsv")          , optional: true, emit: pae
-    tuple val(meta), path ("${meta.id}_*_pae.tsv")          , optional: true, emit: paes
+    tuple val(meta), path ("${meta.id}_0_pae.tsv")          , emit: pae
+    tuple val(meta), path ("${meta.id}_*_pae.tsv")          , emit: paes
     tuple val(meta), path ("${meta.id}_ptm.tsv")            , emit: ptms
     tuple val(meta), path ("${meta.id}_iptm.tsv")           , optional: true, emit: iptms
     tuple val(meta), path ("${meta.id}_chainwise_ptm.tsv")  , optional: true, emit: chainwise_ptm

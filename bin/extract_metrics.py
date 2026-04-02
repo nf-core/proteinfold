@@ -25,11 +25,6 @@ from utils import plddt_from_struct_b_factor, get_chain_ids
 #...
 # ^ overwrought with duplication, but can catch program specific weirdness, and lower barrier to adding new programs in the future.
 
-# TODO: Chain-wise iPTM since the relevant interface might not always be the average of all.
-# Would complete Issue #308
-# Proposed format is pair-interfaces in rows, structure inference number in cols: https://github.com/nf-core/proteinfold/pull/312#issuecomment-2917709432
-# KR - changed to have both sides of the matrix, because it's not symmetrical (see comment in Issue #306)
-
 # Mapping of characters to integers for MSA parsing.
 # 20 is for unknown characters, and 21 is for gaps.
 AA_to_int = {
@@ -448,7 +443,6 @@ def read_colabfold_metrics(name, colabfold_metrics_fns):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--pkls", dest="pkls", required=False, nargs="+") # For reading both HelixFold3 and AlphaFold2 MSA formats
-    parser.add_argument("--npzs", dest="npzs", required=False, nargs="+") # For reading the Boltz-1 PAE formats. TODO: Boltz-1 MSA not implemented (go straight to .a3m file), implement
     parser.add_argument("--a3ms", dest="a3ms", required=False, nargs="+") # For reading the RosettaFold-All-Atom MSA formats
     parser.add_argument("--paired_a3m", dest="paired_a3m", required=False) # For reading the ColabFold MSA format
     parser.add_argument("--csvs", dest="csvs", required=False, nargs="+") # For reading boltz csvs

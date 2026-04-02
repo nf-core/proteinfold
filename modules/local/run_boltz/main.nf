@@ -27,6 +27,7 @@ process RUN_BOLTZ {
     tuple val(meta), path ("boltz_results_*/predictions/*/*.pdb")               , emit: pdb
     tuple val(meta), path ("${meta.id}_plddt.tsv")                              , emit: plddt
     tuple val(meta), path ("${meta.id}_boltz_msa.tsv")                          , emit: msa
+    // Could potential remove the optional, but Boltz has the --write_full_pae False flag.
     tuple val(meta), path ("${meta.id}_0_pae.tsv")                              , optional: true, emit: pae
     tuple val(meta), path ("${meta.id}_*_pae.tsv")                              , optional: true, emit: paes
     tuple val(meta), path ("${meta.id}_ptm.tsv")                                , emit: ptms
