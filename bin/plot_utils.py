@@ -175,9 +175,10 @@ def generate_plddt_plot(structures, labels=None):
         labels = [f"Rank {idx}" for idx in range(len(structures))]
 
     fig = go.Figure()
-
+    max_residues = 0
     for idx, struct in enumerate(structures):
         plddts = plddt_from_struct_b_factor(struct)
+        max_residues = max(max_residues, len(plddts))
         fig.add_trace(
             go.Scatter(
                 x=list(range(len(plddts))),
@@ -191,7 +192,8 @@ def generate_plddt_plot(structures, labels=None):
     fig.update_layout(
         xaxis=dict(
             title="Residue position", showline=True, linecolor="black", gridcolor="WhiteSmoke",
-            minallowed=0
+            minallowed=0,
+            maxallowed=max_residues - 1, #prevent scrolling past residues, just zoom-ins. Max across all structures is just being very defensive in case of tool differences (though shouldn't happen)
         ),
         yaxis=dict(
             title="pLDDT",
