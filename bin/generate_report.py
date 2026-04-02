@@ -122,7 +122,7 @@ def generate_report(name, out_dir, structures, num_structs_limit=5, msa_files=No
         html = re.sub(r'<!-- BEGIN_MSA_SECTION -->.*?<!-- END_MSA_SECTION -->', '', html, flags=re.DOTALL)
 
     # Generate the pLDDT plot and convert to HTML
-    plddt_fig = generate_plddt_plot(parsed_structures)
+    plddt_fig = generate_plddt_plot(parsed_structures, labels=model_labels)
     plddt_html = plddt_fig.to_html(
         full_html=False,
         include_plotlyjs="cdn",

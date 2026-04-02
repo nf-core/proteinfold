@@ -104,8 +104,9 @@ def align_structures(structures):
 
     def extract_atoms(structure, atom_ids):
         # Must return a sorted list (not set) so ref/target atoms correspond positionally
-        atoms = [atom for atom in structure.get_atoms() if (atom.get_parent().get_id(), atom.name) in atom_ids]
-        return sorted(atoms, key=lambda a: (a.get_parent().get_id(), a.name))
+        atoms = [atom for atom in structure.get_atoms()
+                 if (atom.get_parent().get_parent().get_id(), atom.get_parent().get_id(), atom.name) in atom_ids]
+        return sorted(atoms, key=lambda a: (a.get_parent().get_parent().get_id(), a.get_parent().get_id(), a.name))
 
     ref_atoms = extract_atoms(ref_structure, common_atoms)
 
@@ -162,7 +163,7 @@ def plddt_from_struct_b_factor(structure):
 
     return res_plddts
 
-def generate_plddt_plot(structures):
+def generate_plddt_plot(structures, labels=None):
     """
     Generate a Plotly figure for pLDDT per position for given structures.
 
@@ -172,14 +173,14 @@ def generate_plddt_plot(structures):
     Returns:
         go.Figure: Plotly figure object with pLDDT data.
     """
-    plddt_per_struct = {}
-
-    for idx, struct in enumerate(structures):
-        plddt_per_struct[f"rank-{idx}"] = plddt_from_struct_b_factor(struct)
+    # Support labelling from external scheme, otherwise default to Rank order-based labels
+    if labels is None:
+        labels = [f"Rank {idx}" for idx in range(len(structures))]
 
     fig = go.Figure()
 
-    for idx, (name, plddts) in enumerate(plddt_per_struct.items()):
+    for idx, struct in enumerate(structures):
+        plddts = plddt_from_struct_b_factor(struct) 
         fig.add_trace(
             go.Scatter(
                 x=list(range(len(plddts))),
@@ -192,11 +193,14 @@ def generate_plddt_plot(structures):
         )
     fig.update_layout(
         xaxis=dict(
-            title="Residue position", showline=True, linecolor="black", gridcolor="WhiteSmoke"
+            title="Residue position", showline=True, linecolor="black", gridcolor="WhiteSmoke",
+            minallowed=0, maxallowed=len(plddts)-1, #prevent scrolling beyond residues range
         ),
         yaxis=dict(
             title="pLDDT",
             range=[0, 100],
+            minallowed=0,
+            maxallowed=100, #prevent scrolling, just zoom-ins
             showline=True,
             linecolor="black",
             gridcolor="WhiteSmoke",
