@@ -36,13 +36,13 @@ def _tool_program_label(structure_path):
     # If no specific tool is detected, return the base filename as a fallback (without extension)
     return Path(structure_path).stem
 
-def generate_report(name, out_dir, structures, num_structs_limit=5, msa_files=None, pae_files=None, prog="proteinfold", type="standard", html_template=None):
+def generate_report(name, out_dir, structures, num_structs_limit=5, msa_files, pae_files, prog, report_type, html_template):
 
     PLOTLY_CONFIG = {"displayModeBar": True, "displaylogo": False, "scrollZoom": True}
 
     # Sort structures by name and limit to set number
     # For comparison report using single top ranked structure from each tool so sorting not performed - structures should be pre-sorted and limited by user input
-    if type != "comparison" and len(structures) > num_structs_limit:
+    if report_type != "comparison" and len(structures) > num_structs_limit:
         print(f"Warning: More than {num_structs_limit} structures provided. Sorting and using only the first {num_structs_limit} structures.")
         sorted_structures = sort_structures_by_rank(structures, prog)
         structures = sorted_structures[:num_structs_limit]
@@ -58,14 +58,14 @@ def generate_report(name, out_dir, structures, num_structs_limit=5, msa_files=No
     parsed_structures = [reset_residue_numbers(s) for s in structure_paths]
 
     # For comparison mode, re-parse and align structures
-    if type == "comparison":
+    if report_type == "comparison":
         parsed_structures = align_structures(structure_paths)
 
     print("Structures:", structure_paths)
 
 
     # Build model labels: infer tool names for comparison, rank numbers otherwise
-    if type == "comparison":
+    if report_type == "comparison":
         model_labels = [_tool_program_label(s) for s in structure_paths]
     else:
         model_labels = [f"Rank {idx+1}" for idx, _ in enumerate(parsed_structures)]
@@ -77,7 +77,7 @@ def generate_report(name, out_dir, structures, num_structs_limit=5, msa_files=No
 
     # Build configuration JSON for JavaScript
     config = {
-        "reportType": type,
+        "report_type": report_type,
         "sampleName": name,
         "programName": prog_name_mapping.get(prog, prog),
         "structFormat": struct_format,
@@ -87,7 +87,7 @@ def generate_report(name, out_dir, structures, num_structs_limit=5, msa_files=No
     }
 
     # Inject configuration as a JSON script tag before </head>
-    config_script = f'<script type="application/json" id="report-config">{json.dumps(config)}</script>'
+    config_script = f'<script report_type="application/json" id="report-config">{json.dumps(config)}</script>'
     html = html.replace('</head>', f'{config_script}\n</head>', 1)
 
     # Generate sequence coverage plot from first MSA file
@@ -102,7 +102,7 @@ def generate_report(name, out_dir, structures, num_structs_limit=5, msa_files=No
             for msa_file, tool_label in valid_msa:
                 seq_cov_fig = generate_sequence_coverage_plot(msa_file)
                 # In comparison mode, label each coverage plot with its tool name
-                if type == "comparison" and len(valid_msa) > 1:
+                if report_type == "comparison" and len(valid_msa) > 1:
                     seq_cov_fig.update_layout(
                         title=dict(text=f"Sequence Coverage — {tool_label}")
                     )
@@ -143,7 +143,7 @@ def generate_report(name, out_dir, structures, num_structs_limit=5, msa_files=No
         html = re.sub(r'<!-- BEGIN_PAE_SECTION -->.*?<!-- END_PAE_SECTION -->', '', html, flags=re.DOTALL)
 
     # Write the final HTML report
-    with open(f"{out_dir}/{name}_{type}_report.html", "w") as out_file:
+    with open(f"{out_dir}/{name}_{report_type}_report.html", "w") as out_file:
         out_file.write(html)
 
 def main():
@@ -153,8 +153,8 @@ def main():
     parser.add_argument("--structs", required=True, nargs="+", help="List of structure file paths (.pdb or .cif).")
     parser.add_argument("--msa", nargs="+", default=None, help="MSA file path(s).")
     parser.add_argument("--pae", nargs="+", default=None, help="PAE file path(s).")
-    parser.add_argument("--prog", default="proteinfold", choices=["proteinfold", "alphafold2", "alphafold3", "esmfold", "colabfold", "rosettafold-all-atom", "rosettafold2na", "helixfold3", "boltz", "comparison"], type=str.lower, help="The program used to generate the structures.")
-    parser.add_argument("--type", default="standard", choices=["standard", "comparison"], help="The type of report to generate.")
+    parser.add_argument("--prog", default="proteinfold", choices=["proteinfold", "alphafold2", "alphafold3", "esmfold", "colabfold", "rosettafold-all-atom", "rosettafold2na", "helixfold3", "boltz", "comparison"], report_type=str.lower, help="The program used to generate the structures.")
+    parser.add_argument("--report_type", default="standard", choices=["standard", "comparison"], help="The report_type of report to generate.")
     parser.add_argument("--html_template", required=True, help="Path to the HTML report template.")
 
     args = parser.parse_args()
@@ -163,12 +163,12 @@ def main():
 
     html_template = args.html_template
 
-    # Both these values could be missing - ESMFold for MSA, many others for PAE
-    if args.msa and os.path.basename(args.msa[0]).startswith("DUMMY_"):
-        args.msa = None
-    if args.pae and os.path.basename(args.pae[0]).startswith("DUMMY_"):
-        args.pae = None
-    # Catch-all for any future optional metric args, if we have plots for pTM or other missing values. The above two are more common and explicit
+    ## Both these values could be missing - ESMFold for MSA, many others for PAE
+    #if args.msa and os.path.basename(args.msa[0]).startswith("DUMMY_"):
+    #    args.msa = None
+    #if args.pae and os.path.basename(args.pae[0]).startswith("DUMMY_"):
+    #    args.pae = None
+    ## But caught by a more broad catch-all below for any future metrics, just MSA and PAE are the most explicit cases so left as examples
     for attr in vars(args):
         val = getattr(args, attr)
         if isinstance(val, list) and val and os.path.basename(val[0]).startswith("DUMMY_"):
@@ -182,7 +182,7 @@ def main():
         msa_files=args.msa,
         pae_files=args.pae,
         prog=args.prog,
-        type=args.type,
+        report_type=args.report_type,
         html_template=html_template,
     )
 

@@ -186,7 +186,7 @@ def generate_plddt_plot(structures, labels=None):
                 x=list(range(len(plddts))),
                 y=plddts,
                 mode="lines",
-                name=name,
+                name=labels[idx],
                 text=[f"({pos}, {value:.2f})" for pos, value in enumerate(plddts)],
                 hoverinfo="text",
             )
@@ -194,7 +194,7 @@ def generate_plddt_plot(structures, labels=None):
     fig.update_layout(
         xaxis=dict(
             title="Residue position", showline=True, linecolor="black", gridcolor="WhiteSmoke",
-            minallowed=0, maxallowed=len(plddts)-1, #prevent scrolling beyond residues range
+            minallowed=0
         ),
         yaxis=dict(
             title="pLDDT",
@@ -232,7 +232,7 @@ def process_msas(msa_path):
 
     return final_msas, non_gaps_msas
 
-def generate_sequence_coverage_plot(msa_path, out_dir, name, save_image=False):
+def generate_sequence_coverage_plot(msa_path):
     """
     Generate an interactive Plotly heatmap for sequence coverage with depth overlay.
     """
@@ -301,14 +301,9 @@ def generate_sequence_coverage_plot(msa_path, out_dir, name, save_image=False):
         autosize=True,
     )
 
-    if save_image:
-        image_path = f"{out_dir}/{name+('_' if name else '')}seq_coverage.png"
-        fig.write_image(image_path, width=800, height=600)
-        return fig, image_path
-    else:
-        return fig
+    return fig
 
-def generate_pae_plot(pae_path, out_dir, name, save_image=False):
+def generate_pae_plot(pae_path):
     """
     Generate an interactive Plotly heatmap for Predicted Aligned Error (PAE) data.
     """
@@ -333,10 +328,5 @@ def generate_pae_plot(pae_path, out_dir, name, save_image=False):
         yaxis=dict(title="Aligned Residue"),
         autosize=True,
     )
-
-    if save_image:
-        image_path = f"{out_dir}/{name+('_' if name else '')}pae.png"
-        fig.write_image(image_path, width=800, height=800)
-        return fig, image_path
-    else:
-        return fig
+    
+    return fig
