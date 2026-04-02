@@ -21,11 +21,14 @@ process RUN_ALPHAFOLD3 {
     path ("raw/**")                                         , emit: raw
     tuple val(meta), path ("${meta.id}_alphafold3.cif")     , emit: top_ranked_cif
     tuple val(meta), path ("raw/*ranked_*.cif")             , emit: cif
-    tuple val(meta), path ("${meta.id}_plddt.tsv")          , emit: multiqc
+    tuple val(meta), path ("${meta.id}_plddt.tsv")          , emit: plddt
     tuple val(meta), path ("${meta.id}_alphafold3_msa.tsv") , emit: msa
     tuple val(meta), path ("${meta.id}_0_pae.tsv")          , emit: pae
+    tuple val(meta), path ("${meta.id}_*_pae.tsv")          , emit: paes
     tuple val(meta), path ("${meta.id}_ptm.tsv")            , emit: ptms
     tuple val(meta), path ("${meta.id}_iptm.tsv")           , optional: true, emit: iptms
+    tuple val(meta), path ("${meta.id}_chainwise_ptm.tsv")  , optional: true, emit: chainwise_ptm
+    tuple val(meta), path ("${meta.id}_chainwise_iptm.tsv") , optional: true, emit: chainwise_iptm
     path "versions.yml"                                     , emit: versions
 
     when:
@@ -134,6 +137,8 @@ process RUN_ALPHAFOLD3 {
     touch ${prefix}_0_pae.tsv
     touch ${prefix}_ptm.tsv
     touch ${prefix}_iptm.tsv
+    touch ${prefix}_chainwise_ptm.tsv
+    touch ${prefix}_chainwise_iptm.tsv
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

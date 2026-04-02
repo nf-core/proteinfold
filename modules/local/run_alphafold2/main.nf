@@ -29,11 +29,11 @@ process RUN_ALPHAFOLD2 {
     path ("raw/**")                                         , emit: raw
     tuple val(meta), path ("${meta.id}_alphafold2.pdb")     , emit: top_ranked_pdb
     tuple val(meta), path ("raw/ranked*.pdb")               , emit: pdb
-    tuple val(meta), path ("${meta.id}_plddt.tsv")          , emit: multiqc
+    tuple val(meta), path ("${meta.id}_plddt.tsv")          , emit: plddt
     tuple val(meta), path ("${meta.id}_alphafold2_msa.tsv") , emit: msa
     // Note: alphafold2_model_preset == "monomer" the pae file won't exist, thus the optional
-    tuple val(meta), path ("${meta.id}_*_pae.tsv")          , optional: true, emit: paes
     tuple val(meta), path ("${meta.id}_0_pae.tsv")          , optional: true, emit: pae
+    tuple val(meta), path ("${meta.id}_*_pae.tsv")          , optional: true, emit: paes
     tuple val(meta), path ("${meta.id}_ptm.tsv")            , optional: true, emit: ptms
     tuple val(meta), path ("${meta.id}_iptm.tsv")           , optional: true, emit: iptms
     path "versions.yml"                                     , emit: versions
@@ -104,6 +104,8 @@ process RUN_ALPHAFOLD2 {
     touch "${meta.id}_0_pae.tsv"
     touch "${meta.id}_ptm.tsv"
     touch "${meta.id}_iptm.tsv"
+    touch "${meta.id}_chainwise_ptm.tsv"
+    touch "${meta.id}_chainwise_iptm.tsv"
     mkdir "raw"
     touch "raw/ranked_0.pdb"
     touch "raw/ranked_1.pdb"

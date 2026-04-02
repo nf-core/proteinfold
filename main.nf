@@ -67,15 +67,14 @@ workflow NFCORE_PROTEINFOLD {
 
     main:
     ch_samplesheet       = samplesheet
-    ch_multiqc           = channel.empty()
     ch_versions          = channel.empty()
     ch_report_input      = channel.empty()
     ch_top_ranked_model  = channel.empty()
     requested_modes      = params.mode.toLowerCase().split(",")
     requested_modes_size = requested_modes.size()
 
-    ch_dummy_file = channel.fromPath("$projectDir/assets/NO_FILE")
-    ch_dummy_file_pae = channel.fromPath("$projectDir/assets/NO_FILE_PAE")
+    ch_dummy_msa = channel.fromPath("$projectDir/assets/DUMMY_MSA")
+    ch_dummy_pae = channel.fromPath("$projectDir/assets/DUMMY_PAE")
 
     //
     // WORKFLOW: Run alphafold2
@@ -136,25 +135,10 @@ workflow NFCORE_PROTEINFOLD {
             PREPARE_ALPHAFOLD2_DBS.out.pdb_seqres,
             PREPARE_ALPHAFOLD2_DBS.out.uniprot
         )
-        ch_multiqc          = ch_multiqc.mix(ALPHAFOLD2.out.multiqc_report.collect())
-        ch_versions         = ch_versions.mix(ALPHAFOLD2.out.versions)
-        ch_report_input     = ch_report_input
-                                .mix(ALPHAFOLD2
-                                .out
-                                .pdb
-                                .map { it ->
-                                    [ it[0],
-                                        it[1].sort { path ->
-                                            def filename = path.name
-                                            def matcher = filename =~ /ranked_(\d+)\.pdb/
-                                            if (matcher.matches()) {
-                                                return matcher[0][1].toInteger()
-                                            } else {
-                                                return 0  // fallback if no match
-                                            }
-                                        }.subList(0, Math.min(5, it[1].size() as int))
-                                    ]
-                                }
+        ch_versions     = ch_versions.mix(ALPHAFOLD2.out.versions)
+        ch_report_input = ch_report_input
+                            .mix(
+                                ALPHAFOLD2.out.pdb
                                 .join(ALPHAFOLD2.out.msa)
                                 .join(ALPHAFOLD2.out.pae)
                             )
@@ -209,27 +193,10 @@ workflow NFCORE_PROTEINFOLD {
             PREPARE_ALPHAFOLD3_DBS.out.uniprot
         )
 
-        ch_multiqc      = ch_multiqc.mix(ALPHAFOLD3.out.multiqc_report)
         ch_versions     = ch_versions.mix(ALPHAFOLD3.out.versions)
         ch_report_input = ch_report_input
                             .mix(
-                                ALPHAFOLD3
-                                    .out
-                                    .pdb
-                                    .map { it ->
-                                        [
-                                            it[0],
-                                            it[1].sort { path ->
-                                                def filename = path.name
-                                                def matcher = filename =~ /.*_ranked_(\d+)\.pdb/
-                                                if (matcher.matches()) {
-                                                    return matcher[0][1].toInteger()
-                                                } else {
-                                                    return 0  // fallback if no match
-                                                }
-                                            }.subList(0, Math.min(5, it[1].size() as int))
-                                        ]
-                                    }
+                                ALPHAFOLD3.out.pdb
                                 .join(ALPHAFOLD3.out.msa)
                                 .join(ALPHAFOLD3.out.pae)
                             )
@@ -270,22 +237,10 @@ workflow NFCORE_PROTEINFOLD {
             params.colabfold_num_recycles
         )
 
-        ch_multiqc          = ch_multiqc.mix(COLABFOLD.out.multiqc_report)
         ch_versions         = ch_versions.mix(COLABFOLD.out.versions)
-        ch_report_input     = ch_report_input
-                                .mix(COLABFOLD.out.pdb.map { it ->
-                                    [ it[0],
-                                        it[1].sort { path ->
-                                            def filename = path.name
-                                            def matcher = filename =~ /_relaxed_rank_(\d+)\.pdb/
-                                            if (matcher.matches()) {
-                                                return matcher[0][1].toInteger()
-                                            } else {
-                                                return 0  // fallback if no match
-                                            }
-                                        }.subList(0, Math.min(5, it[1].size() as int))
-                                    ]
-                                }
+        ch_report_input = ch_report_input
+                            .mix(
+                                COLABFOLD.out.pdb
                                 .join(COLABFOLD.out.msa)
                                 .join(COLABFOLD.out.pae)
                             )
@@ -320,13 +275,13 @@ workflow NFCORE_PROTEINFOLD {
             params.esmfold_num_recycles
         )
 
-        ch_multiqc      = ch_multiqc.mix(ESMFOLD.out.multiqc_report.collect())
         ch_versions     = ch_versions.mix(ESMFOLD.out.versions)
-        ch_report_input = ch_report_input.mix(
-            ESMFOLD.out.pdb
-                .combine(ch_dummy_file)
-                .combine(ch_dummy_file_pae)
-        )
+        ch_report_input = ch_report_input
+                            .mix(
+                                ESMFOLD.out.pdb
+                                .combine(ch_dummy_msa)
+                                .combine(ch_dummy_pae)
+                            )
         ch_top_ranked_model = ch_top_ranked_model.mix(ESMFOLD.out.pdb)
     }
 
@@ -364,13 +319,14 @@ workflow NFCORE_PROTEINFOLD {
             PREPARE_ROSETTAFOLD_ALL_ATOM_DBS.out.pdb100,
             PREPARE_ROSETTAFOLD_ALL_ATOM_DBS.out.rfaa_paper_weights
         )
-        ch_multiqc                              = ch_multiqc.mix(ROSETTAFOLD_ALL_ATOM.out.multiqc_report.collect())
-        ch_versions                             = ch_versions.mix(ROSETTAFOLD_ALL_ATOM.out.versions)
-        ch_report_input                         = ch_report_input.mix(ROSETTAFOLD_ALL_ATOM.out.pdb
-                                                                    .join(ROSETTAFOLD_ALL_ATOM.out.msa)
-                                                                    .join(ROSETTAFOLD_ALL_ATOM.out.pae)
-                                                                    )
-        ch_top_ranked_model                     = ch_top_ranked_model.mix(ROSETTAFOLD_ALL_ATOM.out.pdb)
+        ch_versions     = ch_versions.mix(ROSETTAFOLD_ALL_ATOM.out.versions)
+        ch_report_input = ch_report_input
+                            .mix(
+                                ROSETTAFOLD_ALL_ATOM.out.pdb
+                                .join(ROSETTAFOLD_ALL_ATOM.out.msa)
+                                .join(ROSETTAFOLD_ALL_ATOM.out.pae)
+                            )
+        ch_top_ranked_model = ch_top_ranked_model.mix(ROSETTAFOLD_ALL_ATOM.out.pdb)
     }
 
     //
@@ -434,22 +390,10 @@ workflow NFCORE_PROTEINFOLD {
             PREPARE_HELIXFOLD3_DBS.out.helixfold3_init_models,
             PREPARE_HELIXFOLD3_DBS.out.helixfold3_maxit_src
         )
-        ch_multiqc          = ch_multiqc.mix(HELIXFOLD3.out.multiqc_report.collect())
-        ch_versions         = ch_versions.mix(HELIXFOLD3.out.versions)
-        ch_report_input     = ch_report_input
-                                .mix(HELIXFOLD3.out.pdb.map { it ->
-                                    [ it[0],
-                                        it[1].sort { path ->
-                                            def filename = path.name
-                                            def matcher = filename =~ /ranked_(\d+)\.pdb/
-                                            if (matcher.matches()) {
-                                                return matcher[0][1].toInteger()
-                                            } else {
-                                                return 0  // fallback if no match
-                                            }
-                                        }.subList(0, Math.min(5, it[1].size() as int))
-                                    ]
-                                }
+        ch_versions     = ch_versions.mix(HELIXFOLD3.out.versions)
+        ch_report_input = ch_report_input
+                            .mix(
+                                HELIXFOLD3.out.pdb
                                 .join(HELIXFOLD3.out.msa)
                                 .join(HELIXFOLD3.out.pae)
                             )
@@ -495,18 +439,14 @@ workflow NFCORE_PROTEINFOLD {
             PREPARE_ROSETTAFOLD2NA_DBS.out.rna,
             PREPARE_ROSETTAFOLD2NA_DBS.out.rosettafold2na_weights
         )
-        ch_multiqc                              = ch_multiqc.mix(ROSETTAFOLD2NA.out.multiqc_report.collect())
-        ch_versions                             = ch_versions.mix(ROSETTAFOLD2NA.out.versions)
-        ch_report_input                         = ch_report_input
-                                                    .mix(
-                                                        ROSETTAFOLD2NA
-                                                            .out
-                                                            .pdb
-                                                            .map { meta, pdb -> [ meta, [ pdb ] ] }
-                                                            .join(ROSETTAFOLD2NA.out.msa)
-                                                            .join(ROSETTAFOLD2NA.out.pae)
-                                                    )
-        ch_top_ranked_model                     = ch_top_ranked_model.mix(ROSETTAFOLD2NA.out.pdb)
+        ch_versions     = ch_versions.mix(ROSETTAFOLD2NA.out.versions)
+        ch_report_input = ch_report_input
+                            .mix(
+                                ROSETTAFOLD2NA.out.pdb
+                                .join(ROSETTAFOLD2NA.out.msa)
+                                .join(ROSETTAFOLD2NA.out.pae)
+                            )
+        ch_top_ranked_model = ch_top_ranked_model.mix(ROSETTAFOLD2NA.out.pdb)
     }
 
     // WORKFLOW: Run Boltz
@@ -553,47 +493,30 @@ workflow NFCORE_PROTEINFOLD {
             PREPARE_COLABFOLD_DBS_BOLTZ.out.uniref30,
             params.use_msa_server
         )
-        ch_multiqc                  = ch_multiqc.mix(BOLTZ.out.multiqc_report)
-        ch_versions                 = ch_versions.mix(BOLTZ.out.versions)
-        ch_report_input             = ch_report_input.mix(
-            BOLTZ.out.pdb
-            .join(BOLTZ.out.msa)
-            .join(BOLTZ.out.pae)
-        )
-        ch_top_ranked_model         = ch_top_ranked_model.mix(BOLTZ.out.top_ranked_pdb)
+        ch_versions     = ch_versions.mix(BOLTZ.out.versions)
+        ch_report_input = ch_report_input
+                            .mix(
+                                BOLTZ.out.pdb
+                                .join(BOLTZ.out.msa)
+                                .join(BOLTZ.out.pae)
+                            )
+        ch_top_ranked_model = ch_top_ranked_model.mix(BOLTZ.out.top_ranked_pdb)
     }
     //
     // POST PROCESSING: generate visualisation reports
     //
-    ch_multiqc_config        = channel.fromPath("$projectDir/assets/multiqc_config.yml", checkIfExists: true).first()
-    ch_multiqc_custom_config = params.multiqc_config ? channel.fromPath( params.multiqc_config ).first()  : channel.empty()
-    ch_multiqc_logo          = params.multiqc_logo   ? channel.fromPath( params.multiqc_logo ).first()    : channel.empty()
-    ch_multiqc_methods_description = params.multiqc_methods_description ? file(params.multiqc_methods_description, checkIfExists: true) : file("$projectDir/assets/methods_description_template.yml", checkIfExists: true)
-    ch_report_template     = channel.value(file("$projectDir/assets/report_template.html", checkIfExists: true))
-    ch_comparison_template = channel.value(file("$projectDir/assets/comparison_template.html", checkIfExists: true))
+    ch_report_template = channel.value(file("$projectDir/assets/report_template.html", checkIfExists: true))
 
     POST_PROCESSING(
-        params.skip_visualisation,
         requested_modes_size,
         ch_report_input,
         ch_report_template,
-        ch_comparison_template,
-        params.skip_foldseek,
-        params.foldseek_db,
-        params.foldseek_db_path,
-        params.skip_multiqc,
-        params.outdir,
         ch_versions,
-        ch_multiqc,
-        ch_multiqc_config,
-        ch_multiqc_custom_config,
-        ch_multiqc_logo,
-        ch_multiqc_methods_description,
         ch_top_ranked_model
     )
 
     emit:
-    multiqc_report = ch_multiqc
+    multiqc_report = POST_PROCESSING.out.multiqc_report
 }
 
 /*

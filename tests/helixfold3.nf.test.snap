@@ -4,11 +4,11 @@
             7,
             {
                 "GENERATE_REPORT": {
-                    "python": "3.12.7",
-                    "generate_report.py": "Python 3.12.7"
+                    "python": "3.10.8",
+                    "generate_report.py": "Python 3.10.8"
                 },
                 "RUN_HELIXFOLD3": {
-                    "python": "unknown"
+                    "python": "3.10.8"
                 },
                 "Workflow": {
                     "nf-core/proteinfold": "v2.1.0dev"
@@ -83,10 +83,10 @@
                 "test_alphafold2_report.html:md5,d41d8cd98f00b204e9800998ecf8427e"
             ]
         ],
+        "timestamp": "2026-04-02T15:33:05.481348845",
         "meta": {
-            "nf-test": "0.9.3",
+            "nf-test": "0.9.5",
             "nextflow": "25.10.4"
-        },
-        "timestamp": "2026-03-27T09:10:21.963345902"
+        }
     }
 }

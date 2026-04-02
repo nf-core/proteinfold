@@ -4,8 +4,8 @@
             11,
             {
                 "GENERATE_REPORT": {
-                    "python": "3.12.7",
-                    "generate_report.py": "Python 3.12.7"
+                    "python": "3.10.8",
+                    "generate_report.py": "Python 3.10.8"
                 },
                 "MMSEQS_COLABFOLDSEARCH": {
                     "colabfold_search": "unknown",
@@ -15,7 +15,7 @@
                     "boltz": "unknown"
                 },
                 "SPLIT_MSA": {
-                    "python": "3.8.3"
+                    "python": "3.10.8"
                 },
                 "Workflow": {
                     "nf-core/proteinfold": "v2.1.0dev"
@@ -94,10 +94,10 @@
                 "B.csv:md5,d41d8cd98f00b204e9800998ecf8427e"
             ]
         ],
+        "timestamp": "2026-03-31T18:15:20.627421945",
         "meta": {
-            "nf-test": "0.9.3",
+            "nf-test": "0.9.5",
             "nextflow": "25.10.4"
-        },
-        "timestamp": "2026-03-27T08:53:06.410999759"
+        }
     }
 }

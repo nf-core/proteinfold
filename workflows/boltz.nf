@@ -29,6 +29,7 @@ include { paramsSummaryMap       } from 'plugin/nf-schema'
 include { paramsSummaryMultiqc   } from '../subworkflows/nf-core/utils_nfcore_pipeline'
 include { softwareVersionsToYAML } from '../subworkflows/nf-core/utils_nfcore_pipeline'
 include { methodsDescriptionText } from '../subworkflows/local/utils_nfcore_proteinfold_pipeline'
+include { modeChannel            } from '../subworkflows/local/utils_nfcore_proteinfold_pipeline'
 
 //
 // MODULE: Boltz
@@ -135,62 +136,18 @@ workflow BOLTZ {
         ch_mols
     )
 
-    RUN_BOLTZ
-        .out
-        .pdb
-        .map { it ->
-            def meta = it[0].clone();
-            meta.model = "boltz"
-            [ meta, it[1] ]
-        }
-        .set {ch_pdb}
-
-    RUN_BOLTZ
-        .out
-        .top_ranked_pdb
-        .map { it ->
-            def meta = it[0].clone();
-            meta.model = "boltz"
-            [ meta, it[1] ]
-        }
-        .set { ch_top_ranked_pdb }
-
-    RUN_BOLTZ
-        .out
-        .msa_raw
-        .map { it ->
-            def meta = it[0].clone();
-            meta.model = "boltz"
-            [ meta, it[1] ]
-        }
-        .set { ch_msa }
-
-    RUN_BOLTZ
-        .out
-        .pae_raw
-        .map { it ->
-            def meta = it[0].clone();
-            meta.model = "boltz"
-            [ meta, it[1] ]
-        }
-        .set { ch_pae }
-
-    RUN_BOLTZ
-        .out
-        .multiqc
-        .map { it -> it[1] }
-        .collect(sort: true)
-        .map { it ->  [ [ "model": "boltz"], it.flatten() ] }
-        .set { ch_multiqc_report  }
+    modeChannel(RUN_BOLTZ.out.pdb, "boltz").set { ch_pdb }
+    modeChannel(RUN_BOLTZ.out.top_ranked_pdb, "boltz").set { ch_top_ranked_pdb }
+    modeChannel(RUN_BOLTZ.out.msa, "boltz").set { ch_msa }
+    modeChannel(RUN_BOLTZ.out.pae, "boltz").set { ch_pae }
 
     ch_versions       = ch_versions.mix(RUN_BOLTZ.out.versions)
 
     emit:
     versions        = ch_versions
     msa             = ch_msa
-    structures      = RUN_BOLTZ.out.structures
+    structures_npz     = RUN_BOLTZ.out.structures_npz
     confidence      = RUN_BOLTZ.out.confidence
-    multiqc_report  = ch_multiqc_report
     top_ranked_pdb  = ch_top_ranked_pdb
     pdb             = ch_pdb
     pae             = ch_pae

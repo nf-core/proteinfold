@@ -20,7 +20,7 @@ process RUN_ROSETTAFOLD2NA {
     path ("raw/**")                                            , emit: raw
     tuple val(meta), path("${meta.id}_rosettafold2na.pdb")     , emit: top_ranked_pdb
     tuple val(meta), path("raw/*.pdb")                         , emit: pdb
-    tuple val(meta), path("${meta.id}_plddt.tsv")              , emit: multiqc
+    tuple val(meta), path("${meta.id}_plddt.tsv")              , emit: plddt
     tuple val(meta), path("${meta.id}_rosettafold2na_msa.tsv") , emit: msa
     tuple val(meta), path("${meta.id}_0_pae.tsv")              , emit: pae
     path "versions.yml"                                        , emit: versions

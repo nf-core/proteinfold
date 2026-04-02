@@ -10,6 +10,8 @@
 include { ROSETTAFOLD2NA_FASTA } from '../modules/local/rosettafold2na_fasta'
 include { RUN_ROSETTAFOLD2NA   } from '../modules/local/run_rosettafold2na'
 
+include { modeChannel          } from '../subworkflows/local/utils_nfcore_proteinfold_pipeline'
+
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     RUN MAIN WORKFLOW
@@ -28,7 +30,6 @@ workflow ROSETTAFOLD2NA {
     ch_rosettafold2na_weights // channel: path(rosettafold2na_weights)
 
     main:
-    ch_multiqc_report = channel.empty()
 
     ROSETTAFOLD2NA_FASTA(
         ch_samplesheet
@@ -45,51 +46,14 @@ workflow ROSETTAFOLD2NA {
     )
     ch_versions = ch_versions.mix(RUN_ROSETTAFOLD2NA.out.versions)
 
-    RUN_ROSETTAFOLD2NA
-        .out
-        .multiqc
-        .map { it -> it[1] }
-        .toSortedList()
-        .map { it ->
-            [ [ "model": "rosettafold2na" ], it.flatten() ]
-        }
-        .set { ch_multiqc_report }
-
-    RUN_ROSETTAFOLD2NA
-        .out
-        .pdb
-        .map { it ->
-            def meta = it[0].clone();
-            meta.model = "rosettafold2na";
-            [ meta, it[1] ]
-        }
-        .set { ch_pdb_final }
-
-    RUN_ROSETTAFOLD2NA
-        .out
-        .pae
-        .map { it ->
-            def meta = it[0].clone();
-            meta.model = "rosettafold2na";
-            [ meta, it[1] ]
-        }
-        .set { ch_pae_final }
-
-    RUN_ROSETTAFOLD2NA
-        .out
-        .msa
-        .map { it ->
-            def meta = it[0].clone();
-            meta.model = "rosettafold2na";
-            [ meta, it[1] ]
-        }
-        .set { ch_msa_final }
+    modeChannel(RUN_ROSETTAFOLD2NA.out.pdb, "rosettafold2na", true).set { ch_pdb_final }
+    modeChannel(RUN_ROSETTAFOLD2NA.out.pae, "rosettafold2na").set { ch_pae_final }
+    modeChannel(RUN_ROSETTAFOLD2NA.out.msa, "rosettafold2na").set { ch_msa_final }
 
     emit:
     pdb            = ch_pdb_final      // channel: [ id, /path/to/*.pdb ]
     pae            = ch_pae_final      // channel: [ id, /path/to/*_pae.tsv ]
     msa            = ch_msa_final      // channel: [ id, /path/to/*_msa.tsv ]
-    multiqc_report = ch_multiqc_report // channel: /path/to/multiqc_report.html
     versions       = ch_versions       // channel: [ path(versions.yml) ]
 }
 

@@ -11,6 +11,8 @@ include { RUN_ALPHAFOLD2      } from '../modules/local/run_alphafold2'
 include { RUN_ALPHAFOLD2_MSA  } from '../modules/local/run_alphafold2_msa'
 include { RUN_ALPHAFOLD2_PRED } from '../modules/local/run_alphafold2_pred'
 
+include { modeChannel         } from '../subworkflows/local/utils_nfcore_proteinfold_pipeline'
+
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     IMPORT NF-CORE MODULES/SUBWORKFLOWS
@@ -49,7 +51,6 @@ workflow ALPHAFOLD2 {
     ch_top_ranked_pdb = channel.empty()
     ch_msa            = channel.empty()
     ch_pae            = channel.empty()
-    ch_multiqc_report = channel.empty()
 
     if (alphafold2_model_preset != 'multimer') {
         ch_samplesheet
@@ -82,16 +83,6 @@ workflow ALPHAFOLD2 {
             ch_pdb_seqres,
             ch_uniprot
         )
-
-        RUN_ALPHAFOLD2
-            .out
-            .multiqc
-            .map { it -> it[1] }
-            .toSortedList()
-            .map { it ->
-                [ [ "model": "alphafold2" ], it.flatten() ]
-            }
-            .set { ch_multiqc_report }
 
         ch_pdb            = ch_pdb.mix(RUN_ALPHAFOLD2.out.pdb)
         ch_top_ranked_pdb = ch_top_ranked_pdb.mix(RUN_ALPHAFOLD2.out.top_ranked_pdb)
@@ -143,16 +134,6 @@ workflow ALPHAFOLD2 {
             ch_uniprot
         )
 
-        RUN_ALPHAFOLD2_PRED
-            .out
-            .multiqc
-            .map { it -> it[1] }
-            .toSortedList()
-            .map { it ->
-                [ [ "model": "alphafold2" ], it.flatten() ]
-            }
-            .set { ch_multiqc_report }
-
         ch_top_ranked_pdb = ch_top_ranked_pdb.mix(RUN_ALPHAFOLD2_PRED.out.top_ranked_pdb)
         ch_pdb            = ch_pdb.mix(RUN_ALPHAFOLD2_PRED.out.pdb)
         ch_msa            = ch_msa.mix(RUN_ALPHAFOLD2_PRED.out.msa)
@@ -160,44 +141,16 @@ workflow ALPHAFOLD2 {
         ch_versions       = ch_versions.mix(RUN_ALPHAFOLD2_PRED.out.versions)
     }
 
-    ch_pdb
-        .map { it ->
-            def meta = it[0].clone();
-            meta.model = "alphafold2";
-            def files = (it[1] instanceof List) ? it[1] : [ it[1] ]
-            [ meta, files ]
-        }
-        .set { ch_pdb_final }
-
-    ch_msa
-        .map { it ->
-            def meta = it[0].clone();
-            meta.model = "alphafold2";
-            [ meta, it[1] ]
-        }
-        .set { ch_msa_final }
-
-    ch_pae
-        .map { it ->
-            def meta = it[0].clone();
-            meta.model = "alphafold2";
-            [ meta, it[1] ]
-        }
-        .set { ch_pae_final }
-
-    ch_top_ranked_pdb_final = ch_top_ranked_pdb
-                                .map { it ->
-                                    def meta = it[0].clone();
-                                    meta.model = "alphafold2";
-                                    [ meta, it[1] ]
-                                }
+    modeChannel(ch_pdb, "alphafold2", true).set { ch_pdb_final }
+    modeChannel(ch_msa, "alphafold2").set { ch_msa_final }
+    modeChannel(ch_pae, "alphafold2").set { ch_pae_final }
+    ch_top_ranked_pdb_final = modeChannel(ch_top_ranked_pdb, "alphafold2")
 
     emit:
     top_ranked_pdb = ch_top_ranked_pdb_final // channel: [ meta, /path/to/*.pdb ]
     pdb            = ch_pdb_final            // channel: [ meta, /path/to/*.pdb ]
     msa            = ch_msa_final            // channel: [ meta, /path/to/*.pdb, /path/to/*_coverage.png ]  // Would prefer channel: [ meta, /path/to/*_msa.tsv ]
     pae            = ch_pae_final            // channel: [ meta, /path/to/*_0_pae.tsv]
-    multiqc_report = ch_multiqc_report       // channel: /path/to/multiqc_report.html
     versions       = ch_versions             // channel: [ path(versions.yml) ]
 }
 

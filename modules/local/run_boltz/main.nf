@@ -18,21 +18,22 @@ process RUN_BOLTZ {
 
     output:
     tuple val(meta), path ("boltz_results_${meta.id}")                          , optional: true, emit: intermediates
-    tuple val(meta), path ("boltz_results_*/processed/msa/*.npz")               , emit: msa
-    tuple val(meta), path ("boltz_results_*/processed/structures/*.npz")        , emit: structures
+    tuple val(meta), path ("boltz_results_*/processed/structures/*.npz")        , emit: structures_npz
+    tuple val(meta), path ("boltz_results_*/predictions/*/plddt_*model_0.npz")  , emit: plddt_npz
+    tuple val(meta), path ("boltz_results_*/processed/msa/*.npz")               , emit: msa_npz
+    tuple val(meta), path ("boltz_results_*/predictions/*/pae_*model_0.npz")    , emit: pae_npz
     tuple val(meta), path ("boltz_results_*/predictions/*/confidence*.json")    , emit: confidence
-    tuple val(meta), path ("${meta.id}_plddt.tsv")                              , emit: multiqc
     tuple val(meta), path ("${meta.id}_boltz.pdb")                              , emit: top_ranked_pdb
     tuple val(meta), path ("boltz_results_*/predictions/*/*.pdb")               , emit: pdb
-    tuple val(meta), path ("boltz_results_*/predictions/*/plddt_*model_0.npz")  , emit: plddt
-    tuple val(meta), path ("boltz_results_*/predictions/*/pae_*model_0.npz")    , emit: pae
-    tuple val(meta), path ("${meta.id}_plddt.tsv")                              , emit: plddt_raw
-    tuple val(meta), path ("${meta.id}_boltz_msa.tsv")                          , emit: msa_raw
-    tuple val(meta), path ("${meta.id}_*_pae.tsv")                              , emit: pae_raw
-    tuple val(meta), path ("${meta.id}_ptm.tsv")                                , emit: ptm_raw
-    tuple val(meta), path ("${meta.id}_iptm.tsv")                               , optional: true, emit: iptm_raw
-    tuple val(meta), path ("${meta.id}_chainwise_ptm.tsv")                      , emit: summary_chainwise_ptm_raw
-    tuple val(meta), path ("${meta.id}_chainwise_iptm.tsv")                     , optional: true, emit: chainwise_iptm_raw
+    tuple val(meta), path ("${meta.id}_plddt.tsv")                              , emit: plddt
+    tuple val(meta), path ("${meta.id}_boltz_msa.tsv")                          , emit: msa
+    // Could potential remove the optional, but Boltz has the --write_full_pae False flag.
+    tuple val(meta), path ("${meta.id}_0_pae.tsv")                              , optional: true, emit: pae
+    tuple val(meta), path ("${meta.id}_*_pae.tsv")                              , optional: true, emit: paes
+    tuple val(meta), path ("${meta.id}_ptm.tsv")                                , emit: ptms
+    tuple val(meta), path ("${meta.id}_iptm.tsv")                               , optional: true, emit: iptms
+    tuple val(meta), path ("${meta.id}_chainwise_ptm.tsv")                      , optional: true, emit: chainwise_ptm
+    tuple val(meta), path ("${meta.id}_chainwise_iptm.tsv")                     , optional: true, emit: chainwise_iptm
     path "versions.yml", emit: versions
 
     when:
