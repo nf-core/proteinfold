@@ -23,7 +23,7 @@ process GENERATE_REPORT {
 
     """
     generate_report.py \\
-        --type standard \\
+        --report_type standard \\
         --prog ${meta.model} \\
         --msa ${msa} \\
         --pae ${pae} \\

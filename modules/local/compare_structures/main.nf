@@ -25,7 +25,7 @@ process COMPARE_STRUCTURES {
 
     """
     generate_report.py \\
-        --type comparison \\
+        --report_type comparison \\
         --prog comparison \\
         --msa ${msa.join(' ')} \\
         --structs ${pdb.join(' ')} \\
