@@ -69,7 +69,6 @@ process RUN_BOLTZ {
         --npzs boltz_results_*/predictions/${meta.id}/pae_*_model_*.npz \\
         --csvs ${meta.id}_*.csv
 
-    mv "${meta.id}_plddt.tsv" "${meta.id}_boltz_plddt.tsv"
     mv "${meta.id}_msa.tsv" "${meta.id}_boltz_msa.tsv"
 
     cat <<-END_VERSIONS > versions.yml
