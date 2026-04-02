@@ -47,6 +47,8 @@ def sort_structures_by_rank(structures, prog):
     Returns:
         List of structure files sorted by rank (always returns list, even for single structures)
     """
+
+    #TODO: some new modes don't have rank sorting logic implemented yet, *i.e.* rosettafold2na
     if prog == "alphafold2":
         # AlphaFold2 structures are named with [run]/ranked_[rank].pdb
         sorted_structures = sorted(structures, key=lambda x: int(os.path.basename(x).replace('ranked_', '').split('.')[0]))
@@ -82,12 +84,12 @@ def align_structures(structures):
     parsed_structures = []
     # Conceivably there could be a mix of structure file types, particularly in comparison mode
     for idx, structure in enumerate(structures):
-        if structures[0].endswith(".pdb"):
+        if structure.endswith(".pdb"):
             parser = PDB.PDBParser(QUIET=True)
-        elif structures[0].endswith(".cif"):
+        elif structure.endswith(".cif"):
             parser = PDB.MMCIFParser(QUIET=True)
         else:
-            raise ValueError(f"{structures[0]} is neither a PDB or mmCIF file!")
+            raise ValueError(f"{structure} is neither a PDB or mmCIF file!")
         parsed_structures.append(parser.get_structure(f"structure-{idx}", structure))
 
     ref_structure = parsed_structures[0]
