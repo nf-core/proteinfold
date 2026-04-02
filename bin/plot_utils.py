@@ -1,8 +1,19 @@
 import plotly.graph_objects as go
 from Bio import PDB
-
+from io import StringIO
 import numpy as np
 import os
+
+def structure_to_pdb_string(structure):
+    """Serialize a BioPython Structure object to a PDB-format string in memory.
+    Useful util to work with object directly and not have to write intermediate to disk
+    """
+    io = PDB.PDBIO()
+    io.set_structure(structure)
+    string_io = StringIO()
+    io.save(string_io)
+    return string_io.getvalue()
+
 
 def reset_residue_numbers(structure):
     """
