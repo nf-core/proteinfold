@@ -100,7 +100,7 @@ def generate_report(name, out_dir, structures, num_structs_limit=5, msa_files=No
         if valid_msa:
             seq_cov_sections = []
             for msa_file, tool_label in valid_msa:
-                seq_cov_fig = generate_sequence_coverage_plot(msa_file, out_dir, name)
+                seq_cov_fig = generate_sequence_coverage_plot(msa_file)
                 # In comparison mode, label each coverage plot with its tool name
                 if type == "comparison" and len(valid_msa) > 1:
                     seq_cov_fig.update_layout(
@@ -132,7 +132,7 @@ def generate_report(name, out_dir, structures, num_structs_limit=5, msa_files=No
 
     # Generate PAE plot from first PAE file (TODO: toggle PAE with model selection), Not used in comparison report
     if pae_files:
-        pae_fig = generate_pae_plot(pae_files[0], out_dir, name)
+        pae_fig = generate_pae_plot(pae_files[0])
         pae_html = pae_fig.to_html(
             full_html=False,
             include_plotlyjs="cdn",
