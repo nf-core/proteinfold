@@ -180,7 +180,7 @@ def generate_plddt_plot(structures, labels=None):
     fig = go.Figure()
 
     for idx, struct in enumerate(structures):
-        plddts = plddt_from_struct_b_factor(struct) 
+        plddts = plddt_from_struct_b_factor(struct)
         fig.add_trace(
             go.Scatter(
                 x=list(range(len(plddts))),
@@ -328,5 +328,5 @@ def generate_pae_plot(pae_path):
         yaxis=dict(title="Aligned Residue"),
         autosize=True,
     )
-    
+
     return fig
