@@ -36,7 +36,7 @@ def _tool_program_label(structure_path):
     # If no specific tool is detected, return the base filename as a fallback (without extension)
     return Path(structure_path).stem
 
-def generate_report(name, out_dir, structures, num_structs_limit=5, msa_files, pae_files, prog, report_type, html_template):
+def generate_report(name, out_dir, structures, msa_files, pae_files, prog, report_type, html_template, num_structs_limit=5):
 
     PLOTLY_CONFIG = {"displayModeBar": True, "displaylogo": False, "scrollZoom": True}
 
@@ -77,17 +77,17 @@ def generate_report(name, out_dir, structures, num_structs_limit=5, msa_files, p
 
     # Build configuration JSON for JavaScript
     config = {
-        "report_type": report_type,
+        "reportType": report_type,
         "sampleName": name,
         "programName": prog_name_mapping.get(prog, prog),
         "structFormat": struct_format,
         "models": model_labels,
-        "plddt_averages": [round(plddt_from_struct_b_factor(s).mean(), 2) for s in parsed_structures],
-        "models_data": [structure_to_pdb_string(s) for s in parsed_structures],
+        "plddtAverages": [round(plddt_from_struct_b_factor(s).mean(), 2) for s in parsed_structures],
+        "modelsData": [structure_to_pdb_string(s) for s in parsed_structures],
     }
 
     # Inject configuration as a JSON script tag before </head>
-    config_script = f'<script report_type="application/json" id="report-config">{json.dumps(config)}</script>'
+    config_script = f'<script type="application/json" id="report-config">{json.dumps(config)}</script>'
     html = html.replace('</head>', f'{config_script}\n</head>', 1)
 
     # Generate sequence coverage plot from first MSA file
@@ -153,8 +153,8 @@ def main():
     parser.add_argument("--structs", required=True, nargs="+", help="List of structure file paths (.pdb or .cif).")
     parser.add_argument("--msa", nargs="+", default=None, help="MSA file path(s).")
     parser.add_argument("--pae", nargs="+", default=None, help="PAE file path(s).")
-    parser.add_argument("--prog", default="proteinfold", choices=["proteinfold", "alphafold2", "alphafold3", "esmfold", "colabfold", "rosettafold-all-atom", "rosettafold2na", "helixfold3", "boltz", "comparison"], report_type=str.lower, help="The program used to generate the structures.")
-    parser.add_argument("--report_type", default="standard", choices=["standard", "comparison"], help="The report_type of report to generate.")
+    parser.add_argument("--prog", default="proteinfold", choices=["proteinfold", "alphafold2", "alphafold3", "esmfold", "colabfold", "rosettafold-all-atom", "rosettafold2na", "helixfold3", "boltz", "comparison"], type=str.lower, help="The program used to generate the structures.")
+    parser.add_argument("--report_type", default="standard", choices=["standard", "comparison"], help="The type of report to generate.")
     parser.add_argument("--html_template", required=True, help="Path to the HTML report template.")
 
     args = parser.parse_args()
