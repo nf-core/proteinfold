@@ -34,8 +34,6 @@ process RUN_ALPHAFOLD2_PRED {
     tuple val(meta), path ("${meta.id}_*_pae.tsv")          , optional: true, emit: paes
     tuple val(meta), path ("${meta.id}_ptm.tsv")            , optional: true, emit: ptms
     tuple val(meta), path ("${meta.id}_iptm.tsv")           , optional: true, emit: iptms
-    tuple val(meta), path ("${meta.id}_chainwise_ptm.tsv")  , optional: true, emit: chainwise_ptm
-    tuple val(meta), path ("${meta.id}_chainwise_iptm.tsv") , optional: true, emit: chainwise_iptm
     path "versions.yml"                                     , emit: versions
 
     when:
