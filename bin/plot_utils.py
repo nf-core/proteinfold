@@ -309,7 +309,7 @@ def generate_pae_plot(pae_path, out_dir, name, save_image=False):
     Generate an interactive Plotly heatmap for Predicted Aligned Error (PAE) data.
     """
     pae = np.genfromtxt(pae_path, delimiter="\t")
-    max_pae = 31.75 # Capped from AlphaFold's value 
+    max_pae = 31.75 # Capped from AlphaFold's value
     fig = go.Figure()
 
     # Add heatmap with green colorscale

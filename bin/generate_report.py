@@ -33,7 +33,7 @@ def _tool_program_label(structure_path):
     for key, label in prog_name_mapping.items():
         if key not in ("comparison", "proteinfold") and key in basename:
             return label
-    # If no specific tool is detected, return the base filename as a fallback (without extension)  
+    # If no specific tool is detected, return the base filename as a fallback (without extension)
     return Path(structure_path).stem
 
 def generate_report(name, out_dir, structures, num_structs_limit=5, msa_files=None, pae_files=None, prog="proteinfold", type="standard", html_template=None):
@@ -50,7 +50,7 @@ def generate_report(name, out_dir, structures, num_structs_limit=5, msa_files=No
     # Keep original file paths for reading structure data and NGL viewer
     structure_paths = list(structures)
 
-    # Use PDB format for NGL viewer convenience. Since I'm parsing BioPython obejcts I can force format from object regardless of input file type 
+    # Use PDB format for NGL viewer convenience. Since I'm parsing BioPython obejcts I can force format from object regardless of input file type
     struct_format = "pdb"
 
     # Parse structures into BioPython objects with sequential residue numbering
@@ -161,7 +161,7 @@ def main():
 
     print("Generating report.....")
 
-    html_template = args.html_template 
+    html_template = args.html_template
 
     # Both these values could be missing - ESMFold for MSA, many others for PAE
     if args.msa and os.path.basename(args.msa[0]).startswith("DUMMY_"):
