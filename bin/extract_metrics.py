@@ -443,6 +443,7 @@ def read_colabfold_metrics(name, colabfold_metrics_fns):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--pkls", dest="pkls", required=False, nargs="+") # For reading both HelixFold3 and AlphaFold2 MSA formats
+    parser.add_argument("--npzs", dest="npzs", required=False, nargs="+") # For reading the Boltz-1 PAE formats. TODO: Boltz-1 MSA not implemented (go straight to .a3m file), implement
     parser.add_argument("--a3ms", dest="a3ms", required=False, nargs="+") # For reading the RosettaFold-All-Atom MSA formats
     parser.add_argument("--paired_a3m", dest="paired_a3m", required=False) # For reading the ColabFold MSA format
     parser.add_argument("--csvs", dest="csvs", required=False, nargs="+") # For reading boltz csvs
