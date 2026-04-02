@@ -79,14 +79,17 @@ def align_structures(structures):
     if not structures:
         raise ValueError("No structures provided for alignment.")
 
-    if structures[0].endswith(".pdb"):
-        parser = PDB.PDBParser(QUIET=True)
-    elif structures[0].endswith(".cif"):
-        parser = PDB.MMCIFParser(QUIET=True)
-    else:
-        raise ValueError(f"{structures[0]} is neither a PDB or mmCIF file!")
+    parsed_structures = []
+    # Conceivably there could be a mix of structure file types, particularly in comparison mode
+    for idx, structure in enumerate(structures):
+        if structures[0].endswith(".pdb"):
+            parser = PDB.PDBParser(QUIET=True)
+        elif structures[0].endswith(".cif"):
+            parser = PDB.MMCIFParser(QUIET=True)
+        else:
+            raise ValueError(f"{structures[0]} is neither a PDB or mmCIF file!")
+        parsed_structures.append(parser.get_structure(f"structure-{idx}", structure))
 
-    parsed_structures = [parser.get_structure(f"structure-{idx}", structure) for idx, structure in enumerate(structures)]
     ref_structure = parsed_structures[0]
 
     def get_atom_ids(structure):
@@ -166,12 +169,6 @@ def plddt_from_struct_b_factor(structure):
 def generate_plddt_plot(structures, labels=None):
     """
     Generate a Plotly figure for pLDDT per position for given structures.
-
-    Args:
-        structures (list): List of structure file paths or BioPython structure objects.
-
-    Returns:
-        go.Figure: Plotly figure object with pLDDT data.
     """
     # Support labelling from external scheme, otherwise default to Rank order-based labels
     if labels is None:
