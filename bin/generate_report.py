@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from plot_utils import (
+    structure_to_pdb_string,
     reset_residue_numbers,
     sort_structures_by_rank,
     align_structures,
@@ -27,12 +28,21 @@ prog_name_mapping = {
     "comparison": "Comparison",
 }
 
+def _tool_program_label(structure_path):
+    basename = Path(structure_path).stem.lower()
+    for key, label in prog_name_mapping.items():
+        if key not in ("comparison", "proteinfold") and key in basename:
+            return label
+    # If no specific tool is detected, return the base filename as a fallback (without extension)  
+    return Path(structure_path).stem
+
 def generate_report(name, out_dir, structures, num_structs_limit=5, msa_files=None, pae_files=None, prog="proteinfold", type="standard", html_template=None):
 
     PLOTLY_CONFIG = {"displayModeBar": True, "displaylogo": False, "scrollZoom": True}
 
     # Sort structures by name and limit to set number
-    if len(structures) > num_structs_limit:
+    # For comparison report using single top ranked structure from each tool so sorting not performed - structures should be pre-sorted and limited by user input
+    if type != "comparison" and len(structures) > num_structs_limit:
         print(f"Warning: More than {num_structs_limit} structures provided. Sorting and using only the first {num_structs_limit} structures.")
         sorted_structures = sort_structures_by_rank(structures, prog)
         structures = sorted_structures[:num_structs_limit]
@@ -40,8 +50,8 @@ def generate_report(name, out_dir, structures, num_structs_limit=5, msa_files=No
     # Keep original file paths for reading structure data and NGL viewer
     structure_paths = list(structures)
 
-    # Detect structure format for NGL viewer
-    struct_format = "cif" if structure_paths[0].endswith(".cif") else "pdb"
+    # Use PDB format for NGL viewer convenience. Since I'm parsing BioPython obejcts I can force format from object regardless of input file type 
+    struct_format = "pdb"
 
     # Parse structures into BioPython objects with sequential residue numbering
     # (ESMFold, HF3 etc. restart numbering per chain — renumber to be sequential)
@@ -53,6 +63,14 @@ def generate_report(name, out_dir, structures, num_structs_limit=5, msa_files=No
 
     print("Structures:", structure_paths)
 
+
+    # Build model labels: infer tool names for comparison, rank numbers otherwise
+    if type == "comparison":
+        model_labels = [_tool_program_label(s) for s in structure_paths]
+    else:
+        model_labels = [f"Rank {idx+1}" for idx, _ in enumerate(parsed_structures)]
+
+
     # Read HTML template
     with open(html_template, "r") as f:
         html = f.read()
@@ -63,9 +81,9 @@ def generate_report(name, out_dir, structures, num_structs_limit=5, msa_files=No
         "sampleName": name,
         "programName": prog_name_mapping.get(prog, prog),
         "structFormat": struct_format,
-        "models": [f"Rank {idx+1}" for idx, _ in enumerate(parsed_structures)],
+        "models": model_labels,
         "plddt_averages": [round(plddt_from_struct_b_factor(s).mean(), 2) for s in parsed_structures],
-        "models_data": [open(s, "r").read() for s in structure_paths],
+        "models_data": [structure_to_pdb_string(s) for s in parsed_structures],
     }
 
     # Inject configuration as a JSON script tag before </head>
@@ -75,12 +93,27 @@ def generate_report(name, out_dir, structures, num_structs_limit=5, msa_files=No
     # Generate sequence coverage plot from first MSA file
     seq_cov_html = None
     if msa_files:
-        seq_cov_fig = generate_sequence_coverage_plot(msa_files[0], out_dir, name)
-        seq_cov_html = seq_cov_fig.to_html(
-            full_html=False,
-            include_plotlyjs="cdn",
-            config=PLOTLY_CONFIG,
-        )
+        # Filter out tools that don't generate MSAs (e.g. ESMFold) - if MSA file is a dummy placeholder, skip the section entirely
+
+        valid_msa = [(m, _tool_program_label(m)) for m in msa_files if not os.path.basename(m).startswith("DUMMY_")]
+
+        if valid_msa:
+            seq_cov_sections = []
+            for msa_file, tool_label in valid_msa:
+                seq_cov_fig = generate_sequence_coverage_plot(msa_file, out_dir, name)
+                # In comparison mode, label each coverage plot with its tool name
+                if type == "comparison" and len(valid_msa) > 1:
+                    seq_cov_fig.update_layout(
+                        title=dict(text=f"Sequence Coverage — {tool_label}")
+                    )
+                seq_cov_sections.append(
+                    seq_cov_fig.to_html(
+                        full_html=False,
+                        include_plotlyjs="cdn",
+                        config=PLOTLY_CONFIG,
+                    )
+                )
+            seq_cov_html = "\n".join(seq_cov_sections)
 
     # Replace or remove optional sections
     if seq_cov_html:
@@ -97,7 +130,7 @@ def generate_report(name, out_dir, structures, num_structs_limit=5, msa_files=No
     )
     html = html.replace('<div id="plddt_placeholder"></div>', plddt_html, 1)
 
-    # Generate PAE plot from first PAE file (TODO: toggle PAE with model selection)
+    # Generate PAE plot from first PAE file (TODO: toggle PAE with model selection), Not used in comparison report
     if pae_files:
         pae_fig = generate_pae_plot(pae_files[0], out_dir, name)
         pae_html = pae_fig.to_html(
@@ -122,13 +155,13 @@ def main():
     parser.add_argument("--pae", nargs="+", default=None, help="PAE file path(s).")
     parser.add_argument("--prog", default="proteinfold", choices=["proteinfold", "alphafold2", "alphafold3", "esmfold", "colabfold", "rosettafold-all-atom", "rosettafold2na", "helixfold3", "boltz", "comparison"], type=str.lower, help="The program used to generate the structures.")
     parser.add_argument("--type", default="standard", choices=["standard", "comparison"], help="The type of report to generate.")
-    parser.add_argument("--html_template", default=None, help="Path to the HTML report template.")
+    parser.add_argument("--html_template", required=True, help="Path to the HTML report template.")
 
     args = parser.parse_args()
 
     print("Generating report.....")
 
-    html_template = args.html_template or get_template_path()
+    html_template = args.html_template 
 
     # Both these values could be missing - ESMFold for MSA, many others for PAE
     if args.msa and os.path.basename(args.msa[0]).startswith("DUMMY_"):
