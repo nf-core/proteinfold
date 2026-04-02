@@ -50,7 +50,7 @@ def generate_report(name, out_dir, structures, msa_files, pae_files, prog, repor
     # Keep original file paths for reading structure data and NGL viewer
     structure_paths = list(structures)
 
-    # Use PDB format for NGL viewer convenience. Since I'm parsing BioPython obejcts I can force format from object regardless of input file type
+    # Use PDB format for NGL viewer convenience. Since I'm parsing BioPython objects I can force format from object regardless of input file type
     struct_format = "pdb"
 
     # Parse structures into BioPython objects with sequential residue numbering
