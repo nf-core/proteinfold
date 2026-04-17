@@ -123,7 +123,7 @@ nf-core/proteinfold was originally written by Athanasios Baltzis ([@athbaltzis](
 
 Many thanks to others who have helped out and contributed along the way too, including (but not limited to): Norman Goodacre and Waleed Osman from Interline Therapeutics ([@interlinetx](https://github.com/interlinetx)), Martin Steinegger ([@martin-steinegger](https://github.com/martin-steinegger)) and Raoul J.P. Bonnal ([@rjpbonnal](https://github.com/rjpbonnal))
 
-The pipeline has been further developed and maintained through contributions from the [Structural Biology Facility (SBF) at UNSW Sydney](https://www.myfacility.unsw.edu.au/facilities/structural-biology-facility), including Joshua Caley ([@jscgh](https://github.com/jscgh)), Keiran Rowell ([@keiran-rowell-unsw](https://github.com/keiran-rowell-unsw)), Thomas Litfin ([@tlitfin](https://github.com/tlitfin)) and Nathan Glades ([@nbtm-sh](https://github.com/nbtm-sh)).
+The pipeline has been further developed and maintained through contributions from the [Structural Biology Facility (SBF) at UNSW Sydney](https://www.unsw.edu.au/research/facilities-and-infrastructure/find-a-facility/sbf), including Joshua Caley ([@jscgh](https://github.com/jscgh)), Keiran Rowell ([@keiran-rowell-unsw](https://github.com/keiran-rowell-unsw)), Thomas Litfin ([@tlitfin](https://github.com/tlitfin)) and Nathan Glades ([@nbtm-sh](https://github.com/nbtm-sh)).
 
 We would also like to thanks to the AWS Open Data Sponsorship Program for generously providing the resources necessary to host the data utilized in the testing, development, and deployment of nf-core proteinfold.
 
