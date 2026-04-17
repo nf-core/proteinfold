@@ -1,0 +1,1908 @@
+{
+    "nodes": [],
+    "edges": [],
+    "subworkflows": {
+        "PIPELINE_INITIALISATION": {
+            "nodes": [],
+            "edges": [],
+            "subworkflows": {
+                "UTILS_NEXTFLOW_PIPELINE": {
+                    "nodes": [],
+                    "edges": [],
+                    "subworkflows": {}
+                },
+                "UTILS_NFSCHEMA_PLUGIN": {
+                    "nodes": [],
+                    "edges": [],
+                    "subworkflows": {}
+                },
+                "UTILS_NFCORE_PIPELINE": {
+                    "nodes": [],
+                    "edges": [],
+                    "subworkflows": {}
+                }
+            }
+        },
+        "NFCORE_PROTEINFOLD": {
+            "nodes": [],
+            "edges": [],
+            "subworkflows": {
+                "PREPARE_ALPHAFOLD2_DBS": {
+                    "nodes": [
+                        {
+                            "id": "<src.process.Process object at 0x7f32348e3c20>",
+                            "name": "DOWNLOAD_PDBMMCIF",
+                            "shape": "ellipse",
+                            "xlabel": "",
+                            "fillcolor": "",
+                            "artificial": false,
+                            "position": {
+                                "x": "59",
+                                "y": "2524"
+                            }
+                        },
+                        {
+                            "id": "<src.process.Process object at 0x7f3234720440>",
+                            "name": "ARIA2_PDB_SEQRES",
+                            "shape": "ellipse",
+                            "xlabel": "",
+                            "fillcolor": "",
+                            "artificial": false,
+                            "position": {
+                                "x": "59",
+                                "y": "2470"
+                            }
+                        },
+                        {
+                            "id": "<src.process.Process object at 0x7f3234723260>",
+                            "name": "COMBINE_UNIPROT",
+                            "shape": "ellipse",
+                            "xlabel": "",
+                            "fillcolor": "",
+                            "artificial": false,
+                            "position": {
+                                "x": "243",
+                                "y": "2614"
+                            }
+                        }
+                    ],
+                    "edges": [
+                        {
+                            "A": "<src.process.Process object at 0x7f32348e3c20>",
+                            "B": "<src.process.Process object at 0x7f3234755d90>",
+                            "label": "",
+                            "color": "#E15759",
+                            "condition": "requested_modes.contains(\"alphafold2\")"
+                        },
+                        {
+                            "A": "<src.process.Process object at 0x7f32348e3c20>",
+                            "B": "<src.process.Process object at 0x7f3234756bd0>",
+                            "label": "",
+                            "color": "#E15759",
+                            "condition": "requested_modes.contains(\"alphafold2\")"
+                        },
+                        {
+                            "A": "<src.process.Process object at 0x7f32348e3c20>",
+                            "B": "<src.process.Process object at 0x7f3234756c60>",
+                            "label": "",
+                            "color": "#E15759",
+                            "condition": "requested_modes.contains(\"alphafold2\")"
+                        },
+                        {
+                            "A": "<src.process.Process object at 0x7f3234720440>",
+                            "B": "<src.process.Process object at 0x7f3234755d90>",
+                            "label": "",
+                            "color": "#E15759",
+                            "condition": "requested_modes.contains(\"alphafold2\")"
+                        },
+                        {
+                            "A": "<src.process.Process object at 0x7f3234720440>",
+                            "B": "<src.process.Process object at 0x7f3234756bd0>",
+                            "label": "",
+                            "color": "#E15759",
+                            "condition": "requested_modes.contains(\"alphafold2\")"
+                        },
+                        {
+                            "A": "<src.process.Process object at 0x7f3234720440>",
+                            "B": "<src.process.Process object at 0x7f3234756c60>",
+                            "label": "",
+                            "color": "#E15759",
+                            "condition": "requested_modes.contains(\"alphafold2\")"
+                        },
+                        {
+                            "A": "<src.process.Process object at 0x7f3234723260>",
+                            "B": "<src.process.Process object at 0x7f3234755d90>",
+                            "label": "",
+                            "color": "#E15759",
+                            "condition": "requested_modes.contains(\"alphafold2\")"
+                        },
+                        {
+                            "A": "<src.process.Process object at 0x7f3234723260>",
+                            "B": "<src.process.Process object at 0x7f3234756bd0>",
+                            "label": "",
+                            "color": "#E15759",
+                            "condition": "requested_modes.contains(\"alphafold2\")"
+                        },
+                        {
+                            "A": "<src.process.Process object at 0x7f3234723260>",
+                            "B": "<src.process.Process object at 0x7f3234756c60>",
+                            "label": "",
+                            "color": "#E15759",
+                            "condition": "requested_modes.contains(\"alphafold2\")"
+                        }
+                    ],
+                    "subworkflows": {
+                        "ARIA2_UNCOMPRESS": {
+                            "nodes": [
+                                {
+                                    "id": "<src.process.Process object at 0x7f32347224b0>",
+                                    "name": "UNTAR",
+                                    "shape": "ellipse",
+                                    "xlabel": "",
+                                    "fillcolor": "",
+                                    "artificial": false,
+                                    "position": {
+                                        "x": "149",
+                                        "y": "2576"
+                                    }
+                                },
+                                {
+                                    "id": "<src.process.Process object at 0x7f3234722780>",
+                                    "name": "GUNZIP",
+                                    "shape": "ellipse",
+                                    "xlabel": "",
+                                    "fillcolor": "",
+                                    "artificial": false,
+                                    "position": {
+                                        "x": "149",
+                                        "y": "2630"
+                                    }
+                                },
+                                {
+                                    "id": "<src.process.Process object at 0x7f3234722a20>",
+                                    "name": "ZSTD_DECOMPRESS",
+                                    "shape": "ellipse",
+                                    "xlabel": "",
+                                    "fillcolor": "",
+                                    "artificial": false,
+                                    "position": {
+                                        "x": "149",
+                                        "y": "2684"
+                                    }
+                                },
+                                {
+                                    "id": "<src.process.Process object at 0x7f3234722d20>",
+                                    "name": "UNZIP",
+                                    "shape": "ellipse",
+                                    "xlabel": "",
+                                    "fillcolor": "",
+                                    "artificial": false,
+                                    "position": {
+                                        "x": "149",
+                                        "y": "2738"
+                                    }
+                                },
+                                {
+                                    "id": "<src.process.Process object at 0x7f32347220f0>",
+                                    "name": "ARIA2",
+                                    "shape": "ellipse",
+                                    "xlabel": "",
+                                    "fillcolor": "",
+                                    "artificial": false,
+                                    "position": {
+                                        "x": "59",
+                                        "y": "2684"
+                                    }
+                                }
+                            ],
+                            "edges": [
+                                {
+                                    "A": "<src.process.Process object at 0x7f32347224b0>",
+                                    "B": "<src.process.Process object at 0x7f3234723260>",
+                                    "label": "",
+                                    "color": "#E15759",
+                                    "condition": "requested_modes.contains(\"alphafold2\")"
+                                },
+                                {
+                                    "A": "<src.process.Process object at 0x7f3234722780>",
+                                    "B": "<src.process.Process object at 0x7f3234723260>",
+                                    "label": "",
+                                    "color": "#E15759",
+                                    "condition": "requested_modes.contains(\"alphafold2\")"
+                                },
+                                {
+                                    "A": "<src.process.Process object at 0x7f3234722a20>",
+                                    "B": "<src.process.Process object at 0x7f3234723260>",
+                                    "label": "",
+                                    "color": "#E15759",
+                                    "condition": "requested_modes.contains(\"alphafold2\")"
+                                },
+                                {
+                                    "A": "<src.process.Process object at 0x7f3234722d20>",
+                                    "B": "<src.process.Process object at 0x7f3234723260>",
+                                    "label": "",
+                                    "color": "#E15759",
+                                    "condition": "requested_modes.contains(\"alphafold2\")"
+                                },
+                                {
+                                    "A": "<src.process.Process object at 0x7f32347220f0>",
+                                    "B": "<src.process.Process object at 0x7f3234722a20>",
+                                    "label": "",
+                                    "color": "#E15759",
+                                    "condition": "requested_modes.contains(\"alphafold2\")"
+                                },
+                                {
+                                    "A": "<src.process.Process object at 0x7f32347220f0>",
+                                    "B": "<src.process.Process object at 0x7f3234722d20>",
+                                    "label": "",
+                                    "color": "#E15759",
+                                    "condition": "requested_modes.contains(\"alphafold2\")"
+                                },
+                                {
+                                    "A": "<src.process.Process object at 0x7f32347220f0>",
+                                    "B": "<src.process.Process object at 0x7f3234722780>",
+                                    "label": "",
+                                    "color": "#E15759",
+                                    "condition": "requested_modes.contains(\"alphafold2\")"
+                                },
+                                {
+                                    "A": "<src.process.Process object at 0x7f32347220f0>",
+                                    "B": "<src.process.Process object at 0x7f32347224b0>",
+                                    "label": "",
+                                    "color": "#E15759",
+                                    "condition": "requested_modes.contains(\"alphafold2\")"
+                                },
+                                {
+                                    "A": "<src.process.Process object at 0x7f32347220f0>",
+                                    "B": "<src.process.Process object at 0x7f3234723260>",
+                                    "label": "",
+                                    "color": "#E15759",
+                                    "condition": "requested_modes.contains(\"alphafold2\")"
+                                }
+                            ],
+                            "subworkflows": {}
+                        }
+                    }
+                },
+                "ALPHAFOLD2": {
+                    "nodes": [
+                        {
+                            "id": "<src.process.Process object at 0x7f3234755d90>",
+                            "name": "RUN_ALPHAFOLD2",
+                            "shape": "ellipse",
+                            "xlabel": "",
+                            "fillcolor": "",
+                            "artificial": false,
+                            "position": {
+                                "x": "333",
+                                "y": "2470"
+                            }
+                        },
+                        {
+                            "id": "<src.process.Process object at 0x7f3234756bd0>",
+                            "name": "RUN_ALPHAFOLD2_MSA",
+                            "shape": "ellipse",
+                            "xlabel": "",
+                            "fillcolor": "",
+                            "artificial": false,
+                            "position": {
+                                "x": "333",
+                                "y": "2524"
+                            }
+                        },
+                        {
+                            "id": "<src.process.Process object at 0x7f3234756c60>",
+                            "name": "RUN_ALPHAFOLD2_PRED",
+                            "shape": "ellipse",
+                            "xlabel": "",
+                            "fillcolor": "",
+                            "artificial": false,
+                            "position": {
+                                "x": "423",
+                                "y": "2524"
+                            }
+                        }
+                    ],
+                    "edges": [
+                        {
+                            "A": "<src.process.Process object at 0x7f3234755d90>",
+                            "B": "<src.process.Process object at 0x7f32348b6240>",
+                            "label": "",
+                            "color": "#E15759",
+                            "condition": "requested_modes.contains(\"alphafold2\")"
+                        },
+                        {
+                            "A": "<src.process.Process object at 0x7f3234755d90>",
+                            "B": "<src.process.Process object at 0x7f32348b6b70>",
+                            "label": "",
+                            "color": "#E15759",
+                            "condition": "requested_modes.contains(\"alphafold2\")"
+                        },
+                        {
+                            "A": "<src.process.Process object at 0x7f3234755d90>",
+                            "B": "<src.process.Process object at 0x7f32348b4d10>",
+                            "label": "",
+                            "color": "#E15759",
+                            "condition": "requested_modes.contains(\"alphafold2\")"
+                        },
+                        {
+                            "A": "<src.process.Process object at 0x7f3234756bd0>",
+                            "B": "<src.process.Process object at 0x7f3234756c60>",
+                            "label": "",
+                            "color": "#E15759",
+                            "condition": "requested_modes.contains(\"alphafold2\")"
+                        },
+                        {
+                            "A": "<src.process.Process object at 0x7f3234756c60>",
+                            "B": "<src.process.Process object at 0x7f32348b6240>",
+                            "label": "",
+                            "color": "#E15759",
+                            "condition": "requested_modes.contains(\"alphafold2\")"
+                        },
+                        {
+                            "A": "<src.process.Process object at 0x7f3234756c60>",
+                            "B": "<src.process.Process object at 0x7f32348b6b70>",
+                            "label": "",
+                            "color": "#E15759",
+                            "condition": "requested_modes.contains(\"alphafold2\")"
+                        },
+                        {
+                            "A": "<src.process.Process object at 0x7f3234756c60>",
+                            "B": "<src.process.Process object at 0x7f32348b4d10>",
+                            "label": "",
+                            "color": "#E15759",
+                            "condition": "requested_modes.contains(\"alphafold2\")"
+                        }
+                    ],
+                    "subworkflows": {}
+                },
+                "PREPARE_ALPHAFOLD3_DBS": {
+                    "nodes": [
+                        {
+                            "id": "<src.process.Process object at 0x7f3234791550>",
+                            "name": "DOWNLOAD_PDBMMCIF_AF3",
+                            "shape": "ellipse",
+                            "xlabel": "",
+                            "fillcolor": "",
+                            "artificial": false,
+                            "position": {
+                                "x": "243",
+                                "y": "2188"
+                            }
+                        }
+                    ],
+                    "edges": [
+                        {
+                            "A": "<src.process.Process object at 0x7f3234791550>",
+                            "B": "<src.process.Process object at 0x7f32347e86e0>",
+                            "label": "",
+                            "color": "#EDC948",
+                            "condition": "requested_modes.contains(\"alphafold3\")"
+                        }
+                    ],
+                    "subworkflows": {
+                        "ARIA2_UNCOMPRESS": {
+                            "nodes": [
+                                {
+                                    "id": "<src.process.Process object at 0x7f32347c95e0>",
+                                    "name": "UNTAR",
+                                    "shape": "ellipse",
+                                    "xlabel": "",
+                                    "fillcolor": "",
+                                    "artificial": false,
+                                    "position": {
+                                        "x": "333",
+                                        "y": "2240"
+                                    }
+                                },
+                                {
+                                    "id": "<src.process.Process object at 0x7f32347c9880>",
+                                    "name": "GUNZIP",
+                                    "shape": "ellipse",
+                                    "xlabel": "",
+                                    "fillcolor": "",
+                                    "artificial": false,
+                                    "position": {
+                                        "x": "333",
+                                        "y": "2294"
+                                    }
+                                },
+                                {
+                                    "id": "<src.process.Process object at 0x7f32347c9b20>",
+                                    "name": "ZSTD_DECOMPRESS",
+                                    "shape": "ellipse",
+                                    "xlabel": "",
+                                    "fillcolor": "",
+                                    "artificial": false,
+                                    "position": {
+                                        "x": "333",
+                                        "y": "2348"
+                                    }
+                                },
+                                {
+                                    "id": "<src.process.Process object at 0x7f32347c9e20>",
+                                    "name": "UNZIP",
+                                    "shape": "ellipse",
+                                    "xlabel": "",
+                                    "fillcolor": "",
+                                    "artificial": false,
+                                    "position": {
+                                        "x": "333",
+                                        "y": "2402"
+                                    }
+                                },
+                                {
+                                    "id": "<src.process.Process object at 0x7f32347c9250>",
+                                    "name": "ARIA2",
+                                    "shape": "ellipse",
+                                    "xlabel": "",
+                                    "fillcolor": "",
+                                    "artificial": false,
+                                    "position": {
+                                        "x": "243",
+                                        "y": "2321"
+                                    }
+                                }
+                            ],
+                            "edges": [
+                                {
+                                    "A": "<src.process.Process object at 0x7f32347c9250>",
+                                    "B": "<src.process.Process object at 0x7f32347c9e20>",
+                                    "label": "",
+                                    "color": "#EDC948",
+                                    "condition": "requested_modes.contains(\"alphafold3\")"
+                                },
+                                {
+                                    "A": "<src.process.Process object at 0x7f32347c9250>",
+                                    "B": "<src.process.Process object at 0x7f32347c9b20>",
+                                    "label": "",
+                                    "color": "#EDC948",
+                                    "condition": "requested_modes.contains(\"alphafold3\")"
+                                },
+                                {
+                                    "A": "<src.process.Process object at 0x7f32347c9250>",
+                                    "B": "<src.process.Process object at 0x7f32347c95e0>",
+                                    "label": "",
+                                    "color": "#EDC948",
+                                    "condition": "requested_modes.contains(\"alphafold3\")"
+                                },
+                                {
+                                    "A": "<src.process.Process object at 0x7f32347c9250>",
+                                    "B": "<src.process.Process object at 0x7f32347c9880>",
+                                    "label": "",
+                                    "color": "#EDC948",
+                                    "condition": "requested_modes.contains(\"alphafold3\")"
+                                }
+                            ],
+                            "subworkflows": {}
+                        }
+                    }
+                },
+                "ALPHAFOLD3": {
+                    "nodes": [
+                        {
+                            "id": "<src.process.Process object at 0x7f32347e8680>",
+                            "name": "FASTA_TO_ALPHAFOLD3_JSON",
+                            "shape": "ellipse",
+                            "xlabel": "",
+                            "fillcolor": "",
+                            "artificial": false,
+                            "position": {
+                                "x": "243",
+                                "y": "2128"
+                            }
+                        },
+                        {
+                            "id": "<src.process.Process object at 0x7f32347e86e0>",
+                            "name": "RUN_ALPHAFOLD3",
+                            "shape": "ellipse",
+                            "xlabel": "",
+                            "fillcolor": "",
+                            "artificial": false,
+                            "position": {
+                                "x": "333",
+                                "y": "2128"
+                            }
+                        },
+                        {
+                            "id": "<src.process.Process object at 0x7f32347e87a0>",
+                            "name": "MMCIF2PDB_MODELS",
+                            "shape": "ellipse",
+                            "xlabel": "",
+                            "fillcolor": "",
+                            "artificial": false,
+                            "position": {
+                                "x": "423",
+                                "y": "2128"
+                            }
+                        },
+                        {
+                            "id": "<src.process.Process object at 0x7f32347e8860>",
+                            "name": "MMCIF2PDB_TOP_RANKED",
+                            "shape": "ellipse",
+                            "xlabel": "",
+                            "fillcolor": "",
+                            "artificial": false,
+                            "position": {
+                                "x": "423",
+                                "y": "2074"
+                            }
+                        }
+                    ],
+                    "edges": [
+                        {
+                            "A": "<src.process.Process object at 0x7f32347e8680>",
+                            "B": "<src.process.Process object at 0x7f32347e86e0>",
+                            "label": "",
+                            "color": "#EDC948",
+                            "condition": "requested_modes.contains(\"alphafold3\")"
+                        },
+                        {
+                            "A": "<src.process.Process object at 0x7f32347e86e0>",
+                            "B": "<src.process.Process object at 0x7f32347e8860>",
+                            "label": "",
+                            "color": "#EDC948",
+                            "condition": "requested_modes.contains(\"alphafold3\")"
+                        },
+                        {
+                            "A": "<src.process.Process object at 0x7f32347e86e0>",
+                            "B": "<src.process.Process object at 0x7f32348b6b70>",
+                            "label": "",
+                            "color": "#EDC948",
+                            "condition": "requested_modes.contains(\"alphafold3\")"
+                        },
+                        {
+                            "A": "<src.process.Process object at 0x7f32347e86e0>",
+                            "B": "<src.process.Process object at 0x7f32348b4d10>",
+                            "label": "",
+                            "color": "#EDC948",
+                            "condition": "requested_modes.contains(\"alphafold3\")"
+                        },
+                        {
+                            "A": "<src.process.Process object at 0x7f32347e86e0>",
+                            "B": "<src.process.Process object at 0x7f32347e87a0>",
+                            "label": "",
+                            "color": "#EDC948",
+                            "condition": "requested_modes.contains(\"alphafold3\")"
+                        },
+                        {
+                            "A": "<src.process.Process object at 0x7f32347e87a0>",
+                            "B": "<src.process.Process object at 0x7f32348b4d10>",
+                            "label": "",
+                            "color": "#EDC948",
+                            "condition": "requested_modes.contains(\"alphafold3\")"
+                        },
+                        {
+                            "A": "<src.process.Process object at 0x7f32347e8860>",
+                            "B": "<src.process.Process object at 0x7f32348b6240>",
+                            "label": "",
+                            "color": "#EDC948",
+                            "condition": "requested_modes.contains(\"alphafold3\")"
+                        }
+                    ],
+                    "subworkflows": {}
+                },
+                "PREPARE_COLABFOLD_DBS": {
+                    "nodes": [
+                        {
+                            "id": "<src.process.Process object at 0x7f32345c8b60>",
+                            "name": "MMSEQS_CREATEINDEX_COLABFOLDDB",
+                            "shape": "ellipse",
+                            "xlabel": "",
+                            "fillcolor": "",
+                            "artificial": false,
+                            "position": {
+                                "x": "59",
+                                "y": "604"
+                            }
+                        },
+                        {
+                            "id": "<src.process.Process object at 0x7f32345c9070>",
+                            "name": "MMSEQS_CREATEINDEX_UNIPROT30",
+                            "shape": "ellipse",
+                            "xlabel": "",
+                            "fillcolor": "",
+                            "artificial": false,
+                            "position": {
+                                "x": "59",
+                                "y": "550"
+                            }
+                        }
+                    ],
+                    "edges": [
+                        {
+                            "A": "<src.process.Process object at 0x7f32345c8b60>",
+                            "B": "<src.process.Process object at 0x7f32345caa80>",
+                            "label": ""
+                        },
+                        {
+                            "A": "<src.process.Process object at 0x7f32345c9070>",
+                            "B": "<src.process.Process object at 0x7f32345caa80>",
+                            "label": ""
+                        }
+                    ],
+                    "subworkflows": {
+                        "ARIA2_UNCOMPRESS": {
+                            "nodes": [
+                                {
+                                    "id": "<src.process.Process object at 0x7f32345b07d0>",
+                                    "name": "UNTAR",
+                                    "shape": "ellipse",
+                                    "xlabel": "",
+                                    "fillcolor": "",
+                                    "artificial": false,
+                                    "position": {
+                                        "x": "149",
+                                        "y": "656"
+                                    }
+                                },
+                                {
+                                    "id": "<src.process.Process object at 0x7f32345b0aa0>",
+                                    "name": "GUNZIP",
+                                    "shape": "ellipse",
+                                    "xlabel": "",
+                                    "fillcolor": "",
+                                    "artificial": false,
+                                    "position": {
+                                        "x": "149",
+                                        "y": "710"
+                                    }
+                                },
+                                {
+                                    "id": "<src.process.Process object at 0x7f32345b0d70>",
+                                    "name": "ZSTD_DECOMPRESS",
+                                    "shape": "ellipse",
+                                    "xlabel": "",
+                                    "fillcolor": "",
+                                    "artificial": false,
+                                    "position": {
+                                        "x": "149",
+                                        "y": "764"
+                                    }
+                                },
+                                {
+                                    "id": "<src.process.Process object at 0x7f32345b1040>",
+                                    "name": "UNZIP",
+                                    "shape": "ellipse",
+                                    "xlabel": "",
+                                    "fillcolor": "",
+                                    "artificial": false,
+                                    "position": {
+                                        "x": "149",
+                                        "y": "818"
+                                    }
+                                },
+                                {
+                                    "id": "<src.process.Process object at 0x7f32345b0440>",
+                                    "name": "ARIA2",
+                                    "shape": "ellipse",
+                                    "xlabel": "",
+                                    "fillcolor": "",
+                                    "artificial": false,
+                                    "position": {
+                                        "x": "59",
+                                        "y": "737"
+                                    }
+                                }
+                            ],
+                            "edges": [
+                                {
+                                    "A": "<src.process.Process object at 0x7f32345b0440>",
+                                    "B": "<src.process.Process object at 0x7f32345b0d70>",
+                                    "label": ""
+                                },
+                                {
+                                    "A": "<src.process.Process object at 0x7f32345b0440>",
+                                    "B": "<src.process.Process object at 0x7f32345b0aa0>",
+                                    "label": ""
+                                },
+                                {
+                                    "A": "<src.process.Process object at 0x7f32345b0440>",
+                                    "B": "<src.process.Process object at 0x7f32345b1040>",
+                                    "label": ""
+                                },
+                                {
+                                    "A": "<src.process.Process object at 0x7f32345b0440>",
+                                    "B": "<src.process.Process object at 0x7f32345b07d0>",
+                                    "label": ""
+                                }
+                            ],
+                            "subworkflows": {}
+                        }
+                    }
+                },
+                "COLABFOLD": {
+                    "nodes": [
+                        {
+                            "id": "<src.process.Process object at 0x7f3234817380>",
+                            "name": "MULTIFASTA_TO_CSV",
+                            "shape": "ellipse",
+                            "xlabel": "",
+                            "fillcolor": "",
+                            "artificial": false,
+                            "position": {
+                                "x": "243",
+                                "y": "2014"
+                            }
+                        },
+                        {
+                            "id": "<src.process.Process object at 0x7f32348174a0>",
+                            "name": "COLABFOLD_BATCH",
+                            "shape": "ellipse",
+                            "xlabel": "",
+                            "fillcolor": "",
+                            "artificial": false,
+                            "position": {
+                                "x": "333",
+                                "y": "2014"
+                            }
+                        },
+                        {
+                            "id": "<src.process.Process object at 0x7f3234817bc0>",
+                            "name": "MULTIFASTA_TO_CSV",
+                            "shape": "ellipse",
+                            "xlabel": "",
+                            "fillcolor": "",
+                            "artificial": false,
+                            "position": {
+                                "x": "243",
+                                "y": "1960"
+                            }
+                        },
+                        {
+                            "id": "<src.process.Process object at 0x7f32348cf6e0>",
+                            "name": "MMSEQS_COLABFOLDSEARCH",
+                            "shape": "ellipse",
+                            "xlabel": "",
+                            "fillcolor": "",
+                            "artificial": false,
+                            "position": {
+                                "x": "333",
+                                "y": "1960"
+                            }
+                        },
+                        {
+                            "id": "<src.process.Process object at 0x7f3234817bf0>",
+                            "name": "COLABFOLD_BATCH",
+                            "shape": "ellipse",
+                            "xlabel": "",
+                            "fillcolor": "",
+                            "artificial": false,
+                            "position": {
+                                "x": "423",
+                                "y": "1960"
+                            }
+                        }
+                    ],
+                    "edges": [
+                        {
+                            "A": "<src.process.Process object at 0x7f3234817380>",
+                            "B": "<src.process.Process object at 0x7f32348174a0>",
+                            "label": ""
+                        },
+                        {
+                            "A": "<src.process.Process object at 0x7f32348174a0>",
+                            "B": "<src.process.Process object at 0x7f32348b4d10>",
+                            "label": ""
+                        },
+                        {
+                            "A": "<src.process.Process object at 0x7f32348174a0>",
+                            "B": "<src.process.Process object at 0x7f32348b6b70>",
+                            "label": ""
+                        },
+                        {
+                            "A": "<src.process.Process object at 0x7f32348174a0>",
+                            "B": "<src.process.Process object at 0x7f32348b6240>",
+                            "label": ""
+                        },
+                        {
+                            "A": "<src.process.Process object at 0x7f3234817bc0>",
+                            "B": "<src.process.Process object at 0x7f32348cf6e0>",
+                            "label": ""
+                        },
+                        {
+                            "A": "<src.process.Process object at 0x7f32348cf6e0>",
+                            "B": "<src.process.Process object at 0x7f3234817bf0>",
+                            "label": ""
+                        },
+                        {
+                            "A": "<src.process.Process object at 0x7f3234817bf0>",
+                            "B": "<src.process.Process object at 0x7f32348b6240>",
+                            "label": ""
+                        },
+                        {
+                            "A": "<src.process.Process object at 0x7f3234817bf0>",
+                            "B": "<src.process.Process object at 0x7f32348b6b70>",
+                            "label": ""
+                        },
+                        {
+                            "A": "<src.process.Process object at 0x7f3234817bf0>",
+                            "B": "<src.process.Process object at 0x7f32348b4d10>",
+                            "label": ""
+                        }
+                    ],
+                    "subworkflows": {}
+                },
+                "PREPARE_ESMFOLD_DBS": {
+                    "nodes": [
+                        {
+                            "id": "<src.process.Process object at 0x7f323463ac90>",
+                            "name": "ARIA2_ESMFOLD_3B_V1",
+                            "shape": "ellipse",
+                            "xlabel": "",
+                            "fillcolor": "",
+                            "artificial": false,
+                            "position": {
+                                "x": "333",
+                                "y": "1840"
+                            }
+                        },
+                        {
+                            "id": "<src.process.Process object at 0x7f323463adb0>",
+                            "name": "ARIA2_ESM2_T36_3B_UR50D",
+                            "shape": "ellipse",
+                            "xlabel": "",
+                            "fillcolor": "",
+                            "artificial": false,
+                            "position": {
+                                "x": "333",
+                                "y": "1786"
+                            }
+                        },
+                        {
+                            "id": "<src.process.Process object at 0x7f323463aea0>",
+                            "name": "ARIA2_ESM2_T36_3B_UR50D_CONTACT_REGRESSION",
+                            "shape": "ellipse",
+                            "xlabel": "",
+                            "fillcolor": "",
+                            "artificial": false,
+                            "position": {
+                                "x": "333",
+                                "y": "1732"
+                            }
+                        }
+                    ],
+                    "edges": [
+                        {
+                            "A": "<src.process.Process object at 0x7f323463ac90>",
+                            "B": "<src.process.Process object at 0x7f32348f99d0>",
+                            "label": ""
+                        },
+                        {
+                            "A": "<src.process.Process object at 0x7f323463adb0>",
+                            "B": "<src.process.Process object at 0x7f32348f99d0>",
+                            "label": ""
+                        },
+                        {
+                            "A": "<src.process.Process object at 0x7f323463aea0>",
+                            "B": "<src.process.Process object at 0x7f32348f99d0>",
+                            "label": ""
+                        }
+                    ],
+                    "subworkflows": {}
+                },
+                "ESMFOLD": {
+                    "nodes": [
+                        {
+                            "id": "<src.process.Process object at 0x7f323463bcb0>",
+                            "name": "MULTIFASTA_TO_SINGLEFASTA",
+                            "shape": "ellipse",
+                            "xlabel": "",
+                            "fillcolor": "",
+                            "artificial": false,
+                            "position": {
+                                "x": "333",
+                                "y": "1900"
+                            }
+                        },
+                        {
+                            "id": "<src.process.Process object at 0x7f32348f99d0>",
+                            "name": "RUN_ESMFOLD",
+                            "shape": "ellipse",
+                            "xlabel": "",
+                            "fillcolor": "",
+                            "artificial": false,
+                            "position": {
+                                "x": "423",
+                                "y": "1900"
+                            }
+                        }
+                    ],
+                    "edges": [
+                        {
+                            "A": "<src.process.Process object at 0x7f323463bcb0>",
+                            "B": "<src.process.Process object at 0x7f32348f99d0>",
+                            "label": ""
+                        },
+                        {
+                            "A": "<src.process.Process object at 0x7f32348f99d0>",
+                            "B": "<src.process.Process object at 0x7f32348b6b70>",
+                            "label": ""
+                        }
+                    ],
+                    "subworkflows": {}
+                },
+                "PREPARE_ROSETTAFOLD_ALL_ATOM_DBS": {
+                    "nodes": [],
+                    "edges": [],
+                    "subworkflows": {
+                        "ARIA2_UNCOMPRESS": {
+                            "nodes": [
+                                {
+                                    "id": "<src.process.Process object at 0x7f323466f230>",
+                                    "name": "UNTAR",
+                                    "shape": "ellipse",
+                                    "xlabel": "",
+                                    "fillcolor": "",
+                                    "artificial": false,
+                                    "position": {
+                                        "x": "333",
+                                        "y": "1502"
+                                    }
+                                },
+                                {
+                                    "id": "<src.process.Process object at 0x7f323466ee10>",
+                                    "name": "GUNZIP",
+                                    "shape": "ellipse",
+                                    "xlabel": "",
+                                    "fillcolor": "",
+                                    "artificial": false,
+                                    "position": {
+                                        "x": "333",
+                                        "y": "1556"
+                                    }
+                                },
+                                {
+                                    "id": "<src.process.Process object at 0x7f323466d4c0>",
+                                    "name": "ZSTD_DECOMPRESS",
+                                    "shape": "ellipse",
+                                    "xlabel": "",
+                                    "fillcolor": "",
+                                    "artificial": false,
+                                    "position": {
+                                        "x": "333",
+                                        "y": "1610"
+                                    }
+                                },
+                                {
+                                    "id": "<src.process.Process object at 0x7f323466f350>",
+                                    "name": "UNZIP",
+                                    "shape": "ellipse",
+                                    "xlabel": "",
+                                    "fillcolor": "",
+                                    "artificial": false,
+                                    "position": {
+                                        "x": "333",
+                                        "y": "1664"
+                                    }
+                                },
+                                {
+                                    "id": "<src.process.Process object at 0x7f323466ee70>",
+                                    "name": "ARIA2",
+                                    "shape": "ellipse",
+                                    "xlabel": "",
+                                    "fillcolor": "",
+                                    "artificial": false,
+                                    "position": {
+                                        "x": "243",
+                                        "y": "1556"
+                                    }
+                                }
+                            ],
+                            "edges": [
+                                {
+                                    "A": "<src.process.Process object at 0x7f323466f230>",
+                                    "B": "<src.process.Process object at 0x7f3234670dd0>",
+                                    "label": "",
+                                    "color": "#FF9DA7",
+                                    "condition": "!(source_url.toString().endsWith('.pkl.gz')) && source_url.toString().endsWith('.tar') $OR$                source_url.toString().endsWith('.tar.gz') $OR$                source_url.toString().endsWith('.tar.zst')$OR$                source_url.toString().endsWith('.tgz')"
+                                },
+                                {
+                                    "A": "<src.process.Process object at 0x7f323466ee10>",
+                                    "B": "<src.process.Process object at 0x7f3234670dd0>",
+                                    "label": "",
+                                    "color": "#F28E2B",
+                                    "condition": "!(source_url.toString().endsWith('.pkl.gz')) && !(source_url.toString().endsWith('.tar') $OR$                source_url.toString().endsWith('.tar.gz') $OR$                source_url.toString().endsWith('.tar.zst')$OR$                source_url.toString().endsWith('.tgz')) && source_url.toString().endsWith('.gz')"
+                                },
+                                {
+                                    "A": "<src.process.Process object at 0x7f323466d4c0>",
+                                    "B": "<src.process.Process object at 0x7f3234670dd0>",
+                                    "label": "",
+                                    "color": "#76B7B2",
+                                    "condition": "!(source_url.toString().endsWith('.pkl.gz')) && !(source_url.toString().endsWith('.tar') $OR$                source_url.toString().endsWith('.tar.gz') $OR$                source_url.toString().endsWith('.tar.zst')$OR$                source_url.toString().endsWith('.tgz')) && !(source_url.toString().endsWith('.gz')) && source_url.toString().endsWith('.zst')"
+                                },
+                                {
+                                    "A": "<src.process.Process object at 0x7f323466f350>",
+                                    "B": "<src.process.Process object at 0x7f3234670dd0>",
+                                    "label": "",
+                                    "color": "#B07AA1",
+                                    "condition": "!(source_url.toString().endsWith('.pkl.gz')) && !(source_url.toString().endsWith('.tar') $OR$                source_url.toString().endsWith('.tar.gz') $OR$                source_url.toString().endsWith('.tar.zst')$OR$                source_url.toString().endsWith('.tgz')) && !(source_url.toString().endsWith('.gz')) && !(source_url.toString().endsWith('.zst')) && source_url.toString().endsWith('.zip')"
+                                },
+                                {
+                                    "A": "<src.process.Process object at 0x7f323466ee70>",
+                                    "B": "<src.process.Process object at 0x7f323466ee10>",
+                                    "label": ""
+                                },
+                                {
+                                    "A": "<src.process.Process object at 0x7f323466ee70>",
+                                    "B": "<src.process.Process object at 0x7f323466f350>",
+                                    "label": ""
+                                },
+                                {
+                                    "A": "<src.process.Process object at 0x7f323466ee70>",
+                                    "B": "<src.process.Process object at 0x7f323466d4c0>",
+                                    "label": ""
+                                },
+                                {
+                                    "A": "<src.process.Process object at 0x7f323466ee70>",
+                                    "B": "<src.process.Process object at 0x7f323466f230>",
+                                    "label": ""
+                                },
+                                {
+                                    "A": "<src.process.Process object at 0x7f323466ee70>",
+                                    "B": "<src.process.Process object at 0x7f3234670dd0>",
+                                    "label": ""
+                                }
+                            ],
+                            "subworkflows": {}
+                        }
+                    }
+                },
+                "ROSETTAFOLD_ALL_ATOM": {
+                    "nodes": [
+                        {
+                            "id": "<src.process.Process object at 0x7f3234670d40>",
+                            "name": "FASTA2YAML",
+                            "shape": "ellipse",
+                            "xlabel": "",
+                            "fillcolor": "",
+                            "artificial": false,
+                            "position": {
+                                "x": "333",
+                                "y": "1428"
+                            }
+                        },
+                        {
+                            "id": "<src.process.Process object at 0x7f3234670dd0>",
+                            "name": "RUN_ROSETTAFOLD_ALL_ATOM",
+                            "shape": "ellipse",
+                            "xlabel": "",
+                            "fillcolor": "",
+                            "artificial": false,
+                            "position": {
+                                "x": "423",
+                                "y": "1428"
+                            }
+                        }
+                    ],
+                    "edges": [
+                        {
+                            "A": "<src.process.Process object at 0x7f3234670d40>",
+                            "B": "<src.process.Process object at 0x7f3234670dd0>",
+                            "label": ""
+                        },
+                        {
+                            "A": "<src.process.Process object at 0x7f3234670dd0>",
+                            "B": "<src.process.Process object at 0x7f32348b6b70>",
+                            "label": ""
+                        }
+                    ],
+                    "subworkflows": {}
+                },
+                "PREPARE_HELIXFOLD3_DBS": {
+                    "nodes": [
+                        {
+                            "id": "<src.process.Process object at 0x7f32346e1010>",
+                            "name": "DOWNLOAD_PDBMMCIF",
+                            "shape": "ellipse",
+                            "xlabel": "",
+                            "fillcolor": "",
+                            "artificial": false,
+                            "position": {
+                                "x": "243",
+                                "y": "1032"
+                            }
+                        },
+                        {
+                            "id": "<src.process.Process object at 0x7f32346e33e0>",
+                            "name": "ARIA2_PDB_SEQRES",
+                            "shape": "ellipse",
+                            "xlabel": "",
+                            "fillcolor": "",
+                            "artificial": false,
+                            "position": {
+                                "x": "243",
+                                "y": "1086"
+                            }
+                        },
+                        {
+                            "id": "<src.process.Process object at 0x7f3234700a10>",
+                            "name": "COMBINE_UNIPROT",
+                            "shape": "ellipse",
+                            "xlabel": "",
+                            "fillcolor": "",
+                            "artificial": false,
+                            "position": {
+                                "x": "243",
+                                "y": "1140"
+                            }
+                        }
+                    ],
+                    "edges": [
+                        {
+                            "A": "<src.process.Process object at 0x7f32346e1010>",
+                            "B": "<src.process.Process object at 0x7f32345275c0>",
+                            "label": "",
+                            "color": "#4E79A7",
+                            "condition": "requested_modes.contains(\"helixfold3\")"
+                        },
+                        {
+                            "A": "<src.process.Process object at 0x7f32346e33e0>",
+                            "B": "<src.process.Process object at 0x7f32345275c0>",
+                            "label": "",
+                            "color": "#4E79A7",
+                            "condition": "requested_modes.contains(\"helixfold3\")"
+                        },
+                        {
+                            "A": "<src.process.Process object at 0x7f3234700a10>",
+                            "B": "<src.process.Process object at 0x7f32345275c0>",
+                            "label": "",
+                            "color": "#4E79A7",
+                            "condition": "requested_modes.contains(\"helixfold3\")"
+                        }
+                    ],
+                    "subworkflows": {
+                        "ARIA2_UNCOMPRESS": {
+                            "nodes": [
+                                {
+                                    "id": "<src.process.Process object at 0x7f3234703680>",
+                                    "name": "UNTAR",
+                                    "shape": "ellipse",
+                                    "xlabel": "",
+                                    "fillcolor": "",
+                                    "artificial": false,
+                                    "position": {
+                                        "x": "333",
+                                        "y": "1192"
+                                    }
+                                },
+                                {
+                                    "id": "<src.process.Process object at 0x7f3234703920>",
+                                    "name": "GUNZIP",
+                                    "shape": "ellipse",
+                                    "xlabel": "",
+                                    "fillcolor": "",
+                                    "artificial": false,
+                                    "position": {
+                                        "x": "333",
+                                        "y": "1246"
+                                    }
+                                },
+                                {
+                                    "id": "<src.process.Process object at 0x7f3234703bc0>",
+                                    "name": "ZSTD_DECOMPRESS",
+                                    "shape": "ellipse",
+                                    "xlabel": "",
+                                    "fillcolor": "",
+                                    "artificial": false,
+                                    "position": {
+                                        "x": "333",
+                                        "y": "1300"
+                                    }
+                                },
+                                {
+                                    "id": "<src.process.Process object at 0x7f3234703ec0>",
+                                    "name": "UNZIP",
+                                    "shape": "ellipse",
+                                    "xlabel": "",
+                                    "fillcolor": "",
+                                    "artificial": false,
+                                    "position": {
+                                        "x": "333",
+                                        "y": "1354"
+                                    }
+                                },
+                                {
+                                    "id": "<src.process.Process object at 0x7f32347032c0>",
+                                    "name": "ARIA2",
+                                    "shape": "ellipse",
+                                    "xlabel": "",
+                                    "fillcolor": "",
+                                    "artificial": false,
+                                    "position": {
+                                        "x": "243",
+                                        "y": "1300"
+                                    }
+                                }
+                            ],
+                            "edges": [
+                                {
+                                    "A": "<src.process.Process object at 0x7f3234703680>",
+                                    "B": "<src.process.Process object at 0x7f32345275c0>",
+                                    "label": "",
+                                    "color": "#4E79A7",
+                                    "condition": "requested_modes.contains(\"helixfold3\")"
+                                },
+                                {
+                                    "A": "<src.process.Process object at 0x7f3234703920>",
+                                    "B": "<src.process.Process object at 0x7f32345275c0>",
+                                    "label": "",
+                                    "color": "#4E79A7",
+                                    "condition": "requested_modes.contains(\"helixfold3\")"
+                                },
+                                {
+                                    "A": "<src.process.Process object at 0x7f3234703bc0>",
+                                    "B": "<src.process.Process object at 0x7f32345275c0>",
+                                    "label": "",
+                                    "color": "#4E79A7",
+                                    "condition": "requested_modes.contains(\"helixfold3\")"
+                                },
+                                {
+                                    "A": "<src.process.Process object at 0x7f3234703ec0>",
+                                    "B": "<src.process.Process object at 0x7f32345275c0>",
+                                    "label": "",
+                                    "color": "#4E79A7",
+                                    "condition": "requested_modes.contains(\"helixfold3\")"
+                                },
+                                {
+                                    "A": "<src.process.Process object at 0x7f32347032c0>",
+                                    "B": "<src.process.Process object at 0x7f3234703920>",
+                                    "label": "",
+                                    "color": "#4E79A7",
+                                    "condition": "requested_modes.contains(\"helixfold3\")"
+                                },
+                                {
+                                    "A": "<src.process.Process object at 0x7f32347032c0>",
+                                    "B": "<src.process.Process object at 0x7f3234703bc0>",
+                                    "label": "",
+                                    "color": "#4E79A7",
+                                    "condition": "requested_modes.contains(\"helixfold3\")"
+                                },
+                                {
+                                    "A": "<src.process.Process object at 0x7f32347032c0>",
+                                    "B": "<src.process.Process object at 0x7f3234703680>",
+                                    "label": "",
+                                    "color": "#4E79A7",
+                                    "condition": "requested_modes.contains(\"helixfold3\")"
+                                },
+                                {
+                                    "A": "<src.process.Process object at 0x7f32347032c0>",
+                                    "B": "<src.process.Process object at 0x7f32345275c0>",
+                                    "label": "",
+                                    "color": "#4E79A7",
+                                    "condition": "requested_modes.contains(\"helixfold3\")"
+                                },
+                                {
+                                    "A": "<src.process.Process object at 0x7f32347032c0>",
+                                    "B": "<src.process.Process object at 0x7f3234703ec0>",
+                                    "label": "",
+                                    "color": "#4E79A7",
+                                    "condition": "requested_modes.contains(\"helixfold3\")"
+                                }
+                            ],
+                            "subworkflows": {}
+                        }
+                    }
+                },
+                "HELIXFOLD3": {
+                    "nodes": [
+                        {
+                            "id": "<src.process.Process object at 0x7f3234527500>",
+                            "name": "FASTA2JSON",
+                            "shape": "ellipse",
+                            "xlabel": "",
+                            "fillcolor": "",
+                            "artificial": false,
+                            "position": {
+                                "x": "333",
+                                "y": "972"
+                            }
+                        },
+                        {
+                            "id": "<src.process.Process object at 0x7f32345275c0>",
+                            "name": "RUN_HELIXFOLD3",
+                            "shape": "ellipse",
+                            "xlabel": "",
+                            "fillcolor": "",
+                            "artificial": false,
+                            "position": {
+                                "x": "423",
+                                "y": "972"
+                            }
+                        }
+                    ],
+                    "edges": [
+                        {
+                            "A": "<src.process.Process object at 0x7f3234527500>",
+                            "B": "<src.process.Process object at 0x7f32345275c0>",
+                            "label": "",
+                            "color": "#4E79A7",
+                            "condition": "requested_modes.contains(\"helixfold3\")"
+                        },
+                        {
+                            "A": "<src.process.Process object at 0x7f32345275c0>",
+                            "B": "<src.process.Process object at 0x7f32348b4d10>",
+                            "label": "",
+                            "color": "#4E79A7",
+                            "condition": "requested_modes.contains(\"helixfold3\")"
+                        },
+                        {
+                            "A": "<src.process.Process object at 0x7f32345275c0>",
+                            "B": "<src.process.Process object at 0x7f32348b6b70>",
+                            "label": "",
+                            "color": "#4E79A7",
+                            "condition": "requested_modes.contains(\"helixfold3\")"
+                        },
+                        {
+                            "A": "<src.process.Process object at 0x7f32345275c0>",
+                            "B": "<src.process.Process object at 0x7f32348b6240>",
+                            "label": "",
+                            "color": "#4E79A7",
+                            "condition": "requested_modes.contains(\"helixfold3\")"
+                        }
+                    ],
+                    "subworkflows": {}
+                },
+                "PREPARE_ROSETTAFOLD2NA_DBS": {
+                    "nodes": [
+                        {
+                            "id": "<src.process.Process object at 0x7f32345659a0>",
+                            "name": "DOWNLOAD_RNA_DATABASES",
+                            "shape": "ellipse",
+                            "xlabel": "",
+                            "fillcolor": "",
+                            "artificial": false,
+                            "position": {
+                                "x": "243",
+                                "y": "624"
+                            }
+                        }
+                    ],
+                    "edges": [
+                        {
+                            "A": "<src.process.Process object at 0x7f32345659a0>",
+                            "B": "<src.process.Process object at 0x7f32345807a0>",
+                            "label": ""
+                        }
+                    ],
+                    "subworkflows": {
+                        "ARIA2_UNCOMPRESS": {
+                            "nodes": [
+                                {
+                                    "id": "<src.process.Process object at 0x7f32345255b0>",
+                                    "name": "UNTAR",
+                                    "shape": "ellipse",
+                                    "xlabel": "",
+                                    "fillcolor": "",
+                                    "artificial": false,
+                                    "position": {
+                                        "x": "333",
+                                        "y": "676"
+                                    }
+                                },
+                                {
+                                    "id": "<src.process.Process object at 0x7f32345661e0>",
+                                    "name": "GUNZIP",
+                                    "shape": "ellipse",
+                                    "xlabel": "",
+                                    "fillcolor": "",
+                                    "artificial": false,
+                                    "position": {
+                                        "x": "333",
+                                        "y": "730"
+                                    }
+                                },
+                                {
+                                    "id": "<src.process.Process object at 0x7f3234564860>",
+                                    "name": "ZSTD_DECOMPRESS",
+                                    "shape": "ellipse",
+                                    "xlabel": "",
+                                    "fillcolor": "",
+                                    "artificial": false,
+                                    "position": {
+                                        "x": "333",
+                                        "y": "784"
+                                    }
+                                },
+                                {
+                                    "id": "<src.process.Process object at 0x7f3234566750>",
+                                    "name": "UNZIP",
+                                    "shape": "ellipse",
+                                    "xlabel": "",
+                                    "fillcolor": "",
+                                    "artificial": false,
+                                    "position": {
+                                        "x": "333",
+                                        "y": "838"
+                                    }
+                                },
+                                {
+                                    "id": "<src.process.Process object at 0x7f32345662a0>",
+                                    "name": "ARIA2",
+                                    "shape": "ellipse",
+                                    "xlabel": "",
+                                    "fillcolor": "",
+                                    "artificial": false,
+                                    "position": {
+                                        "x": "243",
+                                        "y": "784"
+                                    }
+                                }
+                            ],
+                            "edges": [
+                                {
+                                    "A": "<src.process.Process object at 0x7f32345255b0>",
+                                    "B": "<src.process.Process object at 0x7f32345807a0>",
+                                    "label": "",
+                                    "color": "#FF9DA7",
+                                    "condition": "!(source_url.toString().endsWith('.pkl.gz')) && source_url.toString().endsWith('.tar') $OR$                source_url.toString().endsWith('.tar.gz') $OR$                source_url.toString().endsWith('.tar.zst')$OR$                source_url.toString().endsWith('.tgz')"
+                                },
+                                {
+                                    "A": "<src.process.Process object at 0x7f32345661e0>",
+                                    "B": "<src.process.Process object at 0x7f32345807a0>",
+                                    "label": "",
+                                    "color": "#F28E2B",
+                                    "condition": "!(source_url.toString().endsWith('.pkl.gz')) && !(source_url.toString().endsWith('.tar') $OR$                source_url.toString().endsWith('.tar.gz') $OR$                source_url.toString().endsWith('.tar.zst')$OR$                source_url.toString().endsWith('.tgz')) && source_url.toString().endsWith('.gz')"
+                                },
+                                {
+                                    "A": "<src.process.Process object at 0x7f3234564860>",
+                                    "B": "<src.process.Process object at 0x7f32345807a0>",
+                                    "label": "",
+                                    "color": "#76B7B2",
+                                    "condition": "!(source_url.toString().endsWith('.pkl.gz')) && !(source_url.toString().endsWith('.tar') $OR$                source_url.toString().endsWith('.tar.gz') $OR$                source_url.toString().endsWith('.tar.zst')$OR$                source_url.toString().endsWith('.tgz')) && !(source_url.toString().endsWith('.gz')) && source_url.toString().endsWith('.zst')"
+                                },
+                                {
+                                    "A": "<src.process.Process object at 0x7f3234566750>",
+                                    "B": "<src.process.Process object at 0x7f32345807a0>",
+                                    "label": "",
+                                    "color": "#B07AA1",
+                                    "condition": "!(source_url.toString().endsWith('.pkl.gz')) && !(source_url.toString().endsWith('.tar') $OR$                source_url.toString().endsWith('.tar.gz') $OR$                source_url.toString().endsWith('.tar.zst')$OR$                source_url.toString().endsWith('.tgz')) && !(source_url.toString().endsWith('.gz')) && !(source_url.toString().endsWith('.zst')) && source_url.toString().endsWith('.zip')"
+                                },
+                                {
+                                    "A": "<src.process.Process object at 0x7f32345662a0>",
+                                    "B": "<src.process.Process object at 0x7f32345807a0>",
+                                    "label": ""
+                                },
+                                {
+                                    "A": "<src.process.Process object at 0x7f32345662a0>",
+                                    "B": "<src.process.Process object at 0x7f32345255b0>",
+                                    "label": ""
+                                },
+                                {
+                                    "A": "<src.process.Process object at 0x7f32345662a0>",
+                                    "B": "<src.process.Process object at 0x7f3234566750>",
+                                    "label": ""
+                                },
+                                {
+                                    "A": "<src.process.Process object at 0x7f32345662a0>",
+                                    "B": "<src.process.Process object at 0x7f32345661e0>",
+                                    "label": ""
+                                },
+                                {
+                                    "A": "<src.process.Process object at 0x7f32345662a0>",
+                                    "B": "<src.process.Process object at 0x7f3234564860>",
+                                    "label": ""
+                                }
+                            ],
+                            "subworkflows": {}
+                        }
+                    }
+                },
+                "ROSETTAFOLD2NA": {
+                    "nodes": [
+                        {
+                            "id": "<src.process.Process object at 0x7f3234580680>",
+                            "name": "ROSETTAFOLD2NA_FASTA",
+                            "shape": "ellipse",
+                            "xlabel": "",
+                            "fillcolor": "",
+                            "artificial": false,
+                            "position": {
+                                "x": "333",
+                                "y": "564"
+                            }
+                        },
+                        {
+                            "id": "<src.process.Process object at 0x7f32345807a0>",
+                            "name": "RUN_ROSETTAFOLD2NA",
+                            "shape": "ellipse",
+                            "xlabel": "",
+                            "fillcolor": "",
+                            "artificial": false,
+                            "position": {
+                                "x": "423",
+                                "y": "564"
+                            }
+                        }
+                    ],
+                    "edges": [
+                        {
+                            "A": "<src.process.Process object at 0x7f3234580680>",
+                            "B": "<src.process.Process object at 0x7f32345807a0>",
+                            "label": ""
+                        },
+                        {
+                            "A": "<src.process.Process object at 0x7f32345807a0>",
+                            "B": "<src.process.Process object at 0x7f32348b6240>",
+                            "label": ""
+                        },
+                        {
+                            "A": "<src.process.Process object at 0x7f32345807a0>",
+                            "B": "<src.process.Process object at 0x7f32348b6b70>",
+                            "label": ""
+                        },
+                        {
+                            "A": "<src.process.Process object at 0x7f32345807a0>",
+                            "B": "<src.process.Process object at 0x7f32348b4d10>",
+                            "label": ""
+                        }
+                    ],
+                    "subworkflows": {}
+                },
+                "PREPARE_BOLTZ_DBS": {
+                    "nodes": [
+                        {
+                            "id": "<src.process.Process object at 0x7f323458c410>",
+                            "name": "ARIA2_BOLTZ_CCD",
+                            "shape": "ellipse",
+                            "xlabel": "",
+                            "fillcolor": "",
+                            "artificial": false,
+                            "position": {
+                                "x": "243",
+                                "y": "268"
+                            }
+                        },
+                        {
+                            "id": "<src.process.Process object at 0x7f323458c470>",
+                            "name": "ARIA2_BOLTZ_MODEL",
+                            "shape": "ellipse",
+                            "xlabel": "",
+                            "fillcolor": "",
+                            "artificial": false,
+                            "position": {
+                                "x": "243",
+                                "y": "322"
+                            }
+                        },
+                        {
+                            "id": "<src.process.Process object at 0x7f323458c5c0>",
+                            "name": "ARIA2_BOLTZ2_AFF",
+                            "shape": "ellipse",
+                            "xlabel": "",
+                            "fillcolor": "",
+                            "artificial": false,
+                            "position": {
+                                "x": "243",
+                                "y": "376"
+                            }
+                        },
+                        {
+                            "id": "<src.process.Process object at 0x7f323458c6e0>",
+                            "name": "ARIA2_BOLTZ2_CONF",
+                            "shape": "ellipse",
+                            "xlabel": "",
+                            "fillcolor": "",
+                            "artificial": false,
+                            "position": {
+                                "x": "243",
+                                "y": "430"
+                            }
+                        }
+                    ],
+                    "edges": [
+                        {
+                            "A": "<src.process.Process object at 0x7f323458c410>",
+                            "B": "<src.process.Process object at 0x7f32345c8500>",
+                            "label": ""
+                        },
+                        {
+                            "A": "<src.process.Process object at 0x7f323458c470>",
+                            "B": "<src.process.Process object at 0x7f32345c8500>",
+                            "label": ""
+                        },
+                        {
+                            "A": "<src.process.Process object at 0x7f323458c5c0>",
+                            "B": "<src.process.Process object at 0x7f32345c8500>",
+                            "label": ""
+                        },
+                        {
+                            "A": "<src.process.Process object at 0x7f323458c6e0>",
+                            "B": "<src.process.Process object at 0x7f32345c8500>",
+                            "label": ""
+                        }
+                    ],
+                    "subworkflows": {
+                        "ARIA2_UNCOMPRESS": {
+                            "nodes": [
+                                {
+                                    "id": "<src.process.Process object at 0x7f323458d3a0>",
+                                    "name": "UNTAR",
+                                    "shape": "ellipse",
+                                    "xlabel": "",
+                                    "fillcolor": "",
+                                    "artificial": false,
+                                    "position": {
+                                        "x": "333",
+                                        "y": "54"
+                                    }
+                                },
+                                {
+                                    "id": "<src.process.Process object at 0x7f323458d670>",
+                                    "name": "GUNZIP",
+                                    "shape": "ellipse",
+                                    "xlabel": "",
+                                    "fillcolor": "",
+                                    "artificial": false,
+                                    "position": {
+                                        "x": "333",
+                                        "y": "108"
+                                    }
+                                },
+                                {
+                                    "id": "<src.process.Process object at 0x7f323458d8e0>",
+                                    "name": "ZSTD_DECOMPRESS",
+                                    "shape": "ellipse",
+                                    "xlabel": "",
+                                    "fillcolor": "",
+                                    "artificial": false,
+                                    "position": {
+                                        "x": "333",
+                                        "y": "162"
+                                    }
+                                },
+                                {
+                                    "id": "<src.process.Process object at 0x7f323458dc40>",
+                                    "name": "UNZIP",
+                                    "shape": "ellipse",
+                                    "xlabel": "",
+                                    "fillcolor": "",
+                                    "artificial": false,
+                                    "position": {
+                                        "x": "333",
+                                        "y": "216"
+                                    }
+                                },
+                                {
+                                    "id": "<src.process.Process object at 0x7f323458d010>",
+                                    "name": "ARIA2",
+                                    "shape": "ellipse",
+                                    "xlabel": "",
+                                    "fillcolor": "",
+                                    "artificial": false,
+                                    "position": {
+                                        "x": "243",
+                                        "y": "108"
+                                    }
+                                }
+                            ],
+                            "edges": [
+                                {
+                                    "A": "<src.process.Process object at 0x7f323458d3a0>",
+                                    "B": "<src.process.Process object at 0x7f32345c8500>",
+                                    "label": "",
+                                    "color": "#FF9DA7",
+                                    "condition": "!(source_url.toString().endsWith('.pkl.gz')) && source_url.toString().endsWith('.tar') $OR$                source_url.toString().endsWith('.tar.gz') $OR$                source_url.toString().endsWith('.tar.zst')$OR$                source_url.toString().endsWith('.tgz')"
+                                },
+                                {
+                                    "A": "<src.process.Process object at 0x7f323458d670>",
+                                    "B": "<src.process.Process object at 0x7f32345c8500>",
+                                    "label": "",
+                                    "color": "#F28E2B",
+                                    "condition": "!(source_url.toString().endsWith('.pkl.gz')) && !(source_url.toString().endsWith('.tar') $OR$                source_url.toString().endsWith('.tar.gz') $OR$                source_url.toString().endsWith('.tar.zst')$OR$                source_url.toString().endsWith('.tgz')) && source_url.toString().endsWith('.gz')"
+                                },
+                                {
+                                    "A": "<src.process.Process object at 0x7f323458d8e0>",
+                                    "B": "<src.process.Process object at 0x7f32345c8500>",
+                                    "label": "",
+                                    "color": "#76B7B2",
+                                    "condition": "!(source_url.toString().endsWith('.pkl.gz')) && !(source_url.toString().endsWith('.tar') $OR$                source_url.toString().endsWith('.tar.gz') $OR$                source_url.toString().endsWith('.tar.zst')$OR$                source_url.toString().endsWith('.tgz')) && !(source_url.toString().endsWith('.gz')) && source_url.toString().endsWith('.zst')"
+                                },
+                                {
+                                    "A": "<src.process.Process object at 0x7f323458dc40>",
+                                    "B": "<src.process.Process object at 0x7f32345c8500>",
+                                    "label": "",
+                                    "color": "#B07AA1",
+                                    "condition": "!(source_url.toString().endsWith('.pkl.gz')) && !(source_url.toString().endsWith('.tar') $OR$                source_url.toString().endsWith('.tar.gz') $OR$                source_url.toString().endsWith('.tar.zst')$OR$                source_url.toString().endsWith('.tgz')) && !(source_url.toString().endsWith('.gz')) && !(source_url.toString().endsWith('.zst')) && source_url.toString().endsWith('.zip')"
+                                },
+                                {
+                                    "A": "<src.process.Process object at 0x7f323458d010>",
+                                    "B": "<src.process.Process object at 0x7f323458dc40>",
+                                    "label": ""
+                                },
+                                {
+                                    "A": "<src.process.Process object at 0x7f323458d010>",
+                                    "B": "<src.process.Process object at 0x7f32345c8500>",
+                                    "label": ""
+                                },
+                                {
+                                    "A": "<src.process.Process object at 0x7f323458d010>",
+                                    "B": "<src.process.Process object at 0x7f323458d3a0>",
+                                    "label": ""
+                                },
+                                {
+                                    "A": "<src.process.Process object at 0x7f323458d010>",
+                                    "B": "<src.process.Process object at 0x7f323458d8e0>",
+                                    "label": ""
+                                },
+                                {
+                                    "A": "<src.process.Process object at 0x7f323458d010>",
+                                    "B": "<src.process.Process object at 0x7f323458d670>",
+                                    "label": ""
+                                }
+                            ],
+                            "subworkflows": {}
+                        }
+                    }
+                },
+                "BOLTZ": {
+                    "nodes": [
+                        {
+                            "id": "<src.process.Process object at 0x7f32345ca9c0>",
+                            "name": "MULTIFASTA_TO_CSV",
+                            "shape": "ellipse",
+                            "xlabel": "",
+                            "fillcolor": "",
+                            "artificial": false,
+                            "position": {
+                                "x": "59",
+                                "y": "490"
+                            }
+                        },
+                        {
+                            "id": "<src.process.Process object at 0x7f32345caa80>",
+                            "name": "MMSEQS_COLABFOLDSEARCH",
+                            "shape": "ellipse",
+                            "xlabel": "",
+                            "fillcolor": "",
+                            "artificial": false,
+                            "position": {
+                                "x": "149",
+                                "y": "490"
+                            }
+                        },
+                        {
+                            "id": "<src.process.Process object at 0x7f32345cabd0>",
+                            "name": "SPLIT_MSA",
+                            "shape": "ellipse",
+                            "xlabel": "",
+                            "fillcolor": "",
+                            "artificial": false,
+                            "position": {
+                                "x": "243",
+                                "y": "490"
+                            }
+                        },
+                        {
+                            "id": "<src.process.Process object at 0x7f32345c90a0>",
+                            "name": "BOLTZ_FASTA",
+                            "shape": "ellipse",
+                            "xlabel": "",
+                            "fillcolor": "",
+                            "artificial": false,
+                            "position": {
+                                "x": "333",
+                                "y": "490"
+                            }
+                        },
+                        {
+                            "id": "<src.process.Process object at 0x7f32345c8500>",
+                            "name": "RUN_BOLTZ",
+                            "shape": "ellipse",
+                            "xlabel": "",
+                            "fillcolor": "",
+                            "artificial": false,
+                            "position": {
+                                "x": "423",
+                                "y": "490"
+                            }
+                        }
+                    ],
+                    "edges": [
+                        {
+                            "A": "<src.process.Process object at 0x7f32345ca9c0>",
+                            "B": "<src.process.Process object at 0x7f32345caa80>",
+                            "label": ""
+                        },
+                        {
+                            "A": "<src.process.Process object at 0x7f32345caa80>",
+                            "B": "<src.process.Process object at 0x7f32345cabd0>",
+                            "label": ""
+                        },
+                        {
+                            "A": "<src.process.Process object at 0x7f32345cabd0>",
+                            "B": "<src.process.Process object at 0x7f32345c90a0>",
+                            "label": ""
+                        },
+                        {
+                            "A": "<src.process.Process object at 0x7f32345c90a0>",
+                            "B": "<src.process.Process object at 0x7f32345c8500>",
+                            "label": ""
+                        },
+                        {
+                            "A": "<src.process.Process object at 0x7f32345c8500>",
+                            "B": "<src.process.Process object at 0x7f32348b4d10>",
+                            "label": ""
+                        },
+                        {
+                            "A": "<src.process.Process object at 0x7f32345c8500>",
+                            "B": "<src.process.Process object at 0x7f32348b6b70>",
+                            "label": ""
+                        },
+                        {
+                            "A": "<src.process.Process object at 0x7f32345c8500>",
+                            "B": "<src.process.Process object at 0x7f32348b6240>",
+                            "label": ""
+                        }
+                    ],
+                    "subworkflows": {}
+                },
+                "POST_PROCESSING": {
+                    "nodes": [
+                        {
+                            "id": "<src.process.Process object at 0x7f32348b55e0>",
+                            "name": "COMPARE_STRUCTURES",
+                            "shape": "ellipse",
+                            "xlabel": "",
+                            "fillcolor": "",
+                            "artificial": false,
+                            "position": {
+                                "x": "603",
+                                "y": "2037"
+                            }
+                        },
+                        {
+                            "id": "<src.process.Process object at 0x7f32348b4d10>",
+                            "name": "GENERATE_REPORT",
+                            "shape": "ellipse",
+                            "xlabel": "",
+                            "fillcolor": "",
+                            "artificial": false,
+                            "position": {
+                                "x": "513",
+                                "y": "2037"
+                            }
+                        },
+                        {
+                            "id": "<src.process.Process object at 0x7f32348b6240>",
+                            "name": "FOLDSEEK_EASYSEARCH",
+                            "shape": "ellipse",
+                            "xlabel": "",
+                            "fillcolor": "",
+                            "artificial": false,
+                            "position": {
+                                "x": "513",
+                                "y": "1983"
+                            }
+                        },
+                        {
+                            "id": "<src.process.Process object at 0x7f32348b6b70>",
+                            "name": "MULTIQC",
+                            "shape": "ellipse",
+                            "xlabel": "",
+                            "fillcolor": "",
+                            "artificial": false,
+                            "position": {
+                                "x": "513",
+                                "y": "1929"
+                            }
+                        }
+                    ],
+                    "edges": [
+                        {
+                            "A": "<src.process.Process object at 0x7f32348b4d10>",
+                            "B": "<src.process.Process object at 0x7f32348b55e0>",
+                            "label": ""
+                        }
+                    ],
+                    "subworkflows": {}
+                }
+            }
+        },
+        "PIPELINE_COMPLETION": {
+            "nodes": [],
+            "edges": [],
+            "subworkflows": {}
+        }
+    }
+}
