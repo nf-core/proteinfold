@@ -92,6 +92,10 @@
                     "description": "Use the cloud MSA server",
                     "icon": "fas folder-open"
                 },
+                "random_seed": {
+                    "type": "integer",
+                    "description": "Global random seed for modules that natively support explicit seeding."
+                },
                 "msa_server_url": {
                     "type": "string",
                     "description": "Specify your custom MMSeqs2 API server url",
@@ -186,6 +190,10 @@
                     "enum": [0, 1, 2, 3],
                     "errorMessage": "DB load mode must be 0, 1, 2, or 3"
                 },
+                "colabfold_random_seed": {
+                    "type": "integer",
+                    "description": "Random seed to control stochastic ColabFold inference."
+                },
                 "colabfold_use_templates": {
                     "type": "boolean",
                     "default": false,
@@ -249,6 +257,10 @@
             "fa_icon": "fas fa-database",
             "description": "Boltz options.",
             "properties": {
+                "boltz_random_seed": {
+                    "type": "integer",
+                    "description": "Random seed to control stochastic Boltz inference."
+                },
                 "boltz_use_potentials": {
                     "type": "boolean",
                     "description": "run Boltz-2 using inference time potentials"
