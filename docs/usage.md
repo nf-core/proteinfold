@@ -162,19 +162,13 @@ Alternatively, the required data layout for each of the individual modes is desc
 
 ## Random Seeds
 
-The pipeline provides a global random seed parameter for modes that support explicit seeding:
-
-```bash
---random_seed <INTEGER>
-```
-
-This acts as a fallback seed for supported modes. Mode-specific seed parameters override `--random_seed` when both are set.
-
 Currently, explicit seeding is supported for:
 
 - `alphafold2` via `--alphafold2_random_seed`
 - `boltz` via `--boltz_random_seed`
 - `colabfold` via `--colabfold_random_seed`
+
+The pipeline-wide `--random_seed` parameter can be used to set the same seed for `alphafold2`, `boltz`, and `colabfold` modes only. Mode-specific seed parameters override `--random_seed` when both are set.
 
 ## Foldseek structural similarity search
 
