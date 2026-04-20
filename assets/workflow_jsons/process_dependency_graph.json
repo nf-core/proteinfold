@@ -30,7 +30,7 @@
                 "PREPARE_ALPHAFOLD2_DBS": {
                     "nodes": [
                         {
-                            "id": "<src.process.Process object at 0x7f32348e3c20>",
+                            "id": "<src.process.Process object at 0x7f17cdbe3ec0>",
                             "name": "DOWNLOAD_PDBMMCIF",
                             "shape": "ellipse",
                             "xlabel": "",
@@ -42,7 +42,7 @@
                             }
                         },
                         {
-                            "id": "<src.process.Process object at 0x7f3234720440>",
+                            "id": "<src.process.Process object at 0x7f17cda204a0>",
                             "name": "ARIA2_PDB_SEQRES",
                             "shape": "ellipse",
                             "xlabel": "",
@@ -54,7 +54,7 @@
                             }
                         },
                         {
-                            "id": "<src.process.Process object at 0x7f3234723260>",
+                            "id": "<src.process.Process object at 0x7f17cda231d0>",
                             "name": "COMBINE_UNIPROT",
                             "shape": "ellipse",
                             "xlabel": "",
@@ -68,64 +68,64 @@
                     ],
                     "edges": [
                         {
-                            "A": "<src.process.Process object at 0x7f32348e3c20>",
-                            "B": "<src.process.Process object at 0x7f3234755d90>",
+                            "A": "<src.process.Process object at 0x7f17cdbe3ec0>",
+                            "B": "<src.process.Process object at 0x7f17cda59ca0>",
                             "label": "",
                             "color": "#E15759",
                             "condition": "requested_modes.contains(\"alphafold2\")"
                         },
                         {
-                            "A": "<src.process.Process object at 0x7f32348e3c20>",
-                            "B": "<src.process.Process object at 0x7f3234756bd0>",
+                            "A": "<src.process.Process object at 0x7f17cdbe3ec0>",
+                            "B": "<src.process.Process object at 0x7f17cda5ab10>",
                             "label": "",
                             "color": "#E15759",
                             "condition": "requested_modes.contains(\"alphafold2\")"
                         },
                         {
-                            "A": "<src.process.Process object at 0x7f32348e3c20>",
-                            "B": "<src.process.Process object at 0x7f3234756c60>",
+                            "A": "<src.process.Process object at 0x7f17cdbe3ec0>",
+                            "B": "<src.process.Process object at 0x7f17cda5aba0>",
                             "label": "",
                             "color": "#E15759",
                             "condition": "requested_modes.contains(\"alphafold2\")"
                         },
                         {
-                            "A": "<src.process.Process object at 0x7f3234720440>",
-                            "B": "<src.process.Process object at 0x7f3234755d90>",
+                            "A": "<src.process.Process object at 0x7f17cda204a0>",
+                            "B": "<src.process.Process object at 0x7f17cda59ca0>",
                             "label": "",
                             "color": "#E15759",
                             "condition": "requested_modes.contains(\"alphafold2\")"
                         },
                         {
-                            "A": "<src.process.Process object at 0x7f3234720440>",
-                            "B": "<src.process.Process object at 0x7f3234756bd0>",
+                            "A": "<src.process.Process object at 0x7f17cda204a0>",
+                            "B": "<src.process.Process object at 0x7f17cda5ab10>",
                             "label": "",
                             "color": "#E15759",
                             "condition": "requested_modes.contains(\"alphafold2\")"
                         },
                         {
-                            "A": "<src.process.Process object at 0x7f3234720440>",
-                            "B": "<src.process.Process object at 0x7f3234756c60>",
+                            "A": "<src.process.Process object at 0x7f17cda204a0>",
+                            "B": "<src.process.Process object at 0x7f17cda5aba0>",
                             "label": "",
                             "color": "#E15759",
                             "condition": "requested_modes.contains(\"alphafold2\")"
                         },
                         {
-                            "A": "<src.process.Process object at 0x7f3234723260>",
-                            "B": "<src.process.Process object at 0x7f3234755d90>",
+                            "A": "<src.process.Process object at 0x7f17cda231d0>",
+                            "B": "<src.process.Process object at 0x7f17cda59ca0>",
                             "label": "",
                             "color": "#E15759",
                             "condition": "requested_modes.contains(\"alphafold2\")"
                         },
                         {
-                            "A": "<src.process.Process object at 0x7f3234723260>",
-                            "B": "<src.process.Process object at 0x7f3234756bd0>",
+                            "A": "<src.process.Process object at 0x7f17cda231d0>",
+                            "B": "<src.process.Process object at 0x7f17cda5ab10>",
                             "label": "",
                             "color": "#E15759",
                             "condition": "requested_modes.contains(\"alphafold2\")"
                         },
                         {
-                            "A": "<src.process.Process object at 0x7f3234723260>",
-                            "B": "<src.process.Process object at 0x7f3234756c60>",
+                            "A": "<src.process.Process object at 0x7f17cda231d0>",
+                            "B": "<src.process.Process object at 0x7f17cda5aba0>",
                             "label": "",
                             "color": "#E15759",
                             "condition": "requested_modes.contains(\"alphafold2\")"
@@ -135,7 +135,7 @@
                         "ARIA2_UNCOMPRESS": {
                             "nodes": [
                                 {
-                                    "id": "<src.process.Process object at 0x7f32347224b0>",
+                                    "id": "<src.process.Process object at 0x7f17cda224b0>",
                                     "name": "UNTAR",
                                     "shape": "ellipse",
                                     "xlabel": "",
@@ -147,7 +147,7 @@
                                     }
                                 },
                                 {
-                                    "id": "<src.process.Process object at 0x7f3234722780>",
+                                    "id": "<src.process.Process object at 0x7f17cda22690>",
                                     "name": "GUNZIP",
                                     "shape": "ellipse",
                                     "xlabel": "",
@@ -159,7 +159,7 @@
                                     }
                                 },
                                 {
-                                    "id": "<src.process.Process object at 0x7f3234722a20>",
+                                    "id": "<src.process.Process object at 0x7f17cda228d0>",
                                     "name": "ZSTD_DECOMPRESS",
                                     "shape": "ellipse",
                                     "xlabel": "",
@@ -171,7 +171,7 @@
                                     }
                                 },
                                 {
-                                    "id": "<src.process.Process object at 0x7f3234722d20>",
+                                    "id": "<src.process.Process object at 0x7f17cda22d20>",
                                     "name": "UNZIP",
                                     "shape": "ellipse",
                                     "xlabel": "",
@@ -183,7 +183,7 @@
                                     }
                                 },
                                 {
-                                    "id": "<src.process.Process object at 0x7f32347220f0>",
+                                    "id": "<src.process.Process object at 0x7f17cda220f0>",
                                     "name": "ARIA2",
                                     "shape": "ellipse",
                                     "xlabel": "",
@@ -197,64 +197,64 @@
                             ],
                             "edges": [
                                 {
-                                    "A": "<src.process.Process object at 0x7f32347224b0>",
-                                    "B": "<src.process.Process object at 0x7f3234723260>",
+                                    "A": "<src.process.Process object at 0x7f17cda224b0>",
+                                    "B": "<src.process.Process object at 0x7f17cda231d0>",
                                     "label": "",
                                     "color": "#E15759",
                                     "condition": "requested_modes.contains(\"alphafold2\")"
                                 },
                                 {
-                                    "A": "<src.process.Process object at 0x7f3234722780>",
-                                    "B": "<src.process.Process object at 0x7f3234723260>",
+                                    "A": "<src.process.Process object at 0x7f17cda22690>",
+                                    "B": "<src.process.Process object at 0x7f17cda231d0>",
                                     "label": "",
                                     "color": "#E15759",
                                     "condition": "requested_modes.contains(\"alphafold2\")"
                                 },
                                 {
-                                    "A": "<src.process.Process object at 0x7f3234722a20>",
-                                    "B": "<src.process.Process object at 0x7f3234723260>",
+                                    "A": "<src.process.Process object at 0x7f17cda228d0>",
+                                    "B": "<src.process.Process object at 0x7f17cda231d0>",
                                     "label": "",
                                     "color": "#E15759",
                                     "condition": "requested_modes.contains(\"alphafold2\")"
                                 },
                                 {
-                                    "A": "<src.process.Process object at 0x7f3234722d20>",
-                                    "B": "<src.process.Process object at 0x7f3234723260>",
+                                    "A": "<src.process.Process object at 0x7f17cda22d20>",
+                                    "B": "<src.process.Process object at 0x7f17cda231d0>",
                                     "label": "",
                                     "color": "#E15759",
                                     "condition": "requested_modes.contains(\"alphafold2\")"
                                 },
                                 {
-                                    "A": "<src.process.Process object at 0x7f32347220f0>",
-                                    "B": "<src.process.Process object at 0x7f3234722a20>",
+                                    "A": "<src.process.Process object at 0x7f17cda220f0>",
+                                    "B": "<src.process.Process object at 0x7f17cda22690>",
                                     "label": "",
                                     "color": "#E15759",
                                     "condition": "requested_modes.contains(\"alphafold2\")"
                                 },
                                 {
-                                    "A": "<src.process.Process object at 0x7f32347220f0>",
-                                    "B": "<src.process.Process object at 0x7f3234722d20>",
+                                    "A": "<src.process.Process object at 0x7f17cda220f0>",
+                                    "B": "<src.process.Process object at 0x7f17cda228d0>",
                                     "label": "",
                                     "color": "#E15759",
                                     "condition": "requested_modes.contains(\"alphafold2\")"
                                 },
                                 {
-                                    "A": "<src.process.Process object at 0x7f32347220f0>",
-                                    "B": "<src.process.Process object at 0x7f3234722780>",
+                                    "A": "<src.process.Process object at 0x7f17cda220f0>",
+                                    "B": "<src.process.Process object at 0x7f17cda231d0>",
                                     "label": "",
                                     "color": "#E15759",
                                     "condition": "requested_modes.contains(\"alphafold2\")"
                                 },
                                 {
-                                    "A": "<src.process.Process object at 0x7f32347220f0>",
-                                    "B": "<src.process.Process object at 0x7f32347224b0>",
+                                    "A": "<src.process.Process object at 0x7f17cda220f0>",
+                                    "B": "<src.process.Process object at 0x7f17cda22d20>",
                                     "label": "",
                                     "color": "#E15759",
                                     "condition": "requested_modes.contains(\"alphafold2\")"
                                 },
                                 {
-                                    "A": "<src.process.Process object at 0x7f32347220f0>",
-                                    "B": "<src.process.Process object at 0x7f3234723260>",
+                                    "A": "<src.process.Process object at 0x7f17cda220f0>",
+                                    "B": "<src.process.Process object at 0x7f17cda224b0>",
                                     "label": "",
                                     "color": "#E15759",
                                     "condition": "requested_modes.contains(\"alphafold2\")"
@@ -267,7 +267,7 @@
                 "ALPHAFOLD2": {
                     "nodes": [
                         {
-                            "id": "<src.process.Process object at 0x7f3234755d90>",
+                            "id": "<src.process.Process object at 0x7f17cda59ca0>",
                             "name": "RUN_ALPHAFOLD2",
                             "shape": "ellipse",
                             "xlabel": "",
@@ -279,7 +279,7 @@
                             }
                         },
                         {
-                            "id": "<src.process.Process object at 0x7f3234756bd0>",
+                            "id": "<src.process.Process object at 0x7f17cda5ab10>",
                             "name": "RUN_ALPHAFOLD2_MSA",
                             "shape": "ellipse",
                             "xlabel": "",
@@ -291,7 +291,7 @@
                             }
                         },
                         {
-                            "id": "<src.process.Process object at 0x7f3234756c60>",
+                            "id": "<src.process.Process object at 0x7f17cda5aba0>",
                             "name": "RUN_ALPHAFOLD2_PRED",
                             "shape": "ellipse",
                             "xlabel": "",
@@ -305,50 +305,50 @@
                     ],
                     "edges": [
                         {
-                            "A": "<src.process.Process object at 0x7f3234755d90>",
-                            "B": "<src.process.Process object at 0x7f32348b6240>",
+                            "A": "<src.process.Process object at 0x7f17cda59ca0>",
+                            "B": "<src.process.Process object at 0x7f17ff9cc4d0>",
                             "label": "",
                             "color": "#E15759",
                             "condition": "requested_modes.contains(\"alphafold2\")"
                         },
                         {
-                            "A": "<src.process.Process object at 0x7f3234755d90>",
-                            "B": "<src.process.Process object at 0x7f32348b6b70>",
+                            "A": "<src.process.Process object at 0x7f17cda59ca0>",
+                            "B": "<src.process.Process object at 0x7f17cdbba810>",
                             "label": "",
                             "color": "#E15759",
                             "condition": "requested_modes.contains(\"alphafold2\")"
                         },
                         {
-                            "A": "<src.process.Process object at 0x7f3234755d90>",
-                            "B": "<src.process.Process object at 0x7f32348b4d10>",
+                            "A": "<src.process.Process object at 0x7f17cda59ca0>",
+                            "B": "<src.process.Process object at 0x7f17cdbbb1d0>",
                             "label": "",
                             "color": "#E15759",
                             "condition": "requested_modes.contains(\"alphafold2\")"
                         },
                         {
-                            "A": "<src.process.Process object at 0x7f3234756bd0>",
-                            "B": "<src.process.Process object at 0x7f3234756c60>",
+                            "A": "<src.process.Process object at 0x7f17cda5ab10>",
+                            "B": "<src.process.Process object at 0x7f17cda5aba0>",
                             "label": "",
                             "color": "#E15759",
                             "condition": "requested_modes.contains(\"alphafold2\")"
                         },
                         {
-                            "A": "<src.process.Process object at 0x7f3234756c60>",
-                            "B": "<src.process.Process object at 0x7f32348b6240>",
+                            "A": "<src.process.Process object at 0x7f17cda5aba0>",
+                            "B": "<src.process.Process object at 0x7f17ff9cc4d0>",
                             "label": "",
                             "color": "#E15759",
                             "condition": "requested_modes.contains(\"alphafold2\")"
                         },
                         {
-                            "A": "<src.process.Process object at 0x7f3234756c60>",
-                            "B": "<src.process.Process object at 0x7f32348b6b70>",
+                            "A": "<src.process.Process object at 0x7f17cda5aba0>",
+                            "B": "<src.process.Process object at 0x7f17cdbba810>",
                             "label": "",
                             "color": "#E15759",
                             "condition": "requested_modes.contains(\"alphafold2\")"
                         },
                         {
-                            "A": "<src.process.Process object at 0x7f3234756c60>",
-                            "B": "<src.process.Process object at 0x7f32348b4d10>",
+                            "A": "<src.process.Process object at 0x7f17cda5aba0>",
+                            "B": "<src.process.Process object at 0x7f17cdbbb1d0>",
                             "label": "",
                             "color": "#E15759",
                             "condition": "requested_modes.contains(\"alphafold2\")"
@@ -359,7 +359,7 @@
                 "PREPARE_ALPHAFOLD3_DBS": {
                     "nodes": [
                         {
-                            "id": "<src.process.Process object at 0x7f3234791550>",
+                            "id": "<src.process.Process object at 0x7f17cda95880>",
                             "name": "DOWNLOAD_PDBMMCIF_AF3",
                             "shape": "ellipse",
                             "xlabel": "",
@@ -373,8 +373,8 @@
                     ],
                     "edges": [
                         {
-                            "A": "<src.process.Process object at 0x7f3234791550>",
-                            "B": "<src.process.Process object at 0x7f32347e86e0>",
+                            "A": "<src.process.Process object at 0x7f17cda95880>",
+                            "B": "<src.process.Process object at 0x7f17cdaeca70>",
                             "label": "",
                             "color": "#EDC948",
                             "condition": "requested_modes.contains(\"alphafold3\")"
@@ -384,7 +384,7 @@
                         "ARIA2_UNCOMPRESS": {
                             "nodes": [
                                 {
-                                    "id": "<src.process.Process object at 0x7f32347c95e0>",
+                                    "id": "<src.process.Process object at 0x7f17cdacd8e0>",
                                     "name": "UNTAR",
                                     "shape": "ellipse",
                                     "xlabel": "",
@@ -396,7 +396,7 @@
                                     }
                                 },
                                 {
-                                    "id": "<src.process.Process object at 0x7f32347c9880>",
+                                    "id": "<src.process.Process object at 0x7f17cdacdbe0>",
                                     "name": "GUNZIP",
                                     "shape": "ellipse",
                                     "xlabel": "",
@@ -408,7 +408,7 @@
                                     }
                                 },
                                 {
-                                    "id": "<src.process.Process object at 0x7f32347c9b20>",
+                                    "id": "<src.process.Process object at 0x7f17cdacdeb0>",
                                     "name": "ZSTD_DECOMPRESS",
                                     "shape": "ellipse",
                                     "xlabel": "",
@@ -420,7 +420,7 @@
                                     }
                                 },
                                 {
-                                    "id": "<src.process.Process object at 0x7f32347c9e20>",
+                                    "id": "<src.process.Process object at 0x7f17cdace210>",
                                     "name": "UNZIP",
                                     "shape": "ellipse",
                                     "xlabel": "",
@@ -432,7 +432,7 @@
                                     }
                                 },
                                 {
-                                    "id": "<src.process.Process object at 0x7f32347c9250>",
+                                    "id": "<src.process.Process object at 0x7f17cdacd520>",
                                     "name": "ARIA2",
                                     "shape": "ellipse",
                                     "xlabel": "",
@@ -446,29 +446,29 @@
                             ],
                             "edges": [
                                 {
-                                    "A": "<src.process.Process object at 0x7f32347c9250>",
-                                    "B": "<src.process.Process object at 0x7f32347c9e20>",
+                                    "A": "<src.process.Process object at 0x7f17cdacd520>",
+                                    "B": "<src.process.Process object at 0x7f17cdacdeb0>",
                                     "label": "",
                                     "color": "#EDC948",
                                     "condition": "requested_modes.contains(\"alphafold3\")"
                                 },
                                 {
-                                    "A": "<src.process.Process object at 0x7f32347c9250>",
-                                    "B": "<src.process.Process object at 0x7f32347c9b20>",
+                                    "A": "<src.process.Process object at 0x7f17cdacd520>",
+                                    "B": "<src.process.Process object at 0x7f17cdace210>",
                                     "label": "",
                                     "color": "#EDC948",
                                     "condition": "requested_modes.contains(\"alphafold3\")"
                                 },
                                 {
-                                    "A": "<src.process.Process object at 0x7f32347c9250>",
-                                    "B": "<src.process.Process object at 0x7f32347c95e0>",
+                                    "A": "<src.process.Process object at 0x7f17cdacd520>",
+                                    "B": "<src.process.Process object at 0x7f17cdacdbe0>",
                                     "label": "",
                                     "color": "#EDC948",
                                     "condition": "requested_modes.contains(\"alphafold3\")"
                                 },
                                 {
-                                    "A": "<src.process.Process object at 0x7f32347c9250>",
-                                    "B": "<src.process.Process object at 0x7f32347c9880>",
+                                    "A": "<src.process.Process object at 0x7f17cdacd520>",
+                                    "B": "<src.process.Process object at 0x7f17cdacd8e0>",
                                     "label": "",
                                     "color": "#EDC948",
                                     "condition": "requested_modes.contains(\"alphafold3\")"
@@ -481,7 +481,7 @@
                 "ALPHAFOLD3": {
                     "nodes": [
                         {
-                            "id": "<src.process.Process object at 0x7f32347e8680>",
+                            "id": "<src.process.Process object at 0x7f17cdaeca40>",
                             "name": "FASTA_TO_ALPHAFOLD3_JSON",
                             "shape": "ellipse",
                             "xlabel": "",
@@ -493,7 +493,7 @@
                             }
                         },
                         {
-                            "id": "<src.process.Process object at 0x7f32347e86e0>",
+                            "id": "<src.process.Process object at 0x7f17cdaeca70>",
                             "name": "RUN_ALPHAFOLD3",
                             "shape": "ellipse",
                             "xlabel": "",
@@ -505,7 +505,7 @@
                             }
                         },
                         {
-                            "id": "<src.process.Process object at 0x7f32347e87a0>",
+                            "id": "<src.process.Process object at 0x7f17cdaecbc0>",
                             "name": "MMCIF2PDB_MODELS",
                             "shape": "ellipse",
                             "xlabel": "",
@@ -517,7 +517,7 @@
                             }
                         },
                         {
-                            "id": "<src.process.Process object at 0x7f32347e8860>",
+                            "id": "<src.process.Process object at 0x7f17cdaecc80>",
                             "name": "MMCIF2PDB_TOP_RANKED",
                             "shape": "ellipse",
                             "xlabel": "",
@@ -531,50 +531,50 @@
                     ],
                     "edges": [
                         {
-                            "A": "<src.process.Process object at 0x7f32347e8680>",
-                            "B": "<src.process.Process object at 0x7f32347e86e0>",
+                            "A": "<src.process.Process object at 0x7f17cdaeca40>",
+                            "B": "<src.process.Process object at 0x7f17cdaeca70>",
                             "label": "",
                             "color": "#EDC948",
                             "condition": "requested_modes.contains(\"alphafold3\")"
                         },
                         {
-                            "A": "<src.process.Process object at 0x7f32347e86e0>",
-                            "B": "<src.process.Process object at 0x7f32347e8860>",
+                            "A": "<src.process.Process object at 0x7f17cdaeca70>",
+                            "B": "<src.process.Process object at 0x7f17ff9cc4d0>",
                             "label": "",
                             "color": "#EDC948",
                             "condition": "requested_modes.contains(\"alphafold3\")"
                         },
                         {
-                            "A": "<src.process.Process object at 0x7f32347e86e0>",
-                            "B": "<src.process.Process object at 0x7f32348b6b70>",
+                            "A": "<src.process.Process object at 0x7f17cdaeca70>",
+                            "B": "<src.process.Process object at 0x7f17cdaecc80>",
                             "label": "",
                             "color": "#EDC948",
                             "condition": "requested_modes.contains(\"alphafold3\")"
                         },
                         {
-                            "A": "<src.process.Process object at 0x7f32347e86e0>",
-                            "B": "<src.process.Process object at 0x7f32348b4d10>",
+                            "A": "<src.process.Process object at 0x7f17cdaeca70>",
+                            "B": "<src.process.Process object at 0x7f17cdaecbc0>",
                             "label": "",
                             "color": "#EDC948",
                             "condition": "requested_modes.contains(\"alphafold3\")"
                         },
                         {
-                            "A": "<src.process.Process object at 0x7f32347e86e0>",
-                            "B": "<src.process.Process object at 0x7f32347e87a0>",
+                            "A": "<src.process.Process object at 0x7f17cdaeca70>",
+                            "B": "<src.process.Process object at 0x7f17cdbbb1d0>",
                             "label": "",
                             "color": "#EDC948",
                             "condition": "requested_modes.contains(\"alphafold3\")"
                         },
                         {
-                            "A": "<src.process.Process object at 0x7f32347e87a0>",
-                            "B": "<src.process.Process object at 0x7f32348b4d10>",
+                            "A": "<src.process.Process object at 0x7f17cdaecbc0>",
+                            "B": "<src.process.Process object at 0x7f17ff9cc4d0>",
                             "label": "",
                             "color": "#EDC948",
                             "condition": "requested_modes.contains(\"alphafold3\")"
                         },
                         {
-                            "A": "<src.process.Process object at 0x7f32347e8860>",
-                            "B": "<src.process.Process object at 0x7f32348b6240>",
+                            "A": "<src.process.Process object at 0x7f17cdaecc80>",
+                            "B": "<src.process.Process object at 0x7f17cdbba810>",
                             "label": "",
                             "color": "#EDC948",
                             "condition": "requested_modes.contains(\"alphafold3\")"
@@ -585,7 +585,7 @@
                 "PREPARE_COLABFOLD_DBS": {
                     "nodes": [
                         {
-                            "id": "<src.process.Process object at 0x7f32345c8b60>",
+                            "id": "<src.process.Process object at 0x7f17cd8ccda0>",
                             "name": "MMSEQS_CREATEINDEX_COLABFOLDDB",
                             "shape": "ellipse",
                             "xlabel": "",
@@ -597,7 +597,7 @@
                             }
                         },
                         {
-                            "id": "<src.process.Process object at 0x7f32345c9070>",
+                            "id": "<src.process.Process object at 0x7f17cd8cd2b0>",
                             "name": "MMSEQS_CREATEINDEX_UNIPROT30",
                             "shape": "ellipse",
                             "xlabel": "",
@@ -611,13 +611,13 @@
                     ],
                     "edges": [
                         {
-                            "A": "<src.process.Process object at 0x7f32345c8b60>",
-                            "B": "<src.process.Process object at 0x7f32345caa80>",
+                            "A": "<src.process.Process object at 0x7f17cd8ccda0>",
+                            "B": "<src.process.Process object at 0x7f17cd8ced20>",
                             "label": ""
                         },
                         {
-                            "A": "<src.process.Process object at 0x7f32345c9070>",
-                            "B": "<src.process.Process object at 0x7f32345caa80>",
+                            "A": "<src.process.Process object at 0x7f17cd8cd2b0>",
+                            "B": "<src.process.Process object at 0x7f17cd8ced20>",
                             "label": ""
                         }
                     ],
@@ -625,7 +625,7 @@
                         "ARIA2_UNCOMPRESS": {
                             "nodes": [
                                 {
-                                    "id": "<src.process.Process object at 0x7f32345b07d0>",
+                                    "id": "<src.process.Process object at 0x7f17cd8b4a40>",
                                     "name": "UNTAR",
                                     "shape": "ellipse",
                                     "xlabel": "",
@@ -637,7 +637,7 @@
                                     }
                                 },
                                 {
-                                    "id": "<src.process.Process object at 0x7f32345b0aa0>",
+                                    "id": "<src.process.Process object at 0x7f17cd8b4c80>",
                                     "name": "GUNZIP",
                                     "shape": "ellipse",
                                     "xlabel": "",
@@ -649,7 +649,7 @@
                                     }
                                 },
                                 {
-                                    "id": "<src.process.Process object at 0x7f32345b0d70>",
+                                    "id": "<src.process.Process object at 0x7f17cd8b4e60>",
                                     "name": "ZSTD_DECOMPRESS",
                                     "shape": "ellipse",
                                     "xlabel": "",
@@ -661,7 +661,7 @@
                                     }
                                 },
                                 {
-                                    "id": "<src.process.Process object at 0x7f32345b1040>",
+                                    "id": "<src.process.Process object at 0x7f17cd8b5220>",
                                     "name": "UNZIP",
                                     "shape": "ellipse",
                                     "xlabel": "",
@@ -673,7 +673,7 @@
                                     }
                                 },
                                 {
-                                    "id": "<src.process.Process object at 0x7f32345b0440>",
+                                    "id": "<src.process.Process object at 0x7f17cd8b4620>",
                                     "name": "ARIA2",
                                     "shape": "ellipse",
                                     "xlabel": "",
@@ -687,23 +687,23 @@
                             ],
                             "edges": [
                                 {
-                                    "A": "<src.process.Process object at 0x7f32345b0440>",
-                                    "B": "<src.process.Process object at 0x7f32345b0d70>",
+                                    "A": "<src.process.Process object at 0x7f17cd8b4620>",
+                                    "B": "<src.process.Process object at 0x7f17cd8b4a40>",
                                     "label": ""
                                 },
                                 {
-                                    "A": "<src.process.Process object at 0x7f32345b0440>",
-                                    "B": "<src.process.Process object at 0x7f32345b0aa0>",
+                                    "A": "<src.process.Process object at 0x7f17cd8b4620>",
+                                    "B": "<src.process.Process object at 0x7f17cd8b5220>",
                                     "label": ""
                                 },
                                 {
-                                    "A": "<src.process.Process object at 0x7f32345b0440>",
-                                    "B": "<src.process.Process object at 0x7f32345b1040>",
+                                    "A": "<src.process.Process object at 0x7f17cd8b4620>",
+                                    "B": "<src.process.Process object at 0x7f17cd8b4c80>",
                                     "label": ""
                                 },
                                 {
-                                    "A": "<src.process.Process object at 0x7f32345b0440>",
-                                    "B": "<src.process.Process object at 0x7f32345b07d0>",
+                                    "A": "<src.process.Process object at 0x7f17cd8b4620>",
+                                    "B": "<src.process.Process object at 0x7f17cd8b4e60>",
                                     "label": ""
                                 }
                             ],
@@ -714,7 +714,7 @@
                 "COLABFOLD": {
                     "nodes": [
                         {
-                            "id": "<src.process.Process object at 0x7f3234817380>",
+                            "id": "<src.process.Process object at 0x7f17cd91b620>",
                             "name": "MULTIFASTA_TO_CSV",
                             "shape": "ellipse",
                             "xlabel": "",
@@ -726,7 +726,7 @@
                             }
                         },
                         {
-                            "id": "<src.process.Process object at 0x7f32348174a0>",
+                            "id": "<src.process.Process object at 0x7f17cd91b740>",
                             "name": "COLABFOLD_BATCH",
                             "shape": "ellipse",
                             "xlabel": "",
@@ -738,7 +738,7 @@
                             }
                         },
                         {
-                            "id": "<src.process.Process object at 0x7f3234817bc0>",
+                            "id": "<src.process.Process object at 0x7f17cd91bef0>",
                             "name": "MULTIFASTA_TO_CSV",
                             "shape": "ellipse",
                             "xlabel": "",
@@ -750,7 +750,7 @@
                             }
                         },
                         {
-                            "id": "<src.process.Process object at 0x7f32348cf6e0>",
+                            "id": "<src.process.Process object at 0x7f17cda43b30>",
                             "name": "MMSEQS_COLABFOLDSEARCH",
                             "shape": "ellipse",
                             "xlabel": "",
@@ -762,7 +762,7 @@
                             }
                         },
                         {
-                            "id": "<src.process.Process object at 0x7f3234817bf0>",
+                            "id": "<src.process.Process object at 0x7f17cd91bb60>",
                             "name": "COLABFOLD_BATCH",
                             "shape": "ellipse",
                             "xlabel": "",
@@ -776,48 +776,48 @@
                     ],
                     "edges": [
                         {
-                            "A": "<src.process.Process object at 0x7f3234817380>",
-                            "B": "<src.process.Process object at 0x7f32348174a0>",
+                            "A": "<src.process.Process object at 0x7f17cd91b620>",
+                            "B": "<src.process.Process object at 0x7f17cd91b740>",
                             "label": ""
                         },
                         {
-                            "A": "<src.process.Process object at 0x7f32348174a0>",
-                            "B": "<src.process.Process object at 0x7f32348b4d10>",
+                            "A": "<src.process.Process object at 0x7f17cd91b740>",
+                            "B": "<src.process.Process object at 0x7f17ff9cc4d0>",
                             "label": ""
                         },
                         {
-                            "A": "<src.process.Process object at 0x7f32348174a0>",
-                            "B": "<src.process.Process object at 0x7f32348b6b70>",
+                            "A": "<src.process.Process object at 0x7f17cd91b740>",
+                            "B": "<src.process.Process object at 0x7f17cdbba810>",
                             "label": ""
                         },
                         {
-                            "A": "<src.process.Process object at 0x7f32348174a0>",
-                            "B": "<src.process.Process object at 0x7f32348b6240>",
+                            "A": "<src.process.Process object at 0x7f17cd91b740>",
+                            "B": "<src.process.Process object at 0x7f17cdbbb1d0>",
                             "label": ""
                         },
                         {
-                            "A": "<src.process.Process object at 0x7f3234817bc0>",
-                            "B": "<src.process.Process object at 0x7f32348cf6e0>",
+                            "A": "<src.process.Process object at 0x7f17cd91bef0>",
+                            "B": "<src.process.Process object at 0x7f17cda43b30>",
                             "label": ""
                         },
                         {
-                            "A": "<src.process.Process object at 0x7f32348cf6e0>",
-                            "B": "<src.process.Process object at 0x7f3234817bf0>",
+                            "A": "<src.process.Process object at 0x7f17cda43b30>",
+                            "B": "<src.process.Process object at 0x7f17cd91bb60>",
                             "label": ""
                         },
                         {
-                            "A": "<src.process.Process object at 0x7f3234817bf0>",
-                            "B": "<src.process.Process object at 0x7f32348b6240>",
+                            "A": "<src.process.Process object at 0x7f17cd91bb60>",
+                            "B": "<src.process.Process object at 0x7f17ff9cc4d0>",
                             "label": ""
                         },
                         {
-                            "A": "<src.process.Process object at 0x7f3234817bf0>",
-                            "B": "<src.process.Process object at 0x7f32348b6b70>",
+                            "A": "<src.process.Process object at 0x7f17cd91bb60>",
+                            "B": "<src.process.Process object at 0x7f17cdbba810>",
                             "label": ""
                         },
                         {
-                            "A": "<src.process.Process object at 0x7f3234817bf0>",
-                            "B": "<src.process.Process object at 0x7f32348b4d10>",
+                            "A": "<src.process.Process object at 0x7f17cd91bb60>",
+                            "B": "<src.process.Process object at 0x7f17cdbbb1d0>",
                             "label": ""
                         }
                     ],
@@ -826,7 +826,7 @@
                 "PREPARE_ESMFOLD_DBS": {
                     "nodes": [
                         {
-                            "id": "<src.process.Process object at 0x7f323463ac90>",
+                            "id": "<src.process.Process object at 0x7f17cd93afc0>",
                             "name": "ARIA2_ESMFOLD_3B_V1",
                             "shape": "ellipse",
                             "xlabel": "",
@@ -838,7 +838,7 @@
                             }
                         },
                         {
-                            "id": "<src.process.Process object at 0x7f323463adb0>",
+                            "id": "<src.process.Process object at 0x7f17cd93b080>",
                             "name": "ARIA2_ESM2_T36_3B_UR50D",
                             "shape": "ellipse",
                             "xlabel": "",
@@ -850,7 +850,7 @@
                             }
                         },
                         {
-                            "id": "<src.process.Process object at 0x7f323463aea0>",
+                            "id": "<src.process.Process object at 0x7f17cd93b170>",
                             "name": "ARIA2_ESM2_T36_3B_UR50D_CONTACT_REGRESSION",
                             "shape": "ellipse",
                             "xlabel": "",
@@ -864,18 +864,18 @@
                     ],
                     "edges": [
                         {
-                            "A": "<src.process.Process object at 0x7f323463ac90>",
-                            "B": "<src.process.Process object at 0x7f32348f99d0>",
+                            "A": "<src.process.Process object at 0x7f17cd93afc0>",
+                            "B": "<src.process.Process object at 0x7f17cdba1df0>",
                             "label": ""
                         },
                         {
-                            "A": "<src.process.Process object at 0x7f323463adb0>",
-                            "B": "<src.process.Process object at 0x7f32348f99d0>",
+                            "A": "<src.process.Process object at 0x7f17cd93b080>",
+                            "B": "<src.process.Process object at 0x7f17cdba1df0>",
                             "label": ""
                         },
                         {
-                            "A": "<src.process.Process object at 0x7f323463aea0>",
-                            "B": "<src.process.Process object at 0x7f32348f99d0>",
+                            "A": "<src.process.Process object at 0x7f17cd93b170>",
+                            "B": "<src.process.Process object at 0x7f17cdba1df0>",
                             "label": ""
                         }
                     ],
@@ -884,7 +884,7 @@
                 "ESMFOLD": {
                     "nodes": [
                         {
-                            "id": "<src.process.Process object at 0x7f323463bcb0>",
+                            "id": "<src.process.Process object at 0x7f17cd93bef0>",
                             "name": "MULTIFASTA_TO_SINGLEFASTA",
                             "shape": "ellipse",
                             "xlabel": "",
@@ -896,7 +896,7 @@
                             }
                         },
                         {
-                            "id": "<src.process.Process object at 0x7f32348f99d0>",
+                            "id": "<src.process.Process object at 0x7f17cdba1df0>",
                             "name": "RUN_ESMFOLD",
                             "shape": "ellipse",
                             "xlabel": "",
@@ -910,13 +910,13 @@
                     ],
                     "edges": [
                         {
-                            "A": "<src.process.Process object at 0x7f323463bcb0>",
-                            "B": "<src.process.Process object at 0x7f32348f99d0>",
+                            "A": "<src.process.Process object at 0x7f17cd93bef0>",
+                            "B": "<src.process.Process object at 0x7f17cdba1df0>",
                             "label": ""
                         },
                         {
-                            "A": "<src.process.Process object at 0x7f32348f99d0>",
-                            "B": "<src.process.Process object at 0x7f32348b6b70>",
+                            "A": "<src.process.Process object at 0x7f17cdba1df0>",
+                            "B": "<src.process.Process object at 0x7f17cdbbb1d0>",
                             "label": ""
                         }
                     ],
@@ -929,7 +929,7 @@
                         "ARIA2_UNCOMPRESS": {
                             "nodes": [
                                 {
-                                    "id": "<src.process.Process object at 0x7f323466f230>",
+                                    "id": "<src.process.Process object at 0x7f17cd96b4a0>",
                                     "name": "UNTAR",
                                     "shape": "ellipse",
                                     "xlabel": "",
@@ -941,7 +941,7 @@
                                     }
                                 },
                                 {
-                                    "id": "<src.process.Process object at 0x7f323466ee10>",
+                                    "id": "<src.process.Process object at 0x7f17cd96b140>",
                                     "name": "GUNZIP",
                                     "shape": "ellipse",
                                     "xlabel": "",
@@ -953,7 +953,7 @@
                                     }
                                 },
                                 {
-                                    "id": "<src.process.Process object at 0x7f323466d4c0>",
+                                    "id": "<src.process.Process object at 0x7f17cd968a10>",
                                     "name": "ZSTD_DECOMPRESS",
                                     "shape": "ellipse",
                                     "xlabel": "",
@@ -965,7 +965,7 @@
                                     }
                                 },
                                 {
-                                    "id": "<src.process.Process object at 0x7f323466f350>",
+                                    "id": "<src.process.Process object at 0x7f17cd96b620>",
                                     "name": "UNZIP",
                                     "shape": "ellipse",
                                     "xlabel": "",
@@ -977,7 +977,7 @@
                                     }
                                 },
                                 {
-                                    "id": "<src.process.Process object at 0x7f323466ee70>",
+                                    "id": "<src.process.Process object at 0x7f17cd96b0e0>",
                                     "name": "ARIA2",
                                     "shape": "ellipse",
                                     "xlabel": "",
@@ -991,56 +991,56 @@
                             ],
                             "edges": [
                                 {
-                                    "A": "<src.process.Process object at 0x7f323466f230>",
-                                    "B": "<src.process.Process object at 0x7f3234670dd0>",
+                                    "A": "<src.process.Process object at 0x7f17cd96b4a0>",
+                                    "B": "<src.process.Process object at 0x7f17cd981010>",
                                     "label": "",
                                     "color": "#FF9DA7",
                                     "condition": "!(source_url.toString().endsWith('.pkl.gz')) && source_url.toString().endsWith('.tar') $OR$                source_url.toString().endsWith('.tar.gz') $OR$                source_url.toString().endsWith('.tar.zst')$OR$                source_url.toString().endsWith('.tgz')"
                                 },
                                 {
-                                    "A": "<src.process.Process object at 0x7f323466ee10>",
-                                    "B": "<src.process.Process object at 0x7f3234670dd0>",
+                                    "A": "<src.process.Process object at 0x7f17cd96b140>",
+                                    "B": "<src.process.Process object at 0x7f17cd981010>",
                                     "label": "",
                                     "color": "#F28E2B",
                                     "condition": "!(source_url.toString().endsWith('.pkl.gz')) && !(source_url.toString().endsWith('.tar') $OR$                source_url.toString().endsWith('.tar.gz') $OR$                source_url.toString().endsWith('.tar.zst')$OR$                source_url.toString().endsWith('.tgz')) && source_url.toString().endsWith('.gz')"
                                 },
                                 {
-                                    "A": "<src.process.Process object at 0x7f323466d4c0>",
-                                    "B": "<src.process.Process object at 0x7f3234670dd0>",
+                                    "A": "<src.process.Process object at 0x7f17cd968a10>",
+                                    "B": "<src.process.Process object at 0x7f17cd981010>",
                                     "label": "",
                                     "color": "#76B7B2",
                                     "condition": "!(source_url.toString().endsWith('.pkl.gz')) && !(source_url.toString().endsWith('.tar') $OR$                source_url.toString().endsWith('.tar.gz') $OR$                source_url.toString().endsWith('.tar.zst')$OR$                source_url.toString().endsWith('.tgz')) && !(source_url.toString().endsWith('.gz')) && source_url.toString().endsWith('.zst')"
                                 },
                                 {
-                                    "A": "<src.process.Process object at 0x7f323466f350>",
-                                    "B": "<src.process.Process object at 0x7f3234670dd0>",
+                                    "A": "<src.process.Process object at 0x7f17cd96b620>",
+                                    "B": "<src.process.Process object at 0x7f17cd981010>",
                                     "label": "",
                                     "color": "#B07AA1",
                                     "condition": "!(source_url.toString().endsWith('.pkl.gz')) && !(source_url.toString().endsWith('.tar') $OR$                source_url.toString().endsWith('.tar.gz') $OR$                source_url.toString().endsWith('.tar.zst')$OR$                source_url.toString().endsWith('.tgz')) && !(source_url.toString().endsWith('.gz')) && !(source_url.toString().endsWith('.zst')) && source_url.toString().endsWith('.zip')"
                                 },
                                 {
-                                    "A": "<src.process.Process object at 0x7f323466ee70>",
-                                    "B": "<src.process.Process object at 0x7f323466ee10>",
+                                    "A": "<src.process.Process object at 0x7f17cd96b0e0>",
+                                    "B": "<src.process.Process object at 0x7f17cd981010>",
                                     "label": ""
                                 },
                                 {
-                                    "A": "<src.process.Process object at 0x7f323466ee70>",
-                                    "B": "<src.process.Process object at 0x7f323466f350>",
+                                    "A": "<src.process.Process object at 0x7f17cd96b0e0>",
+                                    "B": "<src.process.Process object at 0x7f17cd968a10>",
                                     "label": ""
                                 },
                                 {
-                                    "A": "<src.process.Process object at 0x7f323466ee70>",
-                                    "B": "<src.process.Process object at 0x7f323466d4c0>",
+                                    "A": "<src.process.Process object at 0x7f17cd96b0e0>",
+                                    "B": "<src.process.Process object at 0x7f17cd96b140>",
                                     "label": ""
                                 },
                                 {
-                                    "A": "<src.process.Process object at 0x7f323466ee70>",
-                                    "B": "<src.process.Process object at 0x7f323466f230>",
+                                    "A": "<src.process.Process object at 0x7f17cd96b0e0>",
+                                    "B": "<src.process.Process object at 0x7f17cd96b4a0>",
                                     "label": ""
                                 },
                                 {
-                                    "A": "<src.process.Process object at 0x7f323466ee70>",
-                                    "B": "<src.process.Process object at 0x7f3234670dd0>",
+                                    "A": "<src.process.Process object at 0x7f17cd96b0e0>",
+                                    "B": "<src.process.Process object at 0x7f17cd96b620>",
                                     "label": ""
                                 }
                             ],
@@ -1051,7 +1051,7 @@
                 "ROSETTAFOLD_ALL_ATOM": {
                     "nodes": [
                         {
-                            "id": "<src.process.Process object at 0x7f3234670d40>",
+                            "id": "<src.process.Process object at 0x7f17cd980f20>",
                             "name": "FASTA2YAML",
                             "shape": "ellipse",
                             "xlabel": "",
@@ -1063,7 +1063,7 @@
                             }
                         },
                         {
-                            "id": "<src.process.Process object at 0x7f3234670dd0>",
+                            "id": "<src.process.Process object at 0x7f17cd981010>",
                             "name": "RUN_ROSETTAFOLD_ALL_ATOM",
                             "shape": "ellipse",
                             "xlabel": "",
@@ -1077,13 +1077,13 @@
                     ],
                     "edges": [
                         {
-                            "A": "<src.process.Process object at 0x7f3234670d40>",
-                            "B": "<src.process.Process object at 0x7f3234670dd0>",
+                            "A": "<src.process.Process object at 0x7f17cd980f20>",
+                            "B": "<src.process.Process object at 0x7f17cd981010>",
                             "label": ""
                         },
                         {
-                            "A": "<src.process.Process object at 0x7f3234670dd0>",
-                            "B": "<src.process.Process object at 0x7f32348b6b70>",
+                            "A": "<src.process.Process object at 0x7f17cd981010>",
+                            "B": "<src.process.Process object at 0x7f17cdbbb1d0>",
                             "label": ""
                         }
                     ],
@@ -1092,7 +1092,7 @@
                 "PREPARE_HELIXFOLD3_DBS": {
                     "nodes": [
                         {
-                            "id": "<src.process.Process object at 0x7f32346e1010>",
+                            "id": "<src.process.Process object at 0x7f17cd9e53a0>",
                             "name": "DOWNLOAD_PDBMMCIF",
                             "shape": "ellipse",
                             "xlabel": "",
@@ -1104,7 +1104,7 @@
                             }
                         },
                         {
-                            "id": "<src.process.Process object at 0x7f32346e33e0>",
+                            "id": "<src.process.Process object at 0x7f17cd9e7ef0>",
                             "name": "ARIA2_PDB_SEQRES",
                             "shape": "ellipse",
                             "xlabel": "",
@@ -1116,7 +1116,7 @@
                             }
                         },
                         {
-                            "id": "<src.process.Process object at 0x7f3234700a10>",
+                            "id": "<src.process.Process object at 0x7f17cd800d40>",
                             "name": "COMBINE_UNIPROT",
                             "shape": "ellipse",
                             "xlabel": "",
@@ -1130,22 +1130,22 @@
                     ],
                     "edges": [
                         {
-                            "A": "<src.process.Process object at 0x7f32346e1010>",
-                            "B": "<src.process.Process object at 0x7f32345275c0>",
+                            "A": "<src.process.Process object at 0x7f17cd9e53a0>",
+                            "B": "<src.process.Process object at 0x7f17cd82b7d0>",
                             "label": "",
                             "color": "#4E79A7",
                             "condition": "requested_modes.contains(\"helixfold3\")"
                         },
                         {
-                            "A": "<src.process.Process object at 0x7f32346e33e0>",
-                            "B": "<src.process.Process object at 0x7f32345275c0>",
+                            "A": "<src.process.Process object at 0x7f17cd9e7ef0>",
+                            "B": "<src.process.Process object at 0x7f17cd82b7d0>",
                             "label": "",
                             "color": "#4E79A7",
                             "condition": "requested_modes.contains(\"helixfold3\")"
                         },
                         {
-                            "A": "<src.process.Process object at 0x7f3234700a10>",
-                            "B": "<src.process.Process object at 0x7f32345275c0>",
+                            "A": "<src.process.Process object at 0x7f17cd800d40>",
+                            "B": "<src.process.Process object at 0x7f17cd82b7d0>",
                             "label": "",
                             "color": "#4E79A7",
                             "condition": "requested_modes.contains(\"helixfold3\")"
@@ -1155,7 +1155,7 @@
                         "ARIA2_UNCOMPRESS": {
                             "nodes": [
                                 {
-                                    "id": "<src.process.Process object at 0x7f3234703680>",
+                                    "id": "<src.process.Process object at 0x7f17cd803920>",
                                     "name": "UNTAR",
                                     "shape": "ellipse",
                                     "xlabel": "",
@@ -1167,7 +1167,7 @@
                                     }
                                 },
                                 {
-                                    "id": "<src.process.Process object at 0x7f3234703920>",
+                                    "id": "<src.process.Process object at 0x7f17cd803b00>",
                                     "name": "GUNZIP",
                                     "shape": "ellipse",
                                     "xlabel": "",
@@ -1179,7 +1179,7 @@
                                     }
                                 },
                                 {
-                                    "id": "<src.process.Process object at 0x7f3234703bc0>",
+                                    "id": "<src.process.Process object at 0x7f17cd803da0>",
                                     "name": "ZSTD_DECOMPRESS",
                                     "shape": "ellipse",
                                     "xlabel": "",
@@ -1191,7 +1191,7 @@
                                     }
                                 },
                                 {
-                                    "id": "<src.process.Process object at 0x7f3234703ec0>",
+                                    "id": "<src.process.Process object at 0x7f17cd8281d0>",
                                     "name": "UNZIP",
                                     "shape": "ellipse",
                                     "xlabel": "",
@@ -1203,7 +1203,7 @@
                                     }
                                 },
                                 {
-                                    "id": "<src.process.Process object at 0x7f32347032c0>",
+                                    "id": "<src.process.Process object at 0x7f17cd803560>",
                                     "name": "ARIA2",
                                     "shape": "ellipse",
                                     "xlabel": "",
@@ -1217,64 +1217,64 @@
                             ],
                             "edges": [
                                 {
-                                    "A": "<src.process.Process object at 0x7f3234703680>",
-                                    "B": "<src.process.Process object at 0x7f32345275c0>",
+                                    "A": "<src.process.Process object at 0x7f17cd803920>",
+                                    "B": "<src.process.Process object at 0x7f17cd82b7d0>",
                                     "label": "",
                                     "color": "#4E79A7",
                                     "condition": "requested_modes.contains(\"helixfold3\")"
                                 },
                                 {
-                                    "A": "<src.process.Process object at 0x7f3234703920>",
-                                    "B": "<src.process.Process object at 0x7f32345275c0>",
+                                    "A": "<src.process.Process object at 0x7f17cd803b00>",
+                                    "B": "<src.process.Process object at 0x7f17cd82b7d0>",
                                     "label": "",
                                     "color": "#4E79A7",
                                     "condition": "requested_modes.contains(\"helixfold3\")"
                                 },
                                 {
-                                    "A": "<src.process.Process object at 0x7f3234703bc0>",
-                                    "B": "<src.process.Process object at 0x7f32345275c0>",
+                                    "A": "<src.process.Process object at 0x7f17cd803da0>",
+                                    "B": "<src.process.Process object at 0x7f17cd82b7d0>",
                                     "label": "",
                                     "color": "#4E79A7",
                                     "condition": "requested_modes.contains(\"helixfold3\")"
                                 },
                                 {
-                                    "A": "<src.process.Process object at 0x7f3234703ec0>",
-                                    "B": "<src.process.Process object at 0x7f32345275c0>",
+                                    "A": "<src.process.Process object at 0x7f17cd8281d0>",
+                                    "B": "<src.process.Process object at 0x7f17cd82b7d0>",
                                     "label": "",
                                     "color": "#4E79A7",
                                     "condition": "requested_modes.contains(\"helixfold3\")"
                                 },
                                 {
-                                    "A": "<src.process.Process object at 0x7f32347032c0>",
-                                    "B": "<src.process.Process object at 0x7f3234703920>",
+                                    "A": "<src.process.Process object at 0x7f17cd803560>",
+                                    "B": "<src.process.Process object at 0x7f17cd8281d0>",
                                     "label": "",
                                     "color": "#4E79A7",
                                     "condition": "requested_modes.contains(\"helixfold3\")"
                                 },
                                 {
-                                    "A": "<src.process.Process object at 0x7f32347032c0>",
-                                    "B": "<src.process.Process object at 0x7f3234703bc0>",
+                                    "A": "<src.process.Process object at 0x7f17cd803560>",
+                                    "B": "<src.process.Process object at 0x7f17cd803920>",
                                     "label": "",
                                     "color": "#4E79A7",
                                     "condition": "requested_modes.contains(\"helixfold3\")"
                                 },
                                 {
-                                    "A": "<src.process.Process object at 0x7f32347032c0>",
-                                    "B": "<src.process.Process object at 0x7f3234703680>",
+                                    "A": "<src.process.Process object at 0x7f17cd803560>",
+                                    "B": "<src.process.Process object at 0x7f17cd82b7d0>",
                                     "label": "",
                                     "color": "#4E79A7",
                                     "condition": "requested_modes.contains(\"helixfold3\")"
                                 },
                                 {
-                                    "A": "<src.process.Process object at 0x7f32347032c0>",
-                                    "B": "<src.process.Process object at 0x7f32345275c0>",
+                                    "A": "<src.process.Process object at 0x7f17cd803560>",
+                                    "B": "<src.process.Process object at 0x7f17cd803da0>",
                                     "label": "",
                                     "color": "#4E79A7",
                                     "condition": "requested_modes.contains(\"helixfold3\")"
                                 },
                                 {
-                                    "A": "<src.process.Process object at 0x7f32347032c0>",
-                                    "B": "<src.process.Process object at 0x7f3234703ec0>",
+                                    "A": "<src.process.Process object at 0x7f17cd803560>",
+                                    "B": "<src.process.Process object at 0x7f17cd803b00>",
                                     "label": "",
                                     "color": "#4E79A7",
                                     "condition": "requested_modes.contains(\"helixfold3\")"
@@ -1287,7 +1287,7 @@
                 "HELIXFOLD3": {
                     "nodes": [
                         {
-                            "id": "<src.process.Process object at 0x7f3234527500>",
+                            "id": "<src.process.Process object at 0x7f17cd82b7a0>",
                             "name": "FASTA2JSON",
                             "shape": "ellipse",
                             "xlabel": "",
@@ -1299,7 +1299,7 @@
                             }
                         },
                         {
-                            "id": "<src.process.Process object at 0x7f32345275c0>",
+                            "id": "<src.process.Process object at 0x7f17cd82b7d0>",
                             "name": "RUN_HELIXFOLD3",
                             "shape": "ellipse",
                             "xlabel": "",
@@ -1313,29 +1313,29 @@
                     ],
                     "edges": [
                         {
-                            "A": "<src.process.Process object at 0x7f3234527500>",
-                            "B": "<src.process.Process object at 0x7f32345275c0>",
+                            "A": "<src.process.Process object at 0x7f17cd82b7a0>",
+                            "B": "<src.process.Process object at 0x7f17cd82b7d0>",
                             "label": "",
                             "color": "#4E79A7",
                             "condition": "requested_modes.contains(\"helixfold3\")"
                         },
                         {
-                            "A": "<src.process.Process object at 0x7f32345275c0>",
-                            "B": "<src.process.Process object at 0x7f32348b4d10>",
+                            "A": "<src.process.Process object at 0x7f17cd82b7d0>",
+                            "B": "<src.process.Process object at 0x7f17ff9cc4d0>",
                             "label": "",
                             "color": "#4E79A7",
                             "condition": "requested_modes.contains(\"helixfold3\")"
                         },
                         {
-                            "A": "<src.process.Process object at 0x7f32345275c0>",
-                            "B": "<src.process.Process object at 0x7f32348b6b70>",
+                            "A": "<src.process.Process object at 0x7f17cd82b7d0>",
+                            "B": "<src.process.Process object at 0x7f17cdbba810>",
                             "label": "",
                             "color": "#4E79A7",
                             "condition": "requested_modes.contains(\"helixfold3\")"
                         },
                         {
-                            "A": "<src.process.Process object at 0x7f32345275c0>",
-                            "B": "<src.process.Process object at 0x7f32348b6240>",
+                            "A": "<src.process.Process object at 0x7f17cd82b7d0>",
+                            "B": "<src.process.Process object at 0x7f17cdbbb1d0>",
                             "label": "",
                             "color": "#4E79A7",
                             "condition": "requested_modes.contains(\"helixfold3\")"
@@ -1346,7 +1346,7 @@
                 "PREPARE_ROSETTAFOLD2NA_DBS": {
                     "nodes": [
                         {
-                            "id": "<src.process.Process object at 0x7f32345659a0>",
+                            "id": "<src.process.Process object at 0x7f17cd865a90>",
                             "name": "DOWNLOAD_RNA_DATABASES",
                             "shape": "ellipse",
                             "xlabel": "",
@@ -1360,8 +1360,8 @@
                     ],
                     "edges": [
                         {
-                            "A": "<src.process.Process object at 0x7f32345659a0>",
-                            "B": "<src.process.Process object at 0x7f32345807a0>",
+                            "A": "<src.process.Process object at 0x7f17cd865a90>",
+                            "B": "<src.process.Process object at 0x7f17cd87ca10>",
                             "label": ""
                         }
                     ],
@@ -1369,7 +1369,7 @@
                         "ARIA2_UNCOMPRESS": {
                             "nodes": [
                                 {
-                                    "id": "<src.process.Process object at 0x7f32345255b0>",
+                                    "id": "<src.process.Process object at 0x7f17cd8371d0>",
                                     "name": "UNTAR",
                                     "shape": "ellipse",
                                     "xlabel": "",
@@ -1381,7 +1381,7 @@
                                     }
                                 },
                                 {
-                                    "id": "<src.process.Process object at 0x7f32345661e0>",
+                                    "id": "<src.process.Process object at 0x7f17cd866420>",
                                     "name": "GUNZIP",
                                     "shape": "ellipse",
                                     "xlabel": "",
@@ -1393,7 +1393,7 @@
                                     }
                                 },
                                 {
-                                    "id": "<src.process.Process object at 0x7f3234564860>",
+                                    "id": "<src.process.Process object at 0x7f17cd864a70>",
                                     "name": "ZSTD_DECOMPRESS",
                                     "shape": "ellipse",
                                     "xlabel": "",
@@ -1405,7 +1405,7 @@
                                     }
                                 },
                                 {
-                                    "id": "<src.process.Process object at 0x7f3234566750>",
+                                    "id": "<src.process.Process object at 0x7f17cd866960>",
                                     "name": "UNZIP",
                                     "shape": "ellipse",
                                     "xlabel": "",
@@ -1417,7 +1417,7 @@
                                     }
                                 },
                                 {
-                                    "id": "<src.process.Process object at 0x7f32345662a0>",
+                                    "id": "<src.process.Process object at 0x7f17cd866480>",
                                     "name": "ARIA2",
                                     "shape": "ellipse",
                                     "xlabel": "",
@@ -1431,56 +1431,56 @@
                             ],
                             "edges": [
                                 {
-                                    "A": "<src.process.Process object at 0x7f32345255b0>",
-                                    "B": "<src.process.Process object at 0x7f32345807a0>",
+                                    "A": "<src.process.Process object at 0x7f17cd8371d0>",
+                                    "B": "<src.process.Process object at 0x7f17cd87ca10>",
                                     "label": "",
                                     "color": "#FF9DA7",
                                     "condition": "!(source_url.toString().endsWith('.pkl.gz')) && source_url.toString().endsWith('.tar') $OR$                source_url.toString().endsWith('.tar.gz') $OR$                source_url.toString().endsWith('.tar.zst')$OR$                source_url.toString().endsWith('.tgz')"
                                 },
                                 {
-                                    "A": "<src.process.Process object at 0x7f32345661e0>",
-                                    "B": "<src.process.Process object at 0x7f32345807a0>",
+                                    "A": "<src.process.Process object at 0x7f17cd866420>",
+                                    "B": "<src.process.Process object at 0x7f17cd87ca10>",
                                     "label": "",
                                     "color": "#F28E2B",
                                     "condition": "!(source_url.toString().endsWith('.pkl.gz')) && !(source_url.toString().endsWith('.tar') $OR$                source_url.toString().endsWith('.tar.gz') $OR$                source_url.toString().endsWith('.tar.zst')$OR$                source_url.toString().endsWith('.tgz')) && source_url.toString().endsWith('.gz')"
                                 },
                                 {
-                                    "A": "<src.process.Process object at 0x7f3234564860>",
-                                    "B": "<src.process.Process object at 0x7f32345807a0>",
+                                    "A": "<src.process.Process object at 0x7f17cd864a70>",
+                                    "B": "<src.process.Process object at 0x7f17cd87ca10>",
                                     "label": "",
                                     "color": "#76B7B2",
                                     "condition": "!(source_url.toString().endsWith('.pkl.gz')) && !(source_url.toString().endsWith('.tar') $OR$                source_url.toString().endsWith('.tar.gz') $OR$                source_url.toString().endsWith('.tar.zst')$OR$                source_url.toString().endsWith('.tgz')) && !(source_url.toString().endsWith('.gz')) && source_url.toString().endsWith('.zst')"
                                 },
                                 {
-                                    "A": "<src.process.Process object at 0x7f3234566750>",
-                                    "B": "<src.process.Process object at 0x7f32345807a0>",
+                                    "A": "<src.process.Process object at 0x7f17cd866960>",
+                                    "B": "<src.process.Process object at 0x7f17cd87ca10>",
                                     "label": "",
                                     "color": "#B07AA1",
                                     "condition": "!(source_url.toString().endsWith('.pkl.gz')) && !(source_url.toString().endsWith('.tar') $OR$                source_url.toString().endsWith('.tar.gz') $OR$                source_url.toString().endsWith('.tar.zst')$OR$                source_url.toString().endsWith('.tgz')) && !(source_url.toString().endsWith('.gz')) && !(source_url.toString().endsWith('.zst')) && source_url.toString().endsWith('.zip')"
                                 },
                                 {
-                                    "A": "<src.process.Process object at 0x7f32345662a0>",
-                                    "B": "<src.process.Process object at 0x7f32345807a0>",
+                                    "A": "<src.process.Process object at 0x7f17cd866480>",
+                                    "B": "<src.process.Process object at 0x7f17cd864a70>",
                                     "label": ""
                                 },
                                 {
-                                    "A": "<src.process.Process object at 0x7f32345662a0>",
-                                    "B": "<src.process.Process object at 0x7f32345255b0>",
+                                    "A": "<src.process.Process object at 0x7f17cd866480>",
+                                    "B": "<src.process.Process object at 0x7f17cd87ca10>",
                                     "label": ""
                                 },
                                 {
-                                    "A": "<src.process.Process object at 0x7f32345662a0>",
-                                    "B": "<src.process.Process object at 0x7f3234566750>",
+                                    "A": "<src.process.Process object at 0x7f17cd866480>",
+                                    "B": "<src.process.Process object at 0x7f17cd866420>",
                                     "label": ""
                                 },
                                 {
-                                    "A": "<src.process.Process object at 0x7f32345662a0>",
-                                    "B": "<src.process.Process object at 0x7f32345661e0>",
+                                    "A": "<src.process.Process object at 0x7f17cd866480>",
+                                    "B": "<src.process.Process object at 0x7f17cd866960>",
                                     "label": ""
                                 },
                                 {
-                                    "A": "<src.process.Process object at 0x7f32345662a0>",
-                                    "B": "<src.process.Process object at 0x7f3234564860>",
+                                    "A": "<src.process.Process object at 0x7f17cd866480>",
+                                    "B": "<src.process.Process object at 0x7f17cd8371d0>",
                                     "label": ""
                                 }
                             ],
@@ -1491,7 +1491,7 @@
                 "ROSETTAFOLD2NA": {
                     "nodes": [
                         {
-                            "id": "<src.process.Process object at 0x7f3234580680>",
+                            "id": "<src.process.Process object at 0x7f17cd87c8f0>",
                             "name": "ROSETTAFOLD2NA_FASTA",
                             "shape": "ellipse",
                             "xlabel": "",
@@ -1503,7 +1503,7 @@
                             }
                         },
                         {
-                            "id": "<src.process.Process object at 0x7f32345807a0>",
+                            "id": "<src.process.Process object at 0x7f17cd87ca10>",
                             "name": "RUN_ROSETTAFOLD2NA",
                             "shape": "ellipse",
                             "xlabel": "",
@@ -1517,23 +1517,23 @@
                     ],
                     "edges": [
                         {
-                            "A": "<src.process.Process object at 0x7f3234580680>",
-                            "B": "<src.process.Process object at 0x7f32345807a0>",
+                            "A": "<src.process.Process object at 0x7f17cd87c8f0>",
+                            "B": "<src.process.Process object at 0x7f17cd87ca10>",
                             "label": ""
                         },
                         {
-                            "A": "<src.process.Process object at 0x7f32345807a0>",
-                            "B": "<src.process.Process object at 0x7f32348b6240>",
+                            "A": "<src.process.Process object at 0x7f17cd87ca10>",
+                            "B": "<src.process.Process object at 0x7f17ff9cc4d0>",
                             "label": ""
                         },
                         {
-                            "A": "<src.process.Process object at 0x7f32345807a0>",
-                            "B": "<src.process.Process object at 0x7f32348b6b70>",
+                            "A": "<src.process.Process object at 0x7f17cd87ca10>",
+                            "B": "<src.process.Process object at 0x7f17cdbba810>",
                             "label": ""
                         },
                         {
-                            "A": "<src.process.Process object at 0x7f32345807a0>",
-                            "B": "<src.process.Process object at 0x7f32348b4d10>",
+                            "A": "<src.process.Process object at 0x7f17cd87ca10>",
+                            "B": "<src.process.Process object at 0x7f17cdbbb1d0>",
                             "label": ""
                         }
                     ],
@@ -1542,7 +1542,7 @@
                 "PREPARE_BOLTZ_DBS": {
                     "nodes": [
                         {
-                            "id": "<src.process.Process object at 0x7f323458c410>",
+                            "id": "<src.process.Process object at 0x7f17cd88c650>",
                             "name": "ARIA2_BOLTZ_CCD",
                             "shape": "ellipse",
                             "xlabel": "",
@@ -1554,7 +1554,7 @@
                             }
                         },
                         {
-                            "id": "<src.process.Process object at 0x7f323458c470>",
+                            "id": "<src.process.Process object at 0x7f17cd88c6b0>",
                             "name": "ARIA2_BOLTZ_MODEL",
                             "shape": "ellipse",
                             "xlabel": "",
@@ -1566,7 +1566,7 @@
                             }
                         },
                         {
-                            "id": "<src.process.Process object at 0x7f323458c5c0>",
+                            "id": "<src.process.Process object at 0x7f17cd88c770>",
                             "name": "ARIA2_BOLTZ2_AFF",
                             "shape": "ellipse",
                             "xlabel": "",
@@ -1578,7 +1578,7 @@
                             }
                         },
                         {
-                            "id": "<src.process.Process object at 0x7f323458c6e0>",
+                            "id": "<src.process.Process object at 0x7f17cd88c8c0>",
                             "name": "ARIA2_BOLTZ2_CONF",
                             "shape": "ellipse",
                             "xlabel": "",
@@ -1592,23 +1592,23 @@
                     ],
                     "edges": [
                         {
-                            "A": "<src.process.Process object at 0x7f323458c410>",
-                            "B": "<src.process.Process object at 0x7f32345c8500>",
+                            "A": "<src.process.Process object at 0x7f17cd88c650>",
+                            "B": "<src.process.Process object at 0x7f17cd8cc170>",
                             "label": ""
                         },
                         {
-                            "A": "<src.process.Process object at 0x7f323458c470>",
-                            "B": "<src.process.Process object at 0x7f32345c8500>",
+                            "A": "<src.process.Process object at 0x7f17cd88c6b0>",
+                            "B": "<src.process.Process object at 0x7f17cd8cc170>",
                             "label": ""
                         },
                         {
-                            "A": "<src.process.Process object at 0x7f323458c5c0>",
-                            "B": "<src.process.Process object at 0x7f32345c8500>",
+                            "A": "<src.process.Process object at 0x7f17cd88c770>",
+                            "B": "<src.process.Process object at 0x7f17cd8cc170>",
                             "label": ""
                         },
                         {
-                            "A": "<src.process.Process object at 0x7f323458c6e0>",
-                            "B": "<src.process.Process object at 0x7f32345c8500>",
+                            "A": "<src.process.Process object at 0x7f17cd88c8c0>",
+                            "B": "<src.process.Process object at 0x7f17cd8cc170>",
                             "label": ""
                         }
                     ],
@@ -1616,7 +1616,7 @@
                         "ARIA2_UNCOMPRESS": {
                             "nodes": [
                                 {
-                                    "id": "<src.process.Process object at 0x7f323458d3a0>",
+                                    "id": "<src.process.Process object at 0x7f17cd88d640>",
                                     "name": "UNTAR",
                                     "shape": "ellipse",
                                     "xlabel": "",
@@ -1628,7 +1628,7 @@
                                     }
                                 },
                                 {
-                                    "id": "<src.process.Process object at 0x7f323458d670>",
+                                    "id": "<src.process.Process object at 0x7f17cd88d880>",
                                     "name": "GUNZIP",
                                     "shape": "ellipse",
                                     "xlabel": "",
@@ -1640,7 +1640,7 @@
                                     }
                                 },
                                 {
-                                    "id": "<src.process.Process object at 0x7f323458d8e0>",
+                                    "id": "<src.process.Process object at 0x7f17cd88db80>",
                                     "name": "ZSTD_DECOMPRESS",
                                     "shape": "ellipse",
                                     "xlabel": "",
@@ -1652,7 +1652,7 @@
                                     }
                                 },
                                 {
-                                    "id": "<src.process.Process object at 0x7f323458dc40>",
+                                    "id": "<src.process.Process object at 0x7f17cd88deb0>",
                                     "name": "UNZIP",
                                     "shape": "ellipse",
                                     "xlabel": "",
@@ -1664,7 +1664,7 @@
                                     }
                                 },
                                 {
-                                    "id": "<src.process.Process object at 0x7f323458d010>",
+                                    "id": "<src.process.Process object at 0x7f17cd88d250>",
                                     "name": "ARIA2",
                                     "shape": "ellipse",
                                     "xlabel": "",
@@ -1678,56 +1678,56 @@
                             ],
                             "edges": [
                                 {
-                                    "A": "<src.process.Process object at 0x7f323458d3a0>",
-                                    "B": "<src.process.Process object at 0x7f32345c8500>",
+                                    "A": "<src.process.Process object at 0x7f17cd88d640>",
+                                    "B": "<src.process.Process object at 0x7f17cd8cc170>",
                                     "label": "",
                                     "color": "#FF9DA7",
                                     "condition": "!(source_url.toString().endsWith('.pkl.gz')) && source_url.toString().endsWith('.tar') $OR$                source_url.toString().endsWith('.tar.gz') $OR$                source_url.toString().endsWith('.tar.zst')$OR$                source_url.toString().endsWith('.tgz')"
                                 },
                                 {
-                                    "A": "<src.process.Process object at 0x7f323458d670>",
-                                    "B": "<src.process.Process object at 0x7f32345c8500>",
+                                    "A": "<src.process.Process object at 0x7f17cd88d880>",
+                                    "B": "<src.process.Process object at 0x7f17cd8cc170>",
                                     "label": "",
                                     "color": "#F28E2B",
                                     "condition": "!(source_url.toString().endsWith('.pkl.gz')) && !(source_url.toString().endsWith('.tar') $OR$                source_url.toString().endsWith('.tar.gz') $OR$                source_url.toString().endsWith('.tar.zst')$OR$                source_url.toString().endsWith('.tgz')) && source_url.toString().endsWith('.gz')"
                                 },
                                 {
-                                    "A": "<src.process.Process object at 0x7f323458d8e0>",
-                                    "B": "<src.process.Process object at 0x7f32345c8500>",
+                                    "A": "<src.process.Process object at 0x7f17cd88db80>",
+                                    "B": "<src.process.Process object at 0x7f17cd8cc170>",
                                     "label": "",
                                     "color": "#76B7B2",
                                     "condition": "!(source_url.toString().endsWith('.pkl.gz')) && !(source_url.toString().endsWith('.tar') $OR$                source_url.toString().endsWith('.tar.gz') $OR$                source_url.toString().endsWith('.tar.zst')$OR$                source_url.toString().endsWith('.tgz')) && !(source_url.toString().endsWith('.gz')) && source_url.toString().endsWith('.zst')"
                                 },
                                 {
-                                    "A": "<src.process.Process object at 0x7f323458dc40>",
-                                    "B": "<src.process.Process object at 0x7f32345c8500>",
+                                    "A": "<src.process.Process object at 0x7f17cd88deb0>",
+                                    "B": "<src.process.Process object at 0x7f17cd8cc170>",
                                     "label": "",
                                     "color": "#B07AA1",
                                     "condition": "!(source_url.toString().endsWith('.pkl.gz')) && !(source_url.toString().endsWith('.tar') $OR$                source_url.toString().endsWith('.tar.gz') $OR$                source_url.toString().endsWith('.tar.zst')$OR$                source_url.toString().endsWith('.tgz')) && !(source_url.toString().endsWith('.gz')) && !(source_url.toString().endsWith('.zst')) && source_url.toString().endsWith('.zip')"
                                 },
                                 {
-                                    "A": "<src.process.Process object at 0x7f323458d010>",
-                                    "B": "<src.process.Process object at 0x7f323458dc40>",
+                                    "A": "<src.process.Process object at 0x7f17cd88d250>",
+                                    "B": "<src.process.Process object at 0x7f17cd88d880>",
                                     "label": ""
                                 },
                                 {
-                                    "A": "<src.process.Process object at 0x7f323458d010>",
-                                    "B": "<src.process.Process object at 0x7f32345c8500>",
+                                    "A": "<src.process.Process object at 0x7f17cd88d250>",
+                                    "B": "<src.process.Process object at 0x7f17cd8cc170>",
                                     "label": ""
                                 },
                                 {
-                                    "A": "<src.process.Process object at 0x7f323458d010>",
-                                    "B": "<src.process.Process object at 0x7f323458d3a0>",
+                                    "A": "<src.process.Process object at 0x7f17cd88d250>",
+                                    "B": "<src.process.Process object at 0x7f17cd88db80>",
                                     "label": ""
                                 },
                                 {
-                                    "A": "<src.process.Process object at 0x7f323458d010>",
-                                    "B": "<src.process.Process object at 0x7f323458d8e0>",
+                                    "A": "<src.process.Process object at 0x7f17cd88d250>",
+                                    "B": "<src.process.Process object at 0x7f17cd88d640>",
                                     "label": ""
                                 },
                                 {
-                                    "A": "<src.process.Process object at 0x7f323458d010>",
-                                    "B": "<src.process.Process object at 0x7f323458d670>",
+                                    "A": "<src.process.Process object at 0x7f17cd88d250>",
+                                    "B": "<src.process.Process object at 0x7f17cd88deb0>",
                                     "label": ""
                                 }
                             ],
@@ -1738,7 +1738,7 @@
                 "BOLTZ": {
                     "nodes": [
                         {
-                            "id": "<src.process.Process object at 0x7f32345ca9c0>",
+                            "id": "<src.process.Process object at 0x7f17cd8cec60>",
                             "name": "MULTIFASTA_TO_CSV",
                             "shape": "ellipse",
                             "xlabel": "",
@@ -1750,7 +1750,7 @@
                             }
                         },
                         {
-                            "id": "<src.process.Process object at 0x7f32345caa80>",
+                            "id": "<src.process.Process object at 0x7f17cd8ced20>",
                             "name": "MMSEQS_COLABFOLDSEARCH",
                             "shape": "ellipse",
                             "xlabel": "",
@@ -1762,7 +1762,7 @@
                             }
                         },
                         {
-                            "id": "<src.process.Process object at 0x7f32345cabd0>",
+                            "id": "<src.process.Process object at 0x7f17cd8cee70>",
                             "name": "SPLIT_MSA",
                             "shape": "ellipse",
                             "xlabel": "",
@@ -1774,7 +1774,7 @@
                             }
                         },
                         {
-                            "id": "<src.process.Process object at 0x7f32345c90a0>",
+                            "id": "<src.process.Process object at 0x7f17cd8cc770>",
                             "name": "BOLTZ_FASTA",
                             "shape": "ellipse",
                             "xlabel": "",
@@ -1786,7 +1786,7 @@
                             }
                         },
                         {
-                            "id": "<src.process.Process object at 0x7f32345c8500>",
+                            "id": "<src.process.Process object at 0x7f17cd8cc170>",
                             "name": "RUN_BOLTZ",
                             "shape": "ellipse",
                             "xlabel": "",
@@ -1800,38 +1800,38 @@
                     ],
                     "edges": [
                         {
-                            "A": "<src.process.Process object at 0x7f32345ca9c0>",
-                            "B": "<src.process.Process object at 0x7f32345caa80>",
+                            "A": "<src.process.Process object at 0x7f17cd8cec60>",
+                            "B": "<src.process.Process object at 0x7f17cd8ced20>",
                             "label": ""
                         },
                         {
-                            "A": "<src.process.Process object at 0x7f32345caa80>",
-                            "B": "<src.process.Process object at 0x7f32345cabd0>",
+                            "A": "<src.process.Process object at 0x7f17cd8ced20>",
+                            "B": "<src.process.Process object at 0x7f17cd8cee70>",
                             "label": ""
                         },
                         {
-                            "A": "<src.process.Process object at 0x7f32345cabd0>",
-                            "B": "<src.process.Process object at 0x7f32345c90a0>",
+                            "A": "<src.process.Process object at 0x7f17cd8cee70>",
+                            "B": "<src.process.Process object at 0x7f17cd8cc770>",
                             "label": ""
                         },
                         {
-                            "A": "<src.process.Process object at 0x7f32345c90a0>",
-                            "B": "<src.process.Process object at 0x7f32345c8500>",
+                            "A": "<src.process.Process object at 0x7f17cd8cc770>",
+                            "B": "<src.process.Process object at 0x7f17cd8cc170>",
                             "label": ""
                         },
                         {
-                            "A": "<src.process.Process object at 0x7f32345c8500>",
-                            "B": "<src.process.Process object at 0x7f32348b4d10>",
+                            "A": "<src.process.Process object at 0x7f17cd8cc170>",
+                            "B": "<src.process.Process object at 0x7f17ff9cc4d0>",
                             "label": ""
                         },
                         {
-                            "A": "<src.process.Process object at 0x7f32345c8500>",
-                            "B": "<src.process.Process object at 0x7f32348b6b70>",
+                            "A": "<src.process.Process object at 0x7f17cd8cc170>",
+                            "B": "<src.process.Process object at 0x7f17cdbba810>",
                             "label": ""
                         },
                         {
-                            "A": "<src.process.Process object at 0x7f32345c8500>",
-                            "B": "<src.process.Process object at 0x7f32348b6240>",
+                            "A": "<src.process.Process object at 0x7f17cd8cc170>",
+                            "B": "<src.process.Process object at 0x7f17cdbbb1d0>",
                             "label": ""
                         }
                     ],
@@ -1840,7 +1840,7 @@
                 "POST_PROCESSING": {
                     "nodes": [
                         {
-                            "id": "<src.process.Process object at 0x7f32348b55e0>",
+                            "id": "<src.process.Process object at 0x7f17cdbb9ca0>",
                             "name": "COMPARE_STRUCTURES",
                             "shape": "ellipse",
                             "xlabel": "",
@@ -1852,7 +1852,7 @@
                             }
                         },
                         {
-                            "id": "<src.process.Process object at 0x7f32348b4d10>",
+                            "id": "<src.process.Process object at 0x7f17ff9cc4d0>",
                             "name": "GENERATE_REPORT",
                             "shape": "ellipse",
                             "xlabel": "",
@@ -1864,7 +1864,7 @@
                             }
                         },
                         {
-                            "id": "<src.process.Process object at 0x7f32348b6240>",
+                            "id": "<src.process.Process object at 0x7f17cdbba810>",
                             "name": "FOLDSEEK_EASYSEARCH",
                             "shape": "ellipse",
                             "xlabel": "",
@@ -1876,7 +1876,7 @@
                             }
                         },
                         {
-                            "id": "<src.process.Process object at 0x7f32348b6b70>",
+                            "id": "<src.process.Process object at 0x7f17cdbbb1d0>",
                             "name": "MULTIQC",
                             "shape": "ellipse",
                             "xlabel": "",
@@ -1890,8 +1890,8 @@
                     ],
                     "edges": [
                         {
-                            "A": "<src.process.Process object at 0x7f32348b4d10>",
-                            "B": "<src.process.Process object at 0x7f32348b55e0>",
+                            "A": "<src.process.Process object at 0x7f17ff9cc4d0>",
+                            "B": "<src.process.Process object at 0x7f17cdbb9ca0>",
                             "label": ""
                         }
                     ],

@@ -872,7 +872,19 @@
         },
         {
             "A": "NFCORE_PROTEINFOLD.PREPARE_ALPHAFOLD2_DBS.ARIA2_UNCOMPRESS.ARIA2",
+            "B": "NFCORE_PROTEINFOLD.PREPARE_ALPHAFOLD2_DBS.ARIA2_UNCOMPRESS.GUNZIP",
+            "color": "#E15759",
+            "condition": "requested_modes.contains(\"alphafold2\")"
+        },
+        {
+            "A": "NFCORE_PROTEINFOLD.PREPARE_ALPHAFOLD2_DBS.ARIA2_UNCOMPRESS.ARIA2",
             "B": "NFCORE_PROTEINFOLD.PREPARE_ALPHAFOLD2_DBS.ARIA2_UNCOMPRESS.ZSTD_DECOMPRESS",
+            "color": "#E15759",
+            "condition": "requested_modes.contains(\"alphafold2\")"
+        },
+        {
+            "A": "NFCORE_PROTEINFOLD.PREPARE_ALPHAFOLD2_DBS.ARIA2_UNCOMPRESS.ARIA2",
+            "B": "NFCORE_PROTEINFOLD.PREPARE_ALPHAFOLD2_DBS.COMBINE_UNIPROT",
             "color": "#E15759",
             "condition": "requested_modes.contains(\"alphafold2\")"
         },
@@ -884,19 +896,13 @@
         },
         {
             "A": "NFCORE_PROTEINFOLD.PREPARE_ALPHAFOLD2_DBS.ARIA2_UNCOMPRESS.ARIA2",
-            "B": "NFCORE_PROTEINFOLD.PREPARE_ALPHAFOLD2_DBS.ARIA2_UNCOMPRESS.GUNZIP",
-            "color": "#E15759",
-            "condition": "requested_modes.contains(\"alphafold2\")"
-        },
-        {
-            "A": "NFCORE_PROTEINFOLD.PREPARE_ALPHAFOLD2_DBS.ARIA2_UNCOMPRESS.ARIA2",
             "B": "NFCORE_PROTEINFOLD.PREPARE_ALPHAFOLD2_DBS.ARIA2_UNCOMPRESS.UNTAR",
             "color": "#E15759",
             "condition": "requested_modes.contains(\"alphafold2\")"
         },
         {
-            "A": "NFCORE_PROTEINFOLD.PREPARE_ALPHAFOLD2_DBS.ARIA2_UNCOMPRESS.ARIA2",
-            "B": "NFCORE_PROTEINFOLD.PREPARE_ALPHAFOLD2_DBS.COMBINE_UNIPROT",
+            "A": "NFCORE_PROTEINFOLD.ALPHAFOLD2.RUN_ALPHAFOLD2",
+            "B": "NFCORE_PROTEINFOLD.POST_PROCESSING.GENERATE_REPORT",
             "color": "#E15759",
             "condition": "requested_modes.contains(\"alphafold2\")"
         },
@@ -909,12 +915,6 @@
         {
             "A": "NFCORE_PROTEINFOLD.ALPHAFOLD2.RUN_ALPHAFOLD2",
             "B": "NFCORE_PROTEINFOLD.POST_PROCESSING.MULTIQC",
-            "color": "#E15759",
-            "condition": "requested_modes.contains(\"alphafold2\")"
-        },
-        {
-            "A": "NFCORE_PROTEINFOLD.ALPHAFOLD2.RUN_ALPHAFOLD2",
-            "B": "NFCORE_PROTEINFOLD.POST_PROCESSING.GENERATE_REPORT",
             "color": "#E15759",
             "condition": "requested_modes.contains(\"alphafold2\")"
         },
@@ -926,6 +926,12 @@
         },
         {
             "A": "NFCORE_PROTEINFOLD.ALPHAFOLD2.RUN_ALPHAFOLD2_PRED",
+            "B": "NFCORE_PROTEINFOLD.POST_PROCESSING.GENERATE_REPORT",
+            "color": "#E15759",
+            "condition": "requested_modes.contains(\"alphafold2\")"
+        },
+        {
+            "A": "NFCORE_PROTEINFOLD.ALPHAFOLD2.RUN_ALPHAFOLD2_PRED",
             "B": "NFCORE_PROTEINFOLD.POST_PROCESSING.FOLDSEEK_EASYSEARCH",
             "color": "#E15759",
             "condition": "requested_modes.contains(\"alphafold2\")"
@@ -937,20 +943,8 @@
             "condition": "requested_modes.contains(\"alphafold2\")"
         },
         {
-            "A": "NFCORE_PROTEINFOLD.ALPHAFOLD2.RUN_ALPHAFOLD2_PRED",
-            "B": "NFCORE_PROTEINFOLD.POST_PROCESSING.GENERATE_REPORT",
-            "color": "#E15759",
-            "condition": "requested_modes.contains(\"alphafold2\")"
-        },
-        {
             "A": "NFCORE_PROTEINFOLD.PREPARE_ALPHAFOLD3_DBS.DOWNLOAD_PDBMMCIF_AF3",
             "B": "NFCORE_PROTEINFOLD.ALPHAFOLD3.RUN_ALPHAFOLD3",
-            "color": "#EDC948",
-            "condition": "requested_modes.contains(\"alphafold3\")"
-        },
-        {
-            "A": "NFCORE_PROTEINFOLD.PREPARE_ALPHAFOLD3_DBS.ARIA2_UNCOMPRESS.ARIA2",
-            "B": "NFCORE_PROTEINFOLD.PREPARE_ALPHAFOLD3_DBS.ARIA2_UNCOMPRESS.UNZIP",
             "color": "#EDC948",
             "condition": "requested_modes.contains(\"alphafold3\")"
         },
@@ -962,13 +956,19 @@
         },
         {
             "A": "NFCORE_PROTEINFOLD.PREPARE_ALPHAFOLD3_DBS.ARIA2_UNCOMPRESS.ARIA2",
-            "B": "NFCORE_PROTEINFOLD.PREPARE_ALPHAFOLD3_DBS.ARIA2_UNCOMPRESS.UNTAR",
+            "B": "NFCORE_PROTEINFOLD.PREPARE_ALPHAFOLD3_DBS.ARIA2_UNCOMPRESS.UNZIP",
             "color": "#EDC948",
             "condition": "requested_modes.contains(\"alphafold3\")"
         },
         {
             "A": "NFCORE_PROTEINFOLD.PREPARE_ALPHAFOLD3_DBS.ARIA2_UNCOMPRESS.ARIA2",
             "B": "NFCORE_PROTEINFOLD.PREPARE_ALPHAFOLD3_DBS.ARIA2_UNCOMPRESS.GUNZIP",
+            "color": "#EDC948",
+            "condition": "requested_modes.contains(\"alphafold3\")"
+        },
+        {
+            "A": "NFCORE_PROTEINFOLD.PREPARE_ALPHAFOLD3_DBS.ARIA2_UNCOMPRESS.ARIA2",
+            "B": "NFCORE_PROTEINFOLD.PREPARE_ALPHAFOLD3_DBS.ARIA2_UNCOMPRESS.UNTAR",
             "color": "#EDC948",
             "condition": "requested_modes.contains(\"alphafold3\")"
         },
@@ -980,25 +980,25 @@
         },
         {
             "A": "NFCORE_PROTEINFOLD.ALPHAFOLD3.RUN_ALPHAFOLD3",
-            "B": "NFCORE_PROTEINFOLD.ALPHAFOLD3.MMCIF2PDB_TOP_RANKED",
-            "color": "#EDC948",
-            "condition": "requested_modes.contains(\"alphafold3\")"
-        },
-        {
-            "A": "NFCORE_PROTEINFOLD.ALPHAFOLD3.RUN_ALPHAFOLD3",
-            "B": "NFCORE_PROTEINFOLD.POST_PROCESSING.MULTIQC",
-            "color": "#EDC948",
-            "condition": "requested_modes.contains(\"alphafold3\")"
-        },
-        {
-            "A": "NFCORE_PROTEINFOLD.ALPHAFOLD3.RUN_ALPHAFOLD3",
             "B": "NFCORE_PROTEINFOLD.POST_PROCESSING.GENERATE_REPORT",
             "color": "#EDC948",
             "condition": "requested_modes.contains(\"alphafold3\")"
         },
         {
             "A": "NFCORE_PROTEINFOLD.ALPHAFOLD3.RUN_ALPHAFOLD3",
+            "B": "NFCORE_PROTEINFOLD.ALPHAFOLD3.MMCIF2PDB_TOP_RANKED",
+            "color": "#EDC948",
+            "condition": "requested_modes.contains(\"alphafold3\")"
+        },
+        {
+            "A": "NFCORE_PROTEINFOLD.ALPHAFOLD3.RUN_ALPHAFOLD3",
             "B": "NFCORE_PROTEINFOLD.ALPHAFOLD3.MMCIF2PDB_MODELS",
+            "color": "#EDC948",
+            "condition": "requested_modes.contains(\"alphafold3\")"
+        },
+        {
+            "A": "NFCORE_PROTEINFOLD.ALPHAFOLD3.RUN_ALPHAFOLD3",
+            "B": "NFCORE_PROTEINFOLD.POST_PROCESSING.MULTIQC",
             "color": "#EDC948",
             "condition": "requested_modes.contains(\"alphafold3\")"
         },
@@ -1024,11 +1024,7 @@
         },
         {
             "A": "NFCORE_PROTEINFOLD.PREPARE_COLABFOLD_DBS.ARIA2_UNCOMPRESS.ARIA2",
-            "B": "NFCORE_PROTEINFOLD.PREPARE_COLABFOLD_DBS.ARIA2_UNCOMPRESS.ZSTD_DECOMPRESS"
-        },
-        {
-            "A": "NFCORE_PROTEINFOLD.PREPARE_COLABFOLD_DBS.ARIA2_UNCOMPRESS.ARIA2",
-            "B": "NFCORE_PROTEINFOLD.PREPARE_COLABFOLD_DBS.ARIA2_UNCOMPRESS.GUNZIP"
+            "B": "NFCORE_PROTEINFOLD.PREPARE_COLABFOLD_DBS.ARIA2_UNCOMPRESS.UNTAR"
         },
         {
             "A": "NFCORE_PROTEINFOLD.PREPARE_COLABFOLD_DBS.ARIA2_UNCOMPRESS.ARIA2",
@@ -1036,7 +1032,11 @@
         },
         {
             "A": "NFCORE_PROTEINFOLD.PREPARE_COLABFOLD_DBS.ARIA2_UNCOMPRESS.ARIA2",
-            "B": "NFCORE_PROTEINFOLD.PREPARE_COLABFOLD_DBS.ARIA2_UNCOMPRESS.UNTAR"
+            "B": "NFCORE_PROTEINFOLD.PREPARE_COLABFOLD_DBS.ARIA2_UNCOMPRESS.GUNZIP"
+        },
+        {
+            "A": "NFCORE_PROTEINFOLD.PREPARE_COLABFOLD_DBS.ARIA2_UNCOMPRESS.ARIA2",
+            "B": "NFCORE_PROTEINFOLD.PREPARE_COLABFOLD_DBS.ARIA2_UNCOMPRESS.ZSTD_DECOMPRESS"
         },
         {
             "A": "NFCORE_PROTEINFOLD.COLABFOLD.MULTIFASTA_TO_CSV",
@@ -1048,11 +1048,11 @@
         },
         {
             "A": "NFCORE_PROTEINFOLD.COLABFOLD.COLABFOLD_BATCH",
-            "B": "NFCORE_PROTEINFOLD.POST_PROCESSING.MULTIQC"
+            "B": "NFCORE_PROTEINFOLD.POST_PROCESSING.FOLDSEEK_EASYSEARCH"
         },
         {
             "A": "NFCORE_PROTEINFOLD.COLABFOLD.COLABFOLD_BATCH",
-            "B": "NFCORE_PROTEINFOLD.POST_PROCESSING.FOLDSEEK_EASYSEARCH"
+            "B": "NFCORE_PROTEINFOLD.POST_PROCESSING.MULTIQC"
         },
         {
             "A": "NFCORE_PROTEINFOLD.COLABFOLD.MULTIFASTA_TO_CSV",
@@ -1064,15 +1064,15 @@
         },
         {
             "A": "NFCORE_PROTEINFOLD.COLABFOLD.COLABFOLD_BATCH",
+            "B": "NFCORE_PROTEINFOLD.POST_PROCESSING.GENERATE_REPORT"
+        },
+        {
+            "A": "NFCORE_PROTEINFOLD.COLABFOLD.COLABFOLD_BATCH",
             "B": "NFCORE_PROTEINFOLD.POST_PROCESSING.FOLDSEEK_EASYSEARCH"
         },
         {
             "A": "NFCORE_PROTEINFOLD.COLABFOLD.COLABFOLD_BATCH",
             "B": "NFCORE_PROTEINFOLD.POST_PROCESSING.MULTIQC"
-        },
-        {
-            "A": "NFCORE_PROTEINFOLD.COLABFOLD.COLABFOLD_BATCH",
-            "B": "NFCORE_PROTEINFOLD.POST_PROCESSING.GENERATE_REPORT"
         },
         {
             "A": "NFCORE_PROTEINFOLD.PREPARE_ESMFOLD_DBS.ARIA2_ESMFOLD_3B_V1",
@@ -1120,11 +1120,7 @@
         },
         {
             "A": "NFCORE_PROTEINFOLD.PREPARE_ROSETTAFOLD_ALL_ATOM_DBS.ARIA2_UNCOMPRESS.ARIA2",
-            "B": "NFCORE_PROTEINFOLD.PREPARE_ROSETTAFOLD_ALL_ATOM_DBS.ARIA2_UNCOMPRESS.GUNZIP"
-        },
-        {
-            "A": "NFCORE_PROTEINFOLD.PREPARE_ROSETTAFOLD_ALL_ATOM_DBS.ARIA2_UNCOMPRESS.ARIA2",
-            "B": "NFCORE_PROTEINFOLD.PREPARE_ROSETTAFOLD_ALL_ATOM_DBS.ARIA2_UNCOMPRESS.UNZIP"
+            "B": "NFCORE_PROTEINFOLD.ROSETTAFOLD_ALL_ATOM.RUN_ROSETTAFOLD_ALL_ATOM"
         },
         {
             "A": "NFCORE_PROTEINFOLD.PREPARE_ROSETTAFOLD_ALL_ATOM_DBS.ARIA2_UNCOMPRESS.ARIA2",
@@ -1132,11 +1128,15 @@
         },
         {
             "A": "NFCORE_PROTEINFOLD.PREPARE_ROSETTAFOLD_ALL_ATOM_DBS.ARIA2_UNCOMPRESS.ARIA2",
+            "B": "NFCORE_PROTEINFOLD.PREPARE_ROSETTAFOLD_ALL_ATOM_DBS.ARIA2_UNCOMPRESS.GUNZIP"
+        },
+        {
+            "A": "NFCORE_PROTEINFOLD.PREPARE_ROSETTAFOLD_ALL_ATOM_DBS.ARIA2_UNCOMPRESS.ARIA2",
             "B": "NFCORE_PROTEINFOLD.PREPARE_ROSETTAFOLD_ALL_ATOM_DBS.ARIA2_UNCOMPRESS.UNTAR"
         },
         {
             "A": "NFCORE_PROTEINFOLD.PREPARE_ROSETTAFOLD_ALL_ATOM_DBS.ARIA2_UNCOMPRESS.ARIA2",
-            "B": "NFCORE_PROTEINFOLD.ROSETTAFOLD_ALL_ATOM.RUN_ROSETTAFOLD_ALL_ATOM"
+            "B": "NFCORE_PROTEINFOLD.PREPARE_ROSETTAFOLD_ALL_ATOM_DBS.ARIA2_UNCOMPRESS.UNZIP"
         },
         {
             "A": "NFCORE_PROTEINFOLD.ROSETTAFOLD_ALL_ATOM.FASTA2YAML",
@@ -1190,13 +1190,7 @@
         },
         {
             "A": "NFCORE_PROTEINFOLD.PREPARE_HELIXFOLD3_DBS.ARIA2_UNCOMPRESS.ARIA2",
-            "B": "NFCORE_PROTEINFOLD.PREPARE_HELIXFOLD3_DBS.ARIA2_UNCOMPRESS.GUNZIP",
-            "color": "#4E79A7",
-            "condition": "requested_modes.contains(\"helixfold3\")"
-        },
-        {
-            "A": "NFCORE_PROTEINFOLD.PREPARE_HELIXFOLD3_DBS.ARIA2_UNCOMPRESS.ARIA2",
-            "B": "NFCORE_PROTEINFOLD.PREPARE_HELIXFOLD3_DBS.ARIA2_UNCOMPRESS.ZSTD_DECOMPRESS",
+            "B": "NFCORE_PROTEINFOLD.PREPARE_HELIXFOLD3_DBS.ARIA2_UNCOMPRESS.UNZIP",
             "color": "#4E79A7",
             "condition": "requested_modes.contains(\"helixfold3\")"
         },
@@ -1214,7 +1208,13 @@
         },
         {
             "A": "NFCORE_PROTEINFOLD.PREPARE_HELIXFOLD3_DBS.ARIA2_UNCOMPRESS.ARIA2",
-            "B": "NFCORE_PROTEINFOLD.PREPARE_HELIXFOLD3_DBS.ARIA2_UNCOMPRESS.UNZIP",
+            "B": "NFCORE_PROTEINFOLD.PREPARE_HELIXFOLD3_DBS.ARIA2_UNCOMPRESS.ZSTD_DECOMPRESS",
+            "color": "#4E79A7",
+            "condition": "requested_modes.contains(\"helixfold3\")"
+        },
+        {
+            "A": "NFCORE_PROTEINFOLD.PREPARE_HELIXFOLD3_DBS.ARIA2_UNCOMPRESS.ARIA2",
+            "B": "NFCORE_PROTEINFOLD.PREPARE_HELIXFOLD3_DBS.ARIA2_UNCOMPRESS.GUNZIP",
             "color": "#4E79A7",
             "condition": "requested_modes.contains(\"helixfold3\")"
         },
@@ -1232,13 +1232,13 @@
         },
         {
             "A": "NFCORE_PROTEINFOLD.HELIXFOLD3.RUN_HELIXFOLD3",
-            "B": "NFCORE_PROTEINFOLD.POST_PROCESSING.MULTIQC",
+            "B": "NFCORE_PROTEINFOLD.POST_PROCESSING.FOLDSEEK_EASYSEARCH",
             "color": "#4E79A7",
             "condition": "requested_modes.contains(\"helixfold3\")"
         },
         {
             "A": "NFCORE_PROTEINFOLD.HELIXFOLD3.RUN_HELIXFOLD3",
-            "B": "NFCORE_PROTEINFOLD.POST_PROCESSING.FOLDSEEK_EASYSEARCH",
+            "B": "NFCORE_PROTEINFOLD.POST_PROCESSING.MULTIQC",
             "color": "#4E79A7",
             "condition": "requested_modes.contains(\"helixfold3\")"
         },
@@ -1272,15 +1272,11 @@
         },
         {
             "A": "NFCORE_PROTEINFOLD.PREPARE_ROSETTAFOLD2NA_DBS.ARIA2_UNCOMPRESS.ARIA2",
+            "B": "NFCORE_PROTEINFOLD.PREPARE_ROSETTAFOLD2NA_DBS.ARIA2_UNCOMPRESS.ZSTD_DECOMPRESS"
+        },
+        {
+            "A": "NFCORE_PROTEINFOLD.PREPARE_ROSETTAFOLD2NA_DBS.ARIA2_UNCOMPRESS.ARIA2",
             "B": "NFCORE_PROTEINFOLD.ROSETTAFOLD2NA.RUN_ROSETTAFOLD2NA"
-        },
-        {
-            "A": "NFCORE_PROTEINFOLD.PREPARE_ROSETTAFOLD2NA_DBS.ARIA2_UNCOMPRESS.ARIA2",
-            "B": "NFCORE_PROTEINFOLD.PREPARE_ROSETTAFOLD2NA_DBS.ARIA2_UNCOMPRESS.UNTAR"
-        },
-        {
-            "A": "NFCORE_PROTEINFOLD.PREPARE_ROSETTAFOLD2NA_DBS.ARIA2_UNCOMPRESS.ARIA2",
-            "B": "NFCORE_PROTEINFOLD.PREPARE_ROSETTAFOLD2NA_DBS.ARIA2_UNCOMPRESS.UNZIP"
         },
         {
             "A": "NFCORE_PROTEINFOLD.PREPARE_ROSETTAFOLD2NA_DBS.ARIA2_UNCOMPRESS.ARIA2",
@@ -1288,11 +1284,19 @@
         },
         {
             "A": "NFCORE_PROTEINFOLD.PREPARE_ROSETTAFOLD2NA_DBS.ARIA2_UNCOMPRESS.ARIA2",
-            "B": "NFCORE_PROTEINFOLD.PREPARE_ROSETTAFOLD2NA_DBS.ARIA2_UNCOMPRESS.ZSTD_DECOMPRESS"
+            "B": "NFCORE_PROTEINFOLD.PREPARE_ROSETTAFOLD2NA_DBS.ARIA2_UNCOMPRESS.UNZIP"
+        },
+        {
+            "A": "NFCORE_PROTEINFOLD.PREPARE_ROSETTAFOLD2NA_DBS.ARIA2_UNCOMPRESS.ARIA2",
+            "B": "NFCORE_PROTEINFOLD.PREPARE_ROSETTAFOLD2NA_DBS.ARIA2_UNCOMPRESS.UNTAR"
         },
         {
             "A": "NFCORE_PROTEINFOLD.ROSETTAFOLD2NA.ROSETTAFOLD2NA_FASTA",
             "B": "NFCORE_PROTEINFOLD.ROSETTAFOLD2NA.RUN_ROSETTAFOLD2NA"
+        },
+        {
+            "A": "NFCORE_PROTEINFOLD.ROSETTAFOLD2NA.RUN_ROSETTAFOLD2NA",
+            "B": "NFCORE_PROTEINFOLD.POST_PROCESSING.GENERATE_REPORT"
         },
         {
             "A": "NFCORE_PROTEINFOLD.ROSETTAFOLD2NA.RUN_ROSETTAFOLD2NA",
@@ -1301,10 +1305,6 @@
         {
             "A": "NFCORE_PROTEINFOLD.ROSETTAFOLD2NA.RUN_ROSETTAFOLD2NA",
             "B": "NFCORE_PROTEINFOLD.POST_PROCESSING.MULTIQC"
-        },
-        {
-            "A": "NFCORE_PROTEINFOLD.ROSETTAFOLD2NA.RUN_ROSETTAFOLD2NA",
-            "B": "NFCORE_PROTEINFOLD.POST_PROCESSING.GENERATE_REPORT"
         },
         {
             "A": "NFCORE_PROTEINFOLD.PREPARE_BOLTZ_DBS.ARIA2_BOLTZ_CCD",
@@ -1348,7 +1348,7 @@
         },
         {
             "A": "NFCORE_PROTEINFOLD.PREPARE_BOLTZ_DBS.ARIA2_UNCOMPRESS.ARIA2",
-            "B": "NFCORE_PROTEINFOLD.PREPARE_BOLTZ_DBS.ARIA2_UNCOMPRESS.UNZIP"
+            "B": "NFCORE_PROTEINFOLD.PREPARE_BOLTZ_DBS.ARIA2_UNCOMPRESS.GUNZIP"
         },
         {
             "A": "NFCORE_PROTEINFOLD.PREPARE_BOLTZ_DBS.ARIA2_UNCOMPRESS.ARIA2",
@@ -1356,15 +1356,15 @@
         },
         {
             "A": "NFCORE_PROTEINFOLD.PREPARE_BOLTZ_DBS.ARIA2_UNCOMPRESS.ARIA2",
-            "B": "NFCORE_PROTEINFOLD.PREPARE_BOLTZ_DBS.ARIA2_UNCOMPRESS.UNTAR"
-        },
-        {
-            "A": "NFCORE_PROTEINFOLD.PREPARE_BOLTZ_DBS.ARIA2_UNCOMPRESS.ARIA2",
             "B": "NFCORE_PROTEINFOLD.PREPARE_BOLTZ_DBS.ARIA2_UNCOMPRESS.ZSTD_DECOMPRESS"
         },
         {
             "A": "NFCORE_PROTEINFOLD.PREPARE_BOLTZ_DBS.ARIA2_UNCOMPRESS.ARIA2",
-            "B": "NFCORE_PROTEINFOLD.PREPARE_BOLTZ_DBS.ARIA2_UNCOMPRESS.GUNZIP"
+            "B": "NFCORE_PROTEINFOLD.PREPARE_BOLTZ_DBS.ARIA2_UNCOMPRESS.UNTAR"
+        },
+        {
+            "A": "NFCORE_PROTEINFOLD.PREPARE_BOLTZ_DBS.ARIA2_UNCOMPRESS.ARIA2",
+            "B": "NFCORE_PROTEINFOLD.PREPARE_BOLTZ_DBS.ARIA2_UNCOMPRESS.UNZIP"
         },
         {
             "A": "NFCORE_PROTEINFOLD.BOLTZ.MULTIFASTA_TO_CSV",
@@ -1388,11 +1388,11 @@
         },
         {
             "A": "NFCORE_PROTEINFOLD.BOLTZ.RUN_BOLTZ",
-            "B": "NFCORE_PROTEINFOLD.POST_PROCESSING.MULTIQC"
+            "B": "NFCORE_PROTEINFOLD.POST_PROCESSING.FOLDSEEK_EASYSEARCH"
         },
         {
             "A": "NFCORE_PROTEINFOLD.BOLTZ.RUN_BOLTZ",
-            "B": "NFCORE_PROTEINFOLD.POST_PROCESSING.FOLDSEEK_EASYSEARCH"
+            "B": "NFCORE_PROTEINFOLD.POST_PROCESSING.MULTIQC"
         },
         {
             "A": "NFCORE_PROTEINFOLD.POST_PROCESSING.GENERATE_REPORT",
