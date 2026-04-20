@@ -142,6 +142,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[PR #538](https://github.com/nf-core/proteinfold/pulls/538)] - Bump version 2.0.0 for release preparation.
 - [[PR #563](https://github.com/nf-core/proteinfold/pulls/563)] - Fix boltz csv sync.
 - [[PR #570](https://github.com/nf-core/proteinfold/pulls/570)] - Update parameters table in changelog.
+- [[PR #588](https://github.com/nf-core/proteinfold/pulls/588)] - Add `--random_seed` for AF2, Boltz and ColabFold.
 
 ### Parameters
 
