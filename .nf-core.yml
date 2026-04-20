@@ -4,7 +4,7 @@ lint:
     - .github/CONTRIBUTING.md
   actions_schema_validation: false
   multiqc_config: false
-nf_core_version: 3.5.1
+nf_core_version: 3.5.2
 repository_type: pipeline
 template:
   author: Athanasios Baltzis, Jose Espinosa-Carrasco, Harshil Patel

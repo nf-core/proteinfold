@@ -160,6 +160,16 @@ Alternatively, the required data layout for each of the individual modes is desc
 
 > Omitting the `--db` flag will allow the pipeline to download the reference data required to execute the selected modes.
 
+## Random Seeds
+
+Currently, explicit seeding is supported for:
+
+- `alphafold2` via `--alphafold2_random_seed`
+- `boltz` via `--boltz_random_seed`
+- `colabfold` via `--colabfold_random_seed`
+
+The pipeline-wide `--random_seed` parameter can be used to set the same seed for `alphafold2`, `boltz`, and `colabfold` modes only. Mode-specific seed parameters override `--random_seed` when both are set.
+
 ## Foldseek structural similarity search
 
 The pipeline can run an optional Foldseek `easy-search` step on the top-ranked structure for each input/mode combination.
