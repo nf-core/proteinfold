@@ -94,7 +94,7 @@
                 },
                 "random_seed": {
                     "type": "integer",
-                    "description": "Global random seed for modules that natively support explicit seeding."
+                    "description": "Global random seed for modules that natively support explicit seeding: alphafold2, boltz, and colabfold."
                 },
                 "msa_server_url": {
                     "type": "string",
