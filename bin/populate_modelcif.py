@@ -1,14 +1,13 @@
 #!/usr/bin/env python3
 """
 Convert protein structure prediction outputs (PDB or mmCIF) to a
-modelCIF-compliant mmCIF file, annotating per-residue pLDDT quality
-scores from the *_plddt.tsv produced by extract_metrics.py.
+modelCIF-compliant mmCIF file. 
 
-Usage:
-    populate_modelcif.py \\
-        --struct ranked_*.pdb \\
-        --plddt ${meta.id}_plddt.tsv \\
-        --name ${meta.id} --prog ${meta.model} --versions_yml versions.yml
+With aim to be directly depositable in ModelArchive.
+
+Includes maximal metadata by default
+
+Can also create .bcif for space reasons
 """
 
 import argparse
@@ -16,7 +15,6 @@ import csv
 import os
 import sys
 import yaml
-import msgpack  # Required to make efficiently sized BinaryCIF output
 
 import modelcif
 import modelcif.model
@@ -76,7 +74,7 @@ def _parse_structure(struct_file):
     else:
         raise ValueError(
             f"Unsupported structure format: {ext} for file {struct_file}"
-            "Excpected .pdb, .cif, or .mmcif")
+            "Expected .pdb, .cif, or .mmcif")
     return parser.get_structure('model', struct_file)
 
 
