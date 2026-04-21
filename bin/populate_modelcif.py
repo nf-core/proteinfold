@@ -47,11 +47,17 @@ def parse_args(args=None):
     )
     parser.add_argument('--structs', required=True, nargs='+',
                         help='Input structure files (PDB or mmCIF), one per rank in rank order.')
+    parser.add_argument('--msa',     required=True, help='*_msa.tsv from extract_metrics.py.')
     parser.add_argument('--plddt',   required=True, help='*_plddt.tsv from extract_metrics.py.')
+    parser.add_argument('--pae',     required=True, help='*_pae.tsv from extract_metrics.py.')
+    parser.add_argument('--ptm',     required=True, help='*_ptm.tsv from extract_metrics.py.')
+    parser.add_argument('--iptm',    required=True, help='*_iptm.tsv from extract_metrics.py.')
     parser.add_argument('--name',    required=True)
     parser.add_argument('--prog',         required=True)
     parser.add_argument('--versions_yml', default=None, help='versions.yml emitted by the upstream run_* module.')
     parser.add_argument('--output',       default=None)
+    parser.add_argument('--write_binary', action='store_true',
+                        help='Write BinaryCIF (.bcif) output instead of text mmCIF. Requires the msgpack package.')
     return parser.parse_args(args)
 
 
@@ -299,13 +305,18 @@ def build_modelcif(struct_files, plddt_file, name, prog, sw_version=None):
 def main(args=None):
     args = parse_args(args)
 
-    output_file = args.output or f'{args.name}_{args.prog}.mmcif'
+    if args.write_binary:
+        output_file = args.output or f'{args.name}_{args.prog}.bcif'
+        open_mode, fmt = 'wb', 'BCIF'
+    else:
+        output_file = args.output or f'{args.name}_{args.prog}.mmcif'
+        open_mode, fmt = 'w', 'mmCIF'
 
     sw_version = _read_sw_version(args.versions_yml, args.prog)
-    system = build_modelcif(args.structs, args.plddt, args.name, args.prog, sw_version)  
+    system = build_modelcif(args.structs, args.plddt, args.name, args.prog, sw_version)
 
-    with open(output_file, 'w') as fh:
-        modelcif.dumper.write(fh, [system])
+    with open(output_file, open_mode) as fh:
+        modelcif.dumper.write(fh, [system], format=fmt)
 
     print(f'Written: {output_file}', file=sys.stderr)
 
