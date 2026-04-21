@@ -16,6 +16,7 @@ import csv
 import os
 import sys
 import yaml
+import msgpack  # Required to make efficiently sized BinaryCIF output
 
 import modelcif
 import modelcif.model
@@ -73,7 +74,9 @@ def _parse_structure(struct_file):
     elif ext == '.pdb':
         parser = PDB.PDBParser(QUIET=True)
     else:
-        raise ValueError(f'Unsupported structure format: {ext!r}')
+        raise ValueError(
+            f"Unsupported structure format: {ext} for file {struct_file}"
+            "Excpected .pdb, .cif, or .mmcif")
     return parser.get_structure('model', struct_file)
 
 
@@ -221,7 +224,7 @@ def build_modelcif(struct_files, plddt_file, name, prog, sw_version=None):
 
     if not asym_map:
         raise ValueError(
-            f'No standard polymer residues found in {struct_files[0]!r}. '
+            f'No standard polymer residues found in {struct_files[0]}. '
             'Cannot build modelCIF system.'
         )
 
