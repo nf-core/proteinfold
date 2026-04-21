@@ -170,6 +170,14 @@ Currently, explicit seeding is supported for:
 
 The pipeline-wide `--random_seed` parameter can be used to set the same seed for `alphafold2`, `boltz`, and `colabfold` modes only. Mode-specific seed parameters override `--random_seed` when both are set.
 
+If no seed is explicitly provided, each mode keeps its native default behaviour:
+
+- `alphafold2`: AlphaFold2 generates a random seed internally.
+- `boltz`: Boltz leaves the seed unset (`--seed` is not passed).
+- `colabfold`: ColabFold defaults to `--random-seed 0`.
+
+For reproducible results between runs, it is recommended to set an explicit seed.
+
 ## Foldseek structural similarity search
 
 The pipeline can run an optional Foldseek `easy-search` step on the top-ranked structure for each input/mode combination.
