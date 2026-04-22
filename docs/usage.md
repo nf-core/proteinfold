@@ -162,13 +162,7 @@ Alternatively, the required data layout for each of the individual modes is desc
 
 ## Random Seeds
 
-Currently, explicit seeding is supported for:
-
-- `alphafold2` via `--alphafold2_random_seed`
-- `boltz` via `--boltz_random_seed`
-- `colabfold` via `--colabfold_random_seed`
-
-The pipeline-wide `--random_seed` parameter can be used to set the same seed for `alphafold2`, `boltz`, and `colabfold` modes only. Mode-specific seed parameters override `--random_seed` when both are set.
+The pipeline-wide `--random_seed` parameter can be used to set the same seed for `alphafold2`, `boltz`, and `colabfold` modes only.
 
 If no seed is explicitly provided, each mode keeps its native default behaviour:
 

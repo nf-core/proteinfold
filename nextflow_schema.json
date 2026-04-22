@@ -138,10 +138,6 @@
                     "enum": ["monomer", "monomer_casp14", "monomer_ptm"],
                     "fa_icon": "fas fa-stream"
                 },
-                "alphafold2_random_seed": {
-                    "type": "integer",
-                    "description": "Random seed to control stochastic alphafold inference."
-                },
                 "alphafold2_params_prefix": {
                     "type": "string",
                     "default": "alphafold_params_2022-12-06",
@@ -189,10 +185,6 @@
                     "fa_icon": "fas fa-download",
                     "enum": [0, 1, 2, 3],
                     "errorMessage": "DB load mode must be 0, 1, 2, or 3"
-                },
-                "colabfold_random_seed": {
-                    "type": "integer",
-                    "description": "Random seed to control stochastic ColabFold inference."
                 },
                 "colabfold_use_templates": {
                     "type": "boolean",
@@ -257,10 +249,6 @@
             "fa_icon": "fas fa-database",
             "description": "Boltz options.",
             "properties": {
-                "boltz_random_seed": {
-                    "type": "integer",
-                    "description": "Random seed to control stochastic Boltz inference."
-                },
                 "boltz_use_potentials": {
                     "type": "boolean",
                     "description": "run Boltz-2 using inference time potentials"
