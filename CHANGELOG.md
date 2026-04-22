@@ -8,10 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Enhancements & fixes
 
 - [[PR ##573](https://github.com/nf-core/proteinfold/pull/573)] - Adds affiliations for UNSW Structural Biology Facility (SBF).
+- [[PR #588](https://github.com/nf-core/proteinfold/pulls/588)] - Add `--random_seed` for AF2, Boltz, and ColabFold, removing and replacing `--alphafold2_random_seed`.
 
-| Old parameter | New parameter |
-| ------------- | ------------- |
-|               |               |
+| Old parameter              | New parameter   |
+| -------------------------- | --------------- |
+| `--alphafold2_random_seed` | `--random_seed` |
 
 > **NB:** Parameter has been **updated** if both old and new parameter information is present.
 > **NB:** Parameter has been **added** if just the new parameter information is present.
@@ -142,7 +143,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[PR #538](https://github.com/nf-core/proteinfold/pulls/538)] - Bump version 2.0.0 for release preparation.
 - [[PR #563](https://github.com/nf-core/proteinfold/pulls/563)] - Fix boltz csv sync.
 - [[PR #570](https://github.com/nf-core/proteinfold/pulls/570)] - Update parameters table in changelog.
-- [[PR #588](https://github.com/nf-core/proteinfold/pulls/588)] - Add `--random_seed` for AF2, Boltz and ColabFold.
 
 ### Parameters
 
