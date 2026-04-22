@@ -94,6 +94,8 @@ ${colors.purple}  nf-core/proteinfold ${workflow.manifest.version}${colors.reset
         nextflow_cli_args
     )
 
+    validateInputParameters()
+
     //
     // Create channel from input file provided through input
     //
