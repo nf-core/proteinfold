@@ -189,8 +189,14 @@ workflow PIPELINE_COMPLETION {
 // Check and validate pipeline parameters
 //
 def validateInputParameters() {
-    if (params.mode.toLowerCase().split(",").contains("alphafold3")) {
+    def requestedModes = params.mode.toLowerCase().split(",")*.trim()
+
+    if (requestedModes.contains("alphafold3")) {
         alphafold3Warn(log)
+    }
+
+    if (params.random_seed != null) {
+        randomSeedModeWarn(log, requestedModes)
     }
 }
 
@@ -309,4 +315,16 @@ def alphafold3Warn(log) {
         "  Be aware that the predicted structures can not be used for commercial purposes.\n" +
         "  More information here: \"https://github.com/google-deepmind/alphafold3/blob/main/README.md#alphafold-3-source-code-and-model-parameters.\"\n" +
         "==================================================================================="
+}
+
+def randomSeedModeWarn(log, requestedModes) {
+    def supportedModes = ['alphafold2', 'boltz', 'colabfold'] as Set
+    def unsupportedModes = requestedModes.findAll { !supportedModes.contains(it) }.unique().sort()
+
+    if (!unsupportedModes.isEmpty()) {
+        log.warn "=============================================================================\n" +
+            "  The global --random_seed parameter only applies to alphafold2, boltz, and colabfold.\n" +
+            "  It will be ignored for the following selected mode(s): ${unsupportedModes.join(', ')}.\n" +
+            "==================================================================================="
+    }
 }
