@@ -8,7 +8,7 @@ process GENERATE_REPORT {
         'community.wave.seqera.io/library/biopython_matplotlib_pip_plotly:35975fa0fc54b2d3' }"
 
     input:
-    tuple val(meta), path(pdb), path(msa), path(pae)
+    tuple val(meta), path(pdb), path(msa), path(pae), path(iptm), path(chainwise_iptm)
     path(template)
 
     output:
@@ -28,6 +28,8 @@ process GENERATE_REPORT {
         --type ${meta.model} \\
         --msa ${msa} \\
         --pae ${pae} \\
+        --iptm ${iptm} \\
+        --chainwise_iptm ${chainwise_iptm} \\
         --pdb ${pdb.join(' ')} \\
         --html_template ${template} \\
         --output_dir ./ \\
