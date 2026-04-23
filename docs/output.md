@@ -103,13 +103,15 @@ This allows easy sequence indentity calculation when processing as a `numpy` arr
 
 ### chain-wise (i)pTM (`{meta.id}_chainwise_[i]ptm.tsv`)
 
-(Asymmetrical) ipTM scores, rounded to 4 decimal places, with chain pair lettering as the row (`X:Y`), and the rank number as the column. A pTM value is a chain's own predicted Template Modelling score so lettering will be `X:X`.
+Chain-wise iPTM values, rounded to 4 decimal places, with chain-pair lettering as the row (`X:Y`) and rank number as the column. Where available, self-scores are included as `X:X`.
 
 ```
 0	1	2
 A:B	0.2880	0.2750	0.2900
 B:A	0.2904	0.2801	0.2915
 ```
+
+In the HTML reports, chainwise iPTM and ipSAE are displayed as chain-by-chain matrices for each ranked model. Modes that do not emit these metrics omit the corresponding report sections.
 
 ### PAE (`{meta.id}_{rank_number}_pae.tsv`)
 

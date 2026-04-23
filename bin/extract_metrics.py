@@ -4,6 +4,9 @@ import pickle
 import os
 import argparse
 import json
+import subprocess
+import sys
+import tempfile
 #import torch moved to a conditional import since too bulky import if not used
 import numpy as np
 import csv
@@ -96,7 +99,7 @@ def format_iptm_rows(chain_pair_entries, chain_ids=None):
 
 def format_pair_score_rows(pair_score_entries, pair_labels=None):
     if pair_labels is None:
-        pair_labels = [label for label, _ in next(iter(pair_score_entries.values()))]
+        pair_labels = sorted({label for score_values in pair_score_entries.values() for label, _ in score_values})
 
     rows = [[""] + pair_labels]
     for model_idx, score_values in pair_score_entries.items():
@@ -125,258 +128,6 @@ def write_tsv(file_path, rows):
         writer.writerows(rows)
 
 
-def ptm_func(x, d0):
-    return 1.0 / (1.0 + (x / d0) ** 2.0)
-
-
-ptm_func_vec = np.vectorize(ptm_func)
-
-
-def calc_d0(length, pair_type='protein'):
-    length = float(length)
-    min_value = 2.0 if pair_type == 'nucleic_acid' else 1.0
-    if length > 27:
-        d0 = 1.24 * (length - 15) ** (1.0 / 3.0) - 1.8
-    else:
-        d0 = 1.0
-    return max(min_value, d0)
-
-
-def parse_pdb_atom_line(line):
-    residue_name = line[17:20].strip()
-    if residue_name == "LIG":
-        return None
-
-    return {
-        "atom_num": int(line[6:11].strip()),
-        "atom_name": line[12:16].strip(),
-        "residue_name": residue_name,
-        "chain_id": line[21].strip(),
-        "residue_seq_num": int(line[22:26].strip()),
-        "x": float(line[30:38].strip()),
-        "y": float(line[38:46].strip()),
-        "z": float(line[46:54].strip()),
-    }
-
-
-def parse_cif_atom_line(line, fielddict):
-    linelist = line.split()
-    residue_seq_num = linelist[fielddict['label_seq_id']]
-    if residue_seq_num == ".":
-        return None
-
-    chain_field = 'auth_asym_id' if 'auth_asym_id' in fielddict else 'label_asym_id'
-    return {
-        "atom_num": int(linelist[fielddict['id']]),
-        "atom_name": linelist[fielddict['label_atom_id']],
-        "residue_name": linelist[fielddict['label_comp_id']],
-        "chain_id": linelist[fielddict[chain_field]],
-        "residue_seq_num": int(residue_seq_num),
-        "x": float(linelist[fielddict['Cartn_x']]),
-        "y": float(linelist[fielddict['Cartn_y']]),
-        "z": float(linelist[fielddict['Cartn_z']]),
-    }
-
-
-def classify_chains(chains, residue_types):
-    nuc_residue_set = {"DA", "DC", "DT", "DG", "A", "C", "U", "G"}
-    chain_types = {}
-    _, first_idx = np.unique(chains, return_index=True)
-    unique_chains = chains[np.sort(first_idx)]
-
-    for chain in unique_chains:
-        indices = np.where(chains == chain)[0]
-        chain_residues = residue_types[indices]
-        nuc_count = sum(residue in nuc_residue_set for residue in chain_residues)
-        chain_types[chain] = 'nucleic_acid' if nuc_count > 0 else 'protein'
-
-    return chain_types
-
-
-def extract_structure_chain_arrays(struct_file):
-    residues = []
-    cb_residues = []
-    chains = []
-    atomsitefield_num = 0
-    atomsitefield_dict = {}
-
-    residue_set = {
-        "ALA", "ARG", "ASN", "ASP", "CYS", "GLN", "GLU", "GLY", "HIS", "ILE",
-        "LEU", "LYS", "MET", "PHE", "PRO", "SER", "THR", "TRP", "TYR", "VAL",
-        "DA", "DC", "DT", "DG", "A", "C", "U", "G"
-    }
-    cif = struct_file.endswith(".cif")
-
-    with open(struct_file, 'r') as handle:
-        for line in handle:
-            if line.startswith("_atom_site."):
-                line = line.strip()
-                _, fieldname = line.split(".")
-                atomsitefield_dict[fieldname] = atomsitefield_num
-                atomsitefield_num += 1
-                continue
-
-            if not (line.startswith("ATOM") or line.startswith("HETATM")):
-                continue
-
-            atom = parse_cif_atom_line(line, atomsitefield_dict) if cif else parse_pdb_atom_line(line)
-            if atom is None:
-                continue
-
-            if atom['atom_name'] == "CA" or "C1" in atom['atom_name']:
-                residues.append({
-                    "coor": np.array([atom['x'], atom['y'], atom['z']]),
-                    "res": atom['residue_name'],
-                    "chainid": atom['chain_id'],
-                    "resnum": atom['residue_seq_num'],
-                })
-                chains.append(atom['chain_id'])
-
-            if atom['atom_name'] == "CB" or "C3" in atom['atom_name'] or (
-                atom['residue_name'] == "GLY" and atom['atom_name'] == "CA"
-            ):
-                cb_residues.append({
-                    "coor": np.array([atom['x'], atom['y'], atom['z']]),
-                    "res": atom['residue_name'],
-                    "chainid": atom['chain_id'],
-                    "resnum": atom['residue_seq_num'],
-                })
-            elif atom['atom_name'] == "CA" and atom['residue_name'] not in residue_set:
-                cb_residues.append({
-                    "coor": np.array([atom['x'], atom['y'], atom['z']]),
-                    "res": atom['residue_name'],
-                    "chainid": atom['chain_id'],
-                    "resnum": atom['residue_seq_num'],
-                })
-
-    if not residues:
-        return None
-
-    coordinates = np.array([res['coor'] for res in cb_residues or residues])
-    chains = np.array(chains)
-    residue_types = np.array([res['res'] for res in residues])
-    _, first_idx = np.unique(chains, return_index=True)
-    unique_chains = chains[np.sort(first_idx)]
-    chain_dict = classify_chains(chains, residue_types)
-    chain_pair_type = {
-        chain1: {
-            chain2: (
-                'nucleic_acid'
-                if chain_dict[chain1] == 'nucleic_acid' or chain_dict[chain2] == 'nucleic_acid'
-                else 'protein'
-            )
-            for chain2 in unique_chains if chain1 != chain2
-        }
-        for chain1 in unique_chains
-    }
-    distances = np.sqrt(((coordinates[:, np.newaxis, :] - coordinates[np.newaxis, :, :]) ** 2).sum(axis=2))
-
-    return residues, chains, unique_chains, chain_pair_type, distances
-
-
-def calculate_ipsae_scores(pae_matrix, struct_file, pae_cutoff=10.0):
-    structure_data = extract_structure_chain_arrays(struct_file)
-    if structure_data is None:
-        return 0.0, {}
-
-    residues, chains, unique_chains, chain_pair_type, _ = structure_data
-    numres = len(residues)
-
-    if pae_matrix.shape[0] != numres or pae_matrix.shape[1] != numres:
-        raise ValueError(
-            f"PAE matrix shape {pae_matrix.shape} does not match residue count {numres} for {struct_file}"
-        )
-
-    ipsae_d0dom_asym = {
-        chain1: {chain2: 0.0 for chain2 in unique_chains if chain1 != chain2}
-        for chain1 in unique_chains
-    }
-    pair_scores = {}
-
-    for chain1 in unique_chains:
-        for chain2 in unique_chains:
-            if chain1 == chain2:
-                continue
-
-            valid_pairs_matrix = np.outer(chains == chain1, chains == chain2) & (pae_matrix < pae_cutoff)
-            residues_1 = np.sum(np.any(valid_pairs_matrix, axis=1))
-            residues_2 = np.sum(np.any(valid_pairs_matrix, axis=0))
-            n0dom = residues_1 + residues_2
-            d0dom = calc_d0(n0dom, chain_pair_type[chain1][chain2])
-            ptm_matrix_d0dom = ptm_func_vec(pae_matrix, d0dom)
-
-            max_score = 0.0
-            for i in range(numres):
-                if chains[i] != chain1:
-                    continue
-                valid_pairs = valid_pairs_matrix[i]
-                if valid_pairs.any():
-                    score = float(ptm_matrix_d0dom[i, valid_pairs].mean())
-                    if score > max_score:
-                        max_score = score
-            ipsae_d0dom_asym[chain1][chain2] = max_score
-
-    max_ipsae = 0.0
-    for i, chain1 in enumerate(unique_chains):
-        for chain2 in unique_chains[i + 1:]:
-            score = max(ipsae_d0dom_asym[chain1][chain2], ipsae_d0dom_asym[chain2][chain1])
-            pair_scores[f"{chain1}:{chain2}"] = score
-            max_ipsae = max(max_ipsae, score)
-
-    ordered_pair_scores = sorted(pair_scores.items(), key=lambda item: item[0])
-    return round(max_ipsae, 3), ordered_pair_scores
-
-
-def calculate_iptm_scores(pae_matrix, struct_file):
-    structure_data = extract_structure_chain_arrays(struct_file)
-    if structure_data is None:
-        return 0.0, []
-
-    residues, chains, unique_chains, chain_pair_type, _ = structure_data
-    numres = len(residues)
-
-    if pae_matrix.shape[0] != numres or pae_matrix.shape[1] != numres:
-        raise ValueError(
-            f"PAE matrix shape {pae_matrix.shape} does not match residue count {numres} for {struct_file}"
-        )
-
-    iptm_d0chn_asym = {
-        chain1: {chain2: 0.0 for chain2 in unique_chains if chain1 != chain2}
-        for chain1 in unique_chains
-    }
-    pair_scores = {}
-
-    for chain1 in unique_chains:
-        for chain2 in unique_chains:
-            if chain1 == chain2:
-                continue
-
-            n0chn = np.sum(chains == chain1) + np.sum(chains == chain2)
-            d0chn = calc_d0(n0chn, chain_pair_type[chain1][chain2])
-            ptm_matrix_d0chn = ptm_func_vec(pae_matrix, d0chn)
-
-            max_score = 0.0
-            valid_pairs = (chains == chain2)
-            for i in range(numres):
-                if chains[i] != chain1:
-                    continue
-                if valid_pairs.any():
-                    score = float(ptm_matrix_d0chn[i, valid_pairs].mean())
-                    if score > max_score:
-                        max_score = score
-            iptm_d0chn_asym[chain1][chain2] = max_score
-
-    max_iptm = 0.0
-    for i, chain1 in enumerate(unique_chains):
-        for chain2 in unique_chains[i + 1:]:
-            score = max(iptm_d0chn_asym[chain1][chain2], iptm_d0chn_asym[chain2][chain1])
-            pair_scores[f"{chain1}:{chain2}"] = score
-            max_iptm = max(max_iptm, score)
-
-    ordered_pair_scores = sorted(pair_scores.items(), key=lambda item: item[0])
-    return round(max_iptm, 3), ordered_pair_scores
-
-
 def resolve_struct_for_model(struct_map, model_id):
     if model_id in struct_map:
         return struct_map[model_id]
@@ -385,6 +136,86 @@ def resolve_struct_for_model(struct_map, model_id):
     except (TypeError, ValueError):
         return None
     return struct_map.get(numeric_model_id, struct_map.get(numeric_model_id - 1))
+
+
+def parse_ipsae_text_report(report_path):
+    pair_iptm_scores = []
+    pair_ipsae_scores = []
+    max_iptm = None
+    max_ipsae = None
+
+    with open(report_path) as handle:
+        for line in handle:
+            fields = line.split()
+            if len(fields) < 10 or fields[4] != "max":
+                continue
+
+            pair_label = f"{fields[0]}:{fields[1]}"
+            ipsae_score = float(fields[5])
+            iptm_score = float(fields[9])
+
+            pair_iptm_scores.append((pair_label, iptm_score))
+            pair_ipsae_scores.append((pair_label, ipsae_score))
+            max_iptm = iptm_score if max_iptm is None else max(max_iptm, iptm_score)
+            max_ipsae = ipsae_score if max_ipsae is None else max(max_ipsae, ipsae_score)
+
+    if max_iptm is None or max_ipsae is None:
+        return None
+
+    return round(max_iptm, 3), pair_iptm_scores, round(max_ipsae, 3), pair_ipsae_scores
+
+
+def derive_interface_scores(pae_matrix, struct_file, source_label):
+    try:
+        if len(get_chain_ids(struct_file)) < 2:
+            print(f"Skipping derived interface scores for {source_label}: fewer than 2 chains in {struct_file}")
+            return None
+    except Exception as e:
+        print(f"Skipping derived interface scores for {source_label}: failed to inspect chains in {struct_file}: {e}")
+        return None
+
+    try:
+        with tempfile.TemporaryDirectory(prefix="ipsae_") as temp_dir:
+            struct_basename = os.path.basename(struct_file)
+            staged_struct = os.path.join(temp_dir, struct_basename)
+            pae_json = os.path.join(temp_dir, "pae.json")
+
+            try:
+                os.symlink(os.path.abspath(struct_file), staged_struct)
+            except OSError:
+                with open(struct_file, "rb") as src, open(staged_struct, "wb") as dst:
+                    dst.write(src.read())
+
+            with open(pae_json, "w") as handle:
+                json.dump({"pae": np.asarray(pae_matrix).tolist()}, handle)
+
+            subprocess.run(
+                [
+                    sys.executable,
+                    os.path.join(os.path.dirname(__file__), "ipsae.py"),
+                    pae_json,
+                    staged_struct,
+                    "10",
+                    "15",
+                ],
+                check=True,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.PIPE,
+                text=True,
+            )
+
+            report_path = os.path.join(
+                temp_dir,
+                f"{os.path.splitext(struct_basename)[0]}_10_15.txt",
+            )
+            return parse_ipsae_text_report(report_path)
+    except subprocess.CalledProcessError as e:
+        stderr = e.stderr.strip() if e.stderr else "no stderr"
+        print(f"Skipping derived interface scores for {source_label}: ipsae.py failed for {struct_file}: {stderr}")
+        return None
+    except (OSError, ValueError, json.JSONDecodeError) as e:
+        print(f"Skipping derived interface scores for {source_label}: {e}")
+        return None
 
 def extract_structs_plddt_to_tsv(name, structures):
     """
@@ -451,19 +282,16 @@ def read_pkl(name, pkl_files, struct_files=None):
 
             struct_file = resolve_struct_for_model(struct_map, model_id)
             if 'predicted_aligned_error' in data.keys() and struct_file:
-                try:
-                    max_iptm, pair_iptm_scores = calculate_iptm_scores(np.array(data['predicted_aligned_error']), struct_file)
+                derived_scores = derive_interface_scores(np.array(data['predicted_aligned_error']), struct_file, pkl_file)
+                if derived_scores:
+                    max_iptm, pair_iptm_scores, max_ipsae, pair_scores = derived_scores
                     if pair_iptm_scores:
                         chainwise_iptm[model_id] = pair_iptm_scores
                     if model_id not in iptm_data and max_iptm > 0:
                         iptm_data[model_id] = f"{max_iptm:.3f}\n"
-                except ValueError as e:
-                    print(f"Skipping derived iPTM for {pkl_file}: {e}")
-
-                max_ipsae, pair_scores = calculate_ipsae_scores(np.array(data['predicted_aligned_error']), struct_file)
-                ipsae_data[model_id] = f"{max_ipsae:.3f}\n"
-                if pair_scores:
-                    chainwise_ipsae[model_id] = pair_scores
+                    ipsae_data[model_id] = f"{max_ipsae:.3f}\n"
+                    if pair_scores:
+                        chainwise_ipsae[model_id] = pair_scores
     if ptm_data:
         ptm_rows = sorted([[k, v.strip()] for k, v in ptm_data.items()], key=lambda x: x[0])
         write_tsv(f"{name}_ptm.tsv", ptm_rows)
@@ -541,13 +369,12 @@ def read_npz(name, npz_files, struct_files=None):
             write_tsv(f"{name}_{model_id}_pae.tsv", format_pae_rows(data["pae"]))
             struct_file = resolve_struct_for_model(struct_map, model_id)
             if struct_file:
-                try:
-                    max_ipsae, pair_scores = calculate_ipsae_scores(np.array(data["pae"]), struct_file)
+                derived_scores = derive_interface_scores(np.array(data["pae"]), struct_file, npz_file)
+                if derived_scores:
+                    _, _, max_ipsae, pair_scores = derived_scores
                     ipsae_rows.append((f"{model_id}", f"{max_ipsae:.3f}"))
                     if pair_scores:
                         chainwise_ipsae[int(model_id)] = pair_scores
-                except ValueError as e:
-                    print(f"Skipping ipSAE for {npz_file}: {e}")
    if len(ipsae_rows) > 0:
         write_tsv(f"{name}_ipsae.tsv", sorted(ipsae_rows, key=lambda x: int(x[0])))
    if len(chainwise_ipsae) > 0:
@@ -713,19 +540,16 @@ def read_json(name, json_files, struct_files=None):
 
             struct_file = resolve_struct_for_model(struct_map, model_id)
             if "pae" in data.keys() and struct_file:
-                try:
-                    max_iptm, pair_iptm_scores = calculate_iptm_scores(np.array(data['pae']), struct_file)
+                derived_scores = derive_interface_scores(np.array(data['pae']), struct_file, json_file)
+                if derived_scores:
+                    max_iptm, pair_iptm_scores, max_ipsae, pair_scores = derived_scores
                     if pair_iptm_scores and model_id not in chain_pair_entries:
                         chainwise_iptm[model_id] = pair_iptm_scores
                     if model_id not in iptm_data and max_iptm > 0:
                         iptm_data[model_id] = f"{max_iptm:.3f}\n"
-
-                    max_ipsae, pair_scores = calculate_ipsae_scores(np.array(data['pae']), struct_file)
                     ipsae_data[model_id] = f"{max_ipsae:.3f}\n"
                     if pair_scores:
                         chainwise_ipsae[model_id] = pair_scores
-                except ValueError as e:
-                    print(f"Skipping ipSAE for {json_file}: {e}")
 
             if 'chain_pair_iptm' not in data.keys() and 'pair_chains_iptm' not in data.keys():
                 print(f"No chain-wise iPTM output in {json_file}, it was likely a monomer calculation")
@@ -807,16 +631,16 @@ def read_colabfold_metrics(name, colabfold_metrics_fns, struct_files=None):
             iptm_rows.append((f"{rank_id}", data["iptm"]))
         struct_file = resolve_struct_for_model(struct_map, rank_id)
         if "pae" in data and struct_file:
-            max_iptm, pair_iptm_scores = calculate_iptm_scores(np.array(data['pae']), struct_file)
-            if pair_iptm_scores:
-                chainwise_iptm[rank_id] = pair_iptm_scores
-            if not any(row[0] == f"{rank_id}" for row in iptm_rows) and max_iptm > 0:
-                iptm_rows.append((f"{rank_id}", f"{max_iptm:.3f}"))
-
-            max_ipsae, pair_scores = calculate_ipsae_scores(np.array(data['pae']), struct_file)
-            ipsae_rows.append((f"{rank_id}", f"{max_ipsae:.3f}"))
-            if pair_scores:
-                chainwise_ipsae[rank_id] = pair_scores
+            derived_scores = derive_interface_scores(np.array(data['pae']), struct_file, fn)
+            if derived_scores:
+                max_iptm, pair_iptm_scores, max_ipsae, pair_scores = derived_scores
+                if pair_iptm_scores:
+                    chainwise_iptm[rank_id] = pair_iptm_scores
+                if not any(row[0] == f"{rank_id}" for row in iptm_rows) and max_iptm > 0:
+                    iptm_rows.append((f"{rank_id}", f"{max_iptm:.3f}"))
+                ipsae_rows.append((f"{rank_id}", f"{max_ipsae:.3f}"))
+                if pair_scores:
+                    chainwise_ipsae[rank_id] = pair_scores
     if len(ptm_rows)>0:
         write_tsv(f"{name}_ptm.tsv", sorted(ptm_rows, key = lambda x: x[0]))
     if len(iptm_rows)>0:

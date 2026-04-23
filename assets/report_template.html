@@ -314,11 +314,11 @@
             <div class="text-2xl font-bold tracking-tight text-gray-900">Interface Scores</div>
             <div class="mt-2 grid gap-6 xl:grid-cols-2">
               <div class="shadow-md p-6 bg-white rounded border">
-                <div class="font-semibold text-gray-900 mb-3">Chain-pair iPTM</div>
+                <div class="font-semibold text-gray-900 mb-3">Chainwise iPTM</div>
                 <div id="chainwise-iptm-table" class="text-sm"></div>
               </div>
               <div class="shadow-md p-6 bg-white rounded border">
-                <div class="font-semibold text-gray-900 mb-3">Chain-pair ipSAE</div>
+                <div class="font-semibold text-gray-900 mb-3">Chainwise ipSAE</div>
                 <div id="chainwise-ipsae-table" class="text-sm"></div>
               </div>
             </div>
@@ -774,9 +774,60 @@
       return true;
     };
 
+    const renderScoreMatrix = (containerId, matrix, emptyText) => {
+      const container = document.getElementById(containerId);
+      const chains = matrix?.chains || [];
+      const rows = matrix?.rows || [];
+
+      if (!chains.length || !rows.length) {
+        container.innerHTML = `<div class="text-gray-500">${emptyText}</div>`;
+        return false;
+      }
+
+      const headerCells = chains
+        .map(
+          (chain) => `
+            <th class="pb-2 px-3 text-center font-medium font-mono">${chain}</th>
+          `,
+        )
+        .join("");
+
+      const bodyRows = rows
+        .map(
+          (row, rowIdx) => `
+            <tr class="border-t border-gray-200">
+              <th class="py-2 pr-4 font-medium font-mono text-left">${chains[rowIdx]}</th>
+              ${row
+                .map((value, colIdx) => {
+                  const displayValue = value || (rowIdx === colIdx ? "&mdash;" : "");
+                  const textClass = value ? "text-gray-900 font-mono" : "text-gray-400";
+                  return `<td class="py-2 px-3 text-center ${textClass}">${displayValue}</td>`;
+                })
+                .join("")}
+            </tr>
+          `,
+        )
+        .join("");
+
+      container.innerHTML = `
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="text-gray-500">
+                <th class="pb-2 pr-4 text-left font-medium">Chain</th>
+                ${headerCells}
+              </tr>
+            </thead>
+            <tbody>${bodyRows}</tbody>
+          </table>
+        </div>
+      `;
+      return true;
+    };
+
     const updatePairScoreTables = (ix) => {
-      const hasIptm = renderPairScoreTable("chainwise-iptm-table", CHAINWISE_IPTM_SCORES[ix], "No chain-pair iPTM");
-      const hasIpsae = renderPairScoreTable("chainwise-ipsae-table", CHAINWISE_IPSAE_SCORES[ix], "No chain-pair ipSAE");
+      const hasIptm = renderScoreMatrix("chainwise-iptm-table", CHAINWISE_IPTM_SCORES[ix], "No chainwise iPTM");
+      const hasIpsae = renderScoreMatrix("chainwise-ipsae-table", CHAINWISE_IPSAE_SCORES[ix], "No chainwise ipSAE");
       document.getElementById("interface_scores_container").classList.toggle("hidden", !(hasIptm || hasIpsae));
     };
 
