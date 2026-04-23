@@ -35,6 +35,9 @@ process RUN_ALPHAFOLD2 {
     tuple val(meta), path ("${meta.id}_0_pae.tsv")          , optional: true, emit: pae
     tuple val(meta), path ("${meta.id}_ptm.tsv")            , optional: true, emit: ptms
     tuple val(meta), path ("${meta.id}_iptm.tsv")           , optional: true, emit: iptms
+    tuple val(meta), path ("${meta.id}_ipsae.tsv")          , optional: true, emit: ipsaes
+    tuple val(meta), path ("${meta.id}_chainwise_iptm.tsv"), optional: true, emit: chainwise_iptms
+    tuple val(meta), path ("${meta.id}_chainwise_ipsae.tsv"), optional: true, emit: chainwise_ipsaes
     path "versions.yml"                                     , emit: versions
 
     when:
@@ -79,6 +82,8 @@ process RUN_ALPHAFOLD2 {
         --pkls ${fasta.baseName}/features.pkl ${fasta.baseName}/*.pkl \\
         --structs ${fasta.baseName}/ranked*.pdb
 
+    touch "${meta.id}_iptm.tsv" "${meta.id}_ipsae.tsv" "${meta.id}_chainwise_iptm.tsv" "${meta.id}_chainwise_ipsae.tsv"
+
     mv "${meta.id}_msa.tsv" "${meta.id}_alphafold2_msa.tsv"
 
     # Can't use fasta.baseName to batch outputs in publishDir
@@ -103,6 +108,9 @@ process RUN_ALPHAFOLD2 {
     touch "${meta.id}_0_pae.tsv"
     touch "${meta.id}_ptm.tsv"
     touch "${meta.id}_iptm.tsv"
+    touch "${meta.id}_ipsae.tsv"
+    touch "${meta.id}_chainwise_iptm.tsv"
+    touch "${meta.id}_chainwise_ipsae.tsv"
     mkdir "raw"
     touch "raw/ranked_0.pdb"
     touch "raw/ranked_1.pdb"

@@ -34,7 +34,7 @@ User-facing outputs are largely consistent across modes.
 - `<MODE>/<SEQUENCE NAME>/<SEQUENCE NAME>_plddt.tsv`
 - `<MODE>/<SEQUENCE NAME>/paes/<SEQUENCE NAME>_<RANK>_pae.tsv` (when available)
 - `<MODE>/<SEQUENCE NAME>/<SEQUENCE NAME>_<MODE>_msa.tsv` (mode-specific MSA summary)
-- `<MODE>/<SEQUENCE NAME>/<SEQUENCE NAME>_{ptm,iptm}.tsv` and chainwise summaries (where applicable)
+- `<MODE>/<SEQUENCE NAME>/<SEQUENCE NAME>_{ptm,iptm,ipsae}.tsv` and chainwise summaries (where applicable)
 
 </details>
 

@@ -37,6 +37,9 @@ process RUN_HELIXFOLD3 {
     tuple val(meta), path ("${meta.id}_*_pae.tsv")          , emit: paes
     tuple val(meta), path ("${meta.id}_ptm.tsv")            , emit: ptms
     tuple val(meta), path ("${meta.id}_iptm.tsv")           , optional: true, emit: iptms
+    tuple val(meta), path ("${meta.id}_ipsae.tsv")          , optional: true, emit: ipsaes
+    tuple val(meta), path ("${meta.id}_chainwise_iptm.tsv"), optional: true, emit: chainwise_iptms
+    tuple val(meta), path ("${meta.id}_chainwise_ipsae.tsv"), optional: true, emit: chainwise_ipsaes
     path ("versions.yml")                                   , emit: versions
 
     when:
@@ -88,6 +91,8 @@ process RUN_HELIXFOLD3 {
         --pkls "${fasta.baseName}/final_features.pkl" \\
         --jsons ${fasta.baseName}/${fasta.baseName}-rank*/all_results.json
 
+    touch "${meta.id}_iptm.tsv" "${meta.id}_ipsae.tsv" "${meta.id}_chainwise_iptm.tsv" "${meta.id}_chainwise_ipsae.tsv"
+
     mkdir -p raw
     for i in 1 2 3 4 5; do
         cp "${fasta.baseName}/${fasta.baseName}-rank\$i/predicted_structure.pdb" "raw/ranked_\$i.pdb"
@@ -114,6 +119,9 @@ process RUN_HELIXFOLD3 {
     touch "${meta.id}_helixfold3_msa.tsv"
     touch "${meta.id}_ptm.tsv"
     touch "${meta.id}_iptm.tsv"
+    touch "${meta.id}_ipsae.tsv"
+    touch "${meta.id}_chainwise_iptm.tsv"
+    touch "${meta.id}_chainwise_ipsae.tsv"
     touch "${meta.id}_1_pae.tsv"
     touch "${meta.id}_2_pae.tsv"
     touch "${meta.id}_3_pae.tsv"

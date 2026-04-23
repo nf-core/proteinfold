@@ -177,6 +177,46 @@ workflow BOLTZ {
 
     RUN_BOLTZ
         .out
+        .iptm_raw
+        .map { it ->
+            def meta = it[0].clone();
+            meta.model = "boltz"
+            [ meta, it[1] ]
+        }
+        .set { ch_iptm }
+
+    RUN_BOLTZ
+        .out
+        .ipsae_raw
+        .map { it ->
+            def meta = it[0].clone();
+            meta.model = "boltz"
+            [ meta, it[1] ]
+        }
+        .set { ch_ipsae }
+
+    RUN_BOLTZ
+        .out
+        .chainwise_iptm_raw
+        .map { it ->
+            def meta = it[0].clone();
+            meta.model = "boltz"
+            [ meta, it[1] ]
+        }
+        .set { ch_chainwise_iptm }
+
+    RUN_BOLTZ
+        .out
+        .chainwise_ipsae_raw
+        .map { it ->
+            def meta = it[0].clone();
+            meta.model = "boltz"
+            [ meta, it[1] ]
+        }
+        .set { ch_chainwise_ipsae }
+
+    RUN_BOLTZ
+        .out
         .multiqc
         .map { it -> it[1] }
         .collect(sort: true)
@@ -194,4 +234,8 @@ workflow BOLTZ {
     top_ranked_pdb  = ch_top_ranked_pdb
     pdb             = ch_pdb
     pae             = ch_pae
+    iptm            = ch_iptm
+    ipsae           = ch_ipsae
+    chainwise_iptm  = ch_chainwise_iptm
+    chainwise_ipsae = ch_chainwise_ipsae
 }

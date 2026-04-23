@@ -113,12 +113,20 @@ workflow HELIXFOLD3 {
 
     modeChannel(RUN_HELIXFOLD3.out.msa, "helixfold3").set { ch_msa_final }
     modeChannel(RUN_HELIXFOLD3.out.pae, "helixfold3").set { ch_pae_final }
+    modeChannel(RUN_HELIXFOLD3.out.iptms, "helixfold3").set { ch_iptm_final }
+    modeChannel(RUN_HELIXFOLD3.out.ipsaes, "helixfold3").set { ch_ipsae_final }
+    modeChannel(RUN_HELIXFOLD3.out.chainwise_iptms, "helixfold3").set { ch_chainwise_iptm_final }
+    modeChannel(RUN_HELIXFOLD3.out.chainwise_ipsaes, "helixfold3").set { ch_chainwise_ipsae_final }
 
     emit:
     top_ranked_pdb = ch_top_ranked_pdb // channel: [ meta, /path/to/*.pdb ]
     pdb            = ch_pdb_final      // channel: [ id, /path/to/*.pdb ]
     msa            = ch_msa_final      // channel: [ id, /path/to/*_msa.tsv ]
     pae            = ch_pae_final      // channel: [ id, /path/to/*_pae.tsv ]
+    iptm           = ch_iptm_final     // channel: [ id, /path/to/*_iptm.tsv ]
+    ipsae          = ch_ipsae_final    // channel: [ id, /path/to/*_ipsae.tsv ]
+    chainwise_iptm = ch_chainwise_iptm_final // channel: [ id, /path/to/*_chainwise_iptm.tsv ]
+    chainwise_ipsae = ch_chainwise_ipsae_final // channel: [ id, /path/to/*_chainwise_ipsae.tsv ]
     multiqc_report = ch_multiqc_report // channel: /path/to/multiqc_report.html
     versions       = ch_versions       // channel: [ path(versions.yml) ]
 }

@@ -108,6 +108,10 @@ workflow COLABFOLD {
 
     modeChannel(COLABFOLD_BATCH.out.msa, "colabfold").set { ch_msa_final }
     modeChannel(COLABFOLD_BATCH.out.pae, "colabfold").set { ch_pae_final }
+    modeChannel(COLABFOLD_BATCH.out.iptms, "colabfold").set { ch_iptm_final }
+    modeChannel(COLABFOLD_BATCH.out.ipsaes, "colabfold").set { ch_ipsae_final }
+    modeChannel(COLABFOLD_BATCH.out.chainwise_iptms, "colabfold").set { ch_chainwise_iptm_final }
+    modeChannel(COLABFOLD_BATCH.out.chainwise_ipsaes, "colabfold").set { ch_chainwise_ipsae_final }
 
     COLABFOLD_BATCH
         .out
@@ -124,6 +128,10 @@ workflow COLABFOLD {
     pdb            = ch_pdb_final      // channel: [ id, /path/to/*.pdb ]
     msa            = ch_msa_final      // channel: [ meta, /path/to/*.pdb, /path/to/*_coverage.png ]
     pae            = ch_pae_final      // channel: [ id, /path/to/*_pae.tsv ]
+    iptm           = ch_iptm_final     // channel: [ id, /path/to/*_iptm.tsv ]
+    ipsae          = ch_ipsae_final    // channel: [ id, /path/to/*_ipsae.tsv ]
+    chainwise_iptm = ch_chainwise_iptm_final // channel: [ id, /path/to/*_chainwise_iptm.tsv ]
+    chainwise_ipsae = ch_chainwise_ipsae_final // channel: [ id, /path/to/*_chainwise_ipsae.tsv ]
     multiqc_report = ch_multiqc_report // channel: /path/to/multiqc_report.html
     versions       = ch_versions       // channel: [ path(versions.yml) ]
 }
