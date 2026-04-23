@@ -462,7 +462,9 @@ parser.add_argument("--msa", dest="msa", default="NO_FILE")
 parser.add_argument("--pdb", dest="pdb", required=True, nargs="+")
 parser.add_argument("--pae", dest="pae", default="NO_FILE")
 parser.add_argument("--iptm", dest="iptm", default="NO_FILE")
+parser.add_argument("--ipsae", dest="ipsae", default="NO_FILE")
 parser.add_argument("--chainwise_iptm", dest="chainwise_iptm", default="NO_FILE")
+parser.add_argument("--chainwise_ipsae", dest="chainwise_ipsae", default="NO_FILE")
 parser.add_argument("--name", dest="name")
 parser.add_argument("--output_dir", dest="output_dir")
 parser.add_argument("--html_template", dest="html_template")
@@ -482,7 +484,9 @@ print("generating html report...")
 structures = args.pdb
 structures.sort()
 iptm_scores = read_ranked_score_tsv(args.iptm, len(structures))
+ipsae_scores = read_ranked_score_tsv(args.ipsae, len(structures))
 chainwise_iptm_scores = read_pair_score_tsv(args.chainwise_iptm, len(structures))
+chainwise_ipsae_scores = read_pair_score_tsv(args.chainwise_ipsae, len(structures))
 aligned_structures = align_structures(structures)
 
 io = PDB.PDBIO()
@@ -515,9 +519,19 @@ proteinfold_template = proteinfold_template.replace(
     "const IPTM_SCORES = [];", iptm_js_array
 )
 
+ipsae_js_array = f"const IPSAE_SCORES = {ipsae_scores};"
+proteinfold_template = proteinfold_template.replace(
+    "const IPSAE_SCORES = [];", ipsae_js_array
+)
+
 chainwise_iptm_js_array = f"const CHAINWISE_IPTM_SCORES = {chainwise_iptm_scores};"
 proteinfold_template = proteinfold_template.replace(
     "const CHAINWISE_IPTM_SCORES = [];", chainwise_iptm_js_array
+)
+
+chainwise_ipsae_js_array = f"const CHAINWISE_IPSAE_SCORES = {chainwise_ipsae_scores};"
+proteinfold_template = proteinfold_template.replace(
+    "const CHAINWISE_IPSAE_SCORES = [];", chainwise_ipsae_js_array
 )
 
 i = 0

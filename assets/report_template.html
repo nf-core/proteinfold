@@ -304,6 +304,10 @@
                 iPTM:
                 <span id="iptm-score" class="font-normal"></span>
               </div>
+              <div id="ipsae-score-row">
+                Max ipSAE:
+                <span id="ipsae-score" class="font-normal"></span>
+              </div>
             </div>
           </div>
           <div id="interface_scores_container" class="hidden">
@@ -312,6 +316,10 @@
               <div class="shadow-md p-6 bg-white rounded border">
                 <div class="font-semibold text-gray-900 mb-3">Chain-pair iPTM</div>
                 <div id="chainwise-iptm-table" class="text-sm"></div>
+              </div>
+              <div class="shadow-md p-6 bg-white rounded border">
+                <div class="font-semibold text-gray-900 mb-3">Chain-pair ipSAE</div>
+                <div id="chainwise-ipsae-table" class="text-sm"></div>
               </div>
             </div>
           </div>
@@ -630,7 +638,9 @@
 
     const LDDT_AVERAGES = [];
     const IPTM_SCORES = [];
+    const IPSAE_SCORES = [];
     const CHAINWISE_IPTM_SCORES = [];
+    const CHAINWISE_IPSAE_SCORES = [];
 
     const REPRESENTATIONS = ["cartoon", "ball+stick", "surface", "backbone"];
 
@@ -709,10 +719,14 @@
 
     const updateInterfaceSummary = (ix) => {
       const iptmScore = IPTM_SCORES[ix];
+      const ipsaeScore = IPSAE_SCORES[ix];
       const hasIptm = hasScalarScore(iptmScore);
+      const hasIpsae = hasScalarScore(ipsaeScore);
 
       document.getElementById("iptm-score-row").classList.toggle("hidden", !hasIptm);
+      document.getElementById("ipsae-score-row").classList.toggle("hidden", !hasIpsae);
       document.getElementById("iptm-score").textContent = hasIptm ? iptmScore : "";
+      document.getElementById("ipsae-score").textContent = hasIpsae ? ipsaeScore : "";
     };
 
     const nextModel = () => {
@@ -762,7 +776,8 @@
 
     const updatePairScoreTables = (ix) => {
       const hasIptm = renderPairScoreTable("chainwise-iptm-table", CHAINWISE_IPTM_SCORES[ix], "No chain-pair iPTM");
-      document.getElementById("interface_scores_container").classList.toggle("hidden", !hasIptm);
+      const hasIpsae = renderPairScoreTable("chainwise-ipsae-table", CHAINWISE_IPSAE_SCORES[ix], "No chain-pair ipSAE");
+      document.getElementById("interface_scores_container").classList.toggle("hidden", !(hasIptm || hasIpsae));
     };
 
     const loadModel = () => {

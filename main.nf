@@ -147,7 +147,9 @@ workflow NFCORE_PROTEINFOLD {
                                 .join(ALPHAFOLD2.out.msa)
                                 .join(ALPHAFOLD2.out.pae)
                                 .join(ALPHAFOLD2.out.iptm)
+                                .join(ALPHAFOLD2.out.ipsae)
                                 .join(ALPHAFOLD2.out.chainwise_iptm)
+                                .join(ALPHAFOLD2.out.chainwise_ipsae)
                             )
 
         ch_top_ranked_model = ch_top_ranked_model.mix(ALPHAFOLD2.out.top_ranked_pdb)
@@ -224,7 +226,9 @@ workflow NFCORE_PROTEINFOLD {
                                 .join(ALPHAFOLD3.out.msa)
                                 .join(ALPHAFOLD3.out.pae)
                                 .join(ALPHAFOLD3.out.iptm)
+                                .join(ALPHAFOLD3.out.ipsae)
                                 .join(ALPHAFOLD3.out.chainwise_iptm)
+                                .join(ALPHAFOLD3.out.chainwise_ipsae)
                             )
         ch_top_ranked_model = ch_top_ranked_model.mix(ALPHAFOLD3.out.top_ranked_pdb)
     }
@@ -281,7 +285,9 @@ workflow NFCORE_PROTEINFOLD {
                                 .join(COLABFOLD.out.msa)
                                 .join(COLABFOLD.out.pae)
                                 .join(COLABFOLD.out.iptm)
+                                .join(COLABFOLD.out.ipsae)
                                 .join(COLABFOLD.out.chainwise_iptm)
+                                .join(COLABFOLD.out.chainwise_ipsae)
                             )
 
         ch_top_ranked_model = ch_top_ranked_model.mix(COLABFOLD.out.top_ranked_pdb)
@@ -320,6 +326,8 @@ workflow NFCORE_PROTEINFOLD {
             ESMFOLD.out.pdb
                 .combine(ch_dummy_file)
                 .combine(ch_dummy_file_pae)
+                .combine(ch_dummy_file)
+                .combine(ch_dummy_file)
                 .combine(ch_dummy_file)
                 .combine(ch_dummy_file)
         )
@@ -365,6 +373,8 @@ workflow NFCORE_PROTEINFOLD {
         ch_report_input                         = ch_report_input.mix(ROSETTAFOLD_ALL_ATOM.out.pdb
                                                                     .join(ROSETTAFOLD_ALL_ATOM.out.msa)
                                                                     .join(ROSETTAFOLD_ALL_ATOM.out.pae)
+                                                                    .combine(ch_dummy_file)
+                                                                    .combine(ch_dummy_file)
                                                                     .combine(ch_dummy_file)
                                                                     .combine(ch_dummy_file)
                                                                     )
@@ -451,7 +461,9 @@ workflow NFCORE_PROTEINFOLD {
                                 .join(HELIXFOLD3.out.msa)
                                 .join(HELIXFOLD3.out.pae)
                                 .join(HELIXFOLD3.out.iptm)
+                                .join(HELIXFOLD3.out.ipsae)
                                 .join(HELIXFOLD3.out.chainwise_iptm)
+                                .join(HELIXFOLD3.out.chainwise_ipsae)
                             )
         ch_top_ranked_model = ch_top_ranked_model.mix(HELIXFOLD3.out.top_ranked_pdb)
     }
@@ -505,6 +517,8 @@ workflow NFCORE_PROTEINFOLD {
                                                             .map { meta, pdb -> [ meta, [ pdb ] ] }
                                                             .join(ROSETTAFOLD2NA.out.msa)
                                                             .join(ROSETTAFOLD2NA.out.pae)
+                                                            .combine(ch_dummy_file)
+                                                            .combine(ch_dummy_file)
                                                             .combine(ch_dummy_file)
                                                             .combine(ch_dummy_file)
                                                     )
@@ -562,7 +576,9 @@ workflow NFCORE_PROTEINFOLD {
             .join(BOLTZ.out.msa)
             .join(BOLTZ.out.pae)
             .join(BOLTZ.out.iptm)
+            .join(BOLTZ.out.ipsae)
             .join(BOLTZ.out.chainwise_iptm)
+            .join(BOLTZ.out.chainwise_ipsae)
         )
         ch_top_ranked_model         = ch_top_ranked_model.mix(BOLTZ.out.top_ranked_pdb)
     }
