@@ -137,6 +137,11 @@ def _read_plddt_tsv(plddt_tsv):
 class _StructureModel(modelcif.model.AbInitioModel):
     """Wrap a BioPython structure as a modelCIF AbInitioModel."""
 
+    # While AlphaFold does use templates and MSAs for homology, the deep learning methods are a different approach and *can* be run template and MSA-free
+    # I think "ab initio" is still the best fit for the modelCIF class features, and wider support for various EvoFormer base models
+    # I was planning to capture MSA, DB, and template in the protocol steps --helped by nextflow-- rather than as an inseparable model attribute.
+    # See (to be implemented later) .protoctol.TemplateSearch() and .protocol.CoevolutionMSA() in the modelCIF spec
+
     def __init__(self, assembly, asym_map, biopython_structure, **kwargs):
         super().__init__(assembly=assembly, **kwargs)
         self._biopy_struct = biopython_structure
@@ -307,6 +312,7 @@ def main(args=None):
     args = parse_args(args)
 
     if args.write_binary:
+        import msgpack  # Only required when writing BinaryCIF; not a hard dependency otherwise. Should be environment.yml but being defensive 
         output_file = args.output or f'{args.name}_{args.prog}.bcif'
         open_mode, fmt = 'wb', 'BCIF'
     else:
