@@ -15,9 +15,6 @@
                     "colabfold_search": "unknown",
                     "mmseqs": null
                 },
-                "MULTIFASTA_TO_CSV": {
-                    "sed": 4.7
-                },
                 "Workflow": {
                     "nf-core/proteinfold": "v1.2.0dev"
                 }
@@ -39,8 +36,6 @@
                 "colabfold/top_ranked_structures",
                 "colabfold/top_ranked_structures/T1024.pdb",
                 "colabfold/top_ranked_structures/T1026.pdb",
-                "multifasta",
-                "multifasta/input.csv",
                 "multiqc",
                 "multiqc/multiqc_data",
                 "multiqc/multiqc_plots",
@@ -61,7 +56,6 @@
                 "T1026_0_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1024.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1026.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "input.csv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "test_alphafold2_report.html:md5,d41d8cd98f00b204e9800998ecf8427e"
             ]
         ],
