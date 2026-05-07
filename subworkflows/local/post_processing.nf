@@ -33,12 +33,13 @@ workflow POST_PROCESSING {
     ch_multiqc_rep
     ch_multiqc_config
     ch_multiqc_custom_config
-    ch_multiqc_logo
+    multiqc_logo
     ch_multiqc_methods_description
     ch_top_ranked_model
 
     main:
-    ch_comparison_report_files = channel.empty()
+    def ch_comparison_report_files = channel.empty()
+    def ch_multiqc_files = channel.empty()
 
     if (!skip_visualisation){
         GENERATE_REPORT(
@@ -63,7 +64,7 @@ workflow POST_PROCESSING {
                         .map { it ->  [it[0], it[1]] }
                         .join(GENERATE_REPORT.out.sequence_coverage)
 
-            not_esm.mix(esm).set{ch_comparison_report_files}
+            ch_comparison_report_files = not_esm.mix(esm)
 
             ch_comparison_report_files
                 .map { it ->
@@ -111,13 +112,13 @@ workflow POST_PROCESSING {
     //
     // Collate and save software versions
     //
-    softwareVersionsToYAML(ch_versions)
+    def ch_collated_versions = softwareVersionsToYAML(ch_versions)
         .collectFile(
             storeDir: "${outdir}/pipeline_info",
             name: 'nf_core_'  +  'proteinfold_software_'  + 'mqc_'  + 'versions.yml',
             sort: true,
             newLine: true
-        ).set { ch_collated_versions }
+        )
 
     //
     // MODULE: MultiQC
@@ -125,32 +126,28 @@ workflow POST_PROCESSING {
     ch_multiqc_report = channel.empty()
 
     if (!skip_multiqc) {
-        summary_params           = paramsSummaryMap(workflow, parameters_schema: "nextflow_schema.json")
-        ch_workflow_summary      = channel.value(paramsSummaryMultiqc(summary_params))
-        ch_methods_description   = channel.value(methodsDescriptionText(ch_multiqc_methods_description))
-
-        ch_multiqc_files = channel.empty()
-        ch_multiqc_files = ch_multiqc_files.mix(ch_workflow_summary.collectFile(name: 'workflow_summary_mqc.yaml'))
-        ch_multiqc_files = ch_multiqc_files.mix(ch_methods_description.collectFile(name: 'methods_description_mqc.yaml'))
-        ch_multiqc_files = ch_multiqc_files.mix(ch_collated_versions)
-
+        ch_summary_params      = paramsSummaryMap(workflow, parameters_schema: "nextflow_schema.json")
+        ch_workflow_summary    = channel.value(paramsSummaryMultiqc(ch_summary_params))
+        ch_multiqc_files       = ch_multiqc_files.mix(ch_workflow_summary.collectFile(name: 'workflow_summary_mqc.yaml'))
+        ch_methods_description = channel.value(methodsDescriptionText(ch_multiqc_methods_description))
+        ch_multiqc_files       = ch_multiqc_files.mix(ch_methods_description.collectFile(name: 'methods_description_mqc.yaml', sort: true))
+        ch_multiqc_files       = ch_multiqc_files.mix(ch_collated_versions)
+                      
         MULTIQC (
             ch_multiqc_rep
-                .combine(
-                    ch_multiqc_files
-                        .collect()
-                        .map { it -> [it] }
-                )
-                .map { it -> [ it[0], it[1] + it[2] ] },
-            ch_multiqc_config,
-            ch_multiqc_custom_config
-                .collect()
-                .ifEmpty([]),
-            ch_multiqc_logo
-                .collect()
-                .ifEmpty([]),
-            [],
-            []
+                .combine(ch_multiqc_files.collect())
+                .combine(ch_multiqc_config.collect().ifEmpty([]))
+                .combine(ch_multiqc_custom_config.collect().ifEmpty([])) 
+                .map { meta, rep_files, methods_file, workflow_file, versions_file, config_file ->
+                    [
+                        meta,
+                        rep_files + [methods_file, workflow_file, versions_file],  // All multiqc input files
+                        config_file,                      
+                        multiqc_logo ? file(multiqc_logo, checkIfExists: true) : [],
+                        [],                                 
+                        []                                  
+                    ]
+                }
         )
         ch_multiqc_report = MULTIQC.out.report.toList()
     }
