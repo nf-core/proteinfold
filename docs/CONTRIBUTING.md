@@ -6,7 +6,7 @@ Thanks for taking an interest in improving nf-core/proteinfold.
 This page describes the recommended nf-core way to contribute to both nf-core/proteinfold and nf-core pipelines in general, including:
 
 - [General contribution guidelines](#general-contribution-guidelines): common procedures or guides across all nf-core pipelines.
-- [Pipeline-specific contribution guidelines](#pipeline-specific-contribution-guidelines): procedures or guides specific to the development conventions of 
+- [Pipeline-specific contribution guidelines](#pipeline-specific-contribution-guidelines): procedures or guides specific to the development conventions of
 
 > [!NOTE]
 > If you need help using or modifying nf-core/proteinfold, ask on the nf-core Slack [#proteinfold](https://nfcore.slack.com/channels/proteinfold) channel ([join our Slack here](https://nf-co.re/join/slack)).

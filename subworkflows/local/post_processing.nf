@@ -132,20 +132,20 @@ workflow POST_PROCESSING {
         ch_methods_description = channel.value(methodsDescriptionText(ch_multiqc_methods_description))
         ch_multiqc_files       = ch_multiqc_files.mix(ch_methods_description.collectFile(name: 'methods_description_mqc.yaml', sort: true))
         ch_multiqc_files       = ch_multiqc_files.mix(ch_collated_versions)
-                      
+
         MULTIQC (
             ch_multiqc_rep
                 .combine(ch_multiqc_files.collect())
                 .combine(ch_multiqc_config.collect().ifEmpty([]))
-                .combine(ch_multiqc_custom_config.collect().ifEmpty([])) 
+                .combine(ch_multiqc_custom_config.collect().ifEmpty([]))
                 .map { meta, rep_files, methods_file, workflow_file, versions_file, config_file ->
                     [
                         meta,
                         rep_files + [methods_file, workflow_file, versions_file],  // All multiqc input files
-                        config_file,                      
+                        config_file,
                         multiqc_logo ? file(multiqc_logo, checkIfExists: true) : [],
-                        [],                                 
-                        []                                  
+                        [],
+                        []
                     ]
                 }
         )
