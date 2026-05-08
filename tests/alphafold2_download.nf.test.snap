@@ -75,7 +75,9 @@
                 "alphafold2/standard/top_ranked_structures/T1026.pdb",
                 "multiqc",
                 "multiqc/alphafold2_multiqc_data",
+                "multiqc/alphafold2_multiqc_data/.stub",
                 "multiqc/alphafold2_multiqc_plots",
+                "multiqc/alphafold2_multiqc_plots/.stub",
                 "multiqc/alphafold2_multiqc_report.html",
                 "pipeline_info",
                 "pipeline_info/nf_core_proteinfold_software_mqc_versions.yml",
@@ -115,6 +117,8 @@
                 "T1026_0_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1024.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1026.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
+                ".stub:md5,d41d8cd98f00b204e9800998ecf8427e",
+                ".stub:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "alphafold2_multiqc_report.html:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "test_alphafold2_report.html:md5,d41d8cd98f00b204e9800998ecf8427e"
             ]
@@ -123,6 +127,6 @@
             "nf-test": "0.9.3",
             "nextflow": "25.10.4"
         },
-        "timestamp": "2026-03-27T08:42:46.521360256"
+        "timestamp": "2026-05-07T14:48:24.552139791"
     }
 }

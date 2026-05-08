@@ -67,7 +67,9 @@
                 "mmcif2pdb/T1026_ranked_5.cif.pdb",
                 "multiqc",
                 "multiqc/multiqc_data",
+                "multiqc/multiqc_data/.stub",
                 "multiqc/multiqc_plots",
+                "multiqc/multiqc_plots/.stub",
                 "multiqc/multiqc_report.html",
                 "pipeline_info",
                 "pipeline_info/nf_core_proteinfold_software_mqc_versions.yml",
@@ -101,6 +103,8 @@
                 "T1026_ranked_3.cif.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1026_ranked_4.cif.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1026_ranked_5.cif.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
+                ".stub:md5,d41d8cd98f00b204e9800998ecf8427e",
+                ".stub:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "test_alphafold2_report.html:md5,d41d8cd98f00b204e9800998ecf8427e"
             ]
         ],
@@ -108,6 +112,6 @@
             "nf-test": "0.9.3",
             "nextflow": "25.10.4"
         },
-        "timestamp": "2026-03-27T08:49:12.687346079"
+        "timestamp": "2026-05-07T22:11:51.363645066"
     }
 }

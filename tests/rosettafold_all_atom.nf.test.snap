@@ -24,7 +24,9 @@
                 "fasta2yaml/out_fasta/B.fasta",
                 "multiqc",
                 "multiqc/multiqc_data",
+                "multiqc/multiqc_data/.stub",
                 "multiqc/multiqc_plots",
+                "multiqc/multiqc_plots/.stub",
                 "multiqc/multiqc_report.html",
                 "pipeline_info",
                 "pipeline_info/nf_core_proteinfold_software_mqc_versions.yml",
@@ -50,6 +52,8 @@
                 "T1026.yaml:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "A.fasta:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "B.fasta:md5,d41d8cd98f00b204e9800998ecf8427e",
+                ".stub:md5,d41d8cd98f00b204e9800998ecf8427e",
+                ".stub:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "test_alphafold2_report.html:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1024_plddt.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1024_rosettafold_all_atom_msa.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
@@ -65,6 +69,6 @@
             "nf-test": "0.9.3",
             "nextflow": "25.10.4"
         },
-        "timestamp": "2026-03-27T09:16:06.423724852"
+        "timestamp": "2026-05-07T17:26:21.935502056"
     }
 }
