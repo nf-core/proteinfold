@@ -23,17 +23,17 @@ process RUN_ALPHAFOLD2_PRED {
     path ('uniprot/*')
 
     output:
-    path ("raw/**")                                         , emit: raw
-    tuple val(meta), path ("${meta.id}_alphafold2.pdb")     , emit: top_ranked_pdb
-    tuple val(meta), path ("raw/ranked*.pdb")               , emit: pdb
-    tuple val(meta), path ("${meta.id}_alphafold2_msa.tsv") , emit: msa
-    tuple val(meta), path ("${meta.id}_plddt.tsv")          , emit: multiqc
+    path ("raw/**")                                        , emit: raw
+    tuple val(meta), path ("${meta.id}_alphafold2.pdb")    , emit: top_ranked_pdb
+    tuple val(meta), path ("raw/ranked*.pdb")              , emit: pdb
+    tuple val(meta), path ("${meta.id}_alphafold2_msa.tsv"), emit: msa
+    tuple val(meta), path ("${meta.id}_plddt_mqc.tsv")     , emit: multiqc
     //Note: alphafold2_model_preset == "monomer" the pae file won't exist.
-    tuple val(meta), path ("${meta.id}_*_pae.tsv")          , optional: true, emit: paes
-    tuple val(meta), path ("${meta.id}_0_pae.tsv")          , optional: true, emit: pae
-    tuple val(meta), path ("${meta.id}_ptm.tsv")            , optional: true, emit: ptms
-    tuple val(meta), path ("${meta.id}_iptm.tsv")           , optional: true, emit: iptms
-    path "versions.yml"                                     , emit: versions
+    tuple val(meta), path ("${meta.id}_*_pae.tsv")         , optional: true, emit: paes
+    tuple val(meta), path ("${meta.id}_0_pae.tsv")         , optional: true, emit: pae
+    tuple val(meta), path ("${meta.id}_ptm.tsv")           , optional: true, emit: ptms
+    tuple val(meta), path ("${meta.id}_iptm.tsv")          , optional: true, emit: iptms
+    path "versions.yml"                                    , emit: versions
 
     when:
     task.ext.when == null || task.ext.when
@@ -77,7 +77,7 @@ process RUN_ALPHAFOLD2_PRED {
     stub:
     """
     touch "${meta.id}_alphafold2.pdb"
-    touch "${meta.id}_plddt.tsv"
+    touch "${meta.id}_plddt_mqc.tsv"
     touch "${meta.id}_alphafold2_msa.tsv"
     touch "${meta.id}_0_pae.tsv"
     mkdir "raw/"
