@@ -13,7 +13,7 @@ process RUN_ESMFOLD {
     output:
     tuple val(meta), path ("${meta.id}_esmfold.pdb")  , emit: top_ranked_pdb
     tuple val(meta), path ("*.pdb")                   , emit: pdb
-    tuple val(meta), path ("${meta.id}_plddt.tsv")    , emit: multiqc
+    tuple val(meta), path ("${meta.id}_plddt_mqc.tsv"), emit: multiqc
     path "versions.yml"                               , emit: versions
 
     when:
@@ -56,7 +56,7 @@ process RUN_ESMFOLD {
     def VERSION = '1.0.3' // WARN: Version information not provided by tool on CLI. Please update this string when bumping container versions.
     """
     touch "${meta.id}_esmfold.pdb"
-    touch "${meta.id}_plddt.tsv"
+    touch "${meta.id}_plddt_mqc.tsv"
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

@@ -128,7 +128,7 @@ def extract_structs_plddt_to_tsv(name, structures):
     plddt_rows =  [["Positions"] + rank_names]
     res_id_col = list(range(len(plddt_cols[0])))
     plddt_rows.extend(zip(res_id_col, *plddt_cols))  # Combine lists column-wise to make rows
-    write_tsv(f"{name}_plddt.tsv", plddt_rows)
+    write_tsv(f"{name}_plddt_mqc.tsv", plddt_rows)
 
 def read_pkl(name, pkl_files):
     """
