@@ -26,12 +26,12 @@ process RUN_HELIXFOLD3 {
     path ('maxit_src')
 
     output:
-    path ("raw/**")                                         , emit: raw
-    tuple val(meta), path ("${meta.id}_helixfold3.pdb")     , emit: top_ranked_pdb
-    tuple val(meta), path ("${meta.id}_helixfold3.cif")     , emit: main_cif
-    tuple val(meta), path ("raw/ranked*.pdb")    , emit: pdb
-    tuple val(meta), path ("${meta.id}_plddt.tsv")          , emit: multiqc
-    tuple val(meta), path ("${meta.id}_helixfold3_msa.tsv") , emit: msa
+    path ("raw/**")                                        , emit: raw
+    tuple val(meta), path ("${meta.id}_helixfold3.pdb")    , emit: top_ranked_pdb
+    tuple val(meta), path ("${meta.id}_helixfold3.cif")    , emit: main_cif
+    tuple val(meta), path ("raw/ranked*.pdb")              , emit: pdb
+    tuple val(meta), path ("${meta.id}_plddt_mqc.tsv")     , emit: multiqc
+    tuple val(meta), path ("${meta.id}_helixfold3_msa.tsv"), emit: msa
     // If ${meta.id}-rank*/all_results.json" doesn't have PAE vales in the key, this will be empty
     tuple val(meta), path ("${meta.id}_1_pae.tsv")          , emit: pae
     tuple val(meta), path ("${meta.id}_*_pae.tsv")          , emit: paes
@@ -115,7 +115,7 @@ process RUN_HELIXFOLD3 {
     """
     touch "${meta.id}_helixfold3.cif"
     touch "${meta.id}_helixfold3.pdb"
-    touch "${meta.id}_plddt.tsv"
+    touch "${meta.id}_plddt_mqc.tsv"
     touch "${meta.id}_helixfold3_msa.tsv"
     touch "${meta.id}_ptm.tsv"
     touch "${meta.id}_iptm.tsv"
