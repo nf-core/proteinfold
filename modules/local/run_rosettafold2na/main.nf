@@ -17,13 +17,13 @@ process RUN_ROSETTAFOLD2NA {
     path ('network/weights/*')
 
     output:
-    path ("raw/**")                                            , emit: raw
-    tuple val(meta), path("${meta.id}_rosettafold2na.pdb")     , emit: top_ranked_pdb
-    tuple val(meta), path("raw/*.pdb")                         , emit: pdb
-    tuple val(meta), path("${meta.id}_plddt.tsv")              , emit: multiqc
-    tuple val(meta), path("${meta.id}_rosettafold2na_msa.tsv") , emit: msa
-    tuple val(meta), path("${meta.id}_0_pae.tsv")              , emit: pae
-    path "versions.yml"                                        , emit: versions
+    path ("raw/**")                                           , emit: raw
+    tuple val(meta), path("${meta.id}_rosettafold2na.pdb")    , emit: top_ranked_pdb
+    tuple val(meta), path("raw/*.pdb")                        , emit: pdb
+    tuple val(meta), path("${meta.id}_plddt_mqc.tsv")         , emit: multiqc
+    tuple val(meta), path("${meta.id}_rosettafold2na_msa.tsv"), emit: msa
+    tuple val(meta), path("${meta.id}_0_pae.tsv")             , emit: pae
+    path "versions.yml"                                       , emit: versions
 
     when:
     task.ext.when == null || task.ext.when
@@ -106,7 +106,7 @@ END_VERSIONS
     mkdir -p raw
     touch "${meta.id}_rosettafold2na.pdb"
     touch raw/model_00.pdb
-    touch "${meta.id}_plddt.tsv"
+    touch "${meta.id}_plddt_mqc.tsv"
     touch "${meta.id}_0_pae.tsv"
     touch "${meta.id}_rosettafold2na_msa.tsv"
 

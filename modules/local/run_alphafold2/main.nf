@@ -25,11 +25,11 @@ process RUN_ALPHAFOLD2 {
     path ('uniprot/*')
 
     output:
-    path ("raw/**")                                         , emit: raw
-    tuple val(meta), path ("${meta.id}_alphafold2.pdb")     , emit: top_ranked_pdb
-    tuple val(meta), path ("raw/ranked*.pdb")               , emit: pdb
-    tuple val(meta), path ("${meta.id}_plddt.tsv")          , emit: multiqc
-    tuple val(meta), path ("${meta.id}_alphafold2_msa.tsv") , emit: msa
+    path ("raw/**")                                        , emit: raw
+    tuple val(meta), path ("${meta.id}_alphafold2.pdb")    , emit: top_ranked_pdb
+    tuple val(meta), path ("raw/ranked*.pdb")              , emit: pdb
+    tuple val(meta), path ("${meta.id}_plddt_mqc.tsv")     , emit: multiqc
+    tuple val(meta), path ("${meta.id}_alphafold2_msa.tsv"), emit: msa
     // Note: alphafold2_model_preset == "monomer" the pae file won't exist, thus the optional
     tuple val(meta), path ("${meta.id}_*_pae.tsv")          , optional: true, emit: paes
     tuple val(meta), path ("${meta.id}_0_pae.tsv")          , optional: true, emit: pae
@@ -103,7 +103,7 @@ process RUN_ALPHAFOLD2 {
     stub:
     """
     touch "${meta.id}_alphafold2.pdb"
-    touch "${meta.id}_plddt.tsv"
+    touch "${meta.id}_plddt_mqc.tsv"
     touch "${meta.id}_alphafold2_msa.tsv"
     touch "${meta.id}_0_pae.tsv"
     touch "${meta.id}_ptm.tsv"
