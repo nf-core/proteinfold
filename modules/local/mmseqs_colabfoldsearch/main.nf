@@ -32,7 +32,7 @@ process MMSEQS_COLABFOLDSEARCH {
             echo "WARNING: skipping uniref30/\$(basename \$f) -- already present from colabfold_db" >&2
         fi
     done
-	
+
     colabfold_search \\
         $args \\
         --threads $task.cpus ${fasta} \\
