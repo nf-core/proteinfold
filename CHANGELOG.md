@@ -7,9 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Enhancements & fixes
 
-- [[PR ##573](https://github.com/nf-core/proteinfold/pull/573)] - Adds affiliations for UNSW Structural Biology Facility (SBF).
+- [[PR #573](https://github.com/nf-core/proteinfold/pull/573)] - Adds affiliations for UNSW Structural Biology Facility (SBF).
 - [[PR #588](https://github.com/nf-core/proteinfold/pulls/588)] - Add `--random_seed` for AF2, Boltz, and ColabFold, removing and replacing `--alphafold2_random_seed`.
+- [[PR #597](https://github.com/nf-core/proteinfold/pull/249)] - Update pipeline template to [nf-core/tools 4.0.2](https://github.com/nf-core/tools/releases/tag/4.0.2).
 - [[#598](https://github.com/nf-core/proteinfold/issues/598)] - Remove workflow JSON generation.
+- [[#600](https://github.com/nf-core/proteinfold/issues/600)] - Fix multiqc reports publication and centralize the config in `modules.config`.
 - [[#602](https://github.com/nf-core/proteinfold/issues/602)] - Fix file name collision when staging ColabFold databases to the same directory in `MMSEQS_COLABFOLDSEARCH`.
 
 | Old parameter              | New parameter   |
