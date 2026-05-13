@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[#600](https://github.com/nf-core/proteinfold/issues/600)] - Fix multiqc reports publication and centralize the config in `modules.config`.
 - [[#602](https://github.com/nf-core/proteinfold/issues/602)] - Fix file name collision when staging ColabFold databases to the same directory in `MMSEQS_COLABFOLDSEARCH`.
 - [[#603](https://github.com/nf-core/proteinfold/issues/603)] - Allow AlphaFold3 JSON files as direct samplesheet input, bypassing `FASTA_TO_ALPHAFOLD3_JSON`.
+- [[#607](https://github.com/nf-core/proteinfold/pull/607)] - Fix Nextflow 26.04.1 warnings when using glob patterns in `file()` and other small fixes.
 
 | Old parameter              | New parameter   |
 | -------------------------- | --------------- |
