@@ -355,15 +355,15 @@ def read_a3m(name, a3m_files):
     write_tsv(f"{name}_msa.tsv", format_msa_rows(final_rows))
 
 def read_npz(name, npz_files, struct_files=None):
-   ipsae_rows = []
-   chainwise_ipsae = {}
-   struct_map = {}
-   if struct_files:
+    ipsae_rows = []
+    chainwise_ipsae = {}
+    struct_map = {}
+    if struct_files:
         for idx, struct_file in enumerate(sorted(struct_files)):
             struct_map[idx] = struct_file
    for idx, npz_file in enumerate(npz_files):
         data = np.load(npz_file)
-       #Boltz PAE files if --write_full_pae is used
+        #Boltz PAE files if --write_full_pae is used
         if npz_file.split('/')[-1].startswith('pae') and npz_file.endswith('.npz'):
             model_id = os.path.basename(npz_file).split('_model_')[-1].split('.npz')[0]
             write_tsv(f"{name}_{model_id}_pae.tsv", format_pae_rows(data["pae"]))

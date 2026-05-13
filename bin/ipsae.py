@@ -1,3 +1,5 @@
+# Please keep this header intact if this file is redistributed
+#
 # ipsae.py
 # script for calculating the ipSAE score for scoring pairwise protein-protein interactions in AlphaFold2 and AlphaFold3 models
 # https://www.biorxiv.org/content/10.1101/2025.02.10.637595v2
