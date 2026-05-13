@@ -8,7 +8,7 @@ process MMSEQS_COLABFOLDSEARCH {
     input:
     tuple val(meta), path(fasta)
     path ('db/*')
-    path ('db/*')
+    path ('uniref30/*')
 
     output:
     tuple val(meta), path("**.a3m"), emit: a3m
@@ -25,6 +25,14 @@ process MMSEQS_COLABFOLDSEARCH {
     def args = task.ext.args ?: ''
 
     """
+    for f in uniref30/*; do
+        if [ ! -e "db/\$(basename \$f)" ]; then
+            ln -sf \$(realpath \$f) db/\$(basename \$f)
+        else
+            echo "WARNING: skipping uniref30/\$(basename \$f) -- already present from colabfold_db" >&2
+        fi
+    done
+
     colabfold_search \\
         $args \\
         --threads $task.cpus ${fasta} \\
