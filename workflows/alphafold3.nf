@@ -43,14 +43,22 @@ workflow ALPHAFOLD3 {
     ch_msa_final      = channel.empty()
     ch_multiqc_report = channel.empty()
 
-    FASTA_TO_ALPHAFOLD3_JSON(ch_samplesheet)
-    ch_versions       = ch_versions.mix(FASTA_TO_ALPHAFOLD3_JSON.out.versions)
+    ch_samplesheet
+        .branch { it ->
+            fasta: it[1].extension == "fasta" || it[1].extension == "fa"
+            json: it[1].extension == "json"
+    }.set { ch_input_by_ext }
+
+    FASTA_TO_ALPHAFOLD3_JSON(ch_input_by_ext.fasta)
+    ch_versions = ch_versions.mix(FASTA_TO_ALPHAFOLD3_JSON.out.versions)
+
+    ch_json = ch_input_by_ext.json.mix(FASTA_TO_ALPHAFOLD3_JSON.out.json)
 
     //
     // SUBWORKFLOW: Run AlphaFold3
     //
     RUN_ALPHAFOLD3 (
-        FASTA_TO_ALPHAFOLD3_JSON.out.json,
+        ch_json,
         ch_alphafold3_params,
         ch_small_bfd,
         ch_mgnify,

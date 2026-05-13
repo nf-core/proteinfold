@@ -7,8 +7,6 @@ process COLABFOLD_BATCH {
 
     input:
     tuple val(meta), path(fasta), path('params/*')
-    path  ('colabfold_db/*')
-    path  ('uniref30/*')
     val   numRec
 
     output:
