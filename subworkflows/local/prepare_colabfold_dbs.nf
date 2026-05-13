@@ -68,14 +68,14 @@ workflow PREPARE_COLABFOLD_DBS {
                                     .out
                                     .db_indexed
                                     .map { _meta, dir ->
-                                        file("${dir}/*")
+                                        files("${dir}/*")
                                     }
                 ch_versions = ch_versions.mix(MMSEQS_CREATEINDEX_COLABFOLDDB.out.versions)
 
             } else {
                 ch_colabfold_db = ch_colabfold_db
                                     .map { dir_path ->
-                                        file("${dir_path}/*")
+                                        files("${dir_path}/*")
                                     }
             }
 
@@ -98,14 +98,14 @@ workflow PREPARE_COLABFOLD_DBS {
                                 .out
                                 .db_indexed
                                 .map { _meta, dir ->
-                                    file("${dir}/*")
+                                    files("${dir}/*")
                                 }
                 ch_versions = ch_versions.mix(MMSEQS_CREATEINDEX_UNIPROT30.out.versions)
 
             } else {
                 ch_uniref30 = ch_uniref30
                                 .map { dir_path ->
-                                    file("${dir_path}/*")
+                                    files("${dir_path}/*")
                                 }
             }
         }
