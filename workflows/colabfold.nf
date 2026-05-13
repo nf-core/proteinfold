@@ -51,8 +51,6 @@ workflow COLABFOLD {
         COLABFOLD_BATCH(
             MULTIFASTA_TO_CSV.out.input_csv
                 .combine(ch_colabfold_params),
-            [],
-            [],
             num_recycles
         )
         ch_versions = ch_versions.mix(COLABFOLD_BATCH.out.versions)
@@ -78,8 +76,6 @@ workflow COLABFOLD {
         COLABFOLD_BATCH(
             MMSEQS_COLABFOLDSEARCH.out.a3m
                 .combine(ch_colabfold_params),
-            ch_colabfold_db,
-            ch_uniref30,
             num_recycles
         )
         ch_versions    = ch_versions.mix(COLABFOLD_BATCH.out.versions)
