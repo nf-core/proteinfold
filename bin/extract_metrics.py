@@ -104,7 +104,7 @@ def format_pair_score_rows(pair_score_entries, pair_labels=None):
     rows = [[""] + pair_labels]
     for model_idx, score_values in pair_score_entries.items():
         score_map = {label: value for label, value in score_values}
-        rows.append([model_idx] + [f"{score_map[label]:.4f}" if label in score_map else "" for label in pair_labels])
+        rows.append([model_idx] + [f"{score_map[label]:.4f}" if label in score_map else "n/a" for label in pair_labels])
 
     return [list(row) for row in zip(*rows)]
 
@@ -232,7 +232,7 @@ def extract_structs_plddt_to_tsv(name, structures):
     # Create header as the first row
     plddt_rows =  [["Positions"] + rank_names]
     res_id_col = list(range(len(plddt_cols[0])))
-    plddt_rows.extend(zip(res_id_col, *plddt_cols))  # Combine lists column-wise to make rows
+    plddt_rows.extend([list(row) for row in zip(res_id_col, *plddt_cols)])  # Combine lists column-wise to make rows
     write_tsv(f"{name}_plddt_mqc.tsv", plddt_rows)
 
 def read_pkl(name, pkl_files, struct_files=None):
@@ -258,7 +258,7 @@ def read_pkl(name, pkl_files, struct_files=None):
         elif pkl_file.endswith("features.pkl"): # AlphaFold2.3
             try:
                 N = data["num_alignments"][0] #monomer
-            except:
+            except (IndexError, KeyError, TypeError):
                 N = data["num_alignments"] #multimer
             write_tsv(f"{name}_msa.tsv", format_msa_rows(data["msa"][:N]))
         else:
@@ -382,7 +382,8 @@ def read_npz(name, npz_files, struct_files=None):
 
 # Boltz MSA processing
 def read_csv(name, csv_files):
-    if not os.path.isfile(csv_files[0]): return #TODO: Fix temporary workaround
+    if not os.path.isfile(csv_files[0]):
+        return  # TODO: Fix temporary workaround
     msa_rows = {}
     unpaired_msa_rows = {}
     for csv_file in sorted(csv_files, key=lambda x: int(x.split('_')[-1].split('.csv')[0])):
@@ -621,8 +622,6 @@ def read_colabfold_metrics(name, colabfold_metrics_fns, struct_files=None):
         with open(fn) as f:
             data = json.load(f)
         rank_id = int(fn.split("rank_")[1].split("_")[0])-1
-        model_id = int(fn.split("model_")[1].split("_")[0])
-        seed_id = int(fn.split("seed_")[1].split(".")[0])
         if "pae" in data:
             write_tsv(f"{name}_{rank_id}_pae.tsv", format_pae_rows(data["pae"]))
         if "ptm" in data:
