@@ -25,7 +25,7 @@ include { MMCIF2PDB as MMCIF2PDB_MODELS           } from '../modules/local/mmcif
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-workflow ALPHAFOLD3_SPLIT {
+workflow ALPHAFOLD3 {
 
     take:
     ch_samplesheet       // channel: samplesheet read in from --input

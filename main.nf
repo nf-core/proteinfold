@@ -28,7 +28,7 @@ include { PREPARE_COLABFOLD_DBS  as PREPARE_COLABFOLD_DBS_BOLTZ     } from './su
 
 include { ALPHAFOLD2                       } from './workflows/alphafold2'
 // include { ALPHAFOLD3                       } from './workflows/alphafold3'
-include { ALPHAFOLD3.                      } from './workflows/alphafold3'
+include { ALPHAFOLD3                       } from './workflows/alphafold3'
 include { COLABFOLD                        } from './workflows/colabfold'
 include { ESMFOLD                          } from './workflows/esmfold'
 include { ROSETTAFOLD_ALL_ATOM             } from './workflows/rosettafold_all_atom'
@@ -267,9 +267,9 @@ workflow NFCORE_PROTEINFOLD {
         ch_versions = ch_versions.mix(PREPARE_ALPHAFOLD3_DBS.out.versions)
 
         //
-        // WORKFLOW: Run nf-core/alphafold3_split workflow
+        // WORKFLOW: Run nf-core/alphafold3 workflow
         //
-        ALPHAFOLD3_SPLIT (
+        ALPHAFOLD3 (
             ch_samplesheet,
             ch_versions,
             PREPARE_ALPHAFOLD3_DBS.out.params,
@@ -281,11 +281,11 @@ workflow NFCORE_PROTEINFOLD {
             PREPARE_ALPHAFOLD3_DBS.out.uniprot
         )
 
-        ch_multiqc      = ch_multiqc.mix(ALPHAFOLD3_SPLIT.out.multiqc_report)
-        ch_versions     = ch_versions.mix(ALPHAFOLD3_SPLIT.out.versions)
+        ch_multiqc      = ch_multiqc.mix(ALPHAFOLD3.out.multiqc_report)
+        ch_versions     = ch_versions.mix(ALPHAFOLD3.out.versions)
         ch_report_input = ch_report_input
                             .mix(
-                                ALPHAFOLD3_SPLIT
+                                ALPHAFOLD3  
                                     .out
                                     .pdb
                                     .map { it ->
@@ -302,14 +302,14 @@ workflow NFCORE_PROTEINFOLD {
                                             }.subList(0, Math.min(5, it[1].size() as int))
                                         ]
                                     }
-                                .join(ALPHAFOLD3_SPLIT.out.msa)
-                                .join(ALPHAFOLD3_SPLIT.out.pae)
-                                .join(ALPHAFOLD3_SPLIT.out.iptm)
-                                .join(ALPHAFOLD3_SPLIT.out.ipsae)
-                                .join(ALPHAFOLD3_SPLIT.out.chainwise_iptm)
-                                .join(ALPHAFOLD3_SPLIT.out.chainwise_ipsae)
+                                .join(ALPHAFOLD3.out.msa)
+                                .join(ALPHAFOLD3.out.pae)
+                                .join(ALPHAFOLD3.out.iptm)
+                                .join(ALPHAFOLD3.out.ipsae)
+                                .join(ALPHAFOLD3.out.chainwise_iptm)
+                                .join(ALPHAFOLD3.out.chainwise_ipsae)
                             )
-        ch_top_ranked_model = ch_top_ranked_model.mix(ALPHAFOLD3_SPLIT.out.top_ranked_pdb)
+        ch_top_ranked_model = ch_top_ranked_model.mix(ALPHAFOLD3.out.top_ranked_pdb)
     }
 
     //
