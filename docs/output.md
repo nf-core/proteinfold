@@ -34,7 +34,7 @@ User-facing outputs are largely consistent across modes.
 - `<MODE>/<SEQUENCE NAME>/<SEQUENCE NAME>_plddt.tsv`
 - `<MODE>/<SEQUENCE NAME>/paes/<SEQUENCE NAME>_<RANK>_pae.tsv` (when available)
 - `<MODE>/<SEQUENCE NAME>/<SEQUENCE NAME>_<MODE>_msa.tsv` (mode-specific MSA summary)
-- `<MODE>/<SEQUENCE NAME>/<SEQUENCE NAME>_{ptm,iptm}.tsv` and chainwise summaries (where applicable)
+- `<MODE>/<SEQUENCE NAME>/<SEQUENCE NAME>_{ptm,iptm,ipsae}.tsv` and chainwise summaries (where applicable)
 
 </details>
 
@@ -103,13 +103,21 @@ This allows easy sequence indentity calculation when processing as a `numpy` arr
 
 ### chain-wise (i)pTM (`{meta.id}_chainwise_[i]ptm.tsv`)
 
-(Asymmetrical) ipTM scores, rounded to 4 decimal places, with chain pair lettering as the row (`X:Y`), and the rank number as the column. A pTM value is a chain's own predicted Template Modelling score so lettering will be `X:X`.
+Chain-wise iPTM values, rounded to 4 decimal places, with chain-pair lettering as the row (`X:Y`) and rank number as the column. Where available, self-scores are included as `X:X`.
 
 ```
 0	1	2
 A:B	0.2880	0.2750	0.2900
 B:A	0.2904	0.2801	0.2915
 ```
+
+In the HTML reports, chainwise iPTM and ipSAE are displayed as chain-by-chain matrices for each ranked model. Modes that do not emit these metrics omit the corresponding report sections.
+
+**IpTM Derivation and Attribution**
+
+- **Derived vs native values:** iPTM values may come either from the prediction program itself (when the program emits an `iptm` or chain-pair matrix) or be derived after-the-fact by running the `ipsae.py` utility included in this pipeline. Derived values are generated from the model's PAE/PAE-like output and are not guaranteed to be numerically identical to program-native iPTM values; they follow the ipSAE/ipTM algorithm used by the IPSAE project and are intended to provide a consistent interface-derived score when a native value is not available.
+- **Default cutoffs used when deriving:** when `extract_metrics.py` derives iPTM/ipSAE it invokes `ipsae.py` with a PAE cutoff of `10` and a distance cutoff of `15` (these are currently hard-coded in the extraction step). If you require different thresholds, compute iPTM/ipSAE externally or update the extraction call accordingly.
+- **Third-party attribution:** the `ipsae.py` utility bundled in `bin/` is derived from the IPSAE project by the Dunbrack Lab (https://github.com/DunbrackLab/IPSAE/). The original script includes an MIT-style header; keep that header intact if the file is redistributed. Please consult the IPSAE repository for full details and citation information.
 
 ### PAE (`{meta.id}_{rank_number}_pae.tsv`)
 

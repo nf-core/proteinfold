@@ -2,6 +2,8 @@
 
 import os
 import argparse
+import csv
+import json
 from matplotlib import pyplot as plt
 import numpy as np
 from collections import OrderedDict
@@ -9,6 +11,14 @@ import base64
 import plotly.graph_objects as go
 import re
 from Bio import PDB
+
+def is_missing_input(path, placeholder_prefix="NO_FILE"):
+    return (
+        not path
+        or os.path.basename(path).startswith(placeholder_prefix)
+        or not os.path.exists(path)
+        or os.path.getsize(path) == 0
+    )
 
 def generate_pae_plot(pae_path, out_dir, name, save_image=False):
     #save_image=False because plotly needs a local install of Google Chrome to save images.....
@@ -47,7 +57,7 @@ def generate_pae_plot(pae_path, out_dir, name, save_image=False):
 
 def generate_output_images(msa_path, plddt_data, name, out_dir, in_type, generate_tsv, pdb):
     msa = []
-    if not msa_path.endswith("NO_FILE"):
+    if not is_missing_input(msa_path):
         with open(msa_path, "r") as in_file:
             for line in in_file:
                 msa.append([int(x) for x in line.strip().split()])
@@ -181,7 +191,7 @@ def generate_output_images(msa_path, plddt_data, name, out_dir, in_type, generat
     ) as out_file:
         out_file.write(html_content)
 
-    if args.pae and not args.pae.endswith('NO_FILE_PAE'):
+    if not is_missing_input(args.pae, "NO_FILE_PAE"):
         pae_fig = generate_pae_plot(args.pae, out_dir, name)
         pae_html_content = pae_fig.to_html(
             full_html=False,
@@ -368,6 +378,104 @@ def pdb_to_lddt(struct_files, generate_tsv):
     return output_lddt, averages
 
 
+def read_ranked_score_tsv(tsv_path, model_count):
+    scores = ["n/a"] * model_count
+    if is_missing_input(tsv_path):
+        return scores
+
+    rows = []
+    with open(tsv_path, "r") as handle:
+        reader = csv.reader(handle, delimiter="\t")
+        for row in reader:
+            if len(row) < 2:
+                continue
+            try:
+                rank = int(row[0])
+                score = float(row[1])
+            except ValueError:
+                continue
+            rows.append((rank, f"{score:.3f}"))
+
+    parsed_ranks = [rank for rank, _ in rows]
+    rank_offset = 1 if parsed_ranks and 0 not in parsed_ranks and 1 in parsed_ranks else 0
+    for rank, score in sorted(rows, key=lambda item: item[0]):
+        rank -= rank_offset
+        if 0 <= rank < model_count:
+            scores[rank] = score
+
+    return scores
+
+
+def read_pair_score_tsv(tsv_path, model_count):
+    scores = [{} for _ in range(model_count)]
+    if is_missing_input(tsv_path):
+        return scores
+
+    with open(tsv_path, "r") as handle:
+        reader = list(csv.reader(handle, delimiter="\t"))
+
+    if not reader or len(reader[0]) < 2:
+        return scores
+
+    parsed_headers = []
+    rank_headers = []
+    for header in reader[0][1:]:
+        try:
+            parsed_rank = int(header)
+            parsed_headers.append(parsed_rank)
+            rank_headers.append(parsed_rank)
+        except ValueError:
+            rank_headers.append(None)
+
+    rank_offset = 1 if parsed_headers and 0 not in parsed_headers and 1 in parsed_headers else 0
+
+    for row in reader[1:]:
+        if len(row) < 2:
+            continue
+        pair_label = row[0]
+        for col_idx, value in enumerate(row[1:]):
+            rank = rank_headers[col_idx] if col_idx < len(rank_headers) else None
+            if rank is None:
+                continue
+            rank -= rank_offset
+            if not (0 <= rank < model_count):
+                continue
+            try:
+                scores[rank][pair_label] = f"{float(value):.4f}"
+            except ValueError:
+                continue
+
+    return scores
+
+
+def build_pair_score_matrices(score_maps):
+    matrices = []
+
+    for score_map in score_maps:
+        if not score_map:
+            matrices.append({"chains": [], "rows": []})
+            continue
+
+        chain_ids = sorted(
+            {
+                chain_id
+                for pair_label in score_map.keys()
+                for chain_id in pair_label.split(":")
+                if ":" in pair_label
+            }
+        )
+        rows = []
+        for row_chain in chain_ids:
+            row = []
+            for col_chain in chain_ids:
+                row.append(score_map.get(f"{row_chain}:{col_chain}", ""))
+            rows.append(row)
+
+        matrices.append({"chains": chain_ids, "rows": rows})
+
+    return matrices
+
+
 print("Starting...")
 
 version = "1.0.0"
@@ -390,6 +498,10 @@ parser.add_argument(
 parser.add_argument("--msa", dest="msa", default="NO_FILE")
 parser.add_argument("--pdb", dest="pdb", required=True, nargs="+")
 parser.add_argument("--pae", dest="pae", default="NO_FILE")
+parser.add_argument("--iptm", dest="iptm", default="NO_FILE")
+parser.add_argument("--ipsae", dest="ipsae", default="NO_FILE")
+parser.add_argument("--chainwise_iptm", dest="chainwise_iptm", default="NO_FILE")
+parser.add_argument("--chainwise_ipsae", dest="chainwise_ipsae", default="NO_FILE")
 parser.add_argument("--name", dest="name")
 parser.add_argument("--output_dir", dest="output_dir")
 parser.add_argument("--html_template", dest="html_template")
@@ -408,6 +520,12 @@ generate_output_images(
 print("generating html report...")
 structures = args.pdb
 structures.sort()
+iptm_scores = read_ranked_score_tsv(args.iptm, len(structures))
+ipsae_scores = read_ranked_score_tsv(args.ipsae, len(structures))
+chainwise_iptm_scores = read_pair_score_tsv(args.chainwise_iptm, len(structures))
+chainwise_ipsae_scores = read_pair_score_tsv(args.chainwise_ipsae, len(structures))
+chainwise_iptm_matrices = build_pair_score_matrices(chainwise_iptm_scores)
+chainwise_ipsae_matrices = build_pair_score_matrices(chainwise_ipsae_scores)
 aligned_structures = align_structures(structures)
 
 io = PDB.PDBIO()
@@ -435,6 +553,26 @@ proteinfold_template = proteinfold_template.replace(
     "const LDDT_AVERAGES = [];", averages_js_array
 )
 
+iptm_js_array = f"const IPTM_SCORES = {iptm_scores};"
+proteinfold_template = proteinfold_template.replace(
+    "const IPTM_SCORES = [];", iptm_js_array
+)
+
+ipsae_js_array = f"const IPSAE_SCORES = {ipsae_scores};"
+proteinfold_template = proteinfold_template.replace(
+    "const IPSAE_SCORES = [];", ipsae_js_array
+)
+
+chainwise_iptm_js_array = f"const CHAINWISE_IPTM_SCORES = {json.dumps(chainwise_iptm_matrices)};"
+proteinfold_template = proteinfold_template.replace(
+    "const CHAINWISE_IPTM_SCORES = [];", chainwise_iptm_js_array
+)
+
+chainwise_ipsae_js_array = f"const CHAINWISE_IPSAE_SCORES = {json.dumps(chainwise_ipsae_matrices)};"
+proteinfold_template = proteinfold_template.replace(
+    "const CHAINWISE_IPSAE_SCORES = [];", chainwise_ipsae_js_array
+)
+
 i = 0
 for structure in aligned_structures:
     proteinfold_template = proteinfold_template.replace(
@@ -442,7 +580,7 @@ for structure in aligned_structures:
     )
     i += 1
 
-if not args.msa.endswith("NO_FILE"):
+if not is_missing_input(args.msa):
     image_path = f"{args.output_dir}/{args.name}_{args.in_type}_seq_coverage.png"
     with open(image_path, "rb") as in_file:
         proteinfold_template = proteinfold_template.replace(
@@ -462,7 +600,7 @@ with open(
         '<div id="lddt_placeholder"></div>', lddt_html
     )
 
-if not args.pae.endswith("NO_FILE_PAE"):
+if not is_missing_input(args.pae, "NO_FILE_PAE"):
     with open(
         f"{args.output_dir}/{args.name + ('_' if args.name else '')}PAE.html",
         "r",

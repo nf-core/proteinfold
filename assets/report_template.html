@@ -300,6 +300,27 @@
                 Average pLDDT:
                 <span id="lddt-average" class="font-normal"></span>
               </div>
+              <div id="iptm-score-row">
+                iPTM:
+                <span id="iptm-score" class="font-normal"></span>
+              </div>
+              <div id="ipsae-score-row">
+                Max ipSAE:
+                <span id="ipsae-score" class="font-normal"></span>
+              </div>
+            </div>
+          </div>
+          <div id="interface_scores_container" class="hidden">
+            <div class="text-2xl font-bold tracking-tight text-gray-900">Interface Scores</div>
+            <div class="mt-2 grid gap-6 xl:grid-cols-2">
+              <div class="shadow-md p-6 bg-white rounded border">
+                <div class="font-semibold text-gray-900 mb-3">Chainwise iPTM</div>
+                <div id="chainwise-iptm-table" class="text-sm"></div>
+              </div>
+              <div class="shadow-md p-6 bg-white rounded border">
+                <div class="font-semibold text-gray-900 mb-3">Chainwise ipSAE</div>
+                <div id="chainwise-ipsae-table" class="text-sm"></div>
+              </div>
             </div>
           </div>
           <!-- Directions -->
@@ -616,6 +637,10 @@
     ];
 
     const LDDT_AVERAGES = [];
+    const IPTM_SCORES = [];
+    const IPSAE_SCORES = [];
+    const CHAINWISE_IPTM_SCORES = [];
+    const CHAINWISE_IPSAE_SCORES = [];
 
     const REPRESENTATIONS = ["cartoon", "ball+stick", "surface", "backbone"];
 
@@ -635,6 +660,8 @@
       spin: false,
     };
 
+    const hasScalarScore = (score) => score !== undefined && score !== null && score !== "" && score !== "n/a";
+
     const uri = (i) => MODELS_DATA[i];
     // Switch to this function to return sample model URI (local dev)
     // const uri = (i) => `https://raw.githubusercontent.com/neoformit/alphafold-galaxy/main/data/${MODELS[i]}`;
@@ -650,6 +677,8 @@
       window.addEventListener("resize", () => stage.handleResize());
 
       document.getElementById("lddt-average").textContent = LDDT_AVERAGES[0];
+      updateInterfaceSummary(0);
+      updatePairScoreTables(0);
 
       loadModel();
       loadModelImage();
@@ -672,6 +701,8 @@
       state.model = ix;
       //document.getElementById("lddt_img").src = LDDT_IMGS[ix];
       document.getElementById("lddt-average").textContent = LDDT_AVERAGES[ix];
+      updateInterfaceSummary(ix);
+      updatePairScoreTables(ix);
       stage.removeComponent(state.modelObject);
       setLoading(1);
 
@@ -686,14 +717,118 @@
       }, MAX_CLICK_INTERVAL_MS);
     };
 
+    const updateInterfaceSummary = (ix) => {
+      const iptmScore = IPTM_SCORES[ix];
+      const ipsaeScore = IPSAE_SCORES[ix];
+      const hasIptm = hasScalarScore(iptmScore);
+      const hasIpsae = hasScalarScore(ipsaeScore);
+
+      document.getElementById("iptm-score-row").classList.toggle("hidden", !hasIptm);
+      document.getElementById("ipsae-score-row").classList.toggle("hidden", !hasIpsae);
+      document.getElementById("iptm-score").textContent = hasIptm ? iptmScore : "";
+      document.getElementById("ipsae-score").textContent = hasIpsae ? ipsaeScore : "";
+    };
+
     const nextModel = () => {
-      const model = state.model === 4 ? 0 : (state.model += 1);
+      const model = state.model === MODELS.length - 1 ? 0 : (state.model += 1);
       setModel(model);
     };
 
     const prevModel = () => {
-      const model = state.model === 0 ? 4 : (state.model -= 1);
+      const model = state.model === 0 ? MODELS.length - 1 : (state.model -= 1);
       setModel(model);
+    };
+
+    const renderPairScoreTable = (containerId, scores, emptyText) => {
+      const container = document.getElementById(containerId);
+      const entries = Object.entries(scores || {});
+
+      if (!entries.length) {
+        container.innerHTML = `<div class="text-gray-500">${emptyText}</div>`;
+        return false;
+      }
+
+      const rows = entries
+        .sort((a, b) => a[0].localeCompare(b[0]))
+        .map(
+          ([pair, score]) => `
+            <tr class="border-t border-gray-200">
+              <td class="py-2 pr-6 font-mono">${pair}</td>
+              <td class="py-2 text-right">${score}</td>
+            </tr>
+          `,
+        )
+        .join("");
+
+      container.innerHTML = `
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="text-left text-gray-500">
+              <th class="pb-2 pr-6 font-medium">Pair</th>
+              <th class="pb-2 text-right font-medium">Score</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      `;
+      return true;
+    };
+
+    const renderScoreMatrix = (containerId, matrix, emptyText) => {
+      const container = document.getElementById(containerId);
+      const chains = matrix?.chains || [];
+      const rows = matrix?.rows || [];
+
+      if (!chains.length || !rows.length) {
+        container.innerHTML = `<div class="text-gray-500">${emptyText}</div>`;
+        return false;
+      }
+
+      const headerCells = chains
+        .map(
+          (chain) => `
+            <th class="pb-2 px-3 text-center font-medium font-mono">${chain}</th>
+          `,
+        )
+        .join("");
+
+      const bodyRows = rows
+        .map(
+          (row, rowIdx) => `
+            <tr class="border-t border-gray-200">
+              <th class="py-2 pr-4 font-medium font-mono text-left">${chains[rowIdx]}</th>
+              ${row
+                .map((value, colIdx) => {
+                  const displayValue = value || (rowIdx === colIdx ? "&mdash;" : "");
+                  const textClass = value ? "text-gray-900 font-mono" : "text-gray-400";
+                  return `<td class="py-2 px-3 text-center ${textClass}">${displayValue}</td>`;
+                })
+                .join("")}
+            </tr>
+          `,
+        )
+        .join("");
+
+      container.innerHTML = `
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="text-gray-500">
+                <th class="pb-2 pr-4 text-left font-medium">Chain</th>
+                ${headerCells}
+              </tr>
+            </thead>
+            <tbody>${bodyRows}</tbody>
+          </table>
+        </div>
+      `;
+      return true;
+    };
+
+    const updatePairScoreTables = (ix) => {
+      const hasIptm = renderScoreMatrix("chainwise-iptm-table", CHAINWISE_IPTM_SCORES[ix], "No chainwise iPTM");
+      const hasIpsae = renderScoreMatrix("chainwise-ipsae-table", CHAINWISE_IPSAE_SCORES[ix], "No chainwise ipSAE");
+      document.getElementById("interface_scores_container").classList.toggle("hidden", !(hasIptm || hasIpsae));
     };
 
     const loadModel = () => {
