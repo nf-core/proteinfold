@@ -7,11 +7,10 @@
 //
 // MODULE: Loaded from modules/local/
 //
-include { FASTA_TO_ALPHAFOLD3_JSON                } from '../modules/local/fasta_to_alphafold3_json'
-include { RUN_ALPHAFOLD3_DATAPIPELINE             } from '../modules/local/run_alphafold3_datapipeline'
-include { RUN_ALPHAFOLD3_INFERENCE                } from '../modules/local/run_alphafold3_inference'
-include { MMCIF2PDB as MMCIF2PDB_TOP_RANKED       } from '../modules/local/mmcif2pdb/main.nf'
-include { MMCIF2PDB as MMCIF2PDB_MODELS           } from '../modules/local/mmcif2pdb/main.nf'
+include { FASTA_TO_ALPHAFOLD3_JSON          } from '../modules/local/fasta_to_alphafold3_json'
+include { RUN_ALPHAFOLD3                    } from '../modules/local/run_alphafold3'
+include { MMCIF2PDB as MMCIF2PDB_TOP_RANKED } from '../modules/local/mmcif2pdb/main.nf'
+include { MMCIF2PDB as MMCIF2PDB_MODELS     } from '../modules/local/mmcif2pdb/main.nf'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -25,12 +24,12 @@ include { MMCIF2PDB as MMCIF2PDB_MODELS           } from '../modules/local/mmcif
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-workflow ALPHAFOLD3_SPLIT {
+workflow ALPHAFOLD3 {
 
     take:
     ch_samplesheet       // channel: samplesheet read in from --input
     ch_versions          // channel: [ path(versions.yml) ]
-    ch_alphafold3_params // channel: path(alphafold3_params)
+    ch_alphafold3_params // channel: path(alphafold2_params)
     ch_small_bfd         // channel: path(small_bfd)
     ch_mgnify            // channel: path(mgnify)
     ch_mmcif_files       // channel: path(mmcif_files)
@@ -56,9 +55,9 @@ workflow ALPHAFOLD3_SPLIT {
     ch_json = ch_input_by_ext.json.mix(FASTA_TO_ALPHAFOLD3_JSON.out.json)
 
     //
-    // MODULE: Run AlphaFold3 data pipeline (MSA + template search)
+    // SUBWORKFLOW: Run AlphaFold3
     //
-    RUN_ALPHAFOLD3_DATAPIPELINE (
+    RUN_ALPHAFOLD3 (
         ch_json,
         ch_alphafold3_params,
         ch_small_bfd,
@@ -68,20 +67,21 @@ workflow ALPHAFOLD3_SPLIT {
         ch_pdb_seqres,
         ch_uniprot
     )
-    ch_versions = ch_versions.mix(RUN_ALPHAFOLD3_DATAPIPELINE.out.versions)
+    ch_versions = ch_versions.mix(RUN_ALPHAFOLD3.out.versions)
 
-    //
-    // MODULE: Run AlphaFold3 inference using pre-computed data JSON
-    //
-    RUN_ALPHAFOLD3_INFERENCE (
-        RUN_ALPHAFOLD3_DATAPIPELINE.out.data_json,
-        ch_alphafold3_params
-    )
-    ch_versions = ch_versions.mix(RUN_ALPHAFOLD3_INFERENCE.out.versions)
+    // Convert mmcif to pdbs
+    RUN_ALPHAFOLD3
+            .out
+            .cif
+            .groupTuple()
+            .map {
+                meta, files ->
+                [ meta, files.flatten() ]
+            }
 
     // Convert models mmcifs to pdbs
     MMCIF2PDB_MODELS (
-        RUN_ALPHAFOLD3_INFERENCE
+        RUN_ALPHAFOLD3
             .out
             .cif
             .groupTuple()
@@ -105,7 +105,7 @@ workflow ALPHAFOLD3_SPLIT {
 
     // Convert top ranked mmcif to pdb
     MMCIF2PDB_TOP_RANKED (
-        RUN_ALPHAFOLD3_INFERENCE
+        RUN_ALPHAFOLD3
             .out
             .top_ranked_cif
     )
@@ -122,7 +122,7 @@ workflow ALPHAFOLD3_SPLIT {
         .set { ch_top_ranked_pdb }
 
     // Prepare msa input
-    RUN_ALPHAFOLD3_INFERENCE
+    RUN_ALPHAFOLD3
         .out
         .msa
         .map { it ->
@@ -132,8 +132,8 @@ workflow ALPHAFOLD3_SPLIT {
         }
         .set { ch_msa_final }
 
-    // Prepare multiqc input
-    RUN_ALPHAFOLD3_INFERENCE
+    // Prepare report input
+    RUN_ALPHAFOLD3
         .out
         .multiqc
         .map { it -> it[1] }
@@ -143,8 +143,8 @@ workflow ALPHAFOLD3_SPLIT {
         }
         .set { ch_multiqc_report }
 
-    // Prepare pae input
-    RUN_ALPHAFOLD3_INFERENCE
+    // Prepare dummy pae input
+    RUN_ALPHAFOLD3
         .out
         .pae
         .map { it ->
@@ -154,7 +154,7 @@ workflow ALPHAFOLD3_SPLIT {
         }
         .set { ch_pae_final }
 
-    RUN_ALPHAFOLD3_INFERENCE
+    RUN_ALPHAFOLD3
         .out
         .iptms
         .map { it ->
@@ -164,7 +164,7 @@ workflow ALPHAFOLD3_SPLIT {
         }
         .set { ch_iptm_final }
 
-    RUN_ALPHAFOLD3_INFERENCE
+    RUN_ALPHAFOLD3
         .out
         .ipsaes
         .map { it ->
@@ -174,7 +174,7 @@ workflow ALPHAFOLD3_SPLIT {
         }
         .set { ch_ipsae_final }
 
-    RUN_ALPHAFOLD3_INFERENCE
+    RUN_ALPHAFOLD3
         .out
         .chainwise_iptms
         .map { it ->
@@ -184,7 +184,7 @@ workflow ALPHAFOLD3_SPLIT {
         }
         .set { ch_chainwise_iptm_final }
 
-    RUN_ALPHAFOLD3_INFERENCE
+    RUN_ALPHAFOLD3
         .out
         .chainwise_ipsaes
         .map { it ->
@@ -193,18 +193,18 @@ workflow ALPHAFOLD3_SPLIT {
             [ meta, it[1] ]
         }
         .set { ch_chainwise_ipsae_final }
-    
+
     emit:
-    top_ranked_pdb  = ch_top_ranked_pdb        // channel: [ id, /path/to/*.pdb ]
-    pdb             = ch_pdb_final             // channel: [ meta, /path/to/*.pdb, ...,/path/to/*.pdb ]
-    msa             = ch_msa_final             // channel: [ meta, /path/to/*.pdb, /path/to/*_coverage.png ]
-    pae             = ch_pae_final             // channel: [ meta, path/to/*_pae.tsv ]
-    iptm            = ch_iptm_final            // channel: [ meta, path/to/*_iptm.tsv ]
-    ipsae           = ch_ipsae_final           // channel: [ meta, path/to/*_ipsae.tsv ]
-    chainwise_iptm  = ch_chainwise_iptm_final  // channel: [ meta, path/to/*_chainwise_iptm.tsv ]
+    top_ranked_pdb = ch_top_ranked_pdb // channel: [ id, /path/to/*.pdb ]
+    pdb            = ch_pdb_final      // channel: [ meta, /path/to/*.pdb, ...,/path/to/*.pdb ]
+    msa            = ch_msa_final      // channel: [ meta, /path/to/*.pdb, /path/to/*_coverage.png ]
+    pae            = ch_pae_final      // channel: [ meta, path/to/*_pae.tsv ]
+    iptm           = ch_iptm_final     // channel: [ meta, path/to/*_iptm.tsv ]
+    ipsae          = ch_ipsae_final    // channel: [ meta, path/to/*_ipsae.tsv ]
+    chainwise_iptm = ch_chainwise_iptm_final // channel: [ meta, path/to/*_chainwise_iptm.tsv ]
     chainwise_ipsae = ch_chainwise_ipsae_final // channel: [ meta, path/to/*_chainwise_ipsae.tsv ]
-    multiqc_report  = ch_multiqc_report        // channel: /path/to/multiqc_report.html
-    versions        = ch_versions              // channel: [ path(versions.yml) ]
+    multiqc_report = ch_multiqc_report // channel: /path/to/multiqc_report.html
+    versions       = ch_versions       // channel: [ path(versions.yml) ]
 }
 
 /*

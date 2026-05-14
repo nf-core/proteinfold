@@ -27,8 +27,8 @@ include { PREPARE_COLABFOLD_DBS  as PREPARE_COLABFOLD_DBS_COLABFOLD } from './su
 include { PREPARE_COLABFOLD_DBS  as PREPARE_COLABFOLD_DBS_BOLTZ     } from './subworkflows/local/prepare_colabfold_dbs'
 
 include { ALPHAFOLD2                       } from './workflows/alphafold2'
-include { ALPHAFOLD3                       } from './workflows/alphafold3'
-include { ALPHAFOLD3_SPLIT                 } from './workflows/alphafold3_split'
+// include { ALPHAFOLD3                       } from './workflows/alphafold3'
+include { ALPHAFOLD3.                      } from './workflows/alphafold3'
 include { COLABFOLD                        } from './workflows/colabfold'
 include { ESMFOLD                          } from './workflows/esmfold'
 include { ROSETTAFOLD_ALL_ATOM             } from './workflows/rosettafold_all_atom'
