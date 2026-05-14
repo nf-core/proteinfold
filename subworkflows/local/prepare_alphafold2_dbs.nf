@@ -21,7 +21,7 @@ workflow PREPARE_ALPHAFOLD2_DBS {
 
     take:
     alphafold2_db            // directory: path to alphafold2 DBs
-    alphafold2_full_dbs                 //   boolean: Use full databases (otherwise reduced version)
+    alphafold2_full_dbs      //   boolean: Use full databases (otherwise reduced version)
     bfd_path                 // directory: /path/to/bfd/
     small_bfd_path           // directory: /path/to/small_bfd/
     alphafold2_params_path   // directory: /path/to/alphafold2/params/
@@ -54,23 +54,23 @@ workflow PREPARE_ALPHAFOLD2_DBS {
 
     if (alphafold2_db) {
         if (alphafold2_full_dbs) {
-            ch_bfd       = channel.value(file(bfd_path, checkIfExists: true))
-            ch_small_bfd = channel.value(file("${projectDir}/assets/dummy_db"))
+            ch_bfd       = channel.value(files(bfd_path, checkIfExists: true))
+            ch_small_bfd = channel.value(files("${projectDir}/assets/dummy_db"))
         }
         else {
             ch_bfd       = channel.value(file("${projectDir}/assets/dummy_db"))
-            ch_small_bfd = channel.value(file(small_bfd_path, checkIfExists: true))
+            ch_small_bfd = channel.value(files(small_bfd_path, checkIfExists: true))
         }
 
-        ch_params         = channel.value(file(alphafold2_params_path, checkIfExists: true))
-        ch_mgnify         = channel.value(file(mgnify_path, checkIfExists: true))
-        ch_pdb70          = channel.value(file(pdb70_path, checkIfExists: true))
-        ch_mmcif_files    = channel.value(file(pdb_mmcif_path, checkIfExists: true))
-        ch_obsolete       = channel.value(file(pdb_obsolete_path, type: 'file', checkIfExists: true))
-        ch_uniref30       = channel.value(file(alphafold2_uniref30_path, type: 'any', checkIfExists: true))
-        ch_uniref90       = channel.value(file(uniref90_path, checkIfExists: true))
-        ch_pdb_seqres     = channel.value(file(pdb_seqres_path, checkIfExists: true))
-        ch_uniprot        = channel.value(file(uniprot_path, checkIfExists: true))
+        ch_params         = channel.value(files(alphafold2_params_path, checkIfExists: true))
+        ch_mgnify         = channel.value(files(mgnify_path, checkIfExists: true))
+        ch_pdb70          = channel.value(files(pdb70_path, checkIfExists: true))
+        ch_mmcif_files    = channel.value(files(pdb_mmcif_path, checkIfExists: true))
+        ch_obsolete       = channel.value(files(pdb_obsolete_path, type: 'file', checkIfExists: true))
+        ch_uniref30       = channel.value(files(alphafold2_uniref30_path, type: 'any', checkIfExists: true))
+        ch_uniref90       = channel.value(files(uniref90_path, checkIfExists: true))
+        ch_pdb_seqres     = channel.value(files(pdb_seqres_path, checkIfExists: true))
+        ch_uniprot        = channel.value(files(uniprot_path, checkIfExists: true))
     }
     else {
         if (alphafold2_full_dbs) {
