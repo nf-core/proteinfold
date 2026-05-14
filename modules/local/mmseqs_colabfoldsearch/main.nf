@@ -3,7 +3,7 @@ process MMSEQS_COLABFOLDSEARCH {
     label 'process_high_memory'
     label 'process_high'
 
-    container "nf-core/proteinfold_mmseqs_colabfoldsearch:2.0.0"
+    container "ghcr.io/tlitfin/wisps-colabfold-search:1.1"
 
     input:
     tuple val(meta), path(fasta)
@@ -12,6 +12,7 @@ process MMSEQS_COLABFOLDSEARCH {
 
     output:
     tuple val(meta), path("**.a3m"), emit: a3m
+    tuple val(meta), path("**.json"), emit: json
     path "versions.yml", emit: versions
 
     when:
