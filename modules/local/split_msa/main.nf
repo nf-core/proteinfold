@@ -11,6 +11,8 @@ process SPLIT_MSA {
     tuple val(meta), path(msa)
     output:
     tuple val(meta), path ("output_msa/*.csv"), emit: msa_csv
+    tuple val(meta), path ("output_msa/*.yaml"), emit: boltz_yaml
+    
     path "versions.yml"        , emit: versions
 
     when:
@@ -31,6 +33,7 @@ process SPLIT_MSA {
     mkdir output_msa
     touch "output_msa/A.csv"
     touch "output_msa/B.csv"
+    touch "output_msa/${meta.id}.yaml"
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

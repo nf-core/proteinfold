@@ -91,14 +91,12 @@ workflow BOLTZ {
         ch_versions = ch_versions.mix(MMSEQS_COLABFOLDSEARCH.out.versions)
 
         SPLIT_MSA(
-            MMSEQS_COLABFOLDSEARCH.out.a3m
+            MMSEQS_COLABFOLDSEARCH.out.json
         )
         ch_versions = ch_versions.mix(SPLIT_MSA.out.versions)
-        ch_input.monomer
+        SPLIT_MSA.out.boltz_yaml
             .join(SPLIT_MSA.out.msa_csv)
-            .mix(
-                ch_input.multimer.join(SPLIT_MSA.out.msa_csv)
-            ).set{ch_prepare_fasta}
+            .set{ch_boltz_input}
 
     }else{
         ch_input
@@ -107,17 +105,8 @@ workflow BOLTZ {
             .map { it ->
                 [it[0], it[1], []]
             }
-            .set{ch_prepare_fasta}
+            .set{ch_boltz_input}
     }
-
-    BOLTZ_FASTA(
-            ch_prepare_fasta
-        )
-
-    ch_input_by_ext.yaml
-        .map { meta, file -> [ meta, file, [] ] }  // already in YAML
-        .mix(BOLTZ_FASTA.out.formatted_fasta)    // newly converted from FASTA
-        .set { ch_boltz_input }
 
     RUN_BOLTZ(
         ch_boltz_input,

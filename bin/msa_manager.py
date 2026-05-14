@@ -2,7 +2,7 @@
 import os
 import string
 import argparse
-
+import json
 
 MAX_MSA_SEQS = 16384
 MAX_PAIRED_SEQS = 8192
@@ -110,7 +110,56 @@ def parse_msa(msa_path, output_dir, meta_id):
                 for seq in unpaired_sequences:
                     out_file.write(f"-1,{seq}\n")
 
+def parse_msa_json(msa_path, output_dir, meta_id):
+    os.makedirs(output_dir, exist_ok=True)
+    """
+    version: 1
+sequences:
+  - protein:
+      id: "A"
+      sequence: "MRIFVYGSLRHKQGNSHWMTNAQLLGDFSIDNYQLYSLGHYPGAVPGNGTVHGEVYRIDNATLAELDALRTRGGEYARQLIQTPYGSAWMYVYQRPVDGLKLIESGDWLDRDK"
+      msa: "NP4186431-NP4186452_A.csv"
+  - protein:
+      id: "B"
+      sequence: "MRITIKRWGNSAGMVIPNIVMKELNLQPGQSVEAQVSNNQLILTPISRRYSLDELLAQCDMNAAELSEQDVWGKSTPAGDEIW"
+      msa: "NP4186431-NP4186452_B.csv"
+    """
+    
+    with open(msa_path, "r") as file:
+        msa_data = json.load(file)
 
+    print(msa_data)
+    filename = os.path.join(output_dir, f"{meta_id}.yaml")
+    with open(filename, "w") as out_file:
+        out_file.write("version: 1\nsequences:")
+        for seq_info in msa_data['sequences']:
+            print(seq_info)
+            for seq_type, seq_details in seq_info.items():
+                
+                seq_label = "sequence"
+                seq_yaml_label = "sequence"
+                if seq_type == "ligand":
+                    if "ccdCodes" in seq_details.keys():
+                        seq_label = "ccdCodes"
+                        seq_details["ccdCodes"] = " ".join(seq_details["ccdCodes"])
+                        seq_yaml_label = "ccd"
+                    elif "smiles" in seq_details.keys():
+                        seq_label = "smiles"
+                        seq_yaml_label = "smiles"
+
+                out_file.write(f"\n  - {seq_type}:\n      id: {seq_details['id'][0]}\n      {seq_yaml_label}: {seq_details[seq_label]}")
+                if seq_type == "protein":
+                    out_file.write(f"\n      msa: {meta_id}_{seq_details['id'][0]}.csv")
+
+                    with open(os.path.join(output_dir, f"{meta_id}_{seq_details['id'][0]}.csv"), "w") as msa_out_file:
+                        msa_out_file.write("key,sequence\n")
+                        for seq in ['pairedMsa', 'unpairedMsa']:
+                            lines = seq_details[seq].splitlines()[1::2]
+                            final_seqs = "\n".join(f"{i if seq == 'pairedMsa' else -1},{x}" for i, x in enumerate(lines))
+                            msa_out_file.write(final_seqs)
+                            msa_out_file.write("\n")
+
+    
 def main():
     parser = argparse.ArgumentParser(description="Split multi-A3M file into CSV sequences per section.")
     parser.add_argument("msa_path", help="Path to input .a3m file")
@@ -118,7 +167,7 @@ def main():
     parser.add_argument("--meta_id", default="default", help="Prefix for MSA files")
 
     args = parser.parse_args()
-    parse_msa(args.msa_path, args.output_dir, args.meta_id)
+    parse_msa_json(args.msa_path, args.output_dir, args.meta_id)
 
 
 if __name__ == "__main__":
