@@ -28,10 +28,10 @@ workflow PREPARE_COLABFOLD_DBS {
     ch_versions     = channel.empty()
 
     if (colabfold_db) {
-        ch_params = channel.value(file(colabfold_alphafold2_params_path,  type: 'any', checkIfExists: true))
+        ch_params = channel.value(files(colabfold_alphafold2_params_path,  type: 'any', checkIfExists: true))
         if (!use_msa_server) {
-            ch_colabfold_db = channel.value(file(colabfold_envdb_path, type: 'any', checkIfExists: true))
-            ch_uniref30     = channel.value(file(colabfold_uniref30_path, type: 'any', checkIfExists: true))
+            ch_colabfold_db = channel.value(files(colabfold_envdb_path, type: 'any', checkIfExists: true))
+            ch_uniref30     = channel.value(files(colabfold_uniref30_path, type: 'any', checkIfExists: true))
         }
     }
     else {
@@ -68,14 +68,14 @@ workflow PREPARE_COLABFOLD_DBS {
                                     .out
                                     .db_indexed
                                     .map { _meta, dir ->
-                                        file("${dir}/*")
+                                        files("${dir}/*")
                                     }
                 ch_versions = ch_versions.mix(MMSEQS_CREATEINDEX_COLABFOLDDB.out.versions)
 
             } else {
                 ch_colabfold_db = ch_colabfold_db
                                     .map { dir_path ->
-                                        file("${dir_path}/*")
+                                        files("${dir_path}/*")
                                     }
             }
 
@@ -98,14 +98,14 @@ workflow PREPARE_COLABFOLD_DBS {
                                 .out
                                 .db_indexed
                                 .map { _meta, dir ->
-                                    file("${dir}/*")
+                                    files("${dir}/*")
                                 }
                 ch_versions = ch_versions.mix(MMSEQS_CREATEINDEX_UNIPROT30.out.versions)
 
             } else {
                 ch_uniref30 = ch_uniref30
                                 .map { dir_path ->
-                                    file("${dir_path}/*")
+                                    files("${dir_path}/*")
                                 }
             }
         }
