@@ -104,7 +104,7 @@ def format_pair_score_rows(pair_score_entries, pair_labels=None):
     rows = [[""] + pair_labels]
     for model_idx, score_values in pair_score_entries.items():
         score_map = {label: value for label, value in score_values}
-        rows.append([model_idx] + [f"{score_map.get(label, 0.0):.4f}" for label in pair_labels])
+        rows.append([model_idx] + [f"{score_map[label]:.4f}" if label in score_map else "" for label in pair_labels])
 
     return [list(row) for row in zip(*rows)]
 
@@ -361,7 +361,7 @@ def read_npz(name, npz_files, struct_files=None):
     if struct_files:
         for idx, struct_file in enumerate(sorted(struct_files)):
             struct_map[idx] = struct_file
-   for idx, npz_file in enumerate(npz_files):
+    for idx, npz_file in enumerate(npz_files):
         data = np.load(npz_file)
         #Boltz PAE files if --write_full_pae is used
         if npz_file.split('/')[-1].startswith('pae') and npz_file.endswith('.npz'):
@@ -375,9 +375,9 @@ def read_npz(name, npz_files, struct_files=None):
                     ipsae_rows.append((f"{model_id}", f"{max_ipsae:.3f}"))
                     if pair_scores:
                         chainwise_ipsae[int(model_id)] = pair_scores
-   if len(ipsae_rows) > 0:
+    if len(ipsae_rows) > 0:
         write_tsv(f"{name}_ipsae.tsv", sorted(ipsae_rows, key=lambda x: int(x[0])))
-   if len(chainwise_ipsae) > 0:
+    if len(chainwise_ipsae) > 0:
         write_tsv(f"{name}_chainwise_ipsae.tsv", format_pair_score_rows(dict(sorted(chainwise_ipsae.items(), key=lambda x: x[0]))))
 
 # Boltz MSA processing
