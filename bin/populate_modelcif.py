@@ -64,6 +64,7 @@ def parse_args(args=None):
 # Structure helpers
 # ---------------------------------------------------------------------------
 
+# So proteinfold can handle the structure files from any ${meta.mode} structure prediction module
 def _parse_structure(struct_file):
     """Parse a PDB or mmCIF file with BioPython and return the structure."""
     ext = os.path.splitext(struct_file)[1].lower()
@@ -92,13 +93,8 @@ def _read_sw_version(versions_yml, prog):
     """
     Extract the version string for *prog* from a Nextflow versions.yml.
 
-    The file has the format::
-
-        "PROCESS:NAME":
-            alphafold2: abc123
-            python: 3.11.0
-
-    Returns None if the file is absent or the key is not found.
+    TODO: this currently assumes a simple structure of versions.yml and I'm not sure if that's settled.
+    
     """
     if versions_yml is None or not os.path.exists(versions_yml):
         return None
@@ -124,6 +120,7 @@ def _read_plddt_tsv(plddt_tsv):
         reader = csv.DictReader(fh, delimiter='\t')
         rows = list(reader)
     rank_cols = sorted(
+        # TODO: need to garuantee that 'rank_X' is always in the tsv spec
         (k for k in rows[0].keys() if k.startswith('rank_')),
         key=lambda k: int(k.split('_', 1)[1]),
     )
@@ -147,6 +144,7 @@ class _StructureModel(modelcif.model.AbInitioModel):
         self._biopy_struct = biopython_structure
         self._asym_map = asym_map  # chain_id -> modelcif.AsymUnit
 
+    # By defining the get_atoms() generator the modelcif library will populate model.atoms cleanly from BioPython structure data
     def get_atoms(self):
         bp_model = next(self._biopy_struct.get_models())
         for chain in bp_model:
@@ -159,6 +157,7 @@ class _StructureModel(modelcif.model.AbInitioModel):
                     continue
                 for atom in res.get_atoms():
                     elem = (atom.element or atom.name[0]).strip().capitalize()
+                    # Remember this is basically BioPython PDB .atom() data -> modelcif.model.Atom, so we have to convert types and rename some fields.
                     yield modelcif.model.Atom(
                         asym_unit=asym,
                         seq_id=seq_id,
@@ -287,10 +286,13 @@ def build_modelcif(struct_files, plddt_file, name, prog, sw_version=None):
                 model.qa_metrics.append(
                     LocalPLDDT(asym.residue(seq_id), next(plddt_iter))
                 )
-                seq_id += 1
+                seq_id += 1is just a diffe
 
         models.append(model)
 
+    # So model.ModelGroup is great here since every single inference from a multi-model method (e.g. AlphaFold) 
+    # is captured coordinates-wise as a separate structure to inspect, but the protocol and software metadata is shared across them. 
+    # TODO: double-check these open as separate #X.Y models in ChineraX
     model_group = modelcif.model.ModelGroup(models, name='All models')
     system.model_groups.append(model_group)
 
