@@ -18,7 +18,7 @@ process RUN_ALPHAFOLD3_DATAPIPELINE {
 
     output:
     tuple val(meta), path ("${meta.id}_data.json"), emit: data_json
-    path "versions.yml"                            , emit: versions
+    path "versions.yml"                           , emit: versions
 
     when:
     task.ext.when == null || task.ext.when
