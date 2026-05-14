@@ -107,6 +107,9 @@ process RUN_ALPHAFOLD3_INFERENCE {
     touch ${prefix}_0_pae.tsv
     touch ${prefix}_ptm.tsv
     touch ${prefix}_iptm.tsv
+    touch ${prefix}_ipsae.tsv
+    touch ${prefix}_chainwise_iptm.tsv
+    touch ${prefix}_chainwise_ipsae.tsv
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
