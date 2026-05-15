@@ -285,7 +285,7 @@ workflow NFCORE_PROTEINFOLD {
         ch_versions     = ch_versions.mix(ALPHAFOLD3.out.versions)
         ch_report_input = ch_report_input
                             .mix(
-                                ALPHAFOLD3  
+                                ALPHAFOLD3
                                     .out
                                     .pdb
                                     .map { it ->

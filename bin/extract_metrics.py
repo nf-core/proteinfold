@@ -506,7 +506,7 @@ def read_json(name, json_files, struct_files=None):
                     final_rows.append(temp_row)
                 write_tsv(f"{name}_msa.tsv", final_rows)
                 continue  # _data.json contains only MSA; no PAE or score fields to process
- 
+
             #AF3 output with PAE info, or HF3 PAE data. TODO: Need to make sure the workflow points to [protein]/[protein]_rank1/all_results.json
 
             # TODO: I think I need to capture model_id and inference_id  -- MUST FIX since this is so fragile and will be different for different programs.
