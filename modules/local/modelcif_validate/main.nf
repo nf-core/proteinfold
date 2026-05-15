@@ -28,7 +28,10 @@ process MODELCIF_VALIDATE {
             with open(f) as fh:
                 systems = modelcif.reader.read(fh)
         if not systems:
-            raise ValueError(f"No ModelCIF system found in {f}")
+            raise ValueError(f"No ModelCIF data blocks found in {f}")
+        for system in systems:
+            if not system.entities:
+                raise ValueError(f"ModelCIF system in {f} has no entities")
         print(f'py-modelcif validation passed: {f}', file=sys.stderr)
 
     with open('versions.yml', 'w') as fh:
