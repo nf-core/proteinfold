@@ -1,0 +1,37 @@
+nextflow_process {
+
+    name "Test metrics are inserted properly by ASSEMBLE_MODELCIF process"
+    script "../modules/local/assemble_modelcif/main.nf"
+    process "ASSEMBLE_MODELCIF"
+
+    tag "assemble_modelcif"
+
+    test("dummy inputs produce modelcif") {
+
+        when {
+            process {
+                """
+                input[0] = [
+                    [ id: 'test', model: 'alphafold2' ],
+                    file("$projectDir/assets/DUMMY_MODELCIF.mmcif", checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_MSA.tsv",         checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_PLDDT.tsv",       checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_PAE.tsv",         checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_PTM.tsv",         checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_IPTM.tsv",        checkIfExists: true),
+                    file("$projectDir/assets/NO_FILE",               checkIfExists: true)
+                ]
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                { assert process.out.modelcif.size() == 1 },
+                { assert snapshot(process.out.versions).match() }
+            )
+        }
+    }
+
+}
