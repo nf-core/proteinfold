@@ -24,4 +24,19 @@ nextflow_process {
         }
     }
 
+    test("rejects invalid mmcif") {
+
+        when {
+            process {
+                """
+                input[0] = [ [ id: 'bad' ], file("$projectDir/assets/DUMMY_INVALID.mmcif", checkIfExists: true) ]
+                """
+            }
+        }
+
+        then {
+            assert process.failed
+        }
+    }
+
 }
