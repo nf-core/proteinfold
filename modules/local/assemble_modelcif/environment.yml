@@ -8,4 +8,4 @@ dependencies:
   - conda-forge::pip=24.2
   - pip:
     - modelcif>=1.7
-    - msgpack>=1.6
+    - msgpack>=1.0
