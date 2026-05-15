@@ -16,9 +16,10 @@ process CIFCHECK {
     """
     for mmcif_file in ${mmcif}; do
         CifCheck -f "\${mmcif_file}" -dictSdb ${projectDir}/bin/dicts/mmcif_ma.sdb
-        if [ -s "\${mmcif_file}-diag.log" ]; then
+        if [ -s "\${mmcif_file}-diag.log" ] || [ -s "\${mmcif_file}-parser.log" ]; then
             echo "ModelArchive CifCheck validation errors in \${mmcif_file}:" >&2
-            cat "\${mmcif_file}-diag.log" >&2
+            [ -s "\${mmcif_file}-diag.log" ]   && cat "\${mmcif_file}-diag.log"   >&2
+            [ -s "\${mmcif_file}-parser.log" ] && cat "\${mmcif_file}-parser.log" >&2
             exit 1
         fi
     done
