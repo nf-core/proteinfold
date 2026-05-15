@@ -6,7 +6,7 @@ nextflow_process {
 
     tag "cifcheck"
 
-    test("dummy modelcif") {
+    test("dummy cifcheck") {
 
         when {
             process {

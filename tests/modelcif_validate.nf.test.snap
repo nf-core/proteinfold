@@ -1,0 +1,14 @@
+{
+    "dummy modelcif": {
+        "content": [
+            [
+                "versions.yml:md5,6c7fe1b4fa92ebfa08ca91ea33a2681f"
+            ]
+        ],
+        "timestamp": "2026-05-15T11:57:47.12268062",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "25.10.4"
+        }
+    }
+}
