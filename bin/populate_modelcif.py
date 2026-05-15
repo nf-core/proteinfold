@@ -24,6 +24,7 @@ import modelcif.dumper
 import modelcif.qa_metric
 import modelcif.protocol
 import modelcif.data
+import modelcif.associated
 
 from Bio import PDB
 from Bio.PDB.Polypeptide import protein_letters_3to1 as _aa3to1
@@ -44,21 +45,22 @@ _SOFTWARE_INFO = {
 
 def parse_args(args=None):
     parser = argparse.ArgumentParser(
-        description='Convert a structure prediction to modelCIF with pLDDT annotations.'
+        description='Generate a valid modelCIF structure file (according to ModelArchive dictionary) from the various metrics .tsv files, and program execution details.'
     )
     parser.add_argument('--structs', required=True, nargs='+',
                         help='Input structure files (PDB or mmCIF), one per rank in rank order.')
     parser.add_argument('--msa',     required=True, help='*_msa.tsv from extract_metrics.py.')
     parser.add_argument('--plddt',   required=True, help='*_plddt.tsv from extract_metrics.py.')
+    parser.add_argument('--pae-embed', action='store_true', help='Embed PAE as local-pairwise QA metrics in the primary modelCIF instead of as an associated file.')
     parser.add_argument('--pae',     required=True, help='*_pae.tsv from extract_metrics.py.')
     parser.add_argument('--ptm',     required=True, help='*_ptm.tsv from extract_metrics.py.')
     parser.add_argument('--iptm',    required=True, help='*_iptm.tsv from extract_metrics.py.')
     parser.add_argument('--name',    required=True)
     parser.add_argument('--prog',         required=True)
+    parser.add_argument('--msa_tool',     default=None, help='MSA search tool used (e.g. jackhmmer, hhblits, mmseqs2). Embedded in the CoevolutionMSA protocol step.')
     parser.add_argument('--versions_yml', default=None, help='versions.yml emitted by the upstream run_* module.')
     parser.add_argument('--output',       default=None)
-    parser.add_argument('--write_binary', action='store_true',
-                        help='Write BinaryCIF (.bcif) output instead of text mmCIF. Requires the msgpack package.')
+    parser.add_argument('--write_binary', action='store_true', help='Write BinaryCIF (.bcif) output instead of text mmCIF. Requires the msgpack package.')
     return parser.parse_args(args)
 
 
@@ -108,6 +110,30 @@ def _read_sw_version(versions_yml, prog):
     process_versions = next(iter(data.values()), {})
     return process_versions.get(prog.lower())
 
+# Some of these parsers should be recombined with utils.py once new generate_report.py refactor merged - KR 
+
+def _read_msa_tsv(msa_tsv):
+    """
+    Parse the *_msa.tsv written by extract_metrics.py.
+
+    The file has no header; each row is one homologous sequence encoded as
+    tab-separated integers (0-21 per residue position).
+
+    Returns ``(num_seqs, alignment_length)`` where *num_seqs* is the MSA
+    depth and *alignment_length* is the number of residue columns.
+    """
+    num_seqs = 0
+    alignment_length = 0
+    with open(msa_tsv) as fh:
+        for line in fh:
+            line = line.rstrip('\n')
+            if not line:
+                continue
+            num_seqs += 1
+            if alignment_length == 0:
+                alignment_length = len(line.split('\t'))
+    return num_seqs, alignment_length
+
 
 def _read_plddt_tsv(plddt_tsv):
     """
@@ -127,6 +153,53 @@ def _read_plddt_tsv(plddt_tsv):
         key=lambda k: int(k.split('_', 1)[1]),
     )
     return {col: [float(row[col]) for row in rows] for col in rank_cols}
+
+
+def _read_ranked_score_tsv(tsv_file):
+    scores = {}
+    with open(tsv_file) as fh:
+        for row in csv.reader(fh, delimiter='\t'):
+            if len(row) < 2:
+                raise ValueError(f"Malformed row in {tsv_file}: {row!r}")
+            rank, value = row[0].strip(), row[1].strip()
+            if not rank or not value:
+                raise ValueError(f"Empty rank or value in {tsv_file}: {row!r}")
+            if not rank.startswith('rank_'):
+                try:
+                    rank = f"rank_{int(rank)}"
+                except ValueError:
+                    continue
+            try:
+                scores[rank] = float(value)
+            except ValueError:
+                continue
+    return scores
+
+
+def _read_pae_tsv(pae_tsv):
+    matrix = []
+    with open(pae_tsv) as fh:
+        for row in csv.reader(fh, delimiter='\t'):
+            if not row:
+                continue
+            matrix.append([float(v) for v in row])
+
+    if not matrix:
+        raise ValueError(f"Empty PAE file: {pae_tsv}")
+
+    ncols = len(matrix[0])
+    if ncols == 0 or any(len(r) != ncols for r in matrix):
+        raise ValueError(f"Non-rectangular PAE matrix in {pae_tsv}")
+
+    return matrix
+
+
+def _read_ptm_tsv(ptm_tsv):
+    return _read_ranked_score_tsv(ptm_tsv)
+
+
+def _read_iptm_tsv(iptm_tsv):
+    return _read_ranked_score_tsv(iptm_tsv)
 
 
 # ---------------------------------------------------------------------------
@@ -179,9 +252,21 @@ class _StructureModel(modelcif.model.AbInitioModel):
 # Piece together the modelCIF system from the structure and pLDDT data
 # ---------------------------------------------------------------------------
 
-def build_modelcif(struct_files, plddt_file, name, prog, sw_version=None):
+def build_modelcif(
+    struct_files,
+    plddt_file,
+    msa_file,
+    pae_file,
+    pae_embed,
+    ptm_file,
+    iptm_file,
+    name,
+    prog,
+    sw_version=None,
+    msa_tool=None,
+):
     """
-    Build a modelcif.System from ranked structure files and a pLDDT TSV.
+    Build a modelcif.System from ranked structure files and QA metric .tsv files.
 
     Parameters
     ----------
@@ -190,12 +275,26 @@ def build_modelcif(struct_files, plddt_file, name, prog, sw_version=None):
         Each file becomes a separate model in the output ModelGroup.
     plddt_file : str
         Path to *_plddt.tsv from extract_metrics.py.
+    msa_file : str
+        Path to *_msa.tsv from extract_metrics.py.
+    pae_file : str
+        Path to *_pae.tsv from extract_metrics.py.
+    pae_embed : bool
+        If True, embed PAE values as local-pairwise QA metrics in the main
+        modelCIF. If False, keep PAE as an associated QA metrics file.
+    ptm_file : str
+        Path to *_ptm.tsv from extract_metrics.py.
+    iptm_file : str
+        Path to *_iptm.tsv from extract_metrics.py.
     name : str
         Sample / sequence identifier used in titles and file naming.
     prog : str
         Prediction program key (see _SOFTWARE_INFO).
     sw_version : str, optional
         Version string parsed from the upstream versions.yml.
+    msa_tool : str, optional
+        MSA search tool name (e.g. ``'jackhmmer'``, ``'hhblits'``, ``'mmseqs2'``).
+        Embedded in the CoevolutionMSA protocol step name.
 
     Returns
     -------
@@ -203,6 +302,10 @@ def build_modelcif(struct_files, plddt_file, name, prog, sw_version=None):
     """
     biopy_structs = [_parse_structure(f) for f in struct_files]
     plddt_by_rank = _read_plddt_tsv(plddt_file)
+    ptm_by_rank = _read_ptm_tsv(ptm_file)
+    iptm_by_rank = _read_iptm_tsv(iptm_file)
+    pae_matrix = _read_pae_tsv(pae_file) if pae_embed else None
+    msa_num_seqs, msa_length = _read_msa_tsv(msa_file)
 
     system = modelcif.System(title=f'{name} predicted by {prog}')
 
@@ -258,6 +361,21 @@ def build_modelcif(struct_files, plddt_file, name, prog, sw_version=None):
 
     LocalPLDDT.software = software
 
+    class GlobalPTM(modelcif.qa_metric.Global, modelcif.qa_metric.PTM):
+        """Predicted TM-score for the full model in [0,1]."""
+
+    GlobalPTM.software = software
+
+    class GlobalIpTM(modelcif.qa_metric.Global, modelcif.qa_metric.IpTM):
+        """Predicted interface TM-score for multichain complexes in [0,1]."""
+
+    GlobalIpTM.software = software
+
+    class LocalPairwisePAE(modelcif.qa_metric.LocalPairwise, modelcif.qa_metric.PAE):
+        """Predicted aligned error between residue pairs."""
+
+    LocalPairwisePAE.software = software
+
     # ---- One model per ranked structure ---------------------------------
     # Pair each struct file with the matching rank_N column from the TSV.
     # zip() stops at the shorter of the two, so a mismatch never raises.
@@ -288,7 +406,38 @@ def build_modelcif(struct_files, plddt_file, name, prog, sw_version=None):
                 model.qa_metrics.append(
                     LocalPLDDT(asym.residue(seq_id), next(plddt_iter))
                 )
-                seq_id += 1is just a diffe
+                seq_id += 1
+
+        if pae_embed:
+            model_residues = []
+            for chain in bp_model_i:
+                asym = asym_map.get(chain.id)
+                if asym is None:
+                    continue
+                seq_id = 1
+                for res in chain.get_residues():
+                    if res.id[0] != ' ':
+                        continue
+                    model_residues.append(asym.residue(seq_id))
+                    seq_id += 1
+
+            num_res = len(model_residues)
+            if len(pae_matrix) != num_res or len(pae_matrix[0]) != num_res:
+                raise ValueError(
+                    f"PAE matrix shape {len(pae_matrix)}x{len(pae_matrix[0])} does not match "
+                    f"the model residue count ({num_res}) for {rank_key}"
+                )
+
+            for i, residue_i in enumerate(model_residues):
+                for j, residue_j in enumerate(model_residues):
+                    model.qa_metrics.append(
+                        LocalPairwisePAE(residue_i, residue_j, pae_matrix[i][j])
+                    )
+
+        if rank_key in ptm_by_rank:
+            model.qa_metrics.append(GlobalPTM(ptm_by_rank[rank_key]))
+        if rank_key in iptm_by_rank:
+            model.qa_metrics.append(GlobalIpTM(iptm_by_rank[rank_key]))
 
         models.append(model)
 
@@ -300,14 +449,44 @@ def build_modelcif(struct_files, plddt_file, name, prog, sw_version=None):
 
     # ---- Protocol -------------------------------------------------------
     protocol = modelcif.protocol.Protocol()
+
+    msa_data = modelcif.data.Data(
+        'Coevolution MSA',
+        details=f'{msa_num_seqs} sequences, {msa_length} columns',
+    )
+    system.data.append(msa_data)
+    msa_step = modelcif.protocol.CoevolutionMSAStep(
+        input_data=modelcif.data.DataGroup(list(seen_seqs.values())),
+        output_data=msa_data,
+        name=msa_tool,
+        software=software,
+    )
+    protocol.steps.append(msa_step)
+
+    # Modeling step: MSA is the input; ranked models are the output.
     step = modelcif.protocol.ModelingStep(
-        input_data=modelcif.data.DataGroup([]),
+        input_data=msa_data,
         output_data=modelcif.data.DataGroup(models),
         name='Structure prediction',
         software=software,
     )
     protocol.steps.append(step)
     system.protocols.append(protocol)
+
+    if not pae_embed:
+        pae_data = modelcif.data.Data(
+            'Predicted aligned error matrix',
+            details='Per-rank PAE matrices exported as TSV from extract_metrics.py',
+        )
+        system.data.append(pae_data)
+        pae_associated = modelcif.associated.QAMetricsFile(
+            path=os.path.basename(pae_file),
+            details='Predicted aligned error (PAE) values for this entry',
+            data=pae_data,
+        )
+        system.repositories.append(
+            modelcif.associated.Repository(url_root=None, files=[pae_associated])
+        )
 
     return system
 
@@ -324,7 +503,21 @@ def main(args=None):
         open_mode, fmt = 'w', 'mmCIF'
 
     sw_version = _read_sw_version(args.versions_yml, args.prog)
-    system = build_modelcif(args.structs, args.plddt, args.name, args.prog, sw_version)
+    # Nextflow emits the string 'None' when no msa_tool is known; normalise to Python None.
+    msa_tool = None if args.msa_tool in (None, 'None') else args.msa_tool
+    system = build_modelcif(
+        args.structs,
+        args.plddt,
+        args.msa,
+        args.pae,
+        args.pae_embed,
+        args.ptm,
+        args.iptm,
+        args.name,
+        args.prog,
+        sw_version,
+        msa_tool,
+    )
 
     with open(output_file, open_mode) as fh:
         modelcif.dumper.write(fh, [system], format=fmt)
