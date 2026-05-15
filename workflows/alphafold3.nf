@@ -193,7 +193,7 @@ workflow ALPHAFOLD3 {
             [ meta, it[1] ]
         }
         .set { ch_chainwise_ipsae_final }
-    
+
     emit:
     top_ranked_pdb  = ch_top_ranked_pdb        // channel: [ id, /path/to/*.pdb ]
     pdb             = ch_pdb_final             // channel: [ meta, /path/to/*.pdb, ...,/path/to/*.pdb ]
