@@ -1,0 +1,7 @@
+name: modelcif_validate
+channels:
+  - conda-forge
+dependencies:
+  - conda-forge::pip=24.2
+  - pip:
+    - modelcif>=1.7
