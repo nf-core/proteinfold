@@ -32,7 +32,7 @@ process ASSEMBLE_MODELCIF {
     def args = task.ext.args ?: ''
     """
     populate_modelcif.py \\
-        --struct ${structs} \\  
+        --structs ${structs} \\
         --msa ${msa} \\
         --plddt ${plddt} \\
         --pae ${pae} \\
@@ -41,6 +41,7 @@ process ASSEMBLE_MODELCIF {
         --name ${meta.id} \\
         --prog ${meta.model} \\
         --versions_yml ${versions_yml} \\
+        --msa_tool ${meta.msa_tool ?: 'None'} \
         $args
 
     cat <<-END_VERSIONS > versions.yml
@@ -51,15 +52,4 @@ process ASSEMBLE_MODELCIF {
     END_VERSIONS
     """
 
-    stub:
-    """
-    touch "${meta.id}_${meta.model}.mmcif"
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        python: \$(python3 --version | sed 's/Python //g')
-        modelcif: \$(python3 -c "import modelcif; print(modelcif.__version__)" 2>/dev/null || echo "unknown")
-        biopython: \$(python3 -c "import Bio; print(Bio.__version__)" 2>/dev/null || echo "unknown")
-    END_VERSIONS
-    """
 }

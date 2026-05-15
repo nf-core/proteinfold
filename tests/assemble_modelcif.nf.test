@@ -12,8 +12,8 @@ nextflow_process {
             process {
                 """
                 input[0] = [
-                    [ id: 'test', model: 'alphafold2' ],
-                    file("$projectDir/assets/DUMMY_MODELCIF.mmcif", checkIfExists: true),
+                    [ id: 'test', model: 'alphafold2', msa_tool: 'jackhmmer' ],
+                    file("$projectDir/assets/DUMMY_MODELCIF.mmcif",  checkIfExists: true),
                     file("$projectDir/assets/DUMMY_MSA.tsv",         checkIfExists: true),
                     file("$projectDir/assets/DUMMY_PLDDT.tsv",       checkIfExists: true),
                     file("$projectDir/assets/DUMMY_PAE.tsv",         checkIfExists: true),
@@ -26,9 +26,21 @@ nextflow_process {
         }
 
         then {
+            def mmcif = path(process.out.modelcif[0][1]).text
+
             assertAll(
                 { assert process.success },
                 { assert process.out.modelcif.size() == 1 },
+
+                { assert mmcif.contains("_ma_qa_metric_local"),
+                    "pLDDT qa_metric table missing from output mmCIF" },
+
+                { assert mmcif.contains("coevolution MSA"),
+                    "Coevolution MSA protocol step missing from output mmCIF" },
+
+                { assert mmcif.contains("modeling"),
+                    "Modeling protocol step missing from output mmCIF" },
+
                 { assert snapshot(process.out.versions).match() }
             )
         }
