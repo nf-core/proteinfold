@@ -7,6 +7,8 @@ With aim to be directly depositable in ModelArchive.
 
 Includes maximal metadata by default
 
+Note: PAE will *not* be embedded due to size constraints, instead linked as an associated file
+
 Can also create .bcif for space reasons
 """
 

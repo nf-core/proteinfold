@@ -1,0 +1,5 @@
+data_DUMMY_PDBX
+_entry.id DUMMY_PDBX
+_entity.id 1
+_entity.type polymer
+_entity.description "test protein"

@@ -24,6 +24,39 @@ nextflow_process {
         }
     }
 
+    test("real modelarchive file (augmented)") {
+
+        when {
+            process {
+                """
+                input[0] = [ [ id: 'real' ], file("$projectDir/assets/ma-atiya1-gk-01-AUGMENTED.cif", checkIfExists: true) ]
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                { assert snapshot(process.out.versions).match() }
+            )
+        }
+    }
+
+    test("rejects plain pdbx without ma content") {
+
+        when {
+            process {
+                """
+                input[0] = [ [ id: 'pdbx' ], file("$projectDir/assets/DUMMY_PDBX.mmcif", checkIfExists: true) ]
+                """
+            }
+        }
+
+        then {
+            assert process.failed
+        }
+    }
+
     test("rejects invalid mmcif") {
 
         when {

@@ -5,7 +5,19 @@
                 "versions.yml:md5,6c7fe1b4fa92ebfa08ca91ea33a2681f"
             ]
         ],
-        "timestamp": "2026-05-15T11:57:47.12268062",
+        "timestamp": "2026-05-15T15:10:56.586593748",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "25.10.4"
+        }
+    },
+    "real modelarchive file (augmented)": {
+        "content": [
+            [
+                "versions.yml:md5,6c7fe1b4fa92ebfa08ca91ea33a2681f"
+            ]
+        ],
+        "timestamp": "2026-05-15T15:14:57.707204617",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "25.10.4"
