@@ -55,6 +55,8 @@ def parse_args(args=None):
     parser.add_argument('--iptm',    required=True, help='*_iptm.tsv from extract_metrics.py.')
     parser.add_argument('--name',    required=True)
     parser.add_argument('--prog',         required=True)
+    parser.add_argument('--msa_tool',     default=None,
+                        help='MSA search tool used (e.g. jackhmmer, hhblits, mmseqs2). Embedded in the CoevolutionMSA protocol step.')
     parser.add_argument('--versions_yml', default=None, help='versions.yml emitted by the upstream run_* module.')
     parser.add_argument('--output',       default=None)
     parser.add_argument('--write_binary', action='store_true',
@@ -107,6 +109,29 @@ def _read_sw_version(versions_yml, prog):
     # The single top-level key is the process name; we don't care what it is.
     process_versions = next(iter(data.values()), {})
     return process_versions.get(prog.lower())
+
+
+def _read_msa_tsv(msa_tsv):
+    """
+    Parse the *_msa.tsv written by extract_metrics.py.
+
+    The file has no header; each row is one homologous sequence encoded as
+    tab-separated integers (0-21 per residue position).
+
+    Returns ``(num_seqs, alignment_length)`` where *num_seqs* is the MSA
+    depth and *alignment_length* is the number of residue columns.
+    """
+    num_seqs = 0
+    alignment_length = 0
+    with open(msa_tsv) as fh:
+        for line in fh:
+            line = line.rstrip('\n')
+            if not line:
+                continue
+            num_seqs += 1
+            if alignment_length == 0:
+                alignment_length = len(line.split('\t'))
+    return num_seqs, alignment_length
 
 
 def _read_plddt_tsv(plddt_tsv):
@@ -179,7 +204,7 @@ class _StructureModel(modelcif.model.AbInitioModel):
 # Piece together the modelCIF system from the structure and pLDDT data
 # ---------------------------------------------------------------------------
 
-def build_modelcif(struct_files, plddt_file, name, prog, sw_version=None):
+def build_modelcif(struct_files, plddt_file, msa_file, name, prog, sw_version=None, msa_tool=None):
     """
     Build a modelcif.System from ranked structure files and a pLDDT TSV.
 
@@ -190,12 +215,17 @@ def build_modelcif(struct_files, plddt_file, name, prog, sw_version=None):
         Each file becomes a separate model in the output ModelGroup.
     plddt_file : str
         Path to *_plddt.tsv from extract_metrics.py.
+    msa_file : str
+        Path to *_msa.tsv from extract_metrics.py.
     name : str
         Sample / sequence identifier used in titles and file naming.
     prog : str
         Prediction program key (see _SOFTWARE_INFO).
     sw_version : str, optional
         Version string parsed from the upstream versions.yml.
+    msa_tool : str, optional
+        MSA search tool name (e.g. ``'jackhmmer'``, ``'hhblits'``, ``'mmseqs2'``).
+        Embedded in the CoevolutionMSA protocol step name.
 
     Returns
     -------
@@ -203,6 +233,7 @@ def build_modelcif(struct_files, plddt_file, name, prog, sw_version=None):
     """
     biopy_structs = [_parse_structure(f) for f in struct_files]
     plddt_by_rank = _read_plddt_tsv(plddt_file)
+    msa_num_seqs, msa_length = _read_msa_tsv(msa_file)
 
     system = modelcif.System(title=f'{name} predicted by {prog}')
 
@@ -288,7 +319,7 @@ def build_modelcif(struct_files, plddt_file, name, prog, sw_version=None):
                 model.qa_metrics.append(
                     LocalPLDDT(asym.residue(seq_id), next(plddt_iter))
                 )
-                seq_id += 1is just a diffe
+                seq_id += 1
 
         models.append(model)
 
@@ -300,8 +331,23 @@ def build_modelcif(struct_files, plddt_file, name, prog, sw_version=None):
 
     # ---- Protocol -------------------------------------------------------
     protocol = modelcif.protocol.Protocol()
+
+    msa_data = modelcif.data.Data(
+        'Coevolution MSA',
+        details=f'{msa_num_seqs} sequences, {msa_length} columns',
+    )
+    system.data.append(msa_data)
+    msa_step = modelcif.protocol.CoevolutionMSAStep(
+        input_data=modelcif.data.DataGroup(list(seen_seqs.values())),
+        output_data=msa_data,
+        name=msa_tool,
+        software=software,
+    )
+    protocol.steps.append(msa_step)
+
+    # Modeling step: MSA is the input; ranked models are the output.
     step = modelcif.protocol.ModelingStep(
-        input_data=modelcif.data.DataGroup([]),
+        input_data=msa_data,
         output_data=modelcif.data.DataGroup(models),
         name='Structure prediction',
         software=software,
@@ -324,7 +370,9 @@ def main(args=None):
         open_mode, fmt = 'w', 'mmCIF'
 
     sw_version = _read_sw_version(args.versions_yml, args.prog)
-    system = build_modelcif(args.structs, args.plddt, args.name, args.prog, sw_version)
+    # Nextflow emits the string 'None' when no msa_tool is known; normalise to Python None.
+    msa_tool = None if args.msa_tool in (None, 'None') else args.msa_tool
+    system = build_modelcif(args.structs, args.plddt, args.msa, args.name, args.prog, sw_version, msa_tool)
 
     with open(output_file, open_mode) as fh:
         modelcif.dumper.write(fh, [system], format=fmt)
