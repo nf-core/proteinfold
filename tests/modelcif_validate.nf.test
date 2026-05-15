@@ -1,0 +1,27 @@
+nextflow_process {
+
+    name "Test Process MODELCIF_VALIDATE"
+    script "../modules/local/modelcif_validate/main.nf"
+    process "MODELCIF_VALIDATE"
+
+    tag "modelcif_validate"
+
+    test("dummy modelcif") {
+
+        when {
+            process {
+                """
+                input[0] = [ [ id: 'test' ], file("$projectDir/assets/DUMMY_MODELCIF.mmcif", checkIfExists: true) ]
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                { assert snapshot(process.out.versions).match() }
+            )
+        }
+    }
+
+}
