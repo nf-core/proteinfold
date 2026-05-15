@@ -26,7 +26,9 @@ process MODELCIF_VALIDATE {
         with warnings.catch_warnings():
             warnings.filterwarnings('error')
             with open(f) as fh:
-                modelcif.reader.read(fh)
+                systems = modelcif.reader.read(fh)
+        if not systems:
+            raise ValueError(f"No ModelCIF system found in {f}")
         print(f'py-modelcif validation passed: {f}', file=sys.stderr)
 
     with open('versions.yml', 'w') as fh:
