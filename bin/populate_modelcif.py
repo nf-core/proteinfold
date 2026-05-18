@@ -44,7 +44,7 @@ _SOFTWARE_INFO = {
 
 def parse_args(args=None):
     parser = argparse.ArgumentParser(
-        description='Convert a structure prediction to modelCIF with pLDDT annotations.'
+        description='Generate a valid modelCIF structure file (according to ModelArchive dictionary) from the various metrics .tsv files, and program execution details.'
     )
     parser.add_argument('--structs', required=True, nargs='+',
                         help='Input structure files (PDB or mmCIF), one per rank in rank order.')
@@ -152,6 +152,36 @@ def _read_plddt_tsv(plddt_tsv):
         key=lambda k: int(k.split('_', 1)[1]),
     )
     return {col: [float(row[col]) for row in rows] for col in rank_cols}
+:w
+
+
+def _read_ranked_score_tsv(tsv_file):
+    scores = {}
+    with open(tsv_file) as fh:
+        for row in csv.reader(fh, delimiter='\t'):
+            if len(row) < 2:
+                raise ValueError(f"Malformed row in {tsv_file}: {row!r}")
+            rank, value = row[0].strip(), row[1].strip()
+            if not rank or not value:
+                raise ValueError(f"Empty rank or value in {tsv_file}: {row!r}")
+            if not rank.startswith('rank_'):
+                try:
+                    rank = f"rank_{int(rank)}"
+                except ValueError:
+                    continue
+            try:
+                scores[rank] = float(value)
+            except ValueError:
+                continue
+    return scores
+
+
+def _read_ptm_tsv(ptm_tsv):
+    return _read_ranked_score_tsv(ptm_tsv)
+
+
+def _read_iptm_tsv(iptm_tsv):
+    return _read_ranked_score_tsv(iptm_tsv)
 
 
 # ---------------------------------------------------------------------------
@@ -204,9 +234,19 @@ class _StructureModel(modelcif.model.AbInitioModel):
 # Piece together the modelCIF system from the structure and pLDDT data
 # ---------------------------------------------------------------------------
 
-def build_modelcif(struct_files, plddt_file, msa_file, name, prog, sw_version=None, msa_tool=None):
+def build_modelcif(
+    struct_files,
+    plddt_file,
+    msa_file,
+    ptm_file,
+    iptm_file,
+    name,
+    prog,
+    sw_version=None,
+    msa_tool=None,
+):
     """
-    Build a modelcif.System from ranked structure files and a pLDDT TSV.
+    Build a modelcif.System from ranked structure files and QA metric .tsv files.
 
     Parameters
     ----------
@@ -217,6 +257,10 @@ def build_modelcif(struct_files, plddt_file, msa_file, name, prog, sw_version=No
         Path to *_plddt.tsv from extract_metrics.py.
     msa_file : str
         Path to *_msa.tsv from extract_metrics.py.
+    ptm_file : str
+        Path to *_ptm.tsv from extract_metrics.py.
+    iptm_file : str
+        Path to *_iptm.tsv from extract_metrics.py.
     name : str
         Sample / sequence identifier used in titles and file naming.
     prog : str
@@ -233,6 +277,8 @@ def build_modelcif(struct_files, plddt_file, msa_file, name, prog, sw_version=No
     """
     biopy_structs = [_parse_structure(f) for f in struct_files]
     plddt_by_rank = _read_plddt_tsv(plddt_file)
+    ptm_by_rank = _read_ptm_tsv(ptm_file)
+    iptm_by_rank = _read_iptm_tsv(iptm_file)
     msa_num_seqs, msa_length = _read_msa_tsv(msa_file)
 
     system = modelcif.System(title=f'{name} predicted by {prog}')
@@ -289,6 +335,16 @@ def build_modelcif(struct_files, plddt_file, msa_file, name, prog, sw_version=No
 
     LocalPLDDT.software = software
 
+    class GlobalPTM(modelcif.qa_metric.Global, modelcif.qa_metric.PTM):
+        """Predicted TM-score for the full model in [0,1]."""
+
+    GlobalPTM.software = software
+
+    class GlobalIpTM(modelcif.qa_metric.Global, modelcif.qa_metric.IpTM):
+        """Predicted interface TM-score for multichain complexes in [0,1]."""
+
+    GlobalIpTM.software = software
+
     # ---- One model per ranked structure ---------------------------------
     # Pair each struct file with the matching rank_N column from the TSV.
     # zip() stops at the shorter of the two, so a mismatch never raises.
@@ -320,6 +376,11 @@ def build_modelcif(struct_files, plddt_file, msa_file, name, prog, sw_version=No
                     LocalPLDDT(asym.residue(seq_id), next(plddt_iter))
                 )
                 seq_id += 1
+
+        if rank_key in ptm_by_rank:
+            model.qa_metrics.append(GlobalPTM(ptm_by_rank[rank_key]))
+        if rank_key in iptm_by_rank:
+            model.qa_metrics.append(GlobalIpTM(iptm_by_rank[rank_key]))
 
         models.append(model)
 
@@ -372,7 +433,17 @@ def main(args=None):
     sw_version = _read_sw_version(args.versions_yml, args.prog)
     # Nextflow emits the string 'None' when no msa_tool is known; normalise to Python None.
     msa_tool = None if args.msa_tool in (None, 'None') else args.msa_tool
-    system = build_modelcif(args.structs, args.plddt, args.msa, args.name, args.prog, sw_version, msa_tool)
+    system = build_modelcif(
+        args.structs,
+        args.plddt,
+        args.msa,
+        args.ptm,
+        args.iptm,
+        args.name,
+        args.prog,
+        sw_version,
+        msa_tool,
+    )
 
     with open(output_file, open_mode) as fh:
         modelcif.dumper.write(fh, [system], format=fmt)
