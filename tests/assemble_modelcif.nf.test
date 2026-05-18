@@ -44,6 +44,17 @@ nextflow_process {
                 { assert mmcif.contains("ipTM"),
                     "ipTM metric type missing from output mmCIF" },
 
+                { assert mmcif.contains("_ma_entry_associated_files"),
+                    "Associated files table missing from output mmCIF" },
+
+                // I'm not sure if this should *always* be asserted, but going to test for completeness during dev - KR
+                { assert (mmcif =~ /\S+\.tsv[^\n]*QA metrics/).find(),
+                    "Expected a TSV associated file entry typed as 'QA metrics'" },
+
+                // \b is a "word boundary" assertion, to avoid matching "PAE" inside some other string - KR
+                { assert (mmcif =~ /Predicted aligned error|\bPAE\b/).find(),
+                    "PAE-associated details missing from output mmCIF" },
+
                 { assert mmcif.contains("coevolution MSA"),
                     "Coevolution MSA protocol step missing from output mmCIF" },
 

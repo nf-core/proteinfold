@@ -24,6 +24,7 @@ import modelcif.dumper
 import modelcif.qa_metric
 import modelcif.protocol
 import modelcif.data
+import modelcif.associated
 
 from Bio import PDB
 from Bio.PDB.Polypeptide import protein_letters_3to1 as _aa3to1
@@ -237,6 +238,7 @@ def build_modelcif(
     struct_files,
     plddt_file,
     msa_file,
+    pae_file,
     ptm_file,
     iptm_file,
     name,
@@ -256,6 +258,8 @@ def build_modelcif(
         Path to *_plddt.tsv from extract_metrics.py.
     msa_file : str
         Path to *_msa.tsv from extract_metrics.py.
+    pae_file : str
+        Path to *_pae.tsv from extract_metrics.py.
     ptm_file : str
         Path to *_ptm.tsv from extract_metrics.py.
     iptm_file : str
@@ -415,6 +419,22 @@ def build_modelcif(
     protocol.steps.append(step)
     system.protocols.append(protocol)
 
+    # Keep PAE matrices as an associated QA metrics file to avoid inflating
+    # the primary modelCIF. This leaves room for a future --embed_pae toggle.
+    pae_data = modelcif.data.Data(
+        'Predicted aligned error matrix',
+        details='Per-rank PAE matrices exported as TSV from extract_metrics.py',
+    )
+    system.data.append(pae_data)
+    pae_associated = modelcif.associated.QAMetricsFile(
+        path=os.path.basename(pae_file),
+        details='Predicted aligned error (PAE) values for this entry',
+        data=pae_data,
+    )
+    system.repositories.append(
+        modelcif.associated.Repository(url_root=None, files=[pae_associated])
+    )
+
     return system
 
 
@@ -436,6 +456,7 @@ def main(args=None):
         args.structs,
         args.plddt,
         args.msa,
+        args.pae,
         args.ptm,
         args.iptm,
         args.name,
