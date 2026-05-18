@@ -17,7 +17,7 @@ process ASSEMBLE_MODELCIF {
     // TODONT: database version injection. This can come out of versions.yml, but leave that to a cleaner database handling implementation.
 
     output:
-    tuple val(meta), path("*.mmcif"), emit: modelcif
+    tuple val(meta), path("*.{mmcif,bcif}"), emit: modelcif
     path "versions.yml"             , emit: versions
 
     when:

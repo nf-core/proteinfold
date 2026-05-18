@@ -22,5 +22,17 @@
             "nf-test": "0.9.5",
             "nextflow": "26.04.1"
         }
+    },
+    "dummy inputs produce binaryCIF": {
+        "content": [
+            [
+                "versions.yml:md5,dfa01312051bd9911655014fa6fa8b8a"
+            ]
+        ],
+        "timestamp": "2026-05-18T15:48:25.156681907",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.1"
+        }
     }
 }
