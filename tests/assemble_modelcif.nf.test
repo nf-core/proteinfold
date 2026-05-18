@@ -35,6 +35,15 @@ nextflow_process {
                 { assert mmcif.contains("_ma_qa_metric_local"),
                     "pLDDT qa_metric table missing from output mmCIF" },
 
+                { assert mmcif.contains("_ma_qa_metric_global"),
+                    "Global qa_metric table (pTM/ipTM) missing from output mmCIF" },
+
+                { assert mmcif.contains("pTM"),
+                    "pTM metric type missing from output mmCIF" },
+
+                { assert mmcif.contains("ipTM"),
+                    "ipTM metric type missing from output mmCIF" },
+
                 { assert mmcif.contains("coevolution MSA"),
                     "Coevolution MSA protocol step missing from output mmCIF" },
 

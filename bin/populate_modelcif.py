@@ -152,7 +152,6 @@ def _read_plddt_tsv(plddt_tsv):
         key=lambda k: int(k.split('_', 1)[1]),
     )
     return {col: [float(row[col]) for row in rows] for col in rank_cols}
-:w
 
 
 def _read_ranked_score_tsv(tsv_file):

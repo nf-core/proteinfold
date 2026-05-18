@@ -71,34 +71,14 @@ This allows easy sequence indentity calculation when processing as a `numpy` arr
 
 ### (i)pTM (`{meta.id}_[i]ptm.tsv`)
 
-(i)pTM scores, rounded to 3 decimal places, listed by the rank number (currently unsorted - to reflect models and seeds where appropriate).
+(i)pTM scores, rounded to 3 decimal places. Two tab-separated columns: rank index (integer) and score value. Rows are sorted by rank index.
 
 ```
-17  0.552
-22  0.529
-21  0.532
-20  0.541
-23  0.523
-3 0.606
-2 0.610
-4 0.606
-1 0.616
-0 0.617
-12  0.580
-9 0.588
-13  0.580
-11  0.583
-14  0.570
-15  0.565
-24  0.517
-16  0.560
-18  0.550
-19  0.550
-10  0.588
-5 0.600
-6 0.597
-7 0.596
-8 0.595
+rank_0	0.617
+rank_1	0.616
+rank_2	0.610
+rank_3	0.606
+rank_4	0.606
 ```
 
 ### chain-wise (i)pTM (`{meta.id}_chainwise_[i]ptm.tsv`)
