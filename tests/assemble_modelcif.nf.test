@@ -14,6 +14,23 @@ nextflow_process {
         if (expectBinaryCIF) {
             assert outName.endsWith('.bcif')
             assert modelcifPath.bytes.length > 0
+
+            def parseCmd = [
+                'python3',
+                '-c',
+                'import sys, modelcif.reader; '\
+                + 'f=open(sys.argv[1],"rb"); '\
+                + 'systems=modelcif.reader.read(f); '\
+                + 'assert len(systems) > 0; '\
+                + 'print(len(systems))',
+                modelcifPath.toString(),
+            ]
+            def parseProc = parseCmd.execute()
+            def stdout = new StringBuffer()
+            def stderr = new StringBuffer()
+            parseProc.consumeProcessOutput(stdout, stderr)
+            def exitCode = parseProc.waitFor()
+            assert exitCode == 0 : "BinaryCIF parse failed (exit=${exitCode}). stdout='${stdout.toString().trim()}' stderr='${stderr.toString().trim()}'"
             return
         }
 
