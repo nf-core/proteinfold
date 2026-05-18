@@ -1,0 +1,42 @@
+data_S
+#
+loop_
+_atom_site.group_PDB
+_atom_site.id
+_atom_site.type_symbol
+_atom_site.label_atom_id
+_atom_site.label_alt_id
+_atom_site.label_comp_id
+_atom_site.label_asym_id
+_atom_site.label_entity_id
+_atom_site.label_seq_id
+_atom_site.pdbx_PDB_ins_code
+_atom_site.Cartn_x
+_atom_site.Cartn_y
+_atom_site.Cartn_z
+_atom_site.occupancy
+_atom_site.B_iso_or_equiv
+_atom_site.auth_seq_id
+_atom_site.auth_asym_id
+_atom_site.pdbx_PDB_model_num
+ATOM 1  C CA . ALA A ? 1  ? 1.000  1.500  2.000  1.0 80.0 1  A 1 
+ATOM 2  C CA . ALA A ? 2  ? 2.000  2.500  3.000  1.0 80.5 2  A 1 
+ATOM 3  C CA . ALA A ? 3  ? 3.000  3.500  4.000  1.0 81.0 3  A 1 
+ATOM 4  C CA . ALA A ? 4  ? 4.000  4.500  5.000  1.0 81.5 4  A 1 
+ATOM 5  C CA . ALA A ? 5  ? 5.000  5.500  6.000  1.0 82.0 5  A 1 
+ATOM 6  C CA . ALA A ? 6  ? 6.000  6.500  7.000  1.0 82.5 6  A 1 
+ATOM 7  C CA . ALA A ? 7  ? 7.000  7.500  8.000  1.0 83.0 7  A 1 
+ATOM 8  C CA . ALA A ? 8  ? 8.000  8.500  9.000  1.0 83.5 8  A 1 
+ATOM 9  C CA . ALA A ? 9  ? 9.000  9.500  10.000 1.0 84.0 9  A 1 
+ATOM 10 C CA . ALA A ? 10 ? 10.000 10.500 11.000 1.0 84.5 10 A 1 
+ATOM 11 C CA . ALA A ? 11 ? 11.000 11.500 12.000 1.0 85.0 11 A 1 
+ATOM 12 C CA . ALA A ? 12 ? 12.000 12.500 13.000 1.0 85.5 12 A 1 
+ATOM 13 C CA . ALA A ? 13 ? 13.000 13.500 14.000 1.0 86.0 13 A 1 
+ATOM 14 C CA . ALA A ? 14 ? 14.000 14.500 15.000 1.0 86.5 14 A 1 
+ATOM 15 C CA . ALA A ? 15 ? 15.000 15.500 16.000 1.0 87.0 15 A 1 
+ATOM 16 C CA . ALA A ? 16 ? 16.000 16.500 17.000 1.0 87.5 16 A 1 
+ATOM 17 C CA . ALA A ? 17 ? 17.000 17.500 18.000 1.0 88.0 17 A 1 
+ATOM 18 C CA . ALA A ? 18 ? 18.000 18.500 19.000 1.0 88.5 18 A 1 
+ATOM 19 C CA . ALA A ? 19 ? 19.000 19.500 20.000 1.0 89.0 19 A 1 
+ATOM 20 C CA . ALA A ? 20 ? 20.000 20.500 21.000 1.0 89.5 20 A 1 
+#

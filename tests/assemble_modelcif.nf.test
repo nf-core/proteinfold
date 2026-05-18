@@ -62,7 +62,7 @@ nextflow_process {
                 """
                 input[0] = [
                     [ id: 'test', model: 'alphafold2', msa_tool: 'jackhmmer' ],
-                    file("$projectDir/assets/DUMMY_MODELCIF.mmcif",  checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_MODELCIF_20RES.mmcif", checkIfExists: true),
                     file("$projectDir/assets/DUMMY_MSA.tsv",         checkIfExists: true),
                     file("$projectDir/assets/DUMMY_PLDDT.tsv",       checkIfExists: true),
                     file("$projectDir/assets/DUMMY_PAE.tsv",         checkIfExists: true),
@@ -89,7 +89,7 @@ nextflow_process {
                 """
                 input[0] = [
                     [ id: 'test_embed', model: 'alphafold2', msa_tool: 'jackhmmer' ],
-                    file("$projectDir/assets/DUMMY_MODELCIF.mmcif",  checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_MODELCIF_20RES.mmcif", checkIfExists: true),
                     file("$projectDir/assets/DUMMY_MSA.tsv",         checkIfExists: true),
                     file("$projectDir/assets/DUMMY_PLDDT.tsv",       checkIfExists: true),
                     file("$projectDir/assets/DUMMY_PAE.tsv",         checkIfExists: true),
