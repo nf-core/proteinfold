@@ -33,7 +33,7 @@ The samplesheet can have as many columns as you desire, however, there is a stri
 
 An [example samplesheet](../assets/samplesheet.csv) has been provided with the pipeline.
 
-Each FASTA file should contain a single protein sequence unless using multimer mode. To provide a FASTA file with multiple sequences for individual folding, you can use one or more FASTA files with the `--split_fasta` parameter. This will treat each sequence in the FASTA file as a separate entry, folding them individually and in parallel, as if each sequence were listed separately in the samplesheet.
+To provide a FASTA file with multiple sequences for individual folding, use one or more FASTA files with the `--split_fasta` parameter. This will treat each sequence in the FASTA file as a separate entry, folding them individually and in parallel, as if each sequence were listed separately in the samplesheet.
 
 ## Running the pipeline
 
@@ -83,7 +83,6 @@ Each mode has specific reference data requirements. To support all modes the `--
 │   ├── af3.bin
 │   ├── alphafold_params_2021-07-14
 │   ├── alphafold_params_2022-12-06
-│   ├── alphafold_params_colab_2022-12-06
 │   ├── boltz1_conf.ckpt
 │   ├── boltz2_aff.ckpt
 │   ├── boltz2_conf.ckpt
@@ -122,6 +121,14 @@ Each mode has specific reference data requirements. To support all modes the `--
 │   └── pdb_seqres.txt
 ├── rfam
 │   └── Rfam-14.9_rep_seq.fasta
+├── RNA
+│   ├── Rfam.full_region
+│   ├── Rfam.cm.*
+│   ├── id_mapping.tsv.gz
+│   ├── rfam_annotations.tsv.gz
+│   ├── rnacentral.fasta.*
+│   ├── nt.*
+│   └── ...
 ├── small_bfd
 │   └── bfd-first_non_consensus_sequences.fasta
 ├── uniprot
@@ -152,6 +159,18 @@ Alternatively, the required data layout for each of the individual modes is desc
 - [RoseTTAFold2NA](./usage/rosettafold2na.md)
 
 > Omitting the `--db` flag will allow the pipeline to download the reference data required to execute the selected modes.
+
+## Random Seeds
+
+The pipeline-wide `--random_seed` parameter can be used to set the same seed for `alphafold2`, `boltz`, and `colabfold` modes only.
+
+If no seed is explicitly provided, each mode keeps its native default behaviour:
+
+- `alphafold2`: AlphaFold2 generates a random seed internally.
+- `boltz`: Boltz leaves the seed unset (`--seed` is not passed).
+- `colabfold`: ColabFold defaults to `--random-seed 0`.
+
+For reproducible results between runs, it is recommended to set an explicit seed.
 
 ## Foldseek structural similarity search
 
@@ -210,7 +229,7 @@ If you wish to repeatedly use the same parameters for multiple runs, rather than
 Pipeline settings can be provided in a `yaml` or `json` file via `-params-file <file>`.
 
 > [!WARNING]
-> Do not use `-c <file>` to specify parameters as this will result in errors. Custom config files specified with `-c` must only be used for [tuning process resource specifications](https://nf-co.re/docs/usage/configuration#tuning-workflow-resources), other infrastructural tweaks (such as output directories), or module arguments (args).
+> Do not use `-c <file>` to specify parameters as this will result in errors. Custom config files specified with `-c` must only be used for [tuning process resource specifications](https://nf-co.re/docs/running/run-pipelines#configuring-pipelines), other infrastructural tweaks (such as output directories), or module arguments (args).
 
 The above pipeline run specified with a params file in yaml format:
 
@@ -306,19 +325,19 @@ Specify the path to a specific config file (this is a core Nextflow command). Se
 
 Whilst the default requirements set within the pipeline will hopefully work for most people and with most input data, you may find that you want to customise the compute resources that the pipeline requests. Each step in the pipeline has a default set of requirements for number of CPUs, memory and time. For most of the pipeline steps, if the job exits with any of the error codes specified [here](https://github.com/nf-core/rnaseq/blob/4c27ef5610c87db00c3c5a3eed10b1d161abf575/conf/base.config#L18) it will automatically be resubmitted with higher resources request (2 x original, then 3 x original). If it still fails after the third attempt then the pipeline execution is stopped.
 
-To change the resource requests, please see the [max resources](https://nf-co.re/docs/usage/configuration#max-resources) and [tuning workflow resources](https://nf-co.re/docs/usage/configuration#tuning-workflow-resources) section of the nf-core website.
+To change the resource requests, please see the [max resources](https://nf-co.re/docs/running/configuration/nextflow-for-your-system#set-max-resources) and [customise process resources](https://nf-co.re/docs/running/configuration/nextflow-for-your-system#customize-process-resources) section of the nf-core website.
 
 ### Custom Containers
 
 In some cases, you may wish to change the container or conda environment used by a pipeline steps for a particular tool. By default, nf-core pipelines use containers and software from the [biocontainers](https://biocontainers.pro/) or [bioconda](https://bioconda.github.io/) projects. However, in some cases the pipeline specified version maybe out of date.
 
-To use a different container from the default container or conda environment specified in a pipeline, please see the [updating tool versions](https://nf-co.re/docs/usage/configuration#updating-tool-versions) section of the nf-core website.
+To use a different container from the default container or conda environment specified in a pipeline, please see the [updating tool versions](https://nf-co.re/docs/running/configuration/nextflow-for-your-system#update-tool-versions) section of the nf-core website.
 
 ### Custom Tool Arguments
 
 A pipeline might not always support every possible argument or option of a particular tool used in pipeline. Fortunately, nf-core pipelines provide some freedom to users to insert additional parameters that the pipeline does not include by default.
 
-To learn how to provide additional arguments to a particular tool of the pipeline, please see the [customising tool arguments](https://nf-co.re/docs/usage/configuration#customising-tool-arguments) section of the nf-core website.
+To learn how to provide additional arguments to a particular tool of the pipeline, please see the [customising tool arguments](https://nf-co.re/docs/running/configuration/nextflow-for-your-system#modifying-tool-arguments) section of the nf-core website.
 
 ### nf-core/configs
 

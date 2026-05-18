@@ -4,6 +4,9 @@ import pickle
 import os
 import argparse
 import json
+import subprocess
+import sys
+import tempfile
 #import torch moved to a conditional import since too bulky import if not used
 import numpy as np
 import csv
@@ -94,6 +97,18 @@ def format_iptm_rows(chain_pair_entries, chain_ids=None):
     return [list(row) for row in zip(*iptm_rows)]
 
 
+def format_pair_score_rows(pair_score_entries, pair_labels=None):
+    if pair_labels is None:
+        pair_labels = sorted({label for score_values in pair_score_entries.values() for label, _ in score_values})
+
+    rows = [[""] + pair_labels]
+    for model_idx, score_values in pair_score_entries.items():
+        score_map = {label: value for label, value in score_values}
+        rows.append([model_idx] + [f"{score_map[label]:.4f}" if label in score_map else "n/a" for label in pair_labels])
+
+    return [list(row) for row in zip(*rows)]
+
+
 def chain_iptm_matrix_to_pairs(iptm_matrix):
     """
     Convert a chain-wise iPTM matrix to pair values by taking off-diagonal elements.
@@ -112,6 +127,96 @@ def write_tsv(file_path, rows):
         writer = csv.writer(out_f, delimiter='\t')
         writer.writerows(rows)
 
+
+def resolve_struct_for_model(struct_map, model_id):
+    if model_id in struct_map:
+        return struct_map[model_id]
+    try:
+        numeric_model_id = int(model_id)
+    except (TypeError, ValueError):
+        return None
+    return struct_map.get(numeric_model_id, struct_map.get(numeric_model_id - 1))
+
+
+def parse_ipsae_text_report(report_path):
+    pair_iptm_scores = []
+    pair_ipsae_scores = []
+    max_iptm = None
+    max_ipsae = None
+
+    with open(report_path) as handle:
+        for line in handle:
+            fields = line.split()
+            if len(fields) < 10 or fields[4] != "max":
+                continue
+
+            pair_label = f"{fields[0]}:{fields[1]}"
+            ipsae_score = float(fields[5])
+            iptm_score = float(fields[9])
+
+            pair_iptm_scores.append((pair_label, iptm_score))
+            pair_ipsae_scores.append((pair_label, ipsae_score))
+            max_iptm = iptm_score if max_iptm is None else max(max_iptm, iptm_score)
+            max_ipsae = ipsae_score if max_ipsae is None else max(max_ipsae, ipsae_score)
+
+    if max_iptm is None or max_ipsae is None:
+        return None
+
+    return round(max_iptm, 3), pair_iptm_scores, round(max_ipsae, 3), pair_ipsae_scores
+
+
+def derive_interface_scores(pae_matrix, struct_file, source_label):
+    try:
+        if len(get_chain_ids(struct_file)) < 2:
+            print(f"Skipping derived interface scores for {source_label}: fewer than 2 chains in {struct_file}")
+            return None
+    except Exception as e:
+        print(f"Skipping derived interface scores for {source_label}: failed to inspect chains in {struct_file}: {e}")
+        return None
+
+    try:
+        with tempfile.TemporaryDirectory(prefix="ipsae_") as temp_dir:
+            struct_basename = os.path.basename(struct_file)
+            staged_struct = os.path.join(temp_dir, struct_basename)
+            pae_json = os.path.join(temp_dir, "pae.json")
+
+            try:
+                os.symlink(os.path.abspath(struct_file), staged_struct)
+            except OSError:
+                with open(struct_file, "rb") as src, open(staged_struct, "wb") as dst:
+                    dst.write(src.read())
+
+            with open(pae_json, "w") as handle:
+                json.dump({"pae": np.asarray(pae_matrix).tolist()}, handle)
+
+            subprocess.run(
+                [
+                    sys.executable,
+                    os.path.join(os.path.dirname(__file__), "ipsae.py"),
+                    pae_json,
+                    staged_struct,
+                    "10",
+                    "15",
+                ],
+                check=True,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.PIPE,
+                text=True,
+            )
+
+            report_path = os.path.join(
+                temp_dir,
+                f"{os.path.splitext(struct_basename)[0]}_10_15.txt",
+            )
+            return parse_ipsae_text_report(report_path)
+    except subprocess.CalledProcessError as e:
+        stderr = e.stderr.strip() if e.stderr else "no stderr"
+        print(f"Skipping derived interface scores for {source_label}: ipsae.py failed for {struct_file}: {stderr}")
+        return None
+    except (OSError, ValueError, json.JSONDecodeError) as e:
+        print(f"Skipping derived interface scores for {source_label}: {e}")
+        return None
+
 def extract_structs_plddt_to_tsv(name, structures):
     """
     Write out a tsv file contain pLDDTs for reading by MultiQC in nf-core/proteinfold
@@ -127,15 +232,22 @@ def extract_structs_plddt_to_tsv(name, structures):
     # Create header as the first row
     plddt_rows =  [["Positions"] + rank_names]
     res_id_col = list(range(len(plddt_cols[0])))
-    plddt_rows.extend(zip(res_id_col, *plddt_cols))  # Combine lists column-wise to make rows
-    write_tsv(f"{name}_plddt.tsv", plddt_rows)
+    plddt_rows.extend([list(row) for row in zip(res_id_col, *plddt_cols)])  # Combine lists column-wise to make rows
+    write_tsv(f"{name}_plddt_mqc.tsv", plddt_rows)
 
-def read_pkl(name, pkl_files):
+def read_pkl(name, pkl_files, struct_files=None):
     """
     Adapted from the Galaxy AlphaFold tool (https://github.com/usegalaxy-au/tools-au/blob/de94df520c8dc7b8652aedb92e90f6ebb312f95f/tools/alphafold/scripts/outputs.py), originally authored by @neoformit and @graceahall and funded by Australian Biocommons and QCIF Australia.
     """
     ptm_data = {}
     iptm_data = {}
+    ipsae_data = {}
+    chainwise_iptm = {}
+    chainwise_ipsae = {}
+    struct_map = {}
+    if struct_files:
+        for idx, struct_file in enumerate(sorted(struct_files)):
+            struct_map[idx] = struct_file
     for pkl_file in pkl_files:
         print(f"Processing {pkl_file}")
         data = pickle.load(open(pkl_file, "rb"))
@@ -146,7 +258,7 @@ def read_pkl(name, pkl_files):
         elif pkl_file.endswith("features.pkl"): # AlphaFold2.3
             try:
                 N = data["num_alignments"][0] #monomer
-            except:
+            except (IndexError, KeyError, TypeError):
                 N = data["num_alignments"] #multimer
             write_tsv(f"{name}_msa.tsv", format_msa_rows(data["msa"][:N]))
         else:
@@ -167,6 +279,19 @@ def read_pkl(name, pkl_files):
 
             if 'iptm' in data:
                 iptm_data[model_id] = f"{np.round(data['iptm'],3)}\n"
+
+            struct_file = resolve_struct_for_model(struct_map, model_id)
+            if 'predicted_aligned_error' in data.keys() and struct_file:
+                derived_scores = derive_interface_scores(np.array(data['predicted_aligned_error']), struct_file, pkl_file)
+                if derived_scores:
+                    max_iptm, pair_iptm_scores, max_ipsae, pair_scores = derived_scores
+                    if pair_iptm_scores:
+                        chainwise_iptm[model_id] = pair_iptm_scores
+                    if model_id not in iptm_data and max_iptm > 0:
+                        iptm_data[model_id] = f"{max_iptm:.3f}\n"
+                    ipsae_data[model_id] = f"{max_ipsae:.3f}\n"
+                    if pair_scores:
+                        chainwise_ipsae[model_id] = pair_scores
     if ptm_data:
         ptm_rows = sorted([[k, v.strip()] for k, v in ptm_data.items()], key=lambda x: x[0])
         write_tsv(f"{name}_ptm.tsv", ptm_rows)
@@ -174,6 +299,16 @@ def read_pkl(name, pkl_files):
     if iptm_data:
         iptm_rows = sorted([[k, v.strip()] for k, v in iptm_data.items()], key=lambda x: x[0])
         write_tsv(f"{name}_iptm.tsv", iptm_rows)
+
+    if chainwise_iptm:
+        write_tsv(f"{name}_chainwise_iptm.tsv", format_pair_score_rows(chainwise_iptm))
+
+    if ipsae_data:
+        ipsae_rows = sorted([[k, v.strip()] for k, v in ipsae_data.items()], key=lambda x: x[0])
+        write_tsv(f"{name}_ipsae.tsv", ipsae_rows)
+
+    if chainwise_ipsae:
+        write_tsv(f"{name}_chainwise_ipsae.tsv", format_pair_score_rows(chainwise_ipsae))
 
 def read_paired_a3m(name, a3m_file):
     msa_rows = a3m_to_int(a3m_file)
@@ -219,17 +354,36 @@ def read_a3m(name, a3m_files):
 
     write_tsv(f"{name}_msa.tsv", format_msa_rows(final_rows))
 
-def read_npz(name, npz_files):
-   for idx, npz_file in enumerate(npz_files):
+def read_npz(name, npz_files, struct_files=None):
+    ipsae_rows = []
+    chainwise_ipsae = {}
+    struct_map = {}
+    if struct_files:
+        for idx, struct_file in enumerate(sorted(struct_files)):
+            struct_map[idx] = struct_file
+    for idx, npz_file in enumerate(npz_files):
         data = np.load(npz_file)
-       #Boltz PAE files if --write_full_pae is used
+        #Boltz PAE files if --write_full_pae is used
         if npz_file.split('/')[-1].startswith('pae') and npz_file.endswith('.npz'):
             model_id = os.path.basename(npz_file).split('_model_')[-1].split('.npz')[0]
             write_tsv(f"{name}_{model_id}_pae.tsv", format_pae_rows(data["pae"]))
+            struct_file = resolve_struct_for_model(struct_map, model_id)
+            if struct_file:
+                derived_scores = derive_interface_scores(np.array(data["pae"]), struct_file, npz_file)
+                if derived_scores:
+                    _, _, max_ipsae, pair_scores = derived_scores
+                    ipsae_rows.append((f"{model_id}", f"{max_ipsae:.3f}"))
+                    if pair_scores:
+                        chainwise_ipsae[int(model_id)] = pair_scores
+    if len(ipsae_rows) > 0:
+        write_tsv(f"{name}_ipsae.tsv", sorted(ipsae_rows, key=lambda x: int(x[0])))
+    if len(chainwise_ipsae) > 0:
+        write_tsv(f"{name}_chainwise_ipsae.tsv", format_pair_score_rows(dict(sorted(chainwise_ipsae.items(), key=lambda x: x[0]))))
 
 # Boltz MSA processing
 def read_csv(name, csv_files):
-    if not os.path.isfile(csv_files[0]): return #TODO: Fix temporary workaround
+    if not os.path.isfile(csv_files[0]):
+        return  # TODO: Fix temporary workaround
     msa_rows = {}
     unpaired_msa_rows = {}
     for csv_file in sorted(csv_files, key=lambda x: int(x.split('_')[-1].split('.csv')[0])):
@@ -287,13 +441,20 @@ def read_csv(name, csv_files):
 
     write_tsv(f"{name}_msa.tsv", final_rows)
 
-def read_json(name, json_files):
+def read_json(name, json_files, struct_files=None):
     ptm_data = {}
     iptm_data = {}
+    ipsae_data = {}
+    chainwise_iptm = {}
+    chainwise_ipsae = {}
     chain_pair_iptm_data = {} # For iPTM data to be converted into formatted pairs with non-self elements
     chain_pair_entries = {}
     chainwise_ptms = {}
     chain_ids = []
+    struct_map = {}
+    if struct_files:
+        for idx, struct_file in enumerate(sorted(struct_files)):
+            struct_map[idx] = struct_file
 
     for idx, json_file in enumerate(json_files):
         with open(json_file, 'r') as f:
@@ -378,6 +539,19 @@ def read_json(name, json_files):
                 if data['iptm']: #ie not null
                     iptm_data[model_id] = f"{np.round(data['iptm'],3)}\n"
 
+            struct_file = resolve_struct_for_model(struct_map, model_id)
+            if "pae" in data.keys() and struct_file:
+                derived_scores = derive_interface_scores(np.array(data['pae']), struct_file, json_file)
+                if derived_scores:
+                    max_iptm, pair_iptm_scores, max_ipsae, pair_scores = derived_scores
+                    if pair_iptm_scores and model_id not in chain_pair_entries:
+                        chainwise_iptm[model_id] = pair_iptm_scores
+                    if model_id not in iptm_data and max_iptm > 0:
+                        iptm_data[model_id] = f"{max_iptm:.3f}\n"
+                    ipsae_data[model_id] = f"{max_ipsae:.3f}\n"
+                    if pair_scores:
+                        chainwise_ipsae[model_id] = pair_scores
+
             if 'chain_pair_iptm' not in data.keys() and 'pair_chains_iptm' not in data.keys():
                 print(f"No chain-wise iPTM output in {json_file}, it was likely a monomer calculation")
             else:
@@ -403,6 +577,8 @@ def read_json(name, json_files):
 
     if chain_pair_entries:
         write_tsv(f"{name}_chainwise_iptm.tsv", format_iptm_rows(chain_pair_entries, chain_ids=chain_ids))
+    elif chainwise_iptm:
+        write_tsv(f"{name}_chainwise_iptm.tsv", format_pair_score_rows(chainwise_iptm))
 
     if ptm_data:
         ptm_rows = [[k, v.strip()] for k, v in sorted(ptm_data.items(), key=lambda x: x[0])]
@@ -411,6 +587,13 @@ def read_json(name, json_files):
     if iptm_data:
         iptm_rows = [[k, v.strip()] for k, v in sorted(iptm_data.items(), key=lambda x: x[0])]
         write_tsv(f"{name}_iptm.tsv", iptm_rows)
+
+    if ipsae_data:
+        ipsae_rows = [[k, v.strip()] for k, v in sorted(ipsae_data.items(), key=lambda x: x[0])]
+        write_tsv(f"{name}_ipsae.tsv", ipsae_rows)
+
+    if chainwise_ipsae:
+        write_tsv(f"{name}_chainwise_ipsae.tsv", format_pair_score_rows(chainwise_ipsae))
 
 
 def read_pt(name, pt_files):
@@ -425,25 +608,48 @@ def read_pt(name, pt_files):
                 write_tsv(f"{name}_0_pae.tsv", format_pae_rows(np.squeeze(data["pae"].numpy())))
         break
 
-def read_colabfold_metrics(name, colabfold_metrics_fns):
+def read_colabfold_metrics(name, colabfold_metrics_fns, struct_files=None):
     ptm_rows = []
     iptm_rows = []
+    ipsae_rows = []
+    chainwise_iptm = {}
+    chainwise_ipsae = {}
+    struct_map = {}
+    if struct_files:
+        for idx, struct_file in enumerate(sorted(struct_files)):
+            struct_map[idx] = struct_file
     for fn in colabfold_metrics_fns:
         with open(fn) as f:
             data = json.load(f)
         rank_id = int(fn.split("rank_")[1].split("_")[0])-1
-        model_id = int(fn.split("model_")[1].split("_")[0])
-        seed_id = int(fn.split("seed_")[1].split(".")[0])
         if "pae" in data:
             write_tsv(f"{name}_{rank_id}_pae.tsv", format_pae_rows(data["pae"]))
         if "ptm" in data:
             ptm_rows.append((f"{rank_id}", data["ptm"]))
         if "iptm" in data:
             iptm_rows.append((f"{rank_id}", data["iptm"]))
+        struct_file = resolve_struct_for_model(struct_map, rank_id)
+        if "pae" in data and struct_file:
+            derived_scores = derive_interface_scores(np.array(data['pae']), struct_file, fn)
+            if derived_scores:
+                max_iptm, pair_iptm_scores, max_ipsae, pair_scores = derived_scores
+                if pair_iptm_scores:
+                    chainwise_iptm[rank_id] = pair_iptm_scores
+                if not any(row[0] == f"{rank_id}" for row in iptm_rows) and max_iptm > 0:
+                    iptm_rows.append((f"{rank_id}", f"{max_iptm:.3f}"))
+                ipsae_rows.append((f"{rank_id}", f"{max_ipsae:.3f}"))
+                if pair_scores:
+                    chainwise_ipsae[rank_id] = pair_scores
     if len(ptm_rows)>0:
         write_tsv(f"{name}_ptm.tsv", sorted(ptm_rows, key = lambda x: x[0]))
     if len(iptm_rows)>0:
         write_tsv(f"{name}_iptm.tsv", sorted(iptm_rows, key = lambda x: x[0]))
+    if len(chainwise_iptm)>0:
+        write_tsv(f"{name}_chainwise_iptm.tsv", format_pair_score_rows(dict(sorted(chainwise_iptm.items(), key=lambda x: x[0]))))
+    if len(ipsae_rows)>0:
+        write_tsv(f"{name}_ipsae.tsv", sorted(ipsae_rows, key = lambda x: x[0]))
+    if len(chainwise_ipsae)>0:
+        write_tsv(f"{name}_chainwise_ipsae.tsv", format_pair_score_rows(dict(sorted(chainwise_ipsae.items(), key=lambda x: x[0]))))
 
 def main():
     parser = argparse.ArgumentParser()
@@ -460,7 +666,7 @@ def main():
     args = parser.parse_args()
 
     if args.pkls:
-        read_pkl(args.name, args.pkls)
+        read_pkl(args.name, args.pkls, args.structs)
     if args.a3ms:
         read_a3m(args.name, args.a3ms)
     if args.paired_a3m:
@@ -468,15 +674,15 @@ def main():
     if args.csvs:
         read_csv(args.name, args.csvs)
     if args.npzs:
-        read_npz(args.name, args.npzs)
+        read_npz(args.name, args.npzs, args.structs)
     if args.jsons:
-        read_json(args.name, args.jsons)
+        read_json(args.name, args.jsons, args.structs)
     if args.pts:
         read_pt(args.name, args.pts)
     if args.structs:
         extract_structs_plddt_to_tsv(args.name, args.structs)
     if args.colabfold_metrics_fns:
-        read_colabfold_metrics(args.name, args.colabfold_metrics_fns)
+        read_colabfold_metrics(args.name, args.colabfold_metrics_fns, args.structs)
 
 if __name__ == "__main__":
     main()

@@ -22,13 +22,6 @@ include { BOLTZ_FASTA } from '../modules/local/boltz_fasta'
 include { SPLIT_MSA } from '../modules/local/split_msa'
 include { MMSEQS_COLABFOLDSEARCH } from '../modules/local/mmseqs_colabfoldsearch'
 include { MULTIFASTA_TO_CSV      } from '../modules/local/multifasta_to_csv'
-//
-// SUBWORKFLOW: Consisting entirely of nf-core/modules
-//
-include { paramsSummaryMap       } from 'plugin/nf-schema'
-include { paramsSummaryMultiqc   } from '../subworkflows/nf-core/utils_nfcore_pipeline'
-include { softwareVersionsToYAML } from '../subworkflows/nf-core/utils_nfcore_pipeline'
-include { methodsDescriptionText } from '../subworkflows/local/utils_nfcore_proteinfold_pipeline'
 
 //
 // MODULE: Boltz
@@ -177,6 +170,46 @@ workflow BOLTZ {
 
     RUN_BOLTZ
         .out
+        .iptm_raw
+        .map { it ->
+            def meta = it[0].clone();
+            meta.model = "boltz"
+            [ meta, it[1] ]
+        }
+        .set { ch_iptm }
+
+    RUN_BOLTZ
+        .out
+        .ipsae_raw
+        .map { it ->
+            def meta = it[0].clone();
+            meta.model = "boltz"
+            [ meta, it[1] ]
+        }
+        .set { ch_ipsae }
+
+    RUN_BOLTZ
+        .out
+        .chainwise_iptm_raw
+        .map { it ->
+            def meta = it[0].clone();
+            meta.model = "boltz"
+            [ meta, it[1] ]
+        }
+        .set { ch_chainwise_iptm }
+
+    RUN_BOLTZ
+        .out
+        .chainwise_ipsae_raw
+        .map { it ->
+            def meta = it[0].clone();
+            meta.model = "boltz"
+            [ meta, it[1] ]
+        }
+        .set { ch_chainwise_ipsae }
+
+    RUN_BOLTZ
+        .out
         .multiqc
         .map { it -> it[1] }
         .collect(sort: true)
@@ -194,4 +227,8 @@ workflow BOLTZ {
     top_ranked_pdb  = ch_top_ranked_pdb
     pdb             = ch_pdb
     pae             = ch_pae
+    iptm            = ch_iptm
+    ipsae           = ch_ipsae
+    chainwise_iptm  = ch_chainwise_iptm
+    chainwise_ipsae = ch_chainwise_ipsae
 }

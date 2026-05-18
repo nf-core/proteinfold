@@ -10,6 +10,7 @@
 include { RUN_ALPHAFOLD2      } from '../modules/local/run_alphafold2'
 include { RUN_ALPHAFOLD2_MSA  } from '../modules/local/run_alphafold2_msa'
 include { RUN_ALPHAFOLD2_PRED } from '../modules/local/run_alphafold2_pred'
+include { resolveModelPresetByFastaEntities } from '../subworkflows/local/utils_nfcore_proteinfold_pipeline'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -30,7 +31,7 @@ workflow ALPHAFOLD2 {
     ch_versions             // channel: [ path(versions.yml) ]
     alphafold2_full_dbs     // boolean: Use full databases (otherwise reduced version)
     alphafold2_mode         //  string: Mode to run Alphafold2 in
-    alphafold2_model_preset //  string: Specifies the model preset to use for Alphafold2
+    alphafold2_model_preset //  string: Model preset used for single-entry FASTA inputs
     uniref30_prefix         //  string: Prefix for uniref30 database files
     ch_alphafold2_params    // channel: path(alphafold2_params)
     ch_bfd                  // channel: path(bfd)
@@ -49,26 +50,26 @@ workflow ALPHAFOLD2 {
     ch_top_ranked_pdb = channel.empty()
     ch_msa            = channel.empty()
     ch_pae            = channel.empty()
+    ch_iptm           = channel.empty()
+    ch_ipsae          = channel.empty()
+    ch_chainwise_iptm = channel.empty()
+    ch_chainwise_ipsae = channel.empty()
     ch_multiqc_report = channel.empty()
 
-    if (alphafold2_model_preset != 'multimer') {
-        ch_samplesheet
-            .map {
-                meta, fasta ->
-                [ meta, fasta.splitFasta(file:true) ]
-            }
-            .transpose()
-            .set { ch_samplesheet }
-    }
+    ch_samplesheet
+        .map { meta, fasta ->
+            def resolved_model_preset = resolveModelPresetByFastaEntities(fasta, alphafold2_model_preset, 'multimer')
+            [ meta, fasta, resolved_model_preset ]
+        }
+        .set { ch_samplesheet_prepared }
 
     if (alphafold2_mode == 'standard') {
         //
         // SUBWORKFLOW: Run Alphafold2 standard mode
         //
         RUN_ALPHAFOLD2 (
-            ch_samplesheet,
+            ch_samplesheet_prepared,
             alphafold2_full_dbs,
-            alphafold2_model_preset,
             uniref30_prefix,
             ch_alphafold2_params,
             ch_bfd,
@@ -97,6 +98,10 @@ workflow ALPHAFOLD2 {
         ch_top_ranked_pdb = ch_top_ranked_pdb.mix(RUN_ALPHAFOLD2.out.top_ranked_pdb)
         ch_msa            = ch_msa.mix(RUN_ALPHAFOLD2.out.msa)
         ch_pae            = ch_pae.mix(RUN_ALPHAFOLD2.out.pae)
+        ch_iptm           = ch_iptm.mix(RUN_ALPHAFOLD2.out.iptms)
+        ch_ipsae          = ch_ipsae.mix(RUN_ALPHAFOLD2.out.ipsaes)
+        ch_chainwise_iptm = ch_chainwise_iptm.mix(RUN_ALPHAFOLD2.out.chainwise_iptms)
+        ch_chainwise_ipsae = ch_chainwise_ipsae.mix(RUN_ALPHAFOLD2.out.chainwise_ipsaes)
         ch_versions       = ch_versions.mix(RUN_ALPHAFOLD2.out.versions)
 
     } else if (alphafold2_mode == 'split_msa_prediction') {
@@ -104,9 +109,8 @@ workflow ALPHAFOLD2 {
         // SUBWORKFLOW: Run Alphafold2 split mode, MSA and predicition
         //
         RUN_ALPHAFOLD2_MSA (
-            ch_samplesheet,
+            ch_samplesheet_prepared,
             alphafold2_full_dbs,
-            alphafold2_model_preset,
             uniref30_prefix,
             ch_alphafold2_params,
             ch_bfd,
@@ -123,13 +127,15 @@ workflow ALPHAFOLD2 {
         ch_versions = ch_versions.mix(RUN_ALPHAFOLD2_MSA.out.versions)
 
         //synchronize
-        ch_samplesheet
+        ch_samplesheet_prepared
             .join(RUN_ALPHAFOLD2_MSA.out.features)
+            .map { meta, fasta, resolved_model_preset, features ->
+                [ meta, fasta, features, resolved_model_preset ]
+            }
             .set { ch_fasta_features }
 
         RUN_ALPHAFOLD2_PRED (
             ch_fasta_features,
-            alphafold2_model_preset,
             ch_alphafold2_params,
             ch_bfd,
             ch_small_bfd,
@@ -157,6 +163,10 @@ workflow ALPHAFOLD2 {
         ch_pdb            = ch_pdb.mix(RUN_ALPHAFOLD2_PRED.out.pdb)
         ch_msa            = ch_msa.mix(RUN_ALPHAFOLD2_PRED.out.msa)
         ch_pae            = ch_pae.mix(RUN_ALPHAFOLD2_PRED.out.pae)
+        ch_iptm           = ch_iptm.mix(RUN_ALPHAFOLD2_PRED.out.iptms)
+        ch_ipsae          = ch_ipsae.mix(RUN_ALPHAFOLD2_PRED.out.ipsaes)
+        ch_chainwise_iptm = ch_chainwise_iptm.mix(RUN_ALPHAFOLD2_PRED.out.chainwise_iptms)
+        ch_chainwise_ipsae = ch_chainwise_ipsae.mix(RUN_ALPHAFOLD2_PRED.out.chainwise_ipsaes)
         ch_versions       = ch_versions.mix(RUN_ALPHAFOLD2_PRED.out.versions)
     }
 
@@ -192,11 +202,47 @@ workflow ALPHAFOLD2 {
                                     [ meta, it[1] ]
                                 }
 
+    ch_iptm
+        .map { it ->
+            def meta = it[0].clone();
+            meta.model = "alphafold2";
+            [ meta, it[1] ]
+        }
+        .set { ch_iptm_final }
+
+    ch_ipsae
+        .map { it ->
+            def meta = it[0].clone();
+            meta.model = "alphafold2";
+            [ meta, it[1] ]
+        }
+        .set { ch_ipsae_final }
+
+    ch_chainwise_iptm
+        .map { it ->
+            def meta = it[0].clone();
+            meta.model = "alphafold2";
+            [ meta, it[1] ]
+        }
+        .set { ch_chainwise_iptm_final }
+
+    ch_chainwise_ipsae
+        .map { it ->
+            def meta = it[0].clone();
+            meta.model = "alphafold2";
+            [ meta, it[1] ]
+        }
+        .set { ch_chainwise_ipsae_final }
+
     emit:
     top_ranked_pdb = ch_top_ranked_pdb_final // channel: [ meta, /path/to/*.pdb ]
     pdb            = ch_pdb_final            // channel: [ meta, /path/to/*.pdb ]
     msa            = ch_msa_final            // channel: [ meta, /path/to/*.pdb, /path/to/*_coverage.png ]  // Would prefer channel: [ meta, /path/to/*_msa.tsv ]
     pae            = ch_pae_final            // channel: [ meta, /path/to/*_0_pae.tsv]
+    iptm           = ch_iptm_final           // channel: [ meta, /path/to/*_iptm.tsv ]
+    ipsae          = ch_ipsae_final          // channel: [ meta, /path/to/*_ipsae.tsv ]
+    chainwise_iptm = ch_chainwise_iptm_final // channel: [ meta, /path/to/*_chainwise_iptm.tsv ]
+    chainwise_ipsae = ch_chainwise_ipsae_final // channel: [ meta, /path/to/*_chainwise_ipsae.tsv ]
     multiqc_report = ch_multiqc_report       // channel: /path/to/multiqc_report.html
     versions       = ch_versions             // channel: [ path(versions.yml) ]
 }

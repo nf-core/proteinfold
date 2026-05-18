@@ -7,9 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Enhancements & fixes
 
-| Old parameter | New parameter |
-| ------------- | ------------- |
-|               |               |
+- [[PR #573](https://github.com/nf-core/proteinfold/pull/573)] - Adds affiliations for UNSW Structural Biology Facility (SBF).
+- [[PR #588](https://github.com/nf-core/proteinfold/pulls/588)] - Add `--random_seed` for AF2, Boltz, and ColabFold, removing and replacing `--alphafold2_random_seed`.
+- [[PR #592](https://github.com/nf-core/proteinfold/pull/592)] - Add iPTM and ipSAE TSV/report outputs, display chainwise interface scores in HTML reports.
+- [[PR #597](https://github.com/nf-core/proteinfold/pull/597)] - Update pipeline template to [nf-core/tools 4.0.2](https://github.com/nf-core/tools/releases/tag/4.0.2).
+- [[#598](https://github.com/nf-core/proteinfold/issues/598)] - Remove workflow JSON generation.
+- [[#600](https://github.com/nf-core/proteinfold/issues/600)] - Fix multiqc reports publication and centralize the config in `modules.config`.
+- [[#602](https://github.com/nf-core/proteinfold/issues/602)] - Fix file name collision when staging ColabFold databases to the same directory in `MMSEQS_COLABFOLDSEARCH`.
+- [[#603](https://github.com/nf-core/proteinfold/issues/603)] - Allow AlphaFold3 JSON files as direct samplesheet input, bypassing `FASTA_TO_ALPHAFOLD3_JSON`.
+- [[#607](https://github.com/nf-core/proteinfold/pull/607)] - Fix Nextflow 26.04.1 warnings when using glob patterns in `file()` and other small fixes.
+
+| Old parameter              | New parameter   |
+| -------------------------- | --------------- |
+| `--alphafold2_random_seed` | `--random_seed` |
 
 > **NB:** Parameter has been **updated** if both old and new parameter information is present.
 > **NB:** Parameter has been **added** if just the new parameter information is present.
@@ -135,6 +145,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[PR #509](https://github.com/nf-core/proteinfold/pulls/509)] - Setup gpu environment for AWS full tests.
 - [[#519](https://github.com/nf-core/proteinfold/issues/519)] - Fix AWS full test before release 2.0.0.
 - [[PR #525](https://github.com/nf-core/proteinfold/pulls/525)] - Reduce AlphaFold2 multimer full test to a single replicate.
+- [[PR #527](https://github.com/nf-core/proteinfold/pulls/527)] - Auto-detect multimer vs monomer and validate unique split.
 - [[PR #531](https://github.com/nf-core/proteinfold/pulls/531)] - Fix alphafold2_random_seed type.
 - [[PR #538](https://github.com/nf-core/proteinfold/pulls/538)] - Bump version 2.0.0 for release preparation.
 - [[PR #563](https://github.com/nf-core/proteinfold/pulls/563)] - Fix boltz csv sync.

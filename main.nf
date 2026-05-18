@@ -37,18 +37,7 @@ include { ROSETTAFOLD2NA                   } from './workflows/rosettafold2na'
 
 include { PIPELINE_INITIALISATION          } from './subworkflows/local/utils_nfcore_proteinfold_pipeline'
 include { PIPELINE_COMPLETION              } from './subworkflows/local/utils_nfcore_proteinfold_pipeline'
-include { getColabfoldAlphafold2Params     } from './subworkflows/local/utils_nfcore_proteinfold_pipeline'
-include { getColabfoldAlphafold2ParamsPath } from './subworkflows/local/utils_nfcore_proteinfold_pipeline'
 include { POST_PROCESSING                  } from './subworkflows/local/post_processing'
-
-/*
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    COLABFOLD PARAMETER VALUES
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-*/
-
-params.colabfold_alphafold2_params_link = getColabfoldAlphafold2Params()
-params.colabfold_alphafold2_params_path = getColabfoldAlphafold2ParamsPath()
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -157,6 +146,10 @@ workflow NFCORE_PROTEINFOLD {
                                 }
                                 .join(ALPHAFOLD2.out.msa)
                                 .join(ALPHAFOLD2.out.pae)
+                                .join(ALPHAFOLD2.out.iptm)
+                                .join(ALPHAFOLD2.out.ipsae)
+                                .join(ALPHAFOLD2.out.chainwise_iptm)
+                                .join(ALPHAFOLD2.out.chainwise_ipsae)
                             )
 
         ch_top_ranked_model = ch_top_ranked_model.mix(ALPHAFOLD2.out.top_ranked_pdb)
@@ -229,9 +222,13 @@ workflow NFCORE_PROTEINFOLD {
                                                 }
                                             }.subList(0, Math.min(5, it[1].size() as int))
                                         ]
-                                    }
+                                }
                                 .join(ALPHAFOLD3.out.msa)
                                 .join(ALPHAFOLD3.out.pae)
+                                .join(ALPHAFOLD3.out.iptm)
+                                .join(ALPHAFOLD3.out.ipsae)
+                                .join(ALPHAFOLD3.out.chainwise_iptm)
+                                .join(ALPHAFOLD3.out.chainwise_ipsae)
                             )
         ch_top_ranked_model = ch_top_ranked_model.mix(ALPHAFOLD3.out.top_ranked_pdb)
     }
@@ -263,7 +260,6 @@ workflow NFCORE_PROTEINFOLD {
         COLABFOLD (
             ch_samplesheet,
             ch_versions,
-            params.colabfold_model_preset,
             PREPARE_COLABFOLD_DBS_COLABFOLD.out.params,
             PREPARE_COLABFOLD_DBS_COLABFOLD.out.colabfold_db,
             PREPARE_COLABFOLD_DBS_COLABFOLD.out.uniref30,
@@ -288,6 +284,10 @@ workflow NFCORE_PROTEINFOLD {
                                 }
                                 .join(COLABFOLD.out.msa)
                                 .join(COLABFOLD.out.pae)
+                                .join(COLABFOLD.out.iptm)
+                                .join(COLABFOLD.out.ipsae)
+                                .join(COLABFOLD.out.chainwise_iptm)
+                                .join(COLABFOLD.out.chainwise_ipsae)
                             )
 
         ch_top_ranked_model = ch_top_ranked_model.mix(COLABFOLD.out.top_ranked_pdb)
@@ -326,6 +326,10 @@ workflow NFCORE_PROTEINFOLD {
             ESMFOLD.out.pdb
                 .combine(ch_dummy_file)
                 .combine(ch_dummy_file_pae)
+                .combine(ch_dummy_file)
+                .combine(ch_dummy_file)
+                .combine(ch_dummy_file)
+                .combine(ch_dummy_file)
         )
         ch_top_ranked_model = ch_top_ranked_model.mix(ESMFOLD.out.pdb)
     }
@@ -369,6 +373,10 @@ workflow NFCORE_PROTEINFOLD {
         ch_report_input                         = ch_report_input.mix(ROSETTAFOLD_ALL_ATOM.out.pdb
                                                                     .join(ROSETTAFOLD_ALL_ATOM.out.msa)
                                                                     .join(ROSETTAFOLD_ALL_ATOM.out.pae)
+                                                                    .combine(ch_dummy_file)
+                                                                    .combine(ch_dummy_file)
+                                                                    .combine(ch_dummy_file)
+                                                                    .combine(ch_dummy_file)
                                                                     )
         ch_top_ranked_model                     = ch_top_ranked_model.mix(ROSETTAFOLD_ALL_ATOM.out.pdb)
     }
@@ -452,6 +460,10 @@ workflow NFCORE_PROTEINFOLD {
                                 }
                                 .join(HELIXFOLD3.out.msa)
                                 .join(HELIXFOLD3.out.pae)
+                                .join(HELIXFOLD3.out.iptm)
+                                .join(HELIXFOLD3.out.ipsae)
+                                .join(HELIXFOLD3.out.chainwise_iptm)
+                                .join(HELIXFOLD3.out.chainwise_ipsae)
                             )
         ch_top_ranked_model = ch_top_ranked_model.mix(HELIXFOLD3.out.top_ranked_pdb)
     }
@@ -505,6 +517,10 @@ workflow NFCORE_PROTEINFOLD {
                                                             .map { meta, pdb -> [ meta, [ pdb ] ] }
                                                             .join(ROSETTAFOLD2NA.out.msa)
                                                             .join(ROSETTAFOLD2NA.out.pae)
+                                                            .combine(ch_dummy_file)
+                                                            .combine(ch_dummy_file)
+                                                            .combine(ch_dummy_file)
+                                                            .combine(ch_dummy_file)
                                                     )
         ch_top_ranked_model                     = ch_top_ranked_model.mix(ROSETTAFOLD2NA.out.pdb)
     }
@@ -559,16 +575,16 @@ workflow NFCORE_PROTEINFOLD {
             BOLTZ.out.pdb
             .join(BOLTZ.out.msa)
             .join(BOLTZ.out.pae)
+            .join(BOLTZ.out.iptm)
+            .join(BOLTZ.out.ipsae)
+            .join(BOLTZ.out.chainwise_iptm)
+            .join(BOLTZ.out.chainwise_ipsae)
         )
         ch_top_ranked_model         = ch_top_ranked_model.mix(BOLTZ.out.top_ranked_pdb)
     }
     //
     // POST PROCESSING: generate visualisation reports
     //
-    ch_multiqc_config        = channel.fromPath("$projectDir/assets/multiqc_config.yml", checkIfExists: true).first()
-    ch_multiqc_custom_config = params.multiqc_config ? channel.fromPath( params.multiqc_config ).first()  : channel.empty()
-    ch_multiqc_logo          = params.multiqc_logo   ? channel.fromPath( params.multiqc_logo ).first()    : channel.empty()
-    ch_multiqc_methods_description = params.multiqc_methods_description ? file(params.multiqc_methods_description, checkIfExists: true) : file("$projectDir/assets/methods_description_template.yml", checkIfExists: true)
     ch_report_template     = channel.value(file("$projectDir/assets/report_template.html", checkIfExists: true))
     ch_comparison_template = channel.value(file("$projectDir/assets/comparison_template.html", checkIfExists: true))
 
@@ -591,6 +607,10 @@ workflow NFCORE_PROTEINFOLD {
         [ m, structs, msa, pae ]
     }
 
+    ch_multiqc_config              = channel.of(file("$projectDir/assets/multiqc_config.yml", checkIfExists: true))
+    ch_multiqc_custom_config       = params.multiqc_config ? channel.of(file(params.multiqc_config, checkIfExists: true)) : channel.empty()
+    ch_multiqc_methods_description = params.multiqc_methods_description ? file(params.multiqc_methods_description, checkIfExists: true) : file("$projectDir/assets/methods_description_template.yml", checkIfExists: true)
+
     POST_PROCESSING(
         params.skip_visualisation,
         requested_modes_size,
@@ -606,7 +626,7 @@ workflow NFCORE_PROTEINFOLD {
         ch_multiqc,
         ch_multiqc_config,
         ch_multiqc_custom_config,
-        ch_multiqc_logo,
+        params.multiqc_logo,
         ch_multiqc_methods_description,
         ch_top_ranked_model
     )
@@ -655,7 +675,6 @@ workflow {
         params.plaintext_email,
         params.outdir,
         params.monochrome_logs,
-        params.hook_url,
         NFCORE_PROTEINFOLD.out.multiqc_report
     )
 }

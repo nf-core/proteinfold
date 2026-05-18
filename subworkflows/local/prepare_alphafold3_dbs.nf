@@ -42,16 +42,16 @@ workflow PREPARE_ALPHAFOLD3_DBS {
     ch_versions   = channel.empty()
 
     if (alphafold3_db) {
-        ch_params         = channel.value(file(alphafold3_params_path, checkIfExists: true))
-        ch_small_bfd      = channel.value(file(small_bfd_path, checkIfExists: true))
-        ch_mgnify         = channel.value(file(mgnify_path, checkIfExists: true))
-        ch_mmcif          = channel.value(file(pdb_mmcif_path, checkIfExists: true))
-        ch_uniref90       = channel.value(file(uniref90_path, checkIfExists: true))
-        ch_pdb_seqres     = channel.value(file(pdb_seqres_path, checkIfExists: true))
-        ch_uniprot        = channel.value(file(uniprot_path, checkIfExists: true))
-        ch_rnacentral     = channel.value(file(rnacentral_active_seq_path))
-        ch_nt_rna         = channel.value(file(nt_rna_2023_02_23_path))
-        ch_rfam           = channel.value(file(rfam_path))
+        ch_params         = channel.value(files(alphafold3_params_path, checkIfExists: true))
+        ch_small_bfd      = channel.value(files(small_bfd_path, checkIfExists: true))
+        ch_mgnify         = channel.value(files(mgnify_path, checkIfExists: true))
+        ch_mmcif          = channel.value(files(pdb_mmcif_path, checkIfExists: true))
+        ch_uniref90       = channel.value(files(uniref90_path, checkIfExists: true))
+        ch_pdb_seqres     = channel.value(files(pdb_seqres_path, checkIfExists: true))
+        ch_uniprot        = channel.value(files(uniprot_path, checkIfExists: true))
+        ch_rnacentral     = channel.value(files(rnacentral_active_seq_path))
+        ch_nt_rna         = channel.value(files(nt_rna_2023_02_23_path))
+        ch_rfam           = channel.value(files(rfam_path))
     } else {
 
         ARIA2_SMALL_BFD (

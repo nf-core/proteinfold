@@ -17,22 +17,24 @@ process RUN_BOLTZ {
     path ('mols')
 
     output:
-    tuple val(meta), path ("boltz_results_${meta.id}")                          , optional: true, emit: intermediates
-    tuple val(meta), path ("boltz_results_*/processed/msa/*.npz")               , emit: msa
-    tuple val(meta), path ("boltz_results_*/processed/structures/*.npz")        , emit: structures
-    tuple val(meta), path ("boltz_results_*/predictions/*/confidence*.json")    , emit: confidence
-    tuple val(meta), path ("${meta.id}_plddt.tsv")                              , emit: multiqc
-    tuple val(meta), path ("${meta.id}_boltz.pdb")                              , emit: top_ranked_pdb
-    tuple val(meta), path ("boltz_results_*/predictions/*/*.pdb")               , emit: pdb
-    tuple val(meta), path ("boltz_results_*/predictions/*/plddt_*model_0.npz")  , emit: plddt
-    tuple val(meta), path ("boltz_results_*/predictions/*/pae_*model_0.npz")    , emit: pae
-    tuple val(meta), path ("${meta.id}_plddt.tsv")                              , emit: plddt_raw
-    tuple val(meta), path ("${meta.id}_boltz_msa.tsv")                          , emit: msa_raw
-    tuple val(meta), path ("${meta.id}_*_pae.tsv")                              , emit: pae_raw
-    tuple val(meta), path ("${meta.id}_ptm.tsv")                                , emit: ptm_raw
-    tuple val(meta), path ("${meta.id}_iptm.tsv")                               , optional: true, emit: iptm_raw
-    tuple val(meta), path ("${meta.id}_chainwise_ptm.tsv")                      , emit: summary_chainwise_ptm_raw
-    tuple val(meta), path ("${meta.id}_chainwise_iptm.tsv")                     , optional: true, emit: chainwise_iptm_raw
+    tuple val(meta), path ("boltz_results_${meta.id}")                        , optional: true, emit: intermediates
+    tuple val(meta), path ("boltz_results_*/processed/msa/*.npz")             , emit: msa
+    tuple val(meta), path ("boltz_results_*/processed/structures/*.npz")      , emit: structures
+    tuple val(meta), path ("boltz_results_*/predictions/*/confidence*.json")  , emit: confidence
+    tuple val(meta), path ("${meta.id}_plddt_mqc.tsv")                        , emit: multiqc
+    tuple val(meta), path ("${meta.id}_boltz.pdb")                            , emit: top_ranked_pdb
+    tuple val(meta), path ("boltz_results_*/predictions/*/*.pdb")             , emit: pdb
+    tuple val(meta), path ("boltz_results_*/predictions/*/plddt_*model_0.npz"), emit: plddt
+    tuple val(meta), path ("boltz_results_*/predictions/*/pae_*model_0.npz")  , emit: pae
+    tuple val(meta), path ("${meta.id}_plddt_mqc.tsv")                        , emit: plddt_raw
+    tuple val(meta), path ("${meta.id}_boltz_msa.tsv")                        , emit: msa_raw
+    tuple val(meta), path ("${meta.id}_*_pae.tsv")                            , emit: pae_raw
+    tuple val(meta), path ("${meta.id}_ptm.tsv")                              , emit: ptm_raw
+    tuple val(meta), path ("${meta.id}_iptm.tsv")                             , optional: true, emit: iptm_raw
+    tuple val(meta), path ("${meta.id}_ipsae.tsv")                            , optional: true, emit: ipsae_raw
+    tuple val(meta), path ("${meta.id}_chainwise_ptm.tsv")                    , emit: summary_chainwise_ptm_raw
+    tuple val(meta), path ("${meta.id}_chainwise_iptm.tsv")                   , optional: true, emit: chainwise_iptm_raw
+    tuple val(meta), path ("${meta.id}_chainwise_ipsae.tsv")                  , optional: true, emit: chainwise_ipsae_raw
     path "versions.yml", emit: versions
 
     when:
@@ -68,6 +70,8 @@ process RUN_BOLTZ {
         --npzs boltz_results_*/predictions/${meta.id}/pae_*_model_*.npz \\
         --csvs ${meta.id}_*.csv
 
+    touch "${meta.id}_iptm.tsv" "${meta.id}_ipsae.tsv" "${meta.id}_chainwise_iptm.tsv" "${meta.id}_chainwise_ipsae.tsv"
+
     mv "${meta.id}_msa.tsv" "${meta.id}_boltz_msa.tsv"
 
     cat <<-END_VERSIONS > versions.yml
@@ -93,13 +97,15 @@ process RUN_BOLTZ {
     touch boltz_results_${meta.id}/predictions/${meta.id}/pae_${meta.id}_model_0.npz
 
     touch "${meta.id}_boltz.pdb"
-    touch "${meta.id}_plddt.tsv"
+    touch "${meta.id}_plddt_mqc.tsv"
     touch "${meta.id}_boltz_msa.tsv"
     touch "${meta.id}_0_pae.tsv"
     touch "${meta.id}_ptm.tsv"
     touch "${meta.id}_iptm.tsv"
+    touch "${meta.id}_ipsae.tsv"
     touch "${meta.id}_chainwise_ptm.tsv"
     touch "${meta.id}_chainwise_iptm.tsv"
+    touch "${meta.id}_chainwise_ipsae.tsv"
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

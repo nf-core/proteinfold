@@ -43,14 +43,22 @@ workflow ALPHAFOLD3 {
     ch_msa_final      = channel.empty()
     ch_multiqc_report = channel.empty()
 
-    FASTA_TO_ALPHAFOLD3_JSON(ch_samplesheet)
-    ch_versions       = ch_versions.mix(FASTA_TO_ALPHAFOLD3_JSON.out.versions)
+    ch_samplesheet
+        .branch { it ->
+            fasta: it[1].extension == "fasta" || it[1].extension == "fa"
+            json: it[1].extension == "json"
+    }.set { ch_input_by_ext }
+
+    FASTA_TO_ALPHAFOLD3_JSON(ch_input_by_ext.fasta)
+    ch_versions = ch_versions.mix(FASTA_TO_ALPHAFOLD3_JSON.out.versions)
+
+    ch_json = ch_input_by_ext.json.mix(FASTA_TO_ALPHAFOLD3_JSON.out.json)
 
     //
     // SUBWORKFLOW: Run AlphaFold3
     //
     RUN_ALPHAFOLD3 (
-        FASTA_TO_ALPHAFOLD3_JSON.out.json,
+        ch_json,
         ch_alphafold3_params,
         ch_small_bfd,
         ch_mgnify,
@@ -146,11 +154,55 @@ workflow ALPHAFOLD3 {
         }
         .set { ch_pae_final }
 
+    RUN_ALPHAFOLD3
+        .out
+        .iptms
+        .map { it ->
+            def meta = it[0].clone();
+            meta.model = "alphafold3";
+            [ meta, it[1] ]
+        }
+        .set { ch_iptm_final }
+
+    RUN_ALPHAFOLD3
+        .out
+        .ipsaes
+        .map { it ->
+            def meta = it[0].clone();
+            meta.model = "alphafold3";
+            [ meta, it[1] ]
+        }
+        .set { ch_ipsae_final }
+
+    RUN_ALPHAFOLD3
+        .out
+        .chainwise_iptms
+        .map { it ->
+            def meta = it[0].clone();
+            meta.model = "alphafold3";
+            [ meta, it[1] ]
+        }
+        .set { ch_chainwise_iptm_final }
+
+    RUN_ALPHAFOLD3
+        .out
+        .chainwise_ipsaes
+        .map { it ->
+            def meta = it[0].clone();
+            meta.model = "alphafold3";
+            [ meta, it[1] ]
+        }
+        .set { ch_chainwise_ipsae_final }
+
     emit:
     top_ranked_pdb = ch_top_ranked_pdb // channel: [ id, /path/to/*.pdb ]
     pdb            = ch_pdb_final      // channel: [ meta, /path/to/*.pdb, ...,/path/to/*.pdb ]
     msa            = ch_msa_final      // channel: [ meta, /path/to/*.pdb, /path/to/*_coverage.png ]
     pae            = ch_pae_final      // channel: [ meta, path/to/*_pae.tsv ]
+    iptm           = ch_iptm_final     // channel: [ meta, path/to/*_iptm.tsv ]
+    ipsae          = ch_ipsae_final    // channel: [ meta, path/to/*_ipsae.tsv ]
+    chainwise_iptm = ch_chainwise_iptm_final // channel: [ meta, path/to/*_chainwise_iptm.tsv ]
+    chainwise_ipsae = ch_chainwise_ipsae_final // channel: [ meta, path/to/*_chainwise_ipsae.tsv ]
     multiqc_report = ch_multiqc_report // channel: /path/to/multiqc_report.html
     versions       = ch_versions       // channel: [ path(versions.yml) ]
 }

@@ -14,7 +14,6 @@ include { samplesheetToList         } from 'plugin/nf-schema'
 include { paramsHelp                } from 'plugin/nf-schema'
 include { completionEmail           } from '../../nf-core/utils_nfcore_pipeline'
 include { completionSummary         } from '../../nf-core/utils_nfcore_pipeline'
-include { imNotification            } from '../../nf-core/utils_nfcore_pipeline'
 include { UTILS_NFCORE_PIPELINE     } from '../../nf-core/utils_nfcore_pipeline'
 include { UTILS_NEXTFLOW_PIPELINE   } from '../../nf-core/utils_nextflow_pipeline'
 include { logColours                } from '../../nf-core/utils_nfcore_pipeline'
@@ -56,6 +55,9 @@ workflow PIPELINE_INITIALISATION {
     // Validate parameters and generate parameter summary to stdout
     //
     def colors = logColours(monochrome_logs)
+
+    def before_text = ""
+    def after_text = ""
     before_text = """
 -${colors.dim}----------------------------------------------------${colors.reset}-
                                         ${colors.green},--.${colors.black}/${colors.green},-.${colors.reset}
@@ -73,6 +75,10 @@ ${colors.purple}  nf-core/proteinfold ${workflow.manifest.version}${colors.reset
 * Software dependencies
     https://github.com/nf-core/proteinfold/blob/master/CITATIONS.md
 """
+    if (monochrome_logs) {
+        before_text = before_text.replaceAll(/\033\[[0-9;]*m/, '')
+    }
+
     command = "nextflow run ${workflow.manifest.name} -profile <docker/singularity/.../institute> --input samplesheet.csv --outdir <OUTDIR>"
 
     UTILS_NFSCHEMA_PLUGIN (
@@ -94,6 +100,8 @@ ${colors.purple}  nf-core/proteinfold ${workflow.manifest.version}${colors.reset
         nextflow_cli_args
     )
 
+    validateInputParameters()
+
     //
     // Create channel from input file provided through input
     //
@@ -108,16 +116,17 @@ ${colors.purple}  nf-core/proteinfold ${workflow.manifest.version}${colors.reset
         }
 
     if (params.split_fasta) {
-        ch_samplesheet.map { _meta, fasta ->
+        ch_samplesheet = ch_samplesheet.map { meta, fasta ->
             validateFasta(fasta)
+            [meta, fasta]
         }
 
         // Split the fasta file into individual files for each sequence
         ch_samplesheet
-            .map { _meta,fasta -> fasta }
-            .splitFasta( record: [header: true, sequence: true] )
-            .collectFile { item ->
-                [ "${cleanHeader(item["header"])}.fa", ">" + cleanHeader(item["header"]) + '\n' +item["sequence"] ]
+            .map { meta, fasta -> [meta.id, fasta] }
+            .splitFasta( record: [header: true, sequence: true], elem: 1 )
+            .collectFile { sample_id, item ->
+                [ "${cleanHeader(sample_id.toString())}_${cleanHeader(item["header"])}.fa", ">" + cleanHeader(item["header"]) + '\n' +item["sequence"] ]
             }
             .map {
                 file -> [[id: file.baseName], file]
@@ -144,7 +153,6 @@ workflow PIPELINE_COMPLETION {
     plaintext_email // boolean: Send plain-text email instead of HTML
     outdir          //    path: Path to output directory where results will be published
     monochrome_logs // boolean: Disable ANSI colour codes in log output
-    hook_url        //  string: hook URL for notifications
     multiqc_report  //  string: Path to MultiQC report
 
     main:
@@ -168,13 +176,11 @@ workflow PIPELINE_COMPLETION {
         }
 
         completionSummary(monochrome_logs)
-        if (hook_url) {
-            imNotification(summary_params, hook_url)
-        }
+
     }
 
     workflow.onError {
-        log.error "Pipeline failed. Please refer to troubleshooting docs: https://nf-co.re/docs/usage/troubleshooting"
+        log.error "Pipeline failed. Please refer to troubleshooting docs for common issues: https://nf-co.re/docs/running/troubleshooting"
     }
 }
 
@@ -188,36 +194,15 @@ workflow PIPELINE_COMPLETION {
 // Check and validate pipeline parameters
 //
 def validateInputParameters() {
-    if (params.mode.toLowerCase().split(",").contains("alphafold3")) {
+    def requestedModes = params.mode.toLowerCase().split(",")*.trim()
+
+    if (requestedModes.contains("alphafold3")) {
         alphafold3Warn(log)
     }
-}
 
-//
-// Get link to Colabfold Alphafold2 parameters
-//
-def getColabfoldAlphafold2Params() {
-    def link = null
-    if (params.colabfold_alphafold2_params_tags) {
-        if (params.colabfold_alphafold2_params_tags.containsKey(params.colabfold_model_preset.toString())) {
-            link = "https://storage.googleapis.com/alphafold/" + params.colabfold_alphafold2_params_tags[ params.colabfold_model_preset.toString() ] + '.tar'
-        }
+    if (params.random_seed != null) {
+        randomSeedModeWarn(log, requestedModes)
     }
-    return link
-}
-
-//
-// Get path to Colabfold Alphafold2 parameters
-//
-def getColabfoldAlphafold2ParamsPath() {
-    def path = null
-    params.colabfold_model_preset.toString()
-    if (params.colabfold_alphafold2_params_tags) {
-        if (params.colabfold_alphafold2_params_tags.containsKey(params.colabfold_model_preset.toString())) {
-            path = "${params.colabfold_db}/params/" + params.colabfold_alphafold2_params_tags[ params.colabfold_model_preset.toString() ]
-        }
-    }
-    return path
 }
 
 def modeChannel(ch, mode) {
@@ -226,6 +211,16 @@ def modeChannel(ch, mode) {
         meta_clone.model = mode
         [ meta_clone, value ]
     }
+}
+
+def countMolecularEntitiesInFasta(fasta) {
+    return fasta.text
+        .readLines()
+        .count { line -> line.trim().startsWith('>') }
+}
+
+def resolveModelPresetByFastaEntities(fasta, monomerPreset, multimerPreset = 'multimer') {
+    return countMolecularEntitiesInFasta(fasta) > 1 ? multimerPreset : monomerPreset
 }
 
 //
@@ -296,11 +291,13 @@ def cleanHeader(header) {
         .replaceAll("/","_")
         .replaceAll(",", "")
         .replaceAll(";","")
+        .replaceAll("\\|","_")
 }
 
 def validateFasta(fasta) {
+    def lines = fasta.text.readLines()
     // extract headers
-    def headers = fasta.findAll { it -> it.startsWith('>') }
+    def headers = lines.findAll { it -> it.startsWith('>') }
     // if headers are not unique, throw an error
     if (headers.size() != headers.unique().size()) {
         throw new Exception("Invalid FASTA file. The headers are not unique.")
@@ -323,4 +320,16 @@ def alphafold3Warn(log) {
         "  Be aware that the predicted structures can not be used for commercial purposes.\n" +
         "  More information here: \"https://github.com/google-deepmind/alphafold3/blob/main/README.md#alphafold-3-source-code-and-model-parameters.\"\n" +
         "==================================================================================="
+}
+
+def randomSeedModeWarn(log, requestedModes) {
+    def supportedModes = ['alphafold2', 'boltz', 'colabfold'] as Set
+    def unsupportedModes = requestedModes.findAll { !supportedModes.contains(it) }.unique().sort()
+
+    if (!unsupportedModes.isEmpty()) {
+        log.warn "=============================================================================\n" +
+            "  The global --random_seed parameter only applies to alphafold2, boltz, and colabfold.\n" +
+            "  It will be ignored for the following selected mode(s): ${unsupportedModes.join(', ')}.\n" +
+            "==================================================================================="
+    }
 }

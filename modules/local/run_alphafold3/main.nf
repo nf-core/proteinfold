@@ -21,11 +21,14 @@ process RUN_ALPHAFOLD3 {
     path ("raw/**")                                         , emit: raw
     tuple val(meta), path ("${meta.id}_alphafold3.cif")     , emit: top_ranked_cif
     tuple val(meta), path ("raw/*ranked_*.cif")             , emit: cif
-    tuple val(meta), path ("${meta.id}_plddt.tsv")          , emit: multiqc
+    tuple val(meta), path ("${meta.id}_plddt_mqc.tsv")      , emit: multiqc
     tuple val(meta), path ("${meta.id}_alphafold3_msa.tsv") , emit: msa
     tuple val(meta), path ("${meta.id}_0_pae.tsv")          , emit: pae
     tuple val(meta), path ("${meta.id}_ptm.tsv")            , emit: ptms
     tuple val(meta), path ("${meta.id}_iptm.tsv")           , optional: true, emit: iptms
+    tuple val(meta), path ("${meta.id}_ipsae.tsv")          , optional: true, emit: ipsaes
+    tuple val(meta), path ("${meta.id}_chainwise_iptm.tsv") , optional: true, emit: chainwise_iptms
+    tuple val(meta), path ("${meta.id}_chainwise_ipsae.tsv"), optional: true, emit: chainwise_ipsaes
     path "versions.yml"                                     , emit: versions
 
     when:
@@ -101,6 +104,8 @@ process RUN_ALPHAFOLD3 {
         --jsons ${af3_id}/${af3_id}_data.json ${af3_id}/${af3_id}_summary_confidences.json ${af3_id}/${af3_id}_confidences.json \\
         --structs raw/*ranked_*.cif
 
+    touch "${prefix}_iptm.tsv" "${prefix}_ipsae.tsv" "${prefix}_chainwise_iptm.tsv" "${prefix}_chainwise_ipsae.tsv"
+
     mv "${prefix}_msa.tsv" "${meta.id}_alphafold3_msa.tsv"
 
     ## Move alphafold3 output directory to raw for save_intermediates
@@ -129,11 +134,14 @@ process RUN_ALPHAFOLD3 {
     touch raw/${prefix}_ranked_3.cif
     touch raw/${prefix}_ranked_4.cif
     touch raw/${prefix}_ranked_5.cif
-    touch ${prefix}_plddt.tsv
+    touch ${prefix}_plddt_mqc.tsv
     touch ${prefix}_alphafold3_msa.tsv
     touch ${prefix}_0_pae.tsv
     touch ${prefix}_ptm.tsv
     touch ${prefix}_iptm.tsv
+    touch ${prefix}_ipsae.tsv
+    touch ${prefix}_chainwise_iptm.tsv
+    touch ${prefix}_chainwise_ipsae.tsv
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
