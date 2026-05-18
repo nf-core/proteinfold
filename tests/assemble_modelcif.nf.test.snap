@@ -1,4 +1,16 @@
 {
+    "dummy inputs produce modelcif with associated PAE": {
+        "content": [
+            [
+                "versions.yml:md5,dfa01312051bd9911655014fa6fa8b8a"
+            ]
+        ],
+        "timestamp": "2026-05-18T15:18:30.559457173",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.1"
+        }
+    },
     "dummy inputs produce modelcif": {
         "content": [
             [

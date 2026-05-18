@@ -51,17 +51,16 @@ def parse_args(args=None):
                         help='Input structure files (PDB or mmCIF), one per rank in rank order.')
     parser.add_argument('--msa',     required=True, help='*_msa.tsv from extract_metrics.py.')
     parser.add_argument('--plddt',   required=True, help='*_plddt.tsv from extract_metrics.py.')
+    parser.add_argument('--pae-embed', action='store_true', help='Embed PAE as local-pairwise QA metrics in the primary modelCIF instead of as an associated file.')
     parser.add_argument('--pae',     required=True, help='*_pae.tsv from extract_metrics.py.')
     parser.add_argument('--ptm',     required=True, help='*_ptm.tsv from extract_metrics.py.')
     parser.add_argument('--iptm',    required=True, help='*_iptm.tsv from extract_metrics.py.')
     parser.add_argument('--name',    required=True)
     parser.add_argument('--prog',         required=True)
-    parser.add_argument('--msa_tool',     default=None,
-                        help='MSA search tool used (e.g. jackhmmer, hhblits, mmseqs2). Embedded in the CoevolutionMSA protocol step.')
+    parser.add_argument('--msa_tool',     default=None, help='MSA search tool used (e.g. jackhmmer, hhblits, mmseqs2). Embedded in the CoevolutionMSA protocol step.')
     parser.add_argument('--versions_yml', default=None, help='versions.yml emitted by the upstream run_* module.')
     parser.add_argument('--output',       default=None)
-    parser.add_argument('--write_binary', action='store_true',
-                        help='Write BinaryCIF (.bcif) output instead of text mmCIF. Requires the msgpack package.')
+    parser.add_argument('--write_binary', action='store_true', help='Write BinaryCIF (.bcif) output instead of text mmCIF. Requires the msgpack package.')
     return parser.parse_args(args)
 
 
@@ -111,6 +110,7 @@ def _read_sw_version(versions_yml, prog):
     process_versions = next(iter(data.values()), {})
     return process_versions.get(prog.lower())
 
+# Some of these parsers should be recombined with utils.py once new generate_report.py refactor merged - KR 
 
 def _read_msa_tsv(msa_tsv):
     """
@@ -176,6 +176,24 @@ def _read_ranked_score_tsv(tsv_file):
     return scores
 
 
+def _read_pae_tsv(pae_tsv):
+    matrix = []
+    with open(pae_tsv) as fh:
+        for row in csv.reader(fh, delimiter='\t'):
+            if not row:
+                continue
+            matrix.append([float(v) for v in row])
+
+    if not matrix:
+        raise ValueError(f"Empty PAE file: {pae_tsv}")
+
+    ncols = len(matrix[0])
+    if ncols == 0 or any(len(r) != ncols for r in matrix):
+        raise ValueError(f"Non-rectangular PAE matrix in {pae_tsv}")
+
+    return matrix
+
+
 def _read_ptm_tsv(ptm_tsv):
     return _read_ranked_score_tsv(ptm_tsv)
 
@@ -239,6 +257,7 @@ def build_modelcif(
     plddt_file,
     msa_file,
     pae_file,
+    pae_embed,
     ptm_file,
     iptm_file,
     name,
@@ -260,6 +279,9 @@ def build_modelcif(
         Path to *_msa.tsv from extract_metrics.py.
     pae_file : str
         Path to *_pae.tsv from extract_metrics.py.
+    pae_embed : bool
+        If True, embed PAE values as local-pairwise QA metrics in the main
+        modelCIF. If False, keep PAE as an associated QA metrics file.
     ptm_file : str
         Path to *_ptm.tsv from extract_metrics.py.
     iptm_file : str
@@ -282,6 +304,7 @@ def build_modelcif(
     plddt_by_rank = _read_plddt_tsv(plddt_file)
     ptm_by_rank = _read_ptm_tsv(ptm_file)
     iptm_by_rank = _read_iptm_tsv(iptm_file)
+    pae_matrix = _read_pae_tsv(pae_file) if pae_embed else None
     msa_num_seqs, msa_length = _read_msa_tsv(msa_file)
 
     system = modelcif.System(title=f'{name} predicted by {prog}')
@@ -348,6 +371,11 @@ def build_modelcif(
 
     GlobalIpTM.software = software
 
+    class LocalPairwisePAE(modelcif.qa_metric.LocalPairwise, modelcif.qa_metric.PAE):
+        """Predicted aligned error between residue pairs."""
+
+    LocalPairwisePAE.software = software
+
     # ---- One model per ranked structure ---------------------------------
     # Pair each struct file with the matching rank_N column from the TSV.
     # zip() stops at the shorter of the two, so a mismatch never raises.
@@ -379,6 +407,32 @@ def build_modelcif(
                     LocalPLDDT(asym.residue(seq_id), next(plddt_iter))
                 )
                 seq_id += 1
+
+        if pae_embed:
+            model_residues = []
+            for chain in bp_model_i:
+                asym = asym_map.get(chain.id)
+                if asym is None:
+                    continue
+                seq_id = 1
+                for res in chain.get_residues():
+                    if res.id[0] != ' ':
+                        continue
+                    model_residues.append(asym.residue(seq_id))
+                    seq_id += 1
+
+            num_res = len(model_residues)
+            if len(pae_matrix) != num_res or len(pae_matrix[0]) != num_res:
+                raise ValueError(
+                    f"PAE matrix shape {len(pae_matrix)}x{len(pae_matrix[0])} does not match "
+                    f"the model residue count ({num_res}) for {rank_key}"
+                )
+
+            for i, residue_i in enumerate(model_residues):
+                for j, residue_j in enumerate(model_residues):
+                    model.qa_metrics.append(
+                        LocalPairwisePAE(residue_i, residue_j, pae_matrix[i][j])
+                    )
 
         if rank_key in ptm_by_rank:
             model.qa_metrics.append(GlobalPTM(ptm_by_rank[rank_key]))
@@ -419,21 +473,20 @@ def build_modelcif(
     protocol.steps.append(step)
     system.protocols.append(protocol)
 
-    # Keep PAE matrices as an associated QA metrics file to avoid inflating
-    # the primary modelCIF. This leaves room for a future --embed_pae toggle.
-    pae_data = modelcif.data.Data(
-        'Predicted aligned error matrix',
-        details='Per-rank PAE matrices exported as TSV from extract_metrics.py',
-    )
-    system.data.append(pae_data)
-    pae_associated = modelcif.associated.QAMetricsFile(
-        path=os.path.basename(pae_file),
-        details='Predicted aligned error (PAE) values for this entry',
-        data=pae_data,
-    )
-    system.repositories.append(
-        modelcif.associated.Repository(url_root=None, files=[pae_associated])
-    )
+    if not pae_embed:
+        pae_data = modelcif.data.Data(
+            'Predicted aligned error matrix',
+            details='Per-rank PAE matrices exported as TSV from extract_metrics.py',
+        )
+        system.data.append(pae_data)
+        pae_associated = modelcif.associated.QAMetricsFile(
+            path=os.path.basename(pae_file),
+            details='Predicted aligned error (PAE) values for this entry',
+            data=pae_data,
+        )
+        system.repositories.append(
+            modelcif.associated.Repository(url_root=None, files=[pae_associated])
+        )
 
     return system
 
@@ -457,6 +510,7 @@ def main(args=None):
         args.plddt,
         args.msa,
         args.pae,
+        args.pae_embed,
         args.ptm,
         args.iptm,
         args.name,

@@ -6,7 +6,56 @@ nextflow_process {
 
     tag "assemble_modelcif"
 
-    test("dummy inputs produce modelcif") {
+    def assertModelcifOutput = { proc, mmcif, expectEmbeddedPAE ->
+        assertAll(
+            { assert proc.success },
+            { assert proc.out.modelcif.size() == 1 },
+
+            { assert mmcif.contains("_ma_qa_metric_local"),
+                "pLDDT qa_metric table missing from output mmCIF" },
+
+            { assert mmcif.contains("_ma_qa_metric_global"),
+                "Global qa_metric table (pTM/ipTM) missing from output mmCIF" },
+
+            { assert mmcif.contains("pTM"),
+                "pTM metric type missing from output mmCIF" },
+
+            { assert mmcif.contains("ipTM"),
+                "ipTM metric type missing from output mmCIF" },
+
+            {
+                if (expectEmbeddedPAE) {
+                    assert mmcif.contains("_ma_qa_metric_local_pairwise")
+                } else {
+                    assert mmcif.contains("_ma_entry_associated_files")
+                }
+            },
+
+            {
+                if (expectEmbeddedPAE) {
+                    assert mmcif.contains("PAE")
+                } else {
+                    assert (mmcif =~ /\S+\.tsv[^\n]*QA metrics/).find()
+                }
+            },
+
+            {
+                if (expectEmbeddedPAE) {
+                    assert !mmcif.contains("_ma_entry_associated_files")
+                } else {
+                    assert (mmcif =~ /Predicted aligned error|\bPAE\b/).find()
+                }
+            },
+
+            { assert mmcif.contains("coevolution MSA"),
+                "Coevolution MSA protocol step missing from output mmCIF" },
+
+            { assert mmcif.contains("modeling"),
+                "Modeling protocol step missing from output mmCIF" }
+        )
+    }
+
+    test("dummy inputs produce modelcif with associated PAE") {
 
         when {
             process {
@@ -27,42 +76,35 @@ nextflow_process {
 
         then {
             def mmcif = path(process.out.modelcif[0][1]).text
+            assertModelcifOutput(process, mmcif, false)
+            assert snapshot(process.out.versions).match()
+        }
+    }
 
-            assertAll(
-                { assert process.success },
-                { assert process.out.modelcif.size() == 1 },
+    test("dummy inputs produce modelcif with embedded PAE") {
+        config "./assemble_modelcif_embed.config"
 
-                { assert mmcif.contains("_ma_qa_metric_local"),
-                    "pLDDT qa_metric table missing from output mmCIF" },
+        when {
+            process {
+                """
+                input[0] = [
+                    [ id: 'test_embed', model: 'alphafold2', msa_tool: 'jackhmmer' ],
+                    file("$projectDir/assets/DUMMY_MODELCIF.mmcif",  checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_MSA.tsv",         checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_PLDDT.tsv",       checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_PAE.tsv",         checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_PTM.tsv",         checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_IPTM.tsv",        checkIfExists: true),
+                    file("$projectDir/assets/NO_FILE",               checkIfExists: true)
+                ]
+                """
+            }
+        }
 
-                { assert mmcif.contains("_ma_qa_metric_global"),
-                    "Global qa_metric table (pTM/ipTM) missing from output mmCIF" },
-
-                { assert mmcif.contains("pTM"),
-                    "pTM metric type missing from output mmCIF" },
-
-                { assert mmcif.contains("ipTM"),
-                    "ipTM metric type missing from output mmCIF" },
-
-                { assert mmcif.contains("_ma_entry_associated_files"),
-                    "Associated files table missing from output mmCIF" },
-
-                // I'm not sure if this should *always* be asserted, but going to test for completeness during dev - KR
-                { assert (mmcif =~ /\S+\.tsv[^\n]*QA metrics/).find(),
-                    "Expected a TSV associated file entry typed as 'QA metrics'" },
-
-                // \b is a "word boundary" assertion, to avoid matching "PAE" inside some other string - KR
-                { assert (mmcif =~ /Predicted aligned error|\bPAE\b/).find(),
-                    "PAE-associated details missing from output mmCIF" },
-
-                { assert mmcif.contains("coevolution MSA"),
-                    "Coevolution MSA protocol step missing from output mmCIF" },
-
-                { assert mmcif.contains("modeling"),
-                    "Modeling protocol step missing from output mmCIF" },
-
-                { assert snapshot(process.out.versions).match() }
-            )
+        then {
+            def mmcif = path(process.out.modelcif[0][1]).text
+            assertModelcifOutput(process, mmcif, true)
+            assert snapshot(process.out.versions).match()
         }
     }
 
