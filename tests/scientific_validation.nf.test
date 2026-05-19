@@ -199,12 +199,15 @@ except Exception as e:
             tag _name
             _tags.each { t -> tag t }
             tag "structure_validation"
+            // The file-level profile controls runtime config; options only override mode per test.
+            options "--mode ${_name}"
 
             when {
                 params {
                     input  = "https://raw.githubusercontent.com/nf-core/test-datasets/proteinfold/testdata/samplesheet/v2.0/samplesheet.csv"
                     outdir = "$outputDir"
-                    mode = _name
+                    // Shared test DB root used by mode-specific configs/derivations.
+                    db     = "s3://proteinfold-dataset/test-data/mini_dbs"
                 }
             }
 
@@ -226,13 +229,13 @@ except Exception as e:
                 def modeOutputDir = file("${params.outdir}/${_name}")
                 assert modeOutputDir.exists(): "${_display} output directory does not exist: ${modeOutputDir}\n"
 
-                // AlphaFold2 now publishes under <outdir>/alphafold2/<alphafold2_mode>/top_ranked_structures.
-                // Putting this exception in to merge into v2.1. The discussion is to retire 'non-split' mode, and so everything can be uder /${meta.mode}/top_ranked_structures - KR
                 def structDirCandidates = [
                     file("${params.outdir}/${_name}/top_ranked_structures")
                 ]
+                // AlphaFold2 now publishes under <outdir>/alphafold2/<alphafold2_mode>/top_ranked_structures.
                 if (_name == 'alphafold2') {
-                    structDirCandidates << file("${params.outdir}/${_name}/${params.alphafold2_mode}/top_ranked_structures")
+                    def nestedDirs = modeOutputDir.listFiles()?.findAll { it.isDirectory() } ?: []
+                    structDirCandidates.addAll(nestedDirs.collect { new File(it, 'top_ranked_structures') })
                 }
                 def structDir = structDirCandidates.find { it.exists() }
                 assert structDir: "${_display} structure directory does not exist. Tried: ${structDirCandidates*.toString()}\n"
