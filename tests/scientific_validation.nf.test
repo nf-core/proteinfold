@@ -228,6 +228,7 @@ except Exception as e:
 
                 // AlphaFold2 now publishes under <outdir>/alphafold2/<alphafold2_mode>/top_ranked_structures.
                 // Putting this exception in to merge into v2.1. The discussion is to retire 'non-split' mode, and so everything can be uder /${meta.mode}/top_ranked_structures - KR
+                def structDirCandidates = [
                     file("${params.outdir}/${_name}/top_ranked_structures")
                 ]
                 if (_name == 'alphafold2') {
