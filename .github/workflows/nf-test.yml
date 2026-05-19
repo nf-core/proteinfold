@@ -33,6 +33,7 @@ jobs:
     outputs:
       shard: ${{ steps.set-shards.outputs.shard }}
       total_shards: ${{ steps.set-shards.outputs.total_shards }}
+      test_paths: ${{ steps.select-paths.outputs.test_paths }}
     steps:
       - name: Clean Workspace # Purge the workspace in case it's running on a self-hosted runner
         run: |
@@ -44,6 +45,37 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Select nf-test paths.   Expensive full runs followed scientific metric validation excluded from PRs except targeting a release to 'main'
+        id: select-paths
+        shell: bash
+        run: |
+          # Add files here to exclude from non-release PR CI runs.
+          # This can be anything that is too heavy to bother the 'regular' CI, but should be validated before release
+          # Can also exclude anything that's intended for a dev to execute locally, but not push through the CI/CD system - KR
+          excluded_tests=(
+            "tests/scientific_validation.nf.test"
+          )
+
+          ls_args=('tests/*.nf.test')
+          apply_exclusions=true
+          if [[ "${{ github.event_name }}" == "pull_request" && ( "${{ github.base_ref }}" == "master" || "${{ github.base_ref }}" == "main" ) ]]; then
+            apply_exclusions=false
+          fi
+
+          if [[ "$apply_exclusions" == true ]]; then
+            for excluded in "${excluded_tests[@]}"; do
+            #:(exclude) is a special 'magic' pathspec syntax for git ls-files to exclude files from the output list - KR
+              ls_args+=(":(exclude)$excluded")
+            done
+          fi
+
+          test_paths=""
+          while IFS= read -r test_file; do
+            test_paths+="${test_file} "
+          done < <(git ls-files "${ls_args[@]}" | sort)
+
+          echo "test_paths=${test_paths% }" >> "$GITHUB_OUTPUT"
+
       - name: get number of shards
         id: set-shards
         uses: ./.github/actions/get-shards
@@ -51,6 +83,8 @@ jobs:
           NFT_VER: ${{ env.NFT_VER }}
         with:
           max_shards: 7
+          paths: ${{ steps.select-paths.outputs.test_paths }}
+          changed_since: HEAD^
 
       - name: debug
         run: |
@@ -95,24 +129,11 @@ jobs:
           NFT_WORKDIR: ${{ env.NFT_WORKDIR }}
           NXF_VERSION: ${{ matrix.NXF_VER }}
         with:
+          paths: ${{ needs.nf-test-changes.outputs.test_paths }}
+          changed_since: HEAD^
           profile: ${{ matrix.profile }}
           shard: ${{ matrix.shard }}
           total_shards: ${{ env.TOTAL_SHARDS }}
-
-      - name: Report test status
-        if: ${{ always() }}
-        run: |
-          if [[ "${{ steps.run_nf_test.outcome }}" == "failure" ]]; then
-            echo "::error::Test with ${{ matrix.NXF_VER }} failed"
-            # Add to workflow summary
-            echo "## ❌ Test failed: ${{ matrix.profile }} | ${{ matrix.NXF_VER }} | Shard ${{ matrix.shard }}/${{ env.TOTAL_SHARDS }}" >> $GITHUB_STEP_SUMMARY
-            if [[ "${{ matrix.NXF_VER }}" == "latest-everything" ]]; then
-              echo "::warning::Test with latest-everything failed but will not cause workflow failure. Please check if the error is expected or if it needs fixing."
-            fi
-            if [[ "${{ matrix.NXF_VER }}" != "latest-everything" ]]; then
-              exit 1
-            fi
-          fi
 
   confirm-pass:
     needs: [nf-test]
