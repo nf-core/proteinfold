@@ -46,6 +46,18 @@ nextflow_pipeline {
         lines.collect { it.split(',')[0].trim() }.findAll { it }
     }
 
+    // ==================== Recursive output collector ====================
+    // Keeps metric discovery readable while supporting nested output layouts.
+    def collectFiles = { File root, Closure<Boolean> predicate ->
+        def files = []
+        root.eachFileRecurse(groovy.io.FileType.FILES) { f ->
+            if (predicate(f)) {
+                files << f
+            }
+        }
+        files.sort { it.path }
+    }
+
     // ==================== Canary: validate the validator ====================
     // Must be called before trusting ANY structure validation results.
     // Tests all three cases:
@@ -214,9 +226,16 @@ except Exception as e:
                 def modeOutputDir = file("${params.outdir}/${_name}")
                 assert modeOutputDir.exists(): "${_display} output directory does not exist: ${modeOutputDir}\n"
 
-                def structDir     = file("${params.outdir}/${_name}/top_ranked_structures")
-                assert structDir.exists(): "${_display} structure directory does not exist: ${structDir}\n"
-                def struct_files  = structDir.exists() ? structDir.listFiles().findAll { it.name.endsWith(_ext) } : []
+                // AlphaFold2 now publishes under <outdir>/alphafold2/<alphafold2_mode>/top_ranked_structures.
+                // Putting this exception in to merge into v2.1. The discussion is to retire 'non-split' mode, and so everything can be uder /${meta.mode}/top_ranked_structures - KR
+                    file("${params.outdir}/${_name}/top_ranked_structures")
+                ]
+                if (_name == 'alphafold2') {
+                    structDirCandidates << file("${params.outdir}/${_name}/${params.alphafold2_mode}/top_ranked_structures")
+                }
+                def structDir = structDirCandidates.find { it.exists() }
+                assert structDir: "${_display} structure directory does not exist. Tried: ${structDirCandidates*.toString()}\n"
+                def struct_files  = structDir.listFiles()?.findAll { it.name.endsWith(_ext) } ?: []
 
                 assert struct_files.size() > 0: "${_display} produced no structure files"
 
@@ -265,9 +284,11 @@ except Exception as e:
                 }
 
                 // ===== pLDDT Validation =====
-                def plddt_files = modeOutputDir.listFiles().findAll { it.isDirectory() }.collect { proteinDir ->
-                    proteinDir.listFiles()?.findAll { it.name.endsWith('plddt.tsv') } ?: []
-                }.flatten()
+                // Look up the collectFiles() helper function above. I considered moving the metrics there,  but I suggest reading up
+                // The file collection logic now sits right above the validation of that particular file - KR
+                def plddt_files = collectFiles(modeOutputDir) { f ->
+                    f.name.endsWith('plddt.tsv')
+                }
                 assert plddt_files.size() > 0: "${_display} failed to produce any pLDDT metric files"
 
                 input_ids.each { seq_id ->
@@ -308,10 +329,9 @@ except Exception as e:
                 }
 
                 // ===== PAE Validation (if present) =====
-                def pae_files = modeOutputDir.listFiles().findAll { it.isDirectory() }.collect { proteinDir ->
-                    def paeDir = new File("${proteinDir}/paes")
-                    paeDir.exists() ? paeDir.listFiles().findAll { it.name.endsWith('.tsv') } : []
-                }.flatten()
+                def pae_files = collectFiles(modeOutputDir) { f ->
+                    f.parentFile?.name == 'paes' && f.name.endsWith('.tsv')
+                }
 
                 pae_files.each { f ->
                     assert f.size() > 0: "Empty PAE file: ${f.name}"
