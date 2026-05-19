@@ -29,12 +29,12 @@ nextflow_pipeline {
     def runPython = { String script_text, String tmpname ->
         def script_file = new File("/tmp/${tmpname}.py")
         script_file.text = script_text
-        def sout = new StringBuffer()
-        def serr = new StringBuffer()
+        def stdout = new StringBuffer()
+        def stderr = new StringBuffer()
         def proc = "python3 ${script_file.absolutePath}".execute()
-        proc.consumeProcessOutput(sout, serr)
+        proc.consumeProcesstdoutput(stdout, stderr)
         def exit_code = proc.waitFor()
-        [exit_code: exit_code, stdout: sout.toString(), stderr: serr.toString()]
+        [exit_code: exit_code, stdout: stdout.toString(), stderr: stderr.toString()]
     }
 
     // ==================== Samplesheet parser ====================
@@ -48,10 +48,11 @@ nextflow_pipeline {
 
     // ==================== Recursive output collector ====================
     // Keeps metric discovery readable while supporting nested output layouts.
-    def collectFiles = { File root, Closure<Boolean> predicate ->
+    // In short this recursively collects files matching a specific name condition (specified at point of validaiton below), True/False, from a given directory root - KR
+    def collectFiles = { File root, Closure<Boolean> matches ->
         def files = []
         root.eachFileRecurse(groovy.io.FileType.FILES) { f ->
-            if (predicate(f)) {
+            if (matches(f)) {
                 files << f
             }
         }
