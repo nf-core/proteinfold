@@ -1,0 +1,28 @@
+{
+    "ESMFold: BioPython structure validation": {
+        "content": [
+            {
+                "GENERATE_REPORT": {
+                    "python": "3.12.7",
+                    "generate_report.py": "Python 3.12.7"
+                },
+                "RUN_ESMFOLD": {
+                    "esm-fold": "1.0.3",
+                    "python": "3.9.23",
+                    "pytorch": "2.0.0+cu118",
+                    "openfold": "1.0.0",
+                    "numpy": "1.23.5",
+                    "biopython": 1.85
+                },
+                "Workflow": {
+                    "nf-core/proteinfold": "v2.1.0dev"
+                }
+            }
+        ],
+        "timestamp": "2026-05-19T14:59:17.378071981",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.1"
+        }
+    }
+}
