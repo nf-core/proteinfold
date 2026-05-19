@@ -32,7 +32,7 @@ nextflow_pipeline {
         def stdout = new StringBuffer()
         def stderr = new StringBuffer()
         def proc = "python3 ${script_file.absolutePath}".execute()
-        proc.consumeProcesstdoutput(stdout, stderr)
+        proc.consumeProcessOutput(stdout, stderr)
         def exit_code = proc.waitFor()
         [exit_code: exit_code, stdout: stdout.toString(), stderr: stderr.toString()]
     }
