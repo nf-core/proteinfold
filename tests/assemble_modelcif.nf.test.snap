@@ -2,10 +2,10 @@
     "dummy inputs produce modelcif with associated PAE": {
         "content": [
             [
-                "versions.yml:md5,dfa01312051bd9911655014fa6fa8b8a"
+                "versions.yml:md5,a7bc9c3711265542603ef205832cc53d"
             ]
         ],
-        "timestamp": "2026-05-18T15:38:50.572001552",
+        "timestamp": "2026-05-20T11:40:55.059902337",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.04.1"
@@ -14,10 +14,10 @@
     "dummy inputs produce modelcif with embedded PAE": {
         "content": [
             [
-                "versions.yml:md5,dfa01312051bd9911655014fa6fa8b8a"
+                "versions.yml:md5,a7bc9c3711265542603ef205832cc53d"
             ]
         ],
-        "timestamp": "2026-05-18T15:39:02.083002271",
+        "timestamp": "2026-05-20T11:41:00.529255009",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.04.1"
@@ -26,10 +26,10 @@
     "dummy inputs produce binaryCIF": {
         "content": [
             [
-                "versions.yml:md5,dfa01312051bd9911655014fa6fa8b8a"
+                "versions.yml:md5,a7bc9c3711265542603ef205832cc53d"
             ]
         ],
-        "timestamp": "2026-05-18T15:48:25.156681907",
+        "timestamp": "2026-05-20T11:41:06.147950598",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.04.1"

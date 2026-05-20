@@ -59,7 +59,7 @@ def parse_args(args=None):
     parser.add_argument('--prog',         required=True)
     parser.add_argument('--msa_tool',     default=None, help='MSA search tool used (e.g. jackhmmer, hhblits, mmseqs2). Embedded in the CoevolutionMSA protocol step.')
     parser.add_argument('--versions_yml', default=None, help='versions.yml emitted by the upstream run_* module.')
-    parser.add_argument('--software_details', required=True, help='Path to DUMMY YAML describing software + protocol step metadata.')
+    parser.add_argument('--software_details', default=None, help='Optional path to DUMMY YAML file for software + protocol step metadata -- pre-wiring into upstream logic.')
     parser.add_argument('--output',       default=None)
     parser.add_argument('--write_binary', action='store_true', help='Write BinaryCIF (.bcif) output instead of text mmCIF. Requires the msgpack package.')
     return parser.parse_args(args)
@@ -114,6 +114,8 @@ def _read_sw_version(versions_yml, prog):
 
 def _read_software_details_yml(software_details):
     """Load software/protocol metadata from an explicit YAML path."""
+    if software_details in (None, 'None'):
+        return {}
     if not os.path.exists(software_details):
         raise ValueError(f"software_details file not found: {software_details}")
     with open(software_details) as fh:
