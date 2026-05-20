@@ -27,7 +27,7 @@ process ASSEMBLE_MODELCIF {
     // Every single structure from a sequence prediction method will be captured in .ModelGroup
     // Every common metric will be captured as a modelCIF qa_metric
     // The advantage is all software metadata and protocol steps are shared between all structures in the .ModelGroup
-    // TODO: add --binary flag to output as binaryCIF or not 
+    // TODO: add --binary flag to output as binaryCIF or not
     script:
     def args = task.ext.args ?: ''
     """

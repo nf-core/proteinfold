@@ -7,5 +7,5 @@ dependencies:
   - conda-forge::pyyaml=6.0.2
   - conda-forge::pip=24.2
   - pip:
-    - modelcif>=1.7
-    - msgpack>=1.0
+      - modelcif>=1.7
+      - msgpack>=1.0

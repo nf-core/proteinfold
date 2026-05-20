@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Convert protein structure prediction outputs (PDB or mmCIF) to a
-modelCIF-compliant mmCIF file. 
+modelCIF-compliant mmCIF file.
 
 With aim to be directly depositable in ModelArchive.
 
@@ -99,7 +99,7 @@ def _read_sw_version(versions_yml, prog):
     Extract the version string for *prog* from a Nextflow versions.yml.
 
     TODO: this currently assumes a simple structure of versions.yml and I'm not sure if that's settled.
-    
+
     """
     if versions_yml is None or not os.path.exists(versions_yml):
         return None
@@ -173,7 +173,7 @@ def _step_software(main_software, execution_software, step_cfg):
         return members[0]
     return modelcif.SoftwareGroup(members)
 
-# Some of these parsers should be recombined with utils.py once new generate_report.py refactor merged - KR 
+# Some of these parsers should be recombined with utils.py once new generate_report.py refactor merged - KR
 
 def _read_msa_tsv(msa_tsv):
     """
@@ -537,8 +537,8 @@ def build_modelcif(
 
         models.append(model)
 
-    # So model.ModelGroup is great here since every single inference from a multi-model method (e.g. AlphaFold) 
-    # is captured coordinates-wise as a separate structure to inspect, but the protocol and software metadata is shared across them. 
+    # So model.ModelGroup is great here since every single inference from a multi-model method (e.g. AlphaFold)
+    # is captured coordinates-wise as a separate structure to inspect, but the protocol and software metadata is shared across them.
     # TODO: double-check these open as separate #X.Y models in ChineraX
     model_group = modelcif.model.ModelGroup(models, name='All models')
     system.model_groups.append(model_group)
@@ -596,7 +596,7 @@ def main(args=None):
     args = parse_args(args)
 
     if args.write_binary:
-        import msgpack  # Only required when writing BinaryCIF; not a hard dependency otherwise. Should be environment.yml but being defensive 
+        import msgpack  # Only required when writing BinaryCIF; not a hard dependency otherwise. Should be environment.yml but being defensive
         output_file = args.output or f'{args.name}_{args.prog}.bcif'
         open_mode, fmt = 'wb', 'BCIF'
     else:

@@ -4,4 +4,4 @@ channels:
 dependencies:
   - conda-forge::pip=24.2
   - pip:
-    - modelcif>=1.7
+      - modelcif>=1.7
