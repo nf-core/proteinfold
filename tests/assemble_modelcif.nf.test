@@ -5,6 +5,7 @@ nextflow_process {
     process "ASSEMBLE_MODELCIF"
 
     tag "assemble_modelcif"
+    config "./assemble_modelcif_software.config"
 
     def assertModelcifOutput = { proc, modelcifPath, expectEmbeddedPAE, expectBinaryCIF ->
         assert proc.success

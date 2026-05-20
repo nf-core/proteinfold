@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Convert protein structure prediction outputs (PDB or mmCIF) to a
-modelCIF-compliant mmCIF file. 
+modelCIF-compliant mmCIF file.
 
 With aim to be directly depositable in ModelArchive.
 
@@ -59,6 +59,7 @@ def parse_args(args=None):
     parser.add_argument('--prog',         required=True)
     parser.add_argument('--msa_tool',     default=None, help='MSA search tool used (e.g. jackhmmer, hhblits, mmseqs2). Embedded in the CoevolutionMSA protocol step.')
     parser.add_argument('--versions_yml', default=None, help='versions.yml emitted by the upstream run_* module.')
+    parser.add_argument('--software_details', default=None, help='Optional path to DUMMY YAML file for software + protocol step metadata -- pre-wiring into upstream logic.')
     parser.add_argument('--output',       default=None)
     parser.add_argument('--write_binary', action='store_true', help='Write BinaryCIF (.bcif) output instead of text mmCIF. Requires the msgpack package.')
     return parser.parse_args(args)
@@ -98,7 +99,7 @@ def _read_sw_version(versions_yml, prog):
     Extract the version string for *prog* from a Nextflow versions.yml.
 
     TODO: this currently assumes a simple structure of versions.yml and I'm not sure if that's settled.
-    
+
     """
     if versions_yml is None or not os.path.exists(versions_yml):
         return None
@@ -110,7 +111,69 @@ def _read_sw_version(versions_yml, prog):
     process_versions = next(iter(data.values()), {})
     return process_versions.get(prog.lower())
 
-# Some of these parsers should be recombined with utils.py once new generate_report.py refactor merged - KR 
+
+def _read_software_details_yml(software_details):
+    """Load software/protocol metadata from an explicit YAML path."""
+    if software_details in (None, 'None'):
+        return {}
+    if not os.path.exists(software_details):
+        raise ValueError(f"software_details file not found: {software_details}")
+    with open(software_details) as fh:
+        data = yaml.safe_load(fh)
+    if data is None:
+        return {}
+    if not isinstance(data, dict):
+        raise ValueError(
+            f"software_details YAML must be a mapping/object, got {type(data).__name__}: {software_details}"
+        )
+    return data
+
+
+def _deep_merge_dict(base, override):
+    """Recursively merge two dicts, preferring values from *override*."""
+    out = dict(base)
+    for key, value in override.items():
+        if (
+            key in out
+            and isinstance(out[key], dict)
+            and isinstance(value, dict)
+        ):
+            out[key] = _deep_merge_dict(out[key], value)
+        else:
+            out[key] = value
+    return out
+
+
+def _software_from_spec(spec, fallback_name, fallback_location, fallback_classification, fallback_description, fallback_version=None):
+    """Create modelcif.Software from a spec dict with sensible fallbacks."""
+    return modelcif.Software(
+        name=spec.get('name', fallback_name),
+        classification=spec.get('classification', fallback_classification),
+        description=spec.get('description', fallback_description),
+        location=spec.get('location', fallback_location),
+        type=spec.get('type', 'program'),
+        version=spec.get('version', fallback_version),
+    )
+
+
+def _step_software(main_software, execution_software, step_cfg):
+    """Resolve protocol step software as Software or SoftwareGroup."""
+    use_main = step_cfg.get('use_main_software', True)
+    use_execution = step_cfg.get('use_execution_software', False)
+
+    members = []
+    if use_main and main_software is not None:
+        members.append(main_software)
+    if use_execution and execution_software is not None:
+        members.append(execution_software)
+
+    if not members:
+        return main_software
+    if len(members) == 1:
+        return members[0]
+    return modelcif.SoftwareGroup(members)
+
+# Some of these parsers should be recombined with utils.py once new generate_report.py refactor merged - KR
 
 def _read_msa_tsv(msa_tsv):
     """
@@ -264,6 +327,7 @@ def build_modelcif(
     prog,
     sw_version=None,
     msa_tool=None,
+    software_details=None,
 ):
     """
     Build a modelcif.System from ranked structure files and QA metric .tsv files.
@@ -300,6 +364,8 @@ def build_modelcif(
     -------
     modelcif.System
     """
+    software_details = software_details or {}
+
     biopy_structs = [_parse_structure(f) for f in struct_files]
     plddt_by_rank = _read_plddt_tsv(plddt_file)
     ptm_by_rank = _read_ptm_tsv(ptm_file)
@@ -346,14 +412,44 @@ def build_modelcif(
         sw_location       = 'unknown'
         sw_classification = 'protein structure prediction'
 
-    software = modelcif.Software(
-        name=sw_name,
-        classification=sw_classification,
-        description=f'{sw_name} structure prediction',
-        location=sw_location,
-        version=sw_version,  # None if not supplied; modelcif accepts this
+    details_defaults = software_details.get('defaults', {})
+    details_programs = software_details.get('programs', {})
+    details_for_prog = details_programs.get(prog.lower(), {})
+
+    modeling_sw_cfg = _deep_merge_dict(
+        details_defaults.get('modeling_software', {}),
+        details_for_prog.get('modeling_software', {}),
+    )
+    execution_sw_cfg = _deep_merge_dict(
+        details_defaults.get('execution_software', {}),
+        details_for_prog.get('execution_software', {}),
+    )
+    protocol_cfg = _deep_merge_dict(
+        details_defaults.get('protocol', {}),
+        details_for_prog.get('protocol', {}),
+    )
+
+    software = _software_from_spec(
+        modeling_sw_cfg,
+        fallback_name=sw_name,
+        fallback_location=sw_location,
+        fallback_classification=sw_classification,
+        fallback_description=f'{sw_name} structure prediction',
+        fallback_version=sw_version,
     )
     system.software.append(software)
+
+    execution_software = None
+    if execution_sw_cfg.get('enabled', False):
+        execution_software = _software_from_spec(
+            execution_sw_cfg,
+            fallback_name='Workflow execution engine',
+            fallback_location='unknown',
+            fallback_classification='workflow management',
+            fallback_description='Workflow execution environment',
+            fallback_version=None,
+        )
+        system.software.append(execution_software)
 
     # ---- pLDDT QA metric class ------------------------------------------
     class LocalPLDDT(modelcif.qa_metric.Local, modelcif.qa_metric.PLDDT):
@@ -441,14 +537,17 @@ def build_modelcif(
 
         models.append(model)
 
-    # So model.ModelGroup is great here since every single inference from a multi-model method (e.g. AlphaFold) 
-    # is captured coordinates-wise as a separate structure to inspect, but the protocol and software metadata is shared across them. 
+    # So model.ModelGroup is great here since every single inference from a multi-model method (e.g. AlphaFold)
+    # is captured coordinates-wise as a separate structure to inspect, but the protocol and software metadata is shared across them.
     # TODO: double-check these open as separate #X.Y models in ChineraX
     model_group = modelcif.model.ModelGroup(models, name='All models')
     system.model_groups.append(model_group)
 
     # ---- Protocol -------------------------------------------------------
     protocol = modelcif.protocol.Protocol()
+
+    msa_step_cfg = protocol_cfg.get('msa_step', {})
+    modeling_step_cfg = protocol_cfg.get('modeling_step', {})
 
     msa_data = modelcif.data.Data(
         'Coevolution MSA',
@@ -458,8 +557,9 @@ def build_modelcif(
     msa_step = modelcif.protocol.CoevolutionMSAStep(
         input_data=modelcif.data.DataGroup(list(seen_seqs.values())),
         output_data=msa_data,
-        name=msa_tool,
-        software=software,
+        name=msa_step_cfg.get('name', msa_tool),
+        details=msa_step_cfg.get('details'),
+        software=_step_software(software, execution_software, msa_step_cfg),
     )
     protocol.steps.append(msa_step)
 
@@ -467,8 +567,9 @@ def build_modelcif(
     step = modelcif.protocol.ModelingStep(
         input_data=msa_data,
         output_data=modelcif.data.DataGroup(models),
-        name='Structure prediction',
-        software=software,
+        name=modeling_step_cfg.get('name', 'Structure prediction'),
+        details=modeling_step_cfg.get('details'),
+        software=_step_software(software, execution_software, modeling_step_cfg),
     )
     protocol.steps.append(step)
     system.protocols.append(protocol)
@@ -495,7 +596,7 @@ def main(args=None):
     args = parse_args(args)
 
     if args.write_binary:
-        import msgpack  # Only required when writing BinaryCIF; not a hard dependency otherwise. Should be environment.yml but being defensive 
+        import msgpack  # Only required when writing BinaryCIF; not a hard dependency otherwise. Should be environment.yml but being defensive
         output_file = args.output or f'{args.name}_{args.prog}.bcif'
         open_mode, fmt = 'wb', 'BCIF'
     else:
@@ -503,6 +604,7 @@ def main(args=None):
         open_mode, fmt = 'w', 'mmCIF'
 
     sw_version = _read_sw_version(args.versions_yml, args.prog)
+    software_details = _read_software_details_yml(args.software_details)
     # Nextflow emits the string 'None' when no msa_tool is known; normalise to Python None.
     msa_tool = None if args.msa_tool in (None, 'None') else args.msa_tool
     system = build_modelcif(
@@ -517,6 +619,7 @@ def main(args=None):
         args.prog,
         sw_version,
         msa_tool,
+        software_details,
     )
 
     with open(output_file, open_mode) as fh:

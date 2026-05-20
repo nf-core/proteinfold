@@ -1,0 +1,116 @@
+nextflow_process {
+
+    name "Test Process MODELCIF_SW_ENTRIES"
+    script "../modules/local/assemble_modelcif/main.nf"
+    process "ASSEMBLE_MODELCIF"
+
+    tag "modelcif_sw_entries"
+    config "./assemble_modelcif_software.config"
+
+    test("dummy inputs include model software and software groups") {
+
+        when {
+            process {
+                """
+                input[0] = [
+                    [ id: 'sw_entries', model: 'alphafold2', msa_tool: 'jackhmmer' ],
+                    file("$projectDir/assets/DUMMY_MODELCIF.mmcif", checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_MSA.tsv",         checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_PLDDT.tsv",       checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_PAE.tsv",         checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_PTM.tsv",         checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_IPTM.tsv",        checkIfExists: true),
+                    file("$projectDir/assets/NO_FILE",               checkIfExists: true)
+                ]
+                """
+            }
+        }
+
+        then {
+            assert process.success
+            assert process.out.modelcif.size() == 1
+
+            def modelcifPath = path(process.out.modelcif[0][1])
+            def expectedMsaTool = process.out.modelcif[0][0].msa_tool?.toString()
+
+            def parseCmd = [
+                'python3',
+                '-c',
+                '''
+import sys
+import modelcif
+import modelcif.reader
+import modelcif.protocol
+
+def _software_names(sw):
+    if isinstance(sw, modelcif.SoftwareGroup):
+        names = []
+        for member in sw:
+            if hasattr(member, "software"):
+                names.append(member.software.name)
+            else:
+                names.append(member.name)
+        return names
+    return [sw.name]
+
+with open(sys.argv[1]) as fh:
+    systems = modelcif.reader.read(fh)
+
+expected_msa_tool = sys.argv[2] if len(sys.argv) > 2 else None
+
+assert len(systems) > 0, "No systems parsed from output mmCIF"
+system = systems[0]
+
+sw_names = [sw.name for sw in system.software]
+assert "AlphaFold2" in sw_names, f"Missing modeling software in system.software: {sw_names}"
+assert "nf-core/proteinfold" in sw_names, f"Missing execution software in system.software: {sw_names}"
+
+assert len(system.protocols) > 0, "No protocol entries found"
+protocol = system.protocols[0]
+assert len(protocol.steps) >= 2, f"Expected >=2 protocol steps, got {len(protocol.steps)}"
+
+msa_step = protocol.steps[0]
+model_step = protocol.steps[1]
+
+assert isinstance(msa_step, modelcif.protocol.CoevolutionMSAStep), (
+    f"Step 1 type mismatch: {type(msa_step).__name__}"
+)
+assert isinstance(model_step, modelcif.protocol.ModelingStep), (
+    f"Step 2 type mismatch: {type(model_step).__name__}"
+)
+
+allowed_msa_tools = {"jackhmmer", "hhblits", "mmseqs2"}
+assert msa_step.name in allowed_msa_tools, (
+    f"Unexpected MSA step name: {msa_step.name}; allowed={sorted(allowed_msa_tools)}"
+)
+if expected_msa_tool and expected_msa_tool != "None":
+    assert msa_step.name == expected_msa_tool, (
+        f"MSA step name mismatch: expected {expected_msa_tool}, observed {msa_step.name}"
+    )
+
+msa_sw_names = _software_names(msa_step.software)
+model_sw_names = _software_names(model_step.software)
+
+assert "AlphaFold2" in msa_sw_names, f"MSA step missing AlphaFold2 software: {msa_sw_names}"
+assert "nf-core/proteinfold" not in msa_sw_names, (
+    f"MSA step should not include execution software: {msa_sw_names}"
+)
+
+assert "AlphaFold2" in model_sw_names, f"Modeling step missing AlphaFold2 software: {model_sw_names}"
+assert "nf-core/proteinfold" in model_sw_names, (
+    f"Modeling step missing execution software group member: {model_sw_names}"
+)
+''',
+                modelcifPath.toString(),
+                expectedMsaTool,
+            ]
+
+            def parseProc = parseCmd.execute()
+            def stdout = new StringBuffer()
+            def stderr = new StringBuffer()
+            parseProc.consumeProcessOutput(stdout, stderr)
+            def exitCode = parseProc.waitFor()
+            assert exitCode == 0 : "Protocol/software parse validation failed (exit=${exitCode}). stdout='${stdout.toString().trim()}' stderr='${stderr.toString().trim()}'"
+        }
+    }
+}
