@@ -1,0 +1,47 @@
+nextflow_process {
+
+    name "Test Process MODELCIF_SW_ENTRIES"
+    script "../modules/local/assemble_modelcif/main.nf"
+    process "ASSEMBLE_MODELCIF"
+
+    tag "modelcif_sw_entries"
+    config "./assemble_modelcif_software.config"
+
+    test("dummy inputs include model software and software groups") {
+
+        when {
+            process {
+                """
+                input[0] = [
+                    [ id: 'sw_entries', model: 'alphafold2', msa_tool: 'jackhmmer' ],
+                    file("$projectDir/assets/DUMMY_MODELCIF.mmcif", checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_MSA.tsv",         checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_PLDDT.tsv",       checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_PAE.tsv",         checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_PTM.tsv",         checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_IPTM.tsv",        checkIfExists: true),
+                    file("$projectDir/assets/NO_FILE",               checkIfExists: true)
+                ]
+                """
+            }
+        }
+
+        then {
+            assert process.success
+            assert process.out.modelcif.size() == 1
+
+            def modelcifPath = path(process.out.modelcif[0][1])
+            def mmcif = modelcifPath.text
+
+            assertAll(
+                { assert mmcif.contains("_software.name") },
+                { assert mmcif.contains("AlphaFold2") },
+                { assert mmcif.contains("nf-core/proteinfold") },
+                { assert mmcif.contains("_ma_software_group.ordinal_id") },
+                { assert mmcif.contains("_ma_protocol_step.method_type") },
+                { assert mmcif.contains("coevolution MSA") },
+                { assert mmcif.contains("modeling") }
+            )
+        }
+    }
+}
