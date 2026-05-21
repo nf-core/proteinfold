@@ -22,8 +22,13 @@ with open(argv[1]) as f:
             continue
         map_out = ss[3]
         if ss[2] in removed: continue
+        seen = set()
         while True:
             if map_out not in mapping: break
+            if map_out in seen:
+                # cycle detected; stop following the chain to avoid infinite loop
+                break
+            seen.add(map_out)
             removed.add(map_out)
             map_out = mapping[map_out]
         print(f"{ss[0]}    {ss[1]} {ss[2]}     {map_out}")
