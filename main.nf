@@ -27,7 +27,6 @@ include { PREPARE_COLABFOLD_DBS  as PREPARE_COLABFOLD_DBS_COLABFOLD } from './su
 include { PREPARE_COLABFOLD_DBS  as PREPARE_COLABFOLD_DBS_BOLTZ     } from './subworkflows/local/prepare_colabfold_dbs'
 
 include { ALPHAFOLD2                       } from './workflows/alphafold2'
-// include { ALPHAFOLD3                       } from './workflows/alphafold3'
 include { ALPHAFOLD3                       } from './workflows/alphafold3'
 include { COLABFOLD                        } from './workflows/colabfold'
 include { ESMFOLD                          } from './workflows/esmfold'
@@ -157,85 +156,7 @@ workflow NFCORE_PROTEINFOLD {
     }
 
     //
-    // WORKFLOW: Run alphafold3
-    //
-    // if(requested_modes.contains("alphafold3")) {
-
-    //     //
-    //     // SUBWORKFLOW: Prepare Alphafold3 DBs
-    //     //
-    //     PREPARE_ALPHAFOLD3_DBS (
-    //         params.alphafold3_db,
-    //         params.alphafold3_params_path,
-    //         params.alphafold3_small_bfd_path,
-    //         params.alphafold3_mgnify_path,
-    //         params.alphafold3_pdb_mmcif_path,
-    //         params.alphafold3_uniref90_path,
-    //         params.alphafold3_pdb_seqres_path,
-    //         params.alphafold3_uniprot_path,
-    //         params.alphafold3_rnacentral_path,
-    //         params.alphafold3_nt_rna_path,
-    //         params.alphafold3_rfam_path,
-    //         params.alphafold3_small_bfd_link,
-    //         params.alphafold3_mgnify_link,
-    //         params.alphafold3_pdb_mmcif_link,
-    //         params.alphafold3_uniref90_link,
-    //         params.alphafold3_pdb_seqres_link,
-    //         params.alphafold3_uniprot_link,
-    //         params.alphafold3_rnacentral_link,
-    //         params.alphafold3_nt_rna_link,
-    //         params.alphafold3_rfam_link
-    //     )
-    //     ch_versions = ch_versions.mix(PREPARE_ALPHAFOLD3_DBS.out.versions)
-
-    //     //
-    //     // WORKFLOW: Run nf-core/alphafold3 workflow
-    //     //
-    //     ALPHAFOLD3 (
-    //         ch_samplesheet,
-    //         ch_versions,
-    //         PREPARE_ALPHAFOLD3_DBS.out.params,
-    //         PREPARE_ALPHAFOLD3_DBS.out.small_bfd,
-    //         PREPARE_ALPHAFOLD3_DBS.out.mgnify,
-    //         PREPARE_ALPHAFOLD3_DBS.out.pdb_mmcif,
-    //         PREPARE_ALPHAFOLD3_DBS.out.uniref90,
-    //         PREPARE_ALPHAFOLD3_DBS.out.pdb_seqres,
-    //         PREPARE_ALPHAFOLD3_DBS.out.uniprot
-    //     )
-
-    //     ch_multiqc      = ch_multiqc.mix(ALPHAFOLD3.out.multiqc_report)
-    //     ch_versions     = ch_versions.mix(ALPHAFOLD3.out.versions)
-    //     ch_report_input = ch_report_input
-    //                         .mix(
-    //                             ALPHAFOLD3
-    //                                 .out
-    //                                 .pdb
-    //                                 .map { it ->
-    //                                     [
-    //                                         it[0],
-    //                                         it[1].sort { path ->
-    //                                             def filename = path.name
-    //                                             def matcher = filename =~ /.*_ranked_(\d+)\.pdb/
-    //                                             if (matcher.matches()) {
-    //                                                 return matcher[0][1].toInteger()
-    //                                             } else {
-    //                                                 return 0  // fallback if no match
-    //                                             }
-    //                                         }.subList(0, Math.min(5, it[1].size() as int))
-    //                                     ]
-    //                             }
-    //                             .join(ALPHAFOLD3.out.msa)
-    //                             .join(ALPHAFOLD3.out.pae)
-    //                             .join(ALPHAFOLD3.out.iptm)
-    //                             .join(ALPHAFOLD3.out.ipsae)
-    //                             .join(ALPHAFOLD3.out.chainwise_iptm)
-    //                             .join(ALPHAFOLD3.out.chainwise_ipsae)
-    //                         )
-    //     ch_top_ranked_model = ch_top_ranked_model.mix(ALPHAFOLD3.out.top_ranked_pdb)
-    // }
-
-    //
-    // WORKFLOW: Run alphafold3 split (data pipeline + inference as separate steps)
+    // WORKFLOW: Run alphafold3 (data pipeline + inference as separate steps)
     //
     if(requested_modes.contains("alphafold3")) {
 
