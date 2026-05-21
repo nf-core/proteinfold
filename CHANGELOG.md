@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[#603](https://github.com/nf-core/proteinfold/issues/603)] - Allow AlphaFold3 JSON files as direct samplesheet input, bypassing `FASTA_TO_ALPHAFOLD3_JSON`.
 - [[#607](https://github.com/nf-core/proteinfold/pull/607)] - Fix Nextflow 26.04.1 warnings when using glob patterns in `file()`, update nf-schema to `2.7.2` to fix type casting and other small fixes.
 - [[#577](https://github.com/nf-core/proteinfold/issues/577)] - Separate in two independent processes alphafold3 data pipeline and inference steps.
+- [[#620](https://github.com/nf-core/proteinfold/pull/620)] - Update `fix_obsolete.py` to avoid infinite loop.
 
 | Old parameter              | New parameter   |
 | -------------------------- | --------------- |
