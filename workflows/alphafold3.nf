@@ -60,7 +60,6 @@ workflow ALPHAFOLD3 {
     //
     RUN_ALPHAFOLD3_DATAPIPELINE (
         ch_json,
-        ch_alphafold3_params,
         ch_small_bfd,
         ch_mgnify,
         ch_mmcif_files,

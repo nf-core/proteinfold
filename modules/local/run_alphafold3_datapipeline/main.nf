@@ -8,7 +8,6 @@ process RUN_ALPHAFOLD3_DATAPIPELINE {
 
     input:
     tuple val(meta), path(json)
-    path "params/*"
     path "small_bfd/*"
     path "mgnify/*"
     path "mmcif_files"
@@ -60,7 +59,6 @@ process RUN_ALPHAFOLD3_DATAPIPELINE {
 
     python3 /app/alphafold/run_alphafold.py \\
         --json_path=${json} \\
-        --model_dir=./params \\
         --uniref90_database_path=\$uniref90 \\
         --mgnify_database_path=\$mgnify \\
         --pdb_database_path=./mmcif_files \\
