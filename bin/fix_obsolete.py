@@ -26,7 +26,8 @@ with open(argv[1]) as f:
         while True:
             if map_out not in mapping: break
             if map_out in seen:
-                # cycle detected; stop following the chain to avoid infinite loop
+                # cycle detected; treat as removed (no successor) to avoid infinite loop
+                map_out = ''
                 break
             seen.add(map_out)
             removed.add(map_out)
