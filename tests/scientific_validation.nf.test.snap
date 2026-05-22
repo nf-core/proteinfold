@@ -71,5 +71,66 @@
             "nf-test": "0.9.5",
             "nextflow": "26.04.1"
         }
+    },
+    "ColabFold: BioPython structure validation": {
+        "content": [
+            {
+                "COLABFOLD_BATCH": {
+                    "alphafold_colabfold": "2.3.10",
+                    "colabfold_batch": "1.5.5"
+                },
+                "GENERATE_REPORT": {
+                    "python": "3.12.7",
+                    "generate_report.py": "Python 3.12.7"
+                },
+                "MMSEQS_COLABFOLDSEARCH": {
+                    "colabfold_search": "1.5.5",
+                    "mmseqs": "8cc5ce367b5638c4306c2d7cfc652dd099a4643f"
+                },
+                "MULTIFASTA_TO_CSV": {
+                    "sed": 4.7
+                },
+                "Workflow": {
+                    "nf-core/proteinfold": "v2.1.0dev"
+                }
+            }
+        ],
+        "timestamp": "2026-05-22T15:19:53.579103078",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.2"
+        }
+    },
+    "AlphaFold2: BioPython structure validation": {
+        "content": [
+            {
+                "GENERATE_REPORT": {
+                    "python": "3.12.7",
+                    "generate_report.py": "Python 3.12.7"
+                },
+                "RUN_ALPHAFOLD2_MSA": {
+                    "python": "3.11.14",
+                    "alphafold2": "1b3170e9409472ec8ad044f9935c92bedd7b4674",
+                    "numpy": "1.24.3",
+                    "biopython": 1.79
+                },
+                "RUN_ALPHAFOLD2_PRED": {
+                    "python": "3.11.14",
+                    "alphafold2": "1b3170e9409472ec8ad044f9935c92bedd7b4674",
+                    "jax": "0.4.26",
+                    "jaxlib": "0.4.26",
+                    "numpy": "1.24.3",
+                    "biopython": 1.79
+                },
+                "Workflow": {
+                    "nf-core/proteinfold": "v2.1.0dev"
+                }
+            }
+        ],
+        "timestamp": "2026-05-22T15:30:22.405659849",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.2"
+        }
     }
 }
