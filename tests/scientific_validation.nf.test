@@ -72,6 +72,8 @@ TITLE    CANARY MALFORMED TEST
 REMARK   Deliberately missing ATOM records - parser must reject this
 END
 """
+// NOTE: runPython runs on host which currently *assumes* BioPython is installed. I haven't set up an environment for manually run tests. - KR
+// TODO: refactor for BioPython parsing to be inside an environment.yml or container, but I don't know the clean way to do this with nf-tests yet.
         def r1 = runPython("""
 import sys, warnings
 from Bio.PDB.PDBParser import PDBConstructionWarning

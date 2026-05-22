@@ -1,4 +1,51 @@
 {
+    "RoseTTAFold-AA: BioPython structure validation": {
+        "content": [
+            {
+                "GENERATE_REPORT": {
+                    "python": "3.12.7",
+                    "generate_report.py": "Python 3.12.7"
+                },
+                "RUN_ROSETTAFOLD_ALL_ATOM": {
+                    "python": "3.12.8",
+                    "rosettafold-all-atom": "unknown"
+                },
+                "Workflow": {
+                    "nf-core/proteinfold": "v2.1.0dev"
+                }
+            }
+        ],
+        "timestamp": "2026-05-22T13:55:16.093036293",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.2"
+        }
+    },
+    "RoseTTAFold2NA: BioPython structure validation": {
+        "content": [
+            {
+                "GENERATE_REPORT": {
+                    "python": "3.12.7",
+                    "generate_report.py": "Python 3.12.7"
+                },
+                "ROSETTAFOLD2NA_FASTA": {
+                    "python": "$(python3 --version | sed 's/Python //g')"
+                },
+                "RUN_ROSETTAFOLD2NA": {
+                    "python": "3.12.11",
+                    "rosettafold2na": "v0.2"
+                },
+                "Workflow": {
+                    "nf-core/proteinfold": "v2.1.0dev"
+                }
+            }
+        ],
+        "timestamp": "2026-05-22T14:03:19.355437044",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.2"
+        }
+    },
     "ESMFold: BioPython structure validation": {
         "content": [
             {
