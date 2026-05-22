@@ -375,7 +375,7 @@ except Exception as e:
                 println "  - Multiple proteins: ${struct_files.size()} structures, ${plddt_files.size()} metrics"
                 println "═══════════════════════════════════════════════════════════"
 
-                // Snapshot the pipeline-level versions artifact, and remove the software_mqc_version file that is ignored in all the other tests - KR 
+                // Snapshot the pipeline-level versions artifact, and remove the software_mqc_version file that is ignored in all the other tests - KR
                 assert snapshot(removeNextflowVersion("${params.outdir}/pipeline_info/nf_core_proteinfold_software_mqc_versions.yml")).match()
             }
         }
