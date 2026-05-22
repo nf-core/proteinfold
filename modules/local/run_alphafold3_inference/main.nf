@@ -1,21 +1,15 @@
 /*
- * Run Alphafold3
+ * Run AlphaFold3 inference only (structure prediction from pre-computed MSA/templates)
  */
-process RUN_ALPHAFOLD3 {
+process RUN_ALPHAFOLD3_INFERENCE {
     tag "$meta.id"
     label 'process_medium'
     label 'process_gpu'
     container "nf-core/proteinfold_alphafold3_standard:2.0.0"
 
     input:
-    tuple val(meta), path(json)
+    tuple val(meta), path(data_json)
     path "params/*"
-    path "small_bfd/*"
-    path "mgnify/*"
-    path "mmcif_files"
-    path "uniref90/*"
-    path "pdb_seqres/*"
-    path "uniprot/*"
 
     output:
     path ("raw/**")                                         , emit: raw
@@ -37,52 +31,27 @@ process RUN_ALPHAFOLD3 {
     script:
     // Exit if running this module with -profile conda / -profile mamba
     if (workflow.profile.tokenize(',').intersect(['conda', 'mamba']).size() >= 1) {
-        error("Local RUN_ALPHAFOLD3 module does not support Conda. Please use Docker / Singularity / Podman instead.")
+        error("Local RUN_ALPHAFOLD3_INFERENCE module does not support Conda. Please use Docker / Singularity / Podman instead.")
     }
 
     def args   = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${meta.id}"
     def af3_id = meta.id.toLowerCase()
     """
-    # Check database files exist and set variables
-    pdb_seqres=\$(ls -v ./pdb_seqres/pdb_seqres.txt ./pdb_seqres/pdb_seqres_2022_09_28.fasta 2>/dev/null | tail -n 1 || echo "")
-    if [[ -z "\$pdb_seqres" ]]; then
-        echo "ERROR: No pdb_seqres file found"
-        exit 1
-    fi
-
-    uniref90=\$(ls -v ./uniref90/uniref90*.fa ./uniref90/uniref90*.fasta 2>/dev/null | tail -n 1 || echo "")
-    if [[ -z "\$uniref90" ]]; then
-        echo "ERROR: No uniref90 file found"
-        exit 1
-    fi
-
-    mgnify=\$(ls -v ./mgnify/mgy_clusters*.fa ./mgnify/mgnify_clusters*.fasta 2>/dev/null | tail -n 1 || echo "")
-    if [[ -z "\$mgnify" ]]; then
-        echo "ERROR: No mgnify file found"
-        exit 1
-    fi
-
-    uniprot=\$(ls -v ./uniprot/uniprot.fasta ./uniprot/uniprot*.fa 2>/dev/null | tail -n 1 || echo "")
-    if [[ -z "\$uniprot" ]]; then
-        echo "ERROR: No uniprot file found"
-        exit 1
-    fi
+    # Stage pre-computed data JSON where AlphaFold3 expects it so it is not regenerated
+    mkdir -p ${af3_id}
+    cp ${data_json} ${af3_id}/${af3_id}_data.json
 
     python3 /app/alphafold/run_alphafold.py \\
-        --json_path=${json} \\
+        --json_path=${data_json} \\
         --model_dir=./params \\
-        --uniref90_database_path=\$uniref90 \\
-        --mgnify_database_path=\$mgnify \\
-        --pdb_database_path=./mmcif_files \\
-        --small_bfd_database_path=./small_bfd/bfd-first_non_consensus_sequences.fasta \\
-        --uniprot_cluster_annot_database_path=\$uniprot \\
-        --seqres_database_path=\$pdb_seqres \\
         --output_dir=\$PWD \\
+        --run_data_pipeline=false \\
+        --run_inference=true \\
         $args
 
     ### Move the rest of the models and rename them according to their rank
-    name=\$(jq -r '.name' ${json})
+    name=\$(jq -r '.name' ${data_json})
 
     ## Copy top ranked model to root
     cp -n "\${name}/\${name}_model.cif" "${prefix}_alphafold3.cif"
@@ -96,8 +65,8 @@ process RUN_ALPHAFOLD3 {
 
     ## Generate files with rank tag in raw directory
     echo "\$sorted_csv" | tail -n +2 | while IFS=',' read -r seed sample ranking_score; do
-    cp -n "\${name}/seed-\${seed}_sample-\${sample}/model.cif" "raw/seed_\${seed}_sample_\${sample}_ranked_\${rank}.cif"
-    rank=\$((rank + 1))
+        cp -n "\${name}/seed-\${seed}_sample-\${sample}/model.cif" "raw/seed_\${seed}_sample_\${sample}_ranked_\${rank}.cif"
+        rank=\$((rank + 1))
     done
 
     extract_metrics.py --name ${prefix} \\
@@ -119,7 +88,6 @@ process RUN_ALPHAFOLD3 {
         jaxlib: \$(python3 -c "import jaxlib; print(jaxlib.__version__)" 2>/dev/null || echo "unknown")
         numpy: \$(python3 -c "import numpy; print(numpy.__version__)" 2>/dev/null || echo "unknown")
         biopython: \$(python3 -c "import Bio; print(Bio.__version__)" 2>/dev/null || echo "unknown")
-        hmmer: \$(hmmsearch -h | grep -o '^# HMMER [0-9.]*' | sed 's/^# HMMER //' || echo "unknown")
         rdkit: \$(python3 -c "import rdkit; print(rdkit.__version__)" 2>/dev/null || echo "unknown")
     END_VERSIONS
     """
@@ -151,7 +119,6 @@ process RUN_ALPHAFOLD3 {
         jaxlib: \$(python3 -c "import jaxlib; print(jaxlib.__version__)" 2>/dev/null || echo "unknown")
         numpy: \$(python3 -c "import numpy; print(numpy.__version__)" 2>/dev/null || echo "unknown")
         biopython: \$(python3 -c "import Bio; print(Bio.__version__)" 2>/dev/null || echo "unknown")
-        hmmer: \$(hmmsearch -h | grep -o '^# HMMER [0-9.]*' | sed 's/^# HMMER //')
         rdkit: \$(python3 -c "import rdkit; print(rdkit.__version__)" 2>/dev/null || echo "unknown")
     END_VERSIONS
     """

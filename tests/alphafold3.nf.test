@@ -5,6 +5,7 @@ nextflow_pipeline {
     tag "pipeline"
     tag "test_alphafold3_standard"
     profile "test_alphafold3_standard"
+    config "./nextflow.config"
 
     test("-profile test_alphafold3_standard") {
 

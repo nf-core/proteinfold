@@ -156,7 +156,7 @@ workflow NFCORE_PROTEINFOLD {
     }
 
     //
-    // WORKFLOW: Run alphafold3
+    // WORKFLOW: Run alphafold3 (data pipeline + inference as separate steps)
     //
     if(requested_modes.contains("alphafold3")) {
 
@@ -222,7 +222,7 @@ workflow NFCORE_PROTEINFOLD {
                                                 }
                                             }.subList(0, Math.min(5, it[1].size() as int))
                                         ]
-                                }
+                                    }
                                 .join(ALPHAFOLD3.out.msa)
                                 .join(ALPHAFOLD3.out.pae)
                                 .join(ALPHAFOLD3.out.iptm)
