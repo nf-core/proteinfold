@@ -201,7 +201,7 @@ except Exception as e:
             _tags.each { t -> tag t }
             tag "structure_validation"
             // The file-level profile controls runtime config; options only override mode per test.
-            options "--mode ${_name}"
+            options "--mode ${_name} --use_gpu"
 
             when {
                 params {
