@@ -12,7 +12,7 @@ process SPLIT_MSA {
     output:
     tuple val(meta), path ("output_msa/*.csv"), emit: msa_csv
     tuple val(meta), path ("output_msa/*.yaml"), emit: boltz_yaml
-    
+
     path "versions.yml"        , emit: versions
 
     when:
