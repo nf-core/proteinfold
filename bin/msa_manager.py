@@ -112,28 +112,16 @@ def parse_msa(msa_path, output_dir, meta_id):
 
 def parse_msa_json(msa_path, output_dir, meta_id):
     os.makedirs(output_dir, exist_ok=True)
-    """
-    version: 1
-sequences:
-  - protein:
-      id: "A"
-      sequence: "MRIFVYGSLRHKQGNSHWMTNAQLLGDFSIDNYQLYSLGHYPGAVPGNGTVHGEVYRIDNATLAELDALRTRGGEYARQLIQTPYGSAWMYVYQRPVDGLKLIESGDWLDRDK"
-      msa: "NP4186431-NP4186452_A.csv"
-  - protein:
-      id: "B"
-      sequence: "MRITIKRWGNSAGMVIPNIVMKELNLQPGQSVEAQVSNNQLILTPISRRYSLDELLAQCDMNAAELSEQDVWGKSTPAGDEIW"
-      msa: "NP4186431-NP4186452_B.csv"
-    """
-    
     with open(msa_path, "r") as file:
         msa_data = json.load(file)
 
-    print(msa_data)
+    #print(msa_data)
+    seq_itr = 0
     filename = os.path.join(output_dir, f"{meta_id}.yaml")
     with open(filename, "w") as out_file:
         out_file.write("version: 1\nsequences:")
         for seq_info in msa_data['sequences']:
-            print(seq_info)
+            #print(seq_info)
             for seq_type, seq_details in seq_info.items():
                 
                 seq_label = "sequence"
@@ -149,16 +137,18 @@ sequences:
 
                 out_file.write(f"\n  - {seq_type}:\n      id: {seq_details['id'][0]}\n      {seq_yaml_label}: {seq_details[seq_label]}")
                 if seq_type == "protein":
-                    out_file.write(f"\n      msa: {meta_id}_{seq_details['id'][0]}.csv")
+                    out_file.write(f"\n      msa: {meta_id}_{seq_itr}.csv")
 
-                    with open(os.path.join(output_dir, f"{meta_id}_{seq_details['id'][0]}.csv"), "w") as msa_out_file:
+                    with open(os.path.join(output_dir, f"{meta_id}_{seq_itr}.csv"), "w") as msa_out_file:
                         msa_out_file.write("key,sequence\n")
                         for seq in ['pairedMsa', 'unpairedMsa']:
                             lines = seq_details[seq].splitlines()[1::2]
-                            final_seqs = "\n".join(f"{i if seq == 'pairedMsa' else -1},{x}" for i, x in enumerate(lines))
-                            msa_out_file.write(final_seqs)
-                            msa_out_file.write("\n")
+                            final_seqs = "\n".join(f"{i + 1 if seq == 'pairedMsa' else -1},{x}" for i, x in enumerate(lines))
+                            if len(final_seqs) > 0:
+                                msa_out_file.write(final_seqs)
+                                msa_out_file.write("\n")
 
+                seq_itr += 1
     
 def main():
     parser = argparse.ArgumentParser(description="Split multi-A3M file into CSV sequences per section.")
