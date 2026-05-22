@@ -19,10 +19,8 @@ nextflow_pipeline {
         [name: 'colabfold',         displayName: 'ColabFold',   ext: '.pdb', tags: ['colabfold']],
         [name: 'boltz',             displayName: 'Boltz',       ext: '.pdb', tags: ['boltz']],
         [name: 'rosettafold2na',    displayName: 'RoseTTAFold2NA', ext: '.pdb', tags: ['rosettafold2na']],
-        // I've kept the RF2NA logic the same but didn't run through in the hackathon as I didn't have working DB and weight files.
         [name: 'rosettafold_all_atom', displayName: 'RoseTTAFold-AA', ext: '.pdb', tags: ['rosettafold_all_atom', 'rosettafold']],
         [name: 'helixfold3',        displayName: 'HelixFold3',  ext: '.pdb', tags: ['helixfold3']],
-        // Applied PR #561 manually to get HelixFold3 test running on the hackathon_march_2026 branch
     ]
 
     // ==================== Shared Python runner ====================
@@ -340,7 +338,7 @@ except Exception as e:
 
                 pae_files.each { f ->
                     assert f.size() > 0: "Empty PAE file: ${f.name}"
-                    def data_rows = f.readLines().drop(1)
+                    def data_rows = f.readLines()
                     if (data_rows.size() > 0) {
                         def n_rows = data_rows.size()
                         def n_cols = data_rows[0].split('\t').size()
