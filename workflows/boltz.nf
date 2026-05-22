@@ -21,7 +21,14 @@ include { MULTIQC } from '../modules/nf-core/multiqc/main'
 include { BOLTZ_FASTA } from '../modules/local/boltz_fasta'
 include { SPLIT_MSA } from '../modules/local/split_msa'
 include { MMSEQS_COLABFOLDSEARCH } from '../modules/local/mmseqs_colabfoldsearch'
-include { MULTIFASTA_TO_CSV      } from '../modules/local/multifasta_to_csv'
+include { MULTIFASTA_TO_SINGLEFASTA      } from '../modules/local/multifasta_to_singlefasta'
+//
+// SUBWORKFLOW: Consisting entirely of nf-core/modules
+//
+include { paramsSummaryMap       } from 'plugin/nf-schema'
+include { paramsSummaryMultiqc   } from '../subworkflows/nf-core/utils_nfcore_pipeline'
+include { softwareVersionsToYAML } from '../subworkflows/nf-core/utils_nfcore_pipeline'
+include { methodsDescriptionText } from '../subworkflows/local/utils_nfcore_proteinfold_pipeline'
 
 //
 // MODULE: Boltz
@@ -78,13 +85,13 @@ workflow BOLTZ {
         .set{ch_input}
 
     if (!msa_server){
-        MULTIFASTA_TO_CSV(
+        MULTIFASTA_TO_SINGLEFASTA(
             ch_input.multimer
         )
-        ch_versions = ch_versions.mix(MULTIFASTA_TO_CSV.out.versions)
+        ch_versions = ch_versions.mix(MULTIFASTA_TO_SINGLEFASTA.out.versions)
 
         MMSEQS_COLABFOLDSEARCH (
-                ch_input.monomer.mix(MULTIFASTA_TO_CSV.out.input_csv),
+                ch_input.monomer.mix(MULTIFASTA_TO_SINGLEFASTA.out.input_fasta),
                 ch_colabfold_db,
                 ch_uniref30
         )

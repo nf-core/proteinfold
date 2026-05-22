@@ -410,13 +410,14 @@ def read_csv(name, csv_files):
         temp_row = []
         #This needs to be fixed if inference is batched in future.
         for chain in manifest["records"][0]["chains"]:
-            j = chain["msa_id"].split("_")[-1]
-            temp_row.extend(msa_rows[j][i])
+            if chain["msa_id"] != -1:
+                j = chain["msa_id"].split("_")[-1]
+                temp_row.extend(msa_rows[j][i])
         final_rows.append(temp_row)
 
     # Un-paired
-    msa_widths = [len(msa_rows[chain["msa_id"].split("_")[-1]][0]) for chain in manifest["records"][0]["chains"]]
-    msa_heights = [len(unpaired_msa_rows[chain["msa_id"].split("_")[-1]]) for chain in manifest["records"][0]["chains"]]
+    msa_widths = [len(msa_rows[chain["msa_id"].split("_")[-1]][0]) for chain in manifest["records"][0]["chains"] if chain["msa_id"] != -1]
+    msa_heights = [len(unpaired_msa_rows[chain["msa_id"].split("_")[-1]]) for chain in manifest["records"][0]["chains"] if chain["msa_id"] != -1]
 
     cum_total_rows = np.cumsum(msa_heights)
 
@@ -424,19 +425,20 @@ def read_csv(name, csv_files):
         temp_row = []
 
         for i, chain in enumerate(manifest["records"][0]["chains"]):
-            msa = unpaired_msa_rows[chain["msa_id"].split("_")[-1]]
-            width = msa_widths[i]
-            if i == 0:
-                minrow = 0
-            else:
-                minrow = cum_total_rows[i-1]
-            maxrow = cum_total_rows[i]
+            if chain["msa_id"] != -1:
+                msa = unpaired_msa_rows[chain["msa_id"].split("_")[-1]]
+                width = msa_widths[i]
+                if i == 0:
+                    minrow = 0
+                else:
+                    minrow = cum_total_rows[i-1]
+                maxrow = cum_total_rows[i]
 
-            if minrow <= row_idx < maxrow:
-                msa_row_idx = row_idx - minrow
-                temp_row.extend(msa[msa_row_idx])
-            else:
-                temp_row.extend(["21"] * width) #gap
+                if minrow <= row_idx < maxrow:
+                    msa_row_idx = row_idx - minrow
+                    temp_row.extend(msa[msa_row_idx])
+                else:
+                    temp_row.extend(["21"] * width) #gap
         final_rows.append(temp_row)
 
     write_tsv(f"{name}_msa.tsv", final_rows)
