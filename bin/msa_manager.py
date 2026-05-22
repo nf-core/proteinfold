@@ -123,7 +123,7 @@ def parse_msa_json(msa_path, output_dir, meta_id):
         for seq_info in msa_data['sequences']:
             #print(seq_info)
             for seq_type, seq_details in seq_info.items():
-                
+
                 seq_label = "sequence"
                 seq_yaml_label = "sequence"
                 if seq_type == "ligand":
@@ -149,7 +149,7 @@ def parse_msa_json(msa_path, output_dir, meta_id):
                                 msa_out_file.write("\n")
 
                 seq_itr += 1
-    
+
 def main():
     parser = argparse.ArgumentParser(description="Split multi-A3M file into CSV sequences per section.")
     parser.add_argument("msa_path", help="Path to input .a3m file")

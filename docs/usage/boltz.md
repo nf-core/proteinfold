@@ -146,8 +146,6 @@ Or in a single fasta entery as shown below:
 QLEDSEVEAVAKGLEEM:rna|AUGC:smiles|N[C@@H](Cc1ccc(O)cc1)C(=O)O
 ```
 
-
-
 ## YAML format
 
 Boltz allows specifying post-translational modifications and manual distance constraints to guide predictions. However, this input information is not supported in the FASTA format and must be specified in an input YAML file according to the boltz [specification](https://github.com/jwohlwend/boltz/blob/main/docs/prediction.md#yaml-format).
