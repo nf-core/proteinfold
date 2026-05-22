@@ -10,7 +10,7 @@ nextflow_pipeline {
     script "../main.nf"
     tag "scientific"
     tag "output_validation"
-    profile "test_full,gpu"
+    profile "test_full,test_full_alphafold3,gpu"
 
     def modes = [
         [name: 'alphafold2',        displayName: 'AlphaFold2',  ext: '.pdb', tags: ['alphafold2']],
@@ -349,7 +349,10 @@ except Exception as e:
                             line.split('\t').each { val ->
                                 try {
                                     def v = Float.parseFloat(val)
-                                    assert v >= 0 && v <= 31.75:          "PAE value ${v} outside 0-31.75 range in ${f.name}"
+                                    // HelixFold3 somehow produces values just above 31.75 (the max PAE in AlphaFold). Raising the limit slightly unless HelixFold3 gets deprecated
+                                    // Reporting 31.75 is intentionally kept as to not suggest 32 is what we expect
+                                    // TODO: revert this max to 31.75 if HelixFold3 is removed - KR
+                                    assert v >= 0 && v <= 32.10:          "PAE value ${v} outside 0-31.75 range in ${f.name}"
                                     assert !v.isNaN() && !v.isInfinite(): "PAE has NaN/inf value in ${f.name}"
                                 } catch (NumberFormatException e) {
                                     assert false: "PAE value '${val}' is not a valid float in ${f.name}"

@@ -74,6 +74,30 @@
             "nextflow": "26.04.2"
         }
     },
+    "HelixFold3: BioPython structure validation": {
+        "content": [
+            {
+                "GENERATE_REPORT": {
+                    "python": "3.12.7",
+                    "generate_report.py": "Python 3.12.7"
+                },
+                "RUN_HELIXFOLD3": {
+                    "python": "3.9.23",
+                    "helixfold3": "705c2974a833cdc3a4420f4e3379da596091c97f",
+                    "hmmer": "3.3.2",
+                    "hhsuite": "3.3.0"
+                },
+                "Workflow": {
+                    "nf-core/proteinfold": "v2.1.0dev"
+                }
+            }
+        ],
+        "timestamp": "2026-05-22T15:51:33.232154825",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.2"
+        }
+    },
     "ESMFold: BioPython structure validation": {
         "content": [
             {
