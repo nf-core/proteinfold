@@ -52,6 +52,7 @@ process MMSEQS_COLABFOLDSEARCH {
     """
     mkdir results
     touch results/${meta.id}.a3m
+    touch results/${meta.id}.json
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
