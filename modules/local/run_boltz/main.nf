@@ -9,7 +9,7 @@ process RUN_BOLTZ {
     container "nf-core/proteinfold_boltz:2.0.0"
 
     input:
-    tuple val(meta), path(fasta), path(files)
+    tuple val(meta), path(yaml), path(files)
     path ('boltz1_conf.ckpt')
     path ('ccd.pkl')
     path ('boltz2_aff.ckpt')
@@ -50,17 +50,23 @@ process RUN_BOLTZ {
     mkdir -p ./home
     export HOME=./home
 
+    # Temporary workaround to upstream boltz bug requiring redownload
     [ ! -f mols.tar ] && touch mols.tar
+
+    # Staging user input from use_msa_server
+    [ ! -f "${meta.id}.yaml" ] && cp "${yaml}" "${meta.id}.yaml"
 
     if command -v nvidia-smi >/dev/null 2>&1 && nvidia-smi -L | grep -q "MIG"; then
         echo ">>> MIG mode detected. Mocking pynvml.nvmlDeviceGetNumGpuCores to avoid errors in Boltz. See https://github.com/nf-core/proteinfold/issues/417"
-        boltz_wrapper.py predict "${fasta}" --output_format "pdb" ${args} --cache ./
+        boltz_wrapper.py predict "${meta.id}.yaml" --output_format "pdb" ${args} --cache ./
     else
-        boltz predict "${fasta}" --output_format "pdb" ${args} --cache ./
+        boltz predict "${meta.id}.yaml" --output_format "pdb" ${args} --cache ./
     fi
 
     cp boltz_results_*/predictions/${meta.id}/*_0.pdb ./${meta.id}_boltz.pdb
-    if [ -f boltz_results_*/msa/${meta.id}_0.csv ]; then
+
+    # For consistency between server and local
+    if compgen -G "boltz_results_*/msa/${meta.id}*.csv" > /dev/null; then
         cp boltz_results_*/msa/${meta.id}_*.csv ./
     fi
 
