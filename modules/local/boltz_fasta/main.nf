@@ -8,10 +8,10 @@ process BOLTZ_FASTA {
         'biocontainers/python:3.8.3' }"
 
     input:
-    tuple val(meta), path(fasta), path(msa)
+    tuple val(meta), path(fasta)
 
     output:
-    tuple val(meta), path ("output_fasta/*.fasta"), path(msa), emit: formatted_fasta
+    tuple val(meta), path ("*.yaml"), emit: boltz_yaml
     path "versions.yml"                                      , emit: versions
 
     when:
@@ -19,9 +19,8 @@ process BOLTZ_FASTA {
 
     script:
     def args = task.ext.args ?: ''
-    def msa_files = msa ? "--msa " + msa.join(' ') : ''
     """
-    fasta_to_boltz.py ${fasta} ${meta.id} ${msa_files}
+    fasta_to_boltz.py ${fasta} ${meta.id} --yaml_out ${meta.id}.yaml
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
@@ -31,8 +30,7 @@ process BOLTZ_FASTA {
 
     stub:
     """
-    mkdir output_fasta
-    touch "output_fasta/${meta.id}.fasta"
+    touch "${meta.id}.yaml"
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

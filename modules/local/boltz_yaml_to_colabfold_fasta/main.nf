@@ -1,4 +1,4 @@
-process SPLIT_MSA {
+process BOLTZ_YAML_TO_COLABFOLD_FASTA {
     tag   "$meta.id"
     label 'process_single'
 
@@ -6,18 +6,18 @@ process SPLIT_MSA {
     container "nf-core/proteinfold_boltz:2.0.0"
 
     input:
-    tuple val(meta), path(msa), path(template_yaml, stageAs: 'original.yaml')
-    output:
-    tuple val(meta), path ("output_msa/*.yaml"), path ("output_msa/*.csv"), emit: boltz_data
+    tuple val(meta), path(boltz_yaml)
 
-    path "versions.yml"        , emit: versions
+    output:
+    tuple val(meta), path("${meta.id}.fasta"), emit: query_fasta
+    path "versions.yml", emit: versions
 
     when:
     task.ext.when == null || task.ext.when
 
     script:
     """
-    msa_manager.py ${msa} -o output_msa --meta_id ${meta.id} --template_yaml ${template_yaml}
+    boltz_yaml_to_colabfold_fasta.py ${boltz_yaml} --id ${meta.id} --output ${meta.id}.fasta
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
@@ -27,10 +27,7 @@ process SPLIT_MSA {
 
     stub:
     """
-    mkdir output_msa
-    touch "output_msa/A.csv"
-    touch "output_msa/B.csv"
-    touch "output_msa/${meta.id}.yaml"
+    touch "${meta.id}.fasta"
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

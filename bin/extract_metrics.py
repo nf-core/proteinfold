@@ -384,9 +384,14 @@ def read_npz(name, npz_files, struct_files=None):
 def read_csv(name, csv_files):
     if not os.path.isfile(csv_files[0]):
         return  # TODO: Fix temporary workaround
+
+    def _csv_msa_idx(csv_path):
+        base = os.path.basename(csv_path)
+        return base.rsplit("_", 1)[-1].replace(".csv", "")
+
     msa_rows = {}
     unpaired_msa_rows = {}
-    for csv_file in sorted(csv_files, key=lambda x: int(x.split('_')[-1].split('.csv')[0])):
+    for csv_file in sorted(csv_files, key=lambda x: int(_csv_msa_idx(x))):
         msa_lines = []
         unpaired_msa_lines = []
         with open(csv_file) as f:
@@ -396,49 +401,58 @@ def read_csv(name, csv_files):
                     unpaired_msa_lines.append(''.join(c for c in line.strip('\n').split(',')[1] if not c.islower()))
                 else:
                     msa_lines.append(''.join(c for c in line.strip('\n').split(',')[1] if not c.islower()))
-        msa_rows[csv_file.split('_')[-1].split('.csv')[0]] = [[str(AA_to_int.get(residue, 20)) for residue in line] for line in msa_lines]
-        unpaired_msa_rows[csv_file.split('_')[-1].split('.csv')[0]] = [[str(AA_to_int.get(residue, 20)) for residue in line] for line in unpaired_msa_lines]
+        idx = _csv_msa_idx(csv_file)
+        msa_rows[idx] = [[str(AA_to_int.get(residue, 20)) for residue in line] for line in msa_lines]
+        unpaired_msa_rows[idx] = [[str(AA_to_int.get(residue, 20)) for residue in line] for line in unpaired_msa_lines]
 
     # Get Chain to MSA mapping (ie non-redundant for homomers)
     # TODO: Make this explicit input
     with open(f'boltz_results_{name}/processed/manifest.json') as f:
         manifest = json.load(f)
 
+    chain_msa_ids = [chain["msa_id"].split("_")[-1] for chain in manifest["records"][0]["chains"] if chain["msa_id"] != -1]
+    available_chain_ids = [idx for idx in chain_msa_ids if idx in msa_rows]
+    if not available_chain_ids:
+        return
+
     final_rows = []
     # Paired
-    for i in range(len(msa_rows["0"])): #The number of paired lines is common to all MSAs
+    paired_row_count = min(len(msa_rows[idx]) for idx in available_chain_ids)
+    for i in range(paired_row_count): # conservatively use common paired depth across chains
         temp_row = []
         #This needs to be fixed if inference is batched in future.
         for chain in manifest["records"][0]["chains"]:
             if chain["msa_id"] != -1:
                 j = chain["msa_id"].split("_")[-1]
-                temp_row.extend(msa_rows[j][i])
+                if j in msa_rows:
+                    temp_row.extend(msa_rows[j][i])
         final_rows.append(temp_row)
 
     # Un-paired
-    msa_widths = [len(msa_rows[chain["msa_id"].split("_")[-1]][0]) for chain in manifest["records"][0]["chains"] if chain["msa_id"] != -1]
-    msa_heights = [len(unpaired_msa_rows[chain["msa_id"].split("_")[-1]]) for chain in manifest["records"][0]["chains"] if chain["msa_id"] != -1]
+    msa_chain_ids = available_chain_ids
+    msa_widths = {idx: len(msa_rows[idx][0]) if len(msa_rows[idx]) > 0 else 0 for idx in msa_chain_ids}
+    msa_heights = [len(unpaired_msa_rows[idx]) for idx in msa_chain_ids]
 
     cum_total_rows = np.cumsum(msa_heights)
 
-    for row_idx in range(cum_total_rows[-1]):
+    total_unpaired_rows = int(cum_total_rows[-1]) if len(cum_total_rows) > 0 else 0
+    for row_idx in range(total_unpaired_rows):
         temp_row = []
 
-        for i, chain in enumerate(manifest["records"][0]["chains"]):
-            if chain["msa_id"] != -1:
-                msa = unpaired_msa_rows[chain["msa_id"].split("_")[-1]]
-                width = msa_widths[i]
-                if i == 0:
-                    minrow = 0
-                else:
-                    minrow = cum_total_rows[i-1]
-                maxrow = cum_total_rows[i]
+        for i, idx in enumerate(msa_chain_ids):
+            msa = unpaired_msa_rows[idx]
+            width = msa_widths[idx]
+            if i == 0:
+                minrow = 0
+            else:
+                minrow = cum_total_rows[i-1]
+            maxrow = cum_total_rows[i]
 
-                if minrow <= row_idx < maxrow:
-                    msa_row_idx = row_idx - minrow
-                    temp_row.extend(msa[msa_row_idx])
-                else:
-                    temp_row.extend(["21"] * width) #gap
+            if minrow <= row_idx < maxrow:
+                msa_row_idx = row_idx - minrow
+                temp_row.extend(msa[msa_row_idx])
+            else:
+                temp_row.extend(["21"] * width) #gap
         final_rows.append(temp_row)
 
     write_tsv(f"{name}_msa.tsv", final_rows)
