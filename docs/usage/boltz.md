@@ -103,7 +103,7 @@ nextflow run nf-core/proteinfold \
 > [!WARNING]
 > If you aim to carry out a large amount of predictions, please use the local mmseqs search module or setup and use your own custom MMSeqs2 API Server. You can find instructions [here](https://github.com/sokrypton/ColabFold/tree/main/MsaServer).
 
-## General Molecules (with mmseqs colabfold server)
+## General Molecules 
 
 Boltz can support general molecular structure prediction. The most direct way to indicate molecular type is to format FASTA files with the molecular type indicated in the sequence header:
 
@@ -121,30 +121,6 @@ ATGC
 ```
 
 If the molecule type is not specified in the header of the input fasta, proteinfold will try to guess the expected molecule type based on the character composition.
-
-## General Molecules (with local mmseqs search)
-
-Boltz can support general molecular structure prediction. The most direct way to indicate molecular type is to format FASTA files with the molecular type indicated in the sequence header:
-
-```
->A|protein
-QLEDSEVEAVAKGLEEM
->B|rna
-rna|AUGC
->C|smiles
-smiles|N[C@@H](Cc1ccc(O)cc1)C(=O)O
->D|ccd
-ccd|ATP
->E|dna
-dna|ATGC
-```
-
-Or in a single fasta entery as shown below:
-
-```
->A
-QLEDSEVEAVAKGLEEM:rna|AUGC:smiles|N[C@@H](Cc1ccc(O)cc1)C(=O)O
-```
 
 ## YAML format
 
