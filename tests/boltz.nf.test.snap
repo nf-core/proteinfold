@@ -1,7 +1,7 @@
 {
     "-profile test_boltz": {
         "content": [
-            15,
+            13,
             {
                 "BOLTZ_FASTA": {
                     "python": "3.8.3"
@@ -12,9 +12,6 @@
                 "GENERATE_REPORT": {
                     "python": "3.12.7",
                     "generate_report.py": "Python 3.12.7"
-                },
-                "MERGE_BOLTZ_MSA": {
-                    "python": null
                 },
                 "MMSEQS_COLABFOLDSEARCH": {
                     "colabfold_search": "unknown",
@@ -61,12 +58,6 @@
                 "boltz/top_ranked_structures",
                 "boltz/top_ranked_structures/T1024.pdb",
                 "boltz/top_ranked_structures/T1026.pdb",
-                "merge",
-                "merge/T1024.yaml",
-                "merge/T1026.yaml",
-                "merge/merged_msa",
-                "merge/merged_msa/T1024_0.csv",
-                "merge/merged_msa/T1026_0.csv",
                 "mmseqs",
                 "mmseqs/results",
                 "mmseqs/results/T1024.a3m",
@@ -115,10 +106,6 @@
                 "T1026_0_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1024.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1026.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "T1024.yaml:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "T1026.yaml:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "T1024_0.csv:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "T1026_0.csv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1024.a3m:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1024.json:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1026.a3m:md5,d41d8cd98f00b204e9800998ecf8427e",
@@ -136,6 +123,6 @@
             "nf-test": "0.9.2",
             "nextflow": "25.10.4"
         },
-        "timestamp": "2026-05-24T11:52:14.352748412"
+        "timestamp": "2026-05-24T13:39:06.277260252"
     }
 }
