@@ -3,6 +3,7 @@ import os
 import string
 import argparse
 import json
+import copy
 import yaml
 
 MAX_MSA_SEQS = 16384
@@ -74,13 +75,13 @@ def parse_template_yaml(template_yaml):
             payload_key = "ccd"
             payload_value = seq_details.get("ccd")
 
-        if payload_key is not None:
-            entities[key] = {
-                "id": seq_id,
-                "seq_type": seq_type,
-                "seq_yaml_label": payload_key,
-                "seq_value": payload_value
-            }
+        entities[key] = {
+            "id": seq_id,
+            "seq_type": seq_type,
+            "seq_yaml_label": payload_key,
+            "seq_value": payload_value,
+            "seq_item": copy.deepcopy(seq_item)
+        }
 
     return order, entities
 
@@ -216,110 +217,139 @@ def parse_msa_json(msa_path, output_dir, meta_id, template_yaml=None):
     with open(msa_path, "r") as file:
         msa_data = json.load(file)
 
+    template_data = None
+    if template_yaml:
+        with open(template_yaml, "r", encoding="utf-8") as handle:
+            template_data = yaml.safe_load(handle) or {}
+        if not isinstance(template_data, dict):
+            raise ValueError(f"Expected top-level mapping in template YAML: {template_yaml}")
+
     parsed_entries = []
-    entry_map = {}
     for seq_info in msa_data['sequences']:
         for seq_type, seq_details in seq_info.items():
             seq_id = seq_details.get('id')
-            key = make_entity_key(seq_type, seq_id)
             entry = {
                 "seq_type": seq_type,
                 "seq_details": seq_details,
                 "payload": get_entry_payload(seq_type, seq_details)
             }
             parsed_entries.append(entry)
-            if key is not None and key not in entry_map:
-                entry_map[key] = entry
 
     ordered_entries = []
     ordered_template_keys = []
-    used_keys = set()
     template_entities = {}
+    unmatched_entries = parsed_entries.copy()
+
+    def pop_match(match_fn):
+        for i, entry in enumerate(unmatched_entries):
+            if match_fn(entry):
+                return unmatched_entries.pop(i)
+        return None
+
     if template_yaml:
         template_order, template_entities = parse_template_yaml(template_yaml)
         for key in template_order:
-            if key in entry_map:
-                ordered_entries.append(entry_map[key])
-                ordered_template_keys.append(key)
-                used_keys.add(key)
-                continue
+            # Prefer exact id/type match first
+            matched = pop_match(
+                lambda entry: make_entity_key(entry["seq_type"], entry["seq_details"].get("id")) == key
+            )
 
             # Fallback: MMseqs may reshuffle/swap ids; match by type + sequence payload
-            if key in template_entities:
+            if matched is None and key in template_entities:
                 template_type = str(template_entities[key]["seq_type"]).strip().lower()
-                template_payload = str(template_entities[key]["seq_value"]).strip()
-                for entry in parsed_entries:
-                    entry_key = make_entity_key(entry["seq_type"], entry["seq_details"].get("id"))
-                    if entry_key in used_keys:
-                        continue
-                    entry_type = str(entry["seq_type"]).strip().lower()
-                    if entry_type == template_type and entry["payload"] == template_payload:
-                        ordered_entries.append(entry)
-                        ordered_template_keys.append(key)
-                        used_keys.add(entry_key)
-                        break
-    for entry in parsed_entries:
-        key = make_entity_key(entry["seq_type"], entry["seq_details"].get("id"))
-        if key not in used_keys:
-            ordered_entries.append(entry)
-            ordered_template_keys.append(None)
-            used_keys.add(key)
+                template_payload = template_entities[key].get("seq_value")
+                if template_payload is not None:
+                    template_payload = str(template_payload).strip()
+                    matched = pop_match(
+                        lambda entry: str(entry["seq_type"]).strip().lower() == template_type
+                        and entry["payload"] == template_payload
+                    )
 
-    filename = os.path.join(output_dir, f"{meta_id}.yaml")
-    with open(filename, "w") as out_file:
-        out_file.write("version: 1\nsequences:")
-        for idx, entry in enumerate(ordered_entries):
+            # Keep template entries even if no MMseqs match, so metadata is retained.
+            ordered_entries.append(matched)
+            ordered_template_keys.append(key)
+
+    for entry in unmatched_entries:
+        ordered_entries.append(entry)
+        ordered_template_keys.append(None)
+
+    output_sequences = []
+    for idx, entry in enumerate(ordered_entries):
+        seq_type = None
+        seq_details = None
+        seq_key = None
+        if entry is not None:
             seq_type = entry["seq_type"]
             seq_details = entry["seq_details"]
             seq_key = make_entity_key(seq_type, seq_details.get("id"))
-            template_key = ordered_template_keys[idx]
+        template_key = ordered_template_keys[idx]
 
-            seq_label = "sequence"
-            seq_yaml_label = "sequence"
+        templ = None
+        if template_key in template_entities:
+            templ = template_entities[template_key]
+        elif seq_key in template_entities:
+            templ = template_entities[seq_key]
+
+        if templ is not None:
+            seq_item_out = copy.deepcopy(templ["seq_item"])
+            seq_type_out, seq_details_out = next(iter(seq_item_out.items()))
+            if not isinstance(seq_details_out, dict):
+                raise ValueError(f"Invalid sequence details in template YAML for key '{template_key}'")
+        else:
+            if entry is None:
+                raise ValueError(f"Could not resolve sequence for template key '{template_key}'")
+            seq_type_out = seq_type
+            seq_details_out = {"id": seq_details.get("id")}
             if seq_type == "ligand":
-                if "ccdCodes" in seq_details.keys():
-                    seq_label = "ccdCodes"
-                    seq_details["ccdCodes"] = " ".join(seq_details["ccdCodes"])
-                    seq_yaml_label = "ccd"
-                elif "smiles" in seq_details.keys():
-                    seq_label = "smiles"
-                    seq_yaml_label = "smiles"
+                if "ccdCodes" in seq_details:
+                    seq_details_out["ccd"] = " ".join(seq_details["ccdCodes"])
+                elif "smiles" in seq_details:
+                    seq_details_out["smiles"] = seq_details["smiles"]
+                elif "ccd" in seq_details:
+                    seq_details_out["ccd"] = seq_details["ccd"]
+                else:
+                    raise ValueError(f"Ligand entity '{seq_details.get('id')}' missing ccd/smiles payload")
+            else:
+                seq_details_out["sequence"] = seq_details.get("sequence")
+            seq_item_out = {seq_type_out: seq_details_out}
 
-            seq_value = seq_details[seq_label]
-            templ = None
-            if template_key in template_entities:
-                templ = template_entities[template_key]
-            elif seq_key in template_entities:
-                templ = template_entities[seq_key]
+        if str(seq_type_out).strip().lower() == "protein":
+            if entry is None:
+                raise ValueError(
+                    f"No MSA mapping found for protein id(s): {seq_details_out.get('id')}"
+                )
+            if "pairedMsa" not in seq_details or "unpairedMsa" not in seq_details:
+                raise ValueError(
+                    f"Protein entity '{seq_details_out.get('id')}' is missing pairedMsa/unpairedMsa in MMseqs JSON"
+                )
+            # Keep MSA numbering aligned with entity order in YAML so non-protein
+            # entities (e.g. RNA/ligands) preserve index gaps, matching server mode.
+            msa_idx = idx
+            seq_details_out["msa"] = f"{meta_id}_{msa_idx}.csv"
 
-            if templ is not None:
-                seq_type = templ["seq_type"]
-                seq_yaml_label = templ["seq_yaml_label"]
-                seq_value = templ["seq_value"]
-
-            yaml_id_source = seq_details.get("id")
-            if templ is not None:
-                yaml_id_source = templ["id"]
-            yaml_id = format_yaml_id(yaml_id_source)
-            out_file.write(f"\n  - {seq_type}:\n      id: {yaml_id}\n      {seq_yaml_label}: {seq_value}")
-            if seq_type == "protein":
-                if "pairedMsa" not in seq_details or "unpairedMsa" not in seq_details:
-                    raise ValueError(
-                        f"Protein entity '{yaml_id}' is missing pairedMsa/unpairedMsa in MMseqs JSON"
+            with open(os.path.join(output_dir, f"{meta_id}_{msa_idx}.csv"), "w") as msa_out_file:
+                msa_out_file.write("key,sequence\n")
+                for msa_type in ["pairedMsa", "unpairedMsa"]:
+                    lines = seq_details[msa_type].splitlines()[1::2]
+                    final_seqs = "\n".join(
+                        f"{i + 1 if msa_type == 'pairedMsa' else -1},{x}" for i, x in enumerate(lines)
                     )
-                # Keep MSA numbering aligned with entity order in YAML so non-protein
-                # entities (e.g. RNA/ligands) preserve index gaps, matching server mode.
-                msa_idx = idx
-                out_file.write(f"\n      msa: {meta_id}_{msa_idx}.csv")
+                    if len(final_seqs) > 0:
+                        msa_out_file.write(final_seqs)
+                        msa_out_file.write("\n")
 
-                with open(os.path.join(output_dir, f"{meta_id}_{msa_idx}.csv"), "w") as msa_out_file:
-                    msa_out_file.write("key,sequence\n")
-                    for seq in ['pairedMsa', 'unpairedMsa']:
-                        lines = seq_details[seq].splitlines()[1::2]
-                        final_seqs = "\n".join(f"{i + 1 if seq == 'pairedMsa' else -1},{x}" for i, x in enumerate(lines))
-                        if len(final_seqs) > 0:
-                            msa_out_file.write(final_seqs)
-                            msa_out_file.write("\n")
+        output_sequences.append(seq_item_out)
+
+    if template_data is not None:
+        output_yaml_data = copy.deepcopy(template_data)
+    else:
+        output_yaml_data = {"version": 1}
+
+    output_yaml_data["sequences"] = output_sequences
+
+    filename = os.path.join(output_dir, f"{meta_id}.yaml")
+    with open(filename, "w", encoding="utf-8") as out_file:
+        yaml.safe_dump(output_yaml_data, out_file, sort_keys=False)
 
 def main():
     parser = argparse.ArgumentParser(description="Split multi-A3M file into CSV sequences per section.")

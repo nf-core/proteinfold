@@ -20,7 +20,6 @@
 include { MULTIQC } from '../modules/nf-core/multiqc/main'
 include { BOLTZ_FASTA } from '../modules/local/boltz_fasta'
 include { BOLTZ_YAML_TO_COLABFOLD_FASTA } from '../modules/local/boltz_yaml_to_colabfold_fasta'
-include { MERGE_BOLTZ_MSA } from '../modules/local/merge_boltz_msa'
 include { SPLIT_MSA } from '../modules/local/split_msa'
 include { MMSEQS_COLABFOLDSEARCH } from '../modules/local/mmseqs_colabfoldsearch'
 
@@ -82,10 +81,8 @@ workflow BOLTZ {
         )
         ch_versions = ch_versions.mix(MMSEQS_COLABFOLDSEARCH.out.versions)
 
-        //colabfold search does not maintain original order - can avoid using below template if this is patched
-        ch_boltz_yaml_input
-            .join(MMSEQS_COLABFOLDSEARCH.out.json)
-            .map { meta, template_yaml, msa_json -> [meta, msa_json, template_yaml] }
+        MMSEQS_COLABFOLDSEARCH.out.json
+            .join(ch_boltz_yaml_input)
             .set { ch_split_msa_input }
 
         SPLIT_MSA(
@@ -93,13 +90,7 @@ workflow BOLTZ {
         )
         ch_versions = ch_versions.mix(SPLIT_MSA.out.versions)
 
-        ch_boltz_yaml_input
-            .join(SPLIT_MSA.out.boltz_data)
-            .set { ch_merge_input }
-
-        MERGE_BOLTZ_MSA(ch_merge_input)
-        ch_versions = ch_versions.mix(MERGE_BOLTZ_MSA.out.versions)
-        MERGE_BOLTZ_MSA.out.boltz_data.set{ch_boltz_input}
+        SPLIT_MSA.out.boltz_data.set { ch_boltz_input }
 
     }else{
         ch_boltz_yaml_input
