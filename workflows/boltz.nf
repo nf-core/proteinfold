@@ -101,7 +101,7 @@ workflow BOLTZ {
         ch_versions = ch_versions.mix(MERGE_BOLTZ_MSA.out.versions)
         MERGE_BOLTZ_MSA.out.boltz_data.set{ch_boltz_input}
 
-    }else{       
+    }else{
         ch_boltz_yaml_input
             .map { meta, yaml -> [meta, yaml, []] }
             .set{ch_boltz_input}
