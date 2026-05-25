@@ -17,7 +17,9 @@ process RUN_ALPHAFOLD3_DATAPIPELINE {
 
     output:
     tuple val(meta), path ("${meta.id}_data.json"), emit: data_json
-    path "versions.yml"                           , emit: versions
+    tuple val("${task.process}"), val('python'), eval("python3 --version | sed 's/Python //g'"), emit: versions_python, topic: versions
+    tuple val("${task.process}"), val('alphafold3'), eval('cd /app/alphafold && git rev-parse HEAD 2>/dev/null || echo "unknown"'), emit: versions_alphafold3, topic: versions
+    tuple val("${task.process}"), val('hmmer'), eval("hmmsearch -h | grep -o '^# HMMER [0-9.]*' | sed 's/^# HMMER //' || echo 'unknown'"), emit: versions_hmmer, topic: versions
 
     when:
     task.ext.when == null || task.ext.when
@@ -71,25 +73,11 @@ process RUN_ALPHAFOLD3_DATAPIPELINE {
         $args
 
     cp ${af3_id}/${af3_id}_data.json ${prefix}_data.json
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        python: \$(python3 --version | sed 's/Python //g')
-        alphafold3: \$(cd /app/alphafold && git rev-parse HEAD 2>/dev/null || echo "unknown")
-        hmmer: \$(hmmsearch -h | grep -o '^# HMMER [0-9.]*' | sed 's/^# HMMER //' || echo "unknown")
-    END_VERSIONS
     """
 
     stub:
     def prefix = task.ext.prefix ?: "${meta.id}"
     """
     touch ${prefix}_data.json
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        python: \$(python3 --version 2>/dev/null | sed 's/Python //g' || echo "unknown")
-        alphafold3: \$(cd /app/alphafold && git rev-parse HEAD 2>/dev/null || echo "unknown")
-        hmmer: \$(hmmsearch -h | grep -o '^# HMMER [0-9.]*' | sed 's/^# HMMER //' || echo "unknown")
-    END_VERSIONS
     """
 }

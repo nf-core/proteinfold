@@ -9,7 +9,8 @@ process MODELCIF_VALIDATE {
 
     output:
     tuple val(meta), path(mmcif), emit: modelcif
-    path "versions.yml"         , emit: versions
+    tuple val("${task.process}"), val('modelcif'), eval("python3 -c \"import modelcif; print(modelcif.__version__)\""), emit: versions_modelcif, topic: versions
+    tuple val("${task.process}"), val('python'), eval("python3 --version | sed 's/Python //g'"), emit: versions_python, topic: versions
 
     when:
     task.ext.when == null || task.ext.when
@@ -38,12 +39,6 @@ process MODELCIF_VALIDATE {
                 raise ValueError(f"ModelCIF system in {f} has no model groups (missing _ma_model_group / _ma_model_list)")
         print(f'py-modelcif validation passed: {f}', file=sys.stderr)
 
-    with open('versions.yml', 'w') as fh:
-        import modelcif
-        fh.write('${task.process}:\\n')
-        fh.write(f'    modelcif: {modelcif.__version__}\\n')
-        import platform
-        fh.write(f'    python: {platform.python_version()}\\n')
     """
 
 }

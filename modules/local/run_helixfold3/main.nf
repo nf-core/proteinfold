@@ -40,7 +40,10 @@ process RUN_HELIXFOLD3 {
     tuple val(meta), path ("${meta.id}_ipsae.tsv")          , optional: true, emit: ipsaes
     tuple val(meta), path ("${meta.id}_chainwise_iptm.tsv") , optional: true, emit: chainwise_iptms
     tuple val(meta), path ("${meta.id}_chainwise_ipsae.tsv"), optional: true, emit: chainwise_ipsaes
-    path ("versions.yml")                                   , emit: versions
+    tuple val("${task.process}"), val('python'), eval("python3 --version 2>&1 | sed 's/Python //g'"), emit: versions_python, topic: versions
+    tuple val("${task.process}"), val('helixfold3'), val('705c2974a833cdc3a4420f4e3379da596091c97f'), emit: versions_helixfold3, topic: versions
+    tuple val("${task.process}"), val('hmmer'), eval("hmmsearch -h 2>&1 | grep -o 'HMMER [0-9.]*' | sed 's/HMMER //'"), emit: versions_hmmer, topic: versions
+    tuple val("${task.process}"), val('hhsuite'), eval("hhblits -h 2>&1 | head -1 | awk '{print \\\$2}' | tr -d ':'"), emit: versions_hhsuite, topic: versions
 
     when:
     task.ext.when == null || task.ext.when
@@ -51,7 +54,6 @@ process RUN_HELIXFOLD3 {
         error("Local RUN_HELIXFOLD3 module does not support Conda. Please use Docker / Singularity / Podman / Apptainer instead.")
     }
     def args = task.ext.args ?: ''
-    def VERSION = '705c2974a833cdc3a4420f4e3379da596091c97f'
     """
     init_model_path=\$(ls ./init_models/*.pdparams | head -n 1)
     mgnify_db_path=\$(ls -v ./mgnify/mgy_clusters*.fa | tail -n 1)
@@ -100,18 +102,9 @@ process RUN_HELIXFOLD3 {
 
     mv "${meta.id}_msa.tsv" "${meta.id}_helixfold3_msa.tsv"
     mv "${fasta.baseName}" raw/
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        python: \$(python3 --version 2>&1 | sed 's/Python //g')
-        helixfold3: "${VERSION}"
-        hmmer: \$(hmmsearch -h 2>&1 | grep -o 'HMMER [0-9.]*' | sed 's/HMMER //')
-        hhsuite: \$(hhblits -h 2>&1 | head -1 | awk '{print \$2}' | tr -d ':')
-    END_VERSIONS
     """
 
     stub:
-    def VERSION = '705c2974a833cdc3a4420f4e3379da596091c97f'
     """
     touch "${meta.id}_helixfold3.cif"
     touch "${meta.id}_helixfold3.pdb"
@@ -133,10 +126,5 @@ process RUN_HELIXFOLD3 {
     touch "raw/ranked_3.pdb"
     touch "raw/ranked_4.pdb"
     touch "raw/ranked_5.pdb"
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        python: \$(python3 --version 2>/dev/null | sed 's/Python //g' || echo "unknown")
-    END_VERSIONS
     """
 }

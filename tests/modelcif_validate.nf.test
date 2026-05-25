@@ -6,6 +6,21 @@ nextflow_process {
 
     tag "modelcif_validate"
 
+    def assertVersionsOutput = { proc ->
+        def versionChannels = proc.out.findAll { key, _ -> key.startsWith('versions') }
+        assert versionChannels.size() >= 2
+
+        def versions = versionChannels.collectMany { _, rows -> rows }
+        assert versions.size() >= 2
+
+        def tools = versions.collect { it[1] } as Set
+        assert tools.containsAll(['modelcif', 'python'])
+
+        assert versions.every { row ->
+            row[0] == 'MODELCIF_VALIDATE' && row[2] != null && row[2].toString().trim()
+        }
+    }
+
     test("dummy modelcif") {
 
         when {
@@ -19,7 +34,7 @@ nextflow_process {
         then {
             assertAll(
                 { assert process.success },
-                { assert snapshot(process.out.versions).match() }
+                { assertVersionsOutput(process) }
             )
         }
     }
@@ -37,7 +52,7 @@ nextflow_process {
         then {
             assertAll(
                 { assert process.success },
-                { assert snapshot(process.out.versions).match() }
+                { assertVersionsOutput(process) }
             )
         }
     }

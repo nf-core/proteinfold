@@ -7,7 +7,7 @@ process CIFCHECK {
 
     output:
     tuple val(meta), path(mmcif), emit: modelcif
-    path "versions.yml"         , emit: versions
+    tuple val("${task.process}"), val('CifCheck'), val('2.500'), emit: versions_cifcheck, topic: versions
 
     when:
     task.ext.when == null || task.ext.when
@@ -24,9 +24,5 @@ process CIFCHECK {
         fi
     done
 
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        CifCheck: "2.500"
-    END_VERSIONS
     """
 }

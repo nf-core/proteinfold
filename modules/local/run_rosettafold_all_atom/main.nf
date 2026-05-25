@@ -25,7 +25,8 @@ process RUN_ROSETTAFOLD_ALL_ATOM {
     // I think there should always be PAE from the .pt PyTorch model. extract_metrics.py has condition import torch to handle this
     tuple val(meta), path ("${meta.id}_*_pae.tsv")                   , emit: paes
     tuple val(meta), path ("${meta.id}_0_pae.tsv")                   , emit: pae
-    path "versions.yml"                                              , emit: versions
+    tuple val("${task.process}"), val('python'), eval("python3 --version | sed 's/Python //g'"), emit: versions_python, topic: versions
+    tuple val("${task.process}"), val('rosettafold-all-atom'), eval("cd /app/RoseTTAFold-All-Atom && git rev-parse HEAD 2>/dev/null || echo \"unknown\""), emit: versions_rosettafold_all_atom, topic: versions
 
     when:
     task.ext.when == null || task.ext.when
@@ -61,12 +62,6 @@ process RUN_ROSETTAFOLD_ALL_ATOM {
     if [[ -f "\${yaml_name}_aux.pt" ]]; then
         mv "\${yaml_name}_aux.pt" raw/
     fi
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        python: \$(python3 --version | sed 's/Python //g')
-        rosettafold-all-atom: \$(cd /app/RoseTTAFold-All-Atom && git rev-parse HEAD 2>/dev/null || echo "unknown")
-    END_VERSIONS
     """
 
     stub:
@@ -78,11 +73,5 @@ process RUN_ROSETTAFOLD_ALL_ATOM {
     touch "${meta.id}_0_pae.tsv"
     mkdir -p raw
     touch raw/${meta.id}_aux.pt
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        python: \$(python3 --version 2>/dev/null | sed 's/Python //g' || echo "unknown")
-        rosettafold-all-atom: \$(cd /app/RoseTTAFold-All-Atom && git rev-parse HEAD 2>/dev/null || echo "unknown")
-    END_VERSIONS
     """
 }

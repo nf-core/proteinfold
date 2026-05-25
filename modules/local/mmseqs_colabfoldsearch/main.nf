@@ -12,8 +12,8 @@ process MMSEQS_COLABFOLDSEARCH {
 
     output:
     tuple val(meta), path("**.a3m"), emit: a3m
-    tuple val(meta), path("**.json"), emit: json
-    path "versions.yml", emit: versions
+    tuple val("${task.process}"), val('colabfold_search'), eval("pip list | grep \"^colabfold\" | awk '{print \\\$2}' 2>/dev/null || echo \"unknown\""), emit: versions_colabfold_search, topic: versions
+    tuple val("${task.process}"), val('mmseqs'), eval("mmseqs version"), emit: versions_mmseqs, topic: versions
 
     when:
     task.ext.when == null || task.ext.when
@@ -40,24 +40,11 @@ process MMSEQS_COLABFOLDSEARCH {
         ./db \\
         --af3-json \\
         "results/"
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        colabfold_search: \$(pip list | grep "^colabfold" | awk '{print \$2}' 2>/dev/null || echo "unknown")
-        mmseqs: \$(mmseqs version)
-    END_VERSIONS
     """
 
     stub:
     """
     mkdir results
     touch results/${meta.id}.a3m
-    touch results/${meta.id}.json
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        colabfold_search: \$(pip list | grep "^colabfold" | awk '{print \$2}' 2>/dev/null || echo "unknown")
-        mmseqs: \$(mmseqs version)
-    END_VERSIONS
     """
 }

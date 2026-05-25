@@ -38,7 +38,6 @@ workflow BOLTZ {
 
     take:
     ch_samplesheet  // channel: samplesheet read from --input
-    ch_versions     // channel: [ path(versions.yml) ]
     ch_boltz_ccd    // channel: [ path(boltz_ccd) ]
     ch_boltz_model  // channel: [ path(model) ]
     ch_boltz2_aff   // channel: [ path(boltz2_aff) ]
@@ -72,25 +71,21 @@ workflow BOLTZ {
         BOLTZ_YAML_TO_COLABFOLD_FASTA(
             ch_boltz_yaml_input
         )
-        ch_versions = ch_versions.mix(BOLTZ_YAML_TO_COLABFOLD_FASTA.out.versions)
 
         MMSEQS_COLABFOLDSEARCH (
                 BOLTZ_YAML_TO_COLABFOLD_FASTA.out.query_fasta,
                 ch_colabfold_db,
                 ch_uniref30
         )
-        ch_versions = ch_versions.mix(MMSEQS_COLABFOLDSEARCH.out.versions)
-
-        MMSEQS_COLABFOLDSEARCH.out.json
-            .join(ch_boltz_yaml_input)
-            .set { ch_split_msa_input }
 
         SPLIT_MSA(
             ch_split_msa_input
         )
-        ch_versions = ch_versions.mix(SPLIT_MSA.out.versions)
-
-        SPLIT_MSA.out.boltz_data.set { ch_boltz_input }
+        ch_input.monomer
+            .join(SPLIT_MSA.out.msa_csv)
+            .mix(
+                ch_input.multimer.join(SPLIT_MSA.out.msa_csv)
+            ).set{ch_prepare_fasta}
 
     }else{
         ch_boltz_yaml_input
@@ -195,10 +190,7 @@ workflow BOLTZ {
         .map { it ->  [ [ "model": "boltz"], it.flatten() ] }
         .set { ch_multiqc_report  }
 
-    ch_versions       = ch_versions.mix(RUN_BOLTZ.out.versions)
-
     emit:
-    versions        = ch_versions
     msa             = ch_msa
     confidence      = RUN_BOLTZ.out.confidence
     multiqc_report  = ch_multiqc_report

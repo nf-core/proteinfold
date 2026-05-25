@@ -33,7 +33,7 @@ process RUN_BOLTZ {
     tuple val(meta), path ("${meta.id}_chainwise_ptm.tsv")                    , emit: summary_chainwise_ptm_raw
     tuple val(meta), path ("${meta.id}_chainwise_iptm.tsv")                   , optional: true, emit: chainwise_iptm_raw
     tuple val(meta), path ("${meta.id}_chainwise_ipsae.tsv")                  , optional: true, emit: chainwise_ipsae_raw
-    path "versions.yml", emit: versions
+    tuple val("${task.process}"), val('boltz'), eval("pip list | grep -i boltz | awk '{print \$2}' 2>/dev/null || echo \"unknown\""), emit: versions_boltz, topic: versions
 
     when:
     task.ext.when == null || task.ext.when
@@ -77,11 +77,6 @@ process RUN_BOLTZ {
     touch "${meta.id}_iptm.tsv" "${meta.id}_ipsae.tsv" "${meta.id}_chainwise_iptm.tsv" "${meta.id}_chainwise_ipsae.tsv"
 
     mv "${meta.id}_msa.tsv" "${meta.id}_boltz_msa.tsv"
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        boltz: \$(pip list | grep -i boltz | awk '{print \$2}' 2>/dev/null || echo "unknown")
-    END_VERSIONS
     """
 
     stub:
@@ -106,10 +101,5 @@ process RUN_BOLTZ {
     touch "${meta.id}_chainwise_ptm.tsv"
     touch "${meta.id}_chainwise_iptm.tsv"
     touch "${meta.id}_chainwise_ipsae.tsv"
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        boltz: \$(pip list | grep -i boltz | awk '{print \$2}' 2>/dev/null || echo "unknown")
-    END_VERSIONS
     """
 }

@@ -29,7 +29,6 @@ workflow COLABFOLD {
 
     take:
     ch_samplesheet          // channel: samplesheet read in from --input
-    ch_versions            // channel: [ path(versions.yml) ]
     ch_colabfold_params    // channel: path(colabfold_params)
     ch_colabfold_db        // channel: path(colabfold_db)
     ch_uniref30            // channel: path(uniref30)
@@ -46,14 +45,12 @@ workflow COLABFOLD {
         MULTIFASTA_TO_CSV(
             ch_samplesheet
         )
-        ch_versions = ch_versions.mix(MULTIFASTA_TO_CSV.out.versions)
 
         COLABFOLD_BATCH(
             MULTIFASTA_TO_CSV.out.input_csv
                 .combine(ch_colabfold_params),
             num_recycles
         )
-        ch_versions = ch_versions.mix(COLABFOLD_BATCH.out.versions)
 
     } else {
         //
@@ -62,13 +59,11 @@ workflow COLABFOLD {
         MULTIFASTA_TO_CSV(
             ch_samplesheet
         )
-        ch_versions = ch_versions.mix(MULTIFASTA_TO_CSV.out.versions)
         MMSEQS_COLABFOLDSEARCH (
             MULTIFASTA_TO_CSV.out.input_csv,
             ch_colabfold_db,
             ch_uniref30
         )
-        ch_versions = ch_versions.mix(MMSEQS_COLABFOLDSEARCH.out.versions)
 
         //
         // MODULE: Run colabfold
@@ -78,7 +73,6 @@ workflow COLABFOLD {
                 .combine(ch_colabfold_params),
             num_recycles
         )
-        ch_versions    = ch_versions.mix(COLABFOLD_BATCH.out.versions)
     }
 
     COLABFOLD_BATCH
@@ -129,7 +123,6 @@ workflow COLABFOLD {
     chainwise_iptm = ch_chainwise_iptm_final // channel: [ id, /path/to/*_chainwise_iptm.tsv ]
     chainwise_ipsae = ch_chainwise_ipsae_final // channel: [ id, /path/to/*_chainwise_ipsae.tsv ]
     multiqc_report = ch_multiqc_report // channel: /path/to/multiqc_report.html
-    versions       = ch_versions       // channel: [ path(versions.yml) ]
 }
 
 /*

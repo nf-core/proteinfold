@@ -14,7 +14,12 @@ process RUN_ESMFOLD {
     tuple val(meta), path ("${meta.id}_esmfold.pdb")  , emit: top_ranked_pdb
     tuple val(meta), path ("*.pdb")                   , emit: pdb
     tuple val(meta), path ("${meta.id}_plddt_mqc.tsv"), emit: multiqc
-    path "versions.yml"                               , emit: versions
+    tuple val("${task.process}"), val('esm-fold'), val('1.0.3'), emit: versions_esmfold, topic: versions
+    tuple val("${task.process}"), val('python'), eval("python3 --version | sed 's/Python //g'"), emit: versions_python, topic: versions
+    tuple val("${task.process}"), val('pytorch'), eval("python3 -c \"import torch; print(torch.__version__)\" 2>/dev/null || echo \"unknown\""), emit: versions_pytorch, topic: versions
+    tuple val("${task.process}"), val('openfold'), eval("python -m pip show openfold | grep \"^Version\" | sed 's/.*Version: //' 2>/dev/null || echo \"unknown\""), emit: versions_openfold, topic: versions
+    tuple val("${task.process}"), val('numpy'), eval("python3 -c \"import numpy; print(numpy.__version__)\" 2>/dev/null || echo \"unknown\""), emit: versions_numpy, topic: versions
+    tuple val("${task.process}"), val('biopython'), eval("python3 -c \"import Bio; print(Bio.__version__)\" 2>/dev/null || echo \"unknown\""), emit: versions_biopython, topic: versions
 
     when:
     task.ext.when == null || task.ext.when
@@ -24,8 +29,6 @@ process RUN_ESMFOLD {
         error("Local RUN_ESMFOLD module does not support Conda. Please use Docker / Singularity / Podman instead.")
     }
     def args = task.ext.args ?: ''
-    def VERSION = '1.0.3' // WARN: Version information not provided by tool on CLI. Please update this string when bumping container versions.
-
     // KR - note: removed the *.pdb -> tmp.pdb, tmp.pdb  -> esmfold.pdb. Why not just take directly?
     // Only one .pdb per ESMFold run
     """
@@ -40,32 +43,11 @@ process RUN_ESMFOLD {
 
     extract_metrics.py --name ${meta.id} \\
         --structs ${meta.id}_esmfold.pdb
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        esm-fold: $VERSION
-        python: \$(python3 --version | sed 's/Python //g')
-        pytorch: \$(python3 -c "import torch; print(torch.__version__)" 2>/dev/null || echo "unknown")
-        openfold: \$(python -m pip show openfold | grep "^Version" | sed 's/.*Version: //' 2>/dev/null || echo "unknown")
-        numpy: \$(python3 -c "import numpy; print(numpy.__version__)" 2>/dev/null || echo "unknown")
-        biopython: \$(python3 -c "import Bio; print(Bio.__version__)" 2>/dev/null || echo "unknown")
-    END_VERSIONS
     """
 
     stub:
-    def VERSION = '1.0.3' // WARN: Version information not provided by tool on CLI. Please update this string when bumping container versions.
     """
     touch "${meta.id}_esmfold.pdb"
     touch "${meta.id}_plddt_mqc.tsv"
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        esm-fold: $VERSION
-        python: \$(python3 --version 2>/dev/null | sed 's/Python //g' || echo "unknown")
-        pytorch: \$(python3 -c "import torch; print(torch.__version__)" 2>/dev/null || echo "unknown")
-        openfold: \$(python -m pip show openfold 2>/dev/null | grep "^Version" | sed 's/.*Version: //' || echo "unknown")
-        numpy: \$(python3 -c "import numpy; print(numpy.__version__)" 2>/dev/null || echo "unknown")
-        biopython: \$(python3 -c "import Bio; print(Bio.__version__)" 2>/dev/null || echo "unknown")
-    END_VERSIONS
     """
 }

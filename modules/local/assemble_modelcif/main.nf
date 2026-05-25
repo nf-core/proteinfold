@@ -18,7 +18,9 @@ process ASSEMBLE_MODELCIF {
 
     output:
     tuple val(meta), path("*.{mmcif,bcif}"), emit: modelcif
-    path "versions.yml"             , emit: versions
+    tuple val("${task.process}"), val('python'), eval("python3 --version | sed 's/Python //g'"), emit: versions_python, topic: versions
+    tuple val("${task.process}"), val('modelcif'), eval("python3 -c \"import modelcif; print(modelcif.__version__)\" 2>/dev/null || echo \"unknown\""), emit: versions_modelcif, topic: versions
+    tuple val("${task.process}"), val('biopython'), eval("python3 -c \"import Bio; print(Bio.__version__)\""), emit: versions_biopython, topic: versions
 
     when:
     task.ext.when == null || task.ext.when
@@ -43,13 +45,6 @@ process ASSEMBLE_MODELCIF {
         --versions_yml ${versions_yml} \\
         --msa_tool ${meta.msa_tool ?: 'None'} \
         $args
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        python: \$(python3 --version | sed 's/Python //g')
-        modelcif: \$(python3 -c "import modelcif; print(modelcif.__version__)" 2>/dev/null || echo "unknown")
-        biopython: \$(python3 -c "import Bio; print(Bio.__version__)")
-    END_VERSIONS
     """
 
 }

@@ -12,7 +12,7 @@ process FASTA2JSON {
     output:
 
     tuple val(meta), path ("*.json"), emit: json
-    path "versions.yml"             , emit: versions
+    tuple val("${task.process}"), val('python'), eval("python3 --version | sed 's/Python //g'"), emit: versions_python, topic: versions
 
     when:
     task.ext.when == null || task.ext.when
@@ -20,20 +20,10 @@ process FASTA2JSON {
     script:
     """
     fasta_to_json.py ${fasta} ${meta.id}
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        python: \$(python3 --version | sed 's/Python //g')
-    END_VERSIONS
     """
 
     stub:
     """
     touch "${meta.id}.json"
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        python: \$(python3 --version | sed 's/Python //g')
-    END_VERSIONS
     """
 }

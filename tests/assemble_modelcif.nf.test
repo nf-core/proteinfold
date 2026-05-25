@@ -82,6 +82,21 @@ nextflow_process {
         )
     }
 
+    def assertVersionsOutput = { proc ->
+        def versionChannels = proc.out.findAll { key, _ -> key.startsWith('versions') }
+        assert versionChannels.size() == 3
+
+        def versions = versionChannels.collectMany { _, rows -> rows }
+        assert versions.size() == 3
+
+        def tools = versions.collect { it[1] } as Set
+        assert tools == (['python', 'modelcif', 'biopython'] as Set)
+
+        assert versions.every { row ->
+            row[0] == 'ASSEMBLE_MODELCIF' && row[2] != null && row[2].toString().trim()
+        }
+    }
+
     test("dummy inputs produce modelcif with associated PAE") {
 
         when {
@@ -104,7 +119,7 @@ nextflow_process {
         then {
             def modelcifPath = path(process.out.modelcif[0][1])
             assertModelcifOutput(process, modelcifPath, false, false)
-            assert snapshot(process.out.versions).match()
+            assertVersionsOutput(process)
         }
     }
 
@@ -131,7 +146,7 @@ nextflow_process {
         then {
             def modelcifPath = path(process.out.modelcif[0][1])
             assertModelcifOutput(process, modelcifPath, true, false)
-            assert snapshot(process.out.versions).match()
+            assertVersionsOutput(process)
         }
     }
 
@@ -158,7 +173,7 @@ nextflow_process {
         then {
             def modelcifPath = path(process.out.modelcif[0][1])
             assertModelcifOutput(process, modelcifPath, false, true)
-            assert snapshot(process.out.versions).match()
+            assertVersionsOutput(process)
         }
     }
 
@@ -200,7 +215,7 @@ nextflow_process {
                 { assert mmcif.contains("test_multi rank_3") },
                 { assert mmcif.contains("test_multi rank_4") }
             )
-            assert process.out.versions.size() == 1
+            assertVersionsOutput(process)
         }
     }
 
