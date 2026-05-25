@@ -4,3 +4,4 @@ channels:
   - bioconda
 dependencies:
   - conda-forge::python=3.8.3
+  - conda-forge::pyyaml
