@@ -7,7 +7,7 @@
                     "python": "3.8.3"
                 },
                 "BOLTZ_YAML_TO_COLABFOLD_FASTA": {
-                    "python": null
+                    "python": "3.14.0"
                 },
                 "GENERATE_REPORT": {
                     "python": "3.12.7",
@@ -21,7 +21,7 @@
                     "boltz": "unknown"
                 },
                 "SPLIT_MSA": {
-                    "python": null
+                    "python": "3.14.0"
                 },
                 "Workflow": {
                     "nf-core/proteinfold": "v2.1.0dev"
@@ -123,6 +123,6 @@
             "nf-test": "0.9.2",
             "nextflow": "25.10.4"
         },
-        "timestamp": "2026-05-24T13:39:06.277260252"
+        "timestamp": "2026-05-25T22:28:36.13892942"
     }
 }
