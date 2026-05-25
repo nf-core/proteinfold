@@ -162,4 +162,45 @@ nextflow_process {
         }
     }
 
+    test("dummy inputs produce modelcif from five mmcif structures") {
+
+        when {
+            process {
+                """
+                input[0] = [
+                    [ id: 'test_multi', model: 'alphafold2', msa_tool: 'jackhmmer' ],
+                    [
+                        file("$projectDir/assets/DUMMY_MMCIF_1.mmcif", checkIfExists: true),
+                        file("$projectDir/assets/DUMMY_MMCIF_2.mmcif", checkIfExists: true),
+                        file("$projectDir/assets/DUMMY_MMCIF_3.mmcif", checkIfExists: true),
+                        file("$projectDir/assets/DUMMY_MMCIF_4.mmcif", checkIfExists: true),
+                        file("$projectDir/assets/DUMMY_MMCIF_5.mmcif", checkIfExists: true)
+                    ],
+                    file("$projectDir/assets/DUMMY_MSA.tsv",         checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_PLDDT.tsv",       checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_PAE.tsv",         checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_PTM.tsv",         checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_IPTM.tsv",        checkIfExists: true),
+                    file("$projectDir/assets/NO_FILE",               checkIfExists: true)
+                ]
+                """
+            }
+        }
+
+        then {
+            def modelcifPath = path(process.out.modelcif[0][1])
+            assertModelcifOutput(process, modelcifPath, false, false)
+
+            def mmcif = modelcifPath.text
+            assertAll(
+                { assert mmcif.contains("test_multi rank_0") },
+                { assert mmcif.contains("test_multi rank_1") },
+                { assert mmcif.contains("test_multi rank_2") },
+                { assert mmcif.contains("test_multi rank_3") },
+                { assert mmcif.contains("test_multi rank_4") }
+            )
+            assert process.out.versions.size() == 1
+        }
+    }
+
 }

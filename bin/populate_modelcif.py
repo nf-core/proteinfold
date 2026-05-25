@@ -473,12 +473,13 @@ def build_modelcif(
     LocalPairwisePAE.software = software
 
     # ---- One model per ranked structure ---------------------------------
-    # Pair each struct file with the matching rank_N column from the TSV.
-    # zip() stops at the shorter of the two, so a mismatch never raises.
+    # Iterate over every provided structure file; rank_N QA metrics are
+    # attached when available, but models are still emitted if extra
+    # structures are provided beyond ranked metric columns.
     models = []
-    for biopy_struct, (rank_key, plddt_values) in zip(
-        biopy_structs, plddt_by_rank.items()
-    ):
+    for idx, biopy_struct in enumerate(biopy_structs):
+        rank_key = f'rank_{idx}'
+        plddt_values = plddt_by_rank.get(rank_key)
         bp_model_i = next(biopy_struct.get_models())
         model = _StructureModel(
             assembly=assembly,
@@ -490,19 +491,26 @@ def build_modelcif(
         # Assign per-residue pLDDT for this rank in residue order across all
         # chains, matching the column order written by
         # extract_metrics.extract_structs_plddt_to_tsv.
-        plddt_iter = iter(plddt_values)
-        for chain in bp_model_i:
-            asym = asym_map.get(chain.id)
-            if asym is None:
-                continue
-            seq_id = 1
-            for res in chain.get_residues():
-                if res.id[0] != ' ':
+        if plddt_values is not None:
+            plddt_iter = iter(plddt_values)
+            for chain in bp_model_i:
+                asym = asym_map.get(chain.id)
+                if asym is None:
                     continue
-                model.qa_metrics.append(
-                    LocalPLDDT(asym.residue(seq_id), next(plddt_iter))
-                )
-                seq_id += 1
+                seq_id = 1
+                for res in chain.get_residues():
+                    if res.id[0] != ' ':
+                        continue
+                    try:
+                        plddt_value = next(plddt_iter)
+                    except StopIteration as err:
+                        raise ValueError(
+                            f'Insufficient pLDDT values for {rank_key} in {plddt_file}'
+                        ) from err
+                    model.qa_metrics.append(
+                        LocalPLDDT(asym.residue(seq_id), plddt_value)
+                    )
+                    seq_id += 1
 
         if pae_embed:
             model_residues = []
