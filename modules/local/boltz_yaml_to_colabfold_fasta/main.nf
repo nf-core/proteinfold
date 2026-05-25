@@ -3,7 +3,9 @@ process BOLTZ_YAML_TO_COLABFOLD_FASTA {
     label 'process_single'
 
     conda "${moduleDir}/environment.yml"
-    container "nf-core/proteinfold_boltz:2.0.0"
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
+        'https://community-cr-prod.seqera.io/docker/registry/v2/blobs/sha256/de/deb97ccf27bd258b3f42fccf4fbc19e5cefe8582359699e12a808bdedb2cc5a8/data' : 
+        'community.wave.seqera.io/library/pip_pyyaml:c2bd49f8575c1263' }"
 
     input:
     tuple val(meta), path(boltz_yaml)
