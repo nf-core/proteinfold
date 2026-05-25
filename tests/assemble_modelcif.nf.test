@@ -163,6 +163,7 @@ nextflow_process {
     }
 
     test("dummy inputs produce modelcif from five mmcif structures") {
+        config "./assemble_modelcif_all_structs.config"
 
         when {
             process {

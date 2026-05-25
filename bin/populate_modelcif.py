@@ -61,6 +61,7 @@ def parse_args(args=None):
     parser.add_argument('--versions_yml', default=None, help='versions.yml emitted by the upstream run_* module.')
     parser.add_argument('--software_details', default=None, help='Optional path to DUMMY YAML file for software + protocol step metadata -- pre-wiring into upstream logic.')
     parser.add_argument('--output',       default=None)
+    parser.add_argument('--all-structs',  action='store_true', help='Include all parseable files passed via --structs as models. Default when this flag is not present is that only the first structure is used.')
     parser.add_argument('--write_binary', action='store_true', help='Write BinaryCIF (.bcif) output instead of text mmCIF. Requires the msgpack package.')
     return parser.parse_args(args)
 
@@ -328,6 +329,7 @@ def build_modelcif(
     sw_version=None,
     msa_tool=None,
     software_details=None,
+    all_structs=False,
 ):
     """
     Build a modelcif.System from ranked structure files and QA metric .tsv files.
@@ -366,7 +368,29 @@ def build_modelcif(
     """
     software_details = software_details or {}
 
-    biopy_structs = [_parse_structure(f) for f in struct_files]
+    selected_struct_files = []
+    biopy_structs = []
+
+    if all_structs:
+        for struct_file in struct_files:
+            try:
+                biopy_struct = _parse_structure(struct_file)
+            except Exception as err:
+                print(
+                    f"Skipping unparseable structure file {struct_file}: {err}",
+                    file=sys.stderr,
+                )
+                continue
+            selected_struct_files.append(struct_file)
+            biopy_structs.append(biopy_struct)
+
+        if not biopy_structs:
+            raise ValueError(
+                'No parseable structures found in --structs input while using --all-structs'
+            )
+    else:
+        selected_struct_files = [struct_files[0]]
+        biopy_structs = [_parse_structure(struct_files[0])]
     plddt_by_rank = _read_plddt_tsv(plddt_file)
     ptm_by_rank = _read_ptm_tsv(ptm_file)
     iptm_by_rank = _read_iptm_tsv(iptm_file)
@@ -397,7 +421,7 @@ def build_modelcif(
 
     if not asym_map:
         raise ValueError(
-            f'No standard polymer residues found in {struct_files[0]}. '
+            f'No standard polymer residues found in {selected_struct_files[0]}. '
             'Cannot build modelCIF system.'
         )
 
@@ -616,18 +640,19 @@ def main(args=None):
     # Nextflow emits the string 'None' when no msa_tool is known; normalise to Python None.
     msa_tool = None if args.msa_tool in (None, 'None') else args.msa_tool
     system = build_modelcif(
-        args.structs,
-        args.plddt,
-        args.msa,
-        args.pae,
-        args.pae_embed,
-        args.ptm,
-        args.iptm,
-        args.name,
-        args.prog,
-        sw_version,
-        msa_tool,
-        software_details,
+        struct_files=args.structs,
+        all_structs=args.all_structs,
+        plddt_file=args.plddt,
+        msa_file=args.msa,
+        pae_file=args.pae,
+        pae_embed=args.pae_embed,
+        ptm_file=args.ptm,
+        iptm_file=args.iptm,
+        name=args.name,
+        prog=args.prog,
+        sw_version=sw_version,
+        msa_tool=msa_tool,
+        software_details=software_details,
     )
 
     with open(output_file, open_mode) as fh:
