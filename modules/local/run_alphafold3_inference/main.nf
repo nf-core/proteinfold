@@ -86,6 +86,7 @@ process RUN_ALPHAFOLD3_INFERENCE {
 
     ## Move alphafold3 output directory to raw for save_intermediates
     mv \${name}/* raw/
+<<<<<<< HEAD
 <<<<<<< HEAD:modules/local/run_alphafold3_inference/main.nf
 
     cat <<-END_VERSIONS > versions.yml
@@ -100,6 +101,8 @@ process RUN_ALPHAFOLD3_INFERENCE {
     END_VERSIONS
 =======
 >>>>>>> 4730ab35 (versions.yml -> topics: all modules):modules/local/run_alphafold3/main.nf
+=======
+>>>>>>> d6ce944c (fix linting)
     """
 
     stub:
@@ -120,6 +123,7 @@ process RUN_ALPHAFOLD3_INFERENCE {
     touch ${prefix}_ipsae.tsv
     touch ${prefix}_chainwise_iptm.tsv
     touch ${prefix}_chainwise_ipsae.tsv
+<<<<<<< HEAD
 <<<<<<< HEAD:modules/local/run_alphafold3_inference/main.nf
 
     cat <<-END_VERSIONS > versions.yml
@@ -134,5 +138,7 @@ process RUN_ALPHAFOLD3_INFERENCE {
     END_VERSIONS
 =======
 >>>>>>> 4730ab35 (versions.yml -> topics: all modules):modules/local/run_alphafold3/main.nf
+=======
+>>>>>>> d6ce944c (fix linting)
     """
 }

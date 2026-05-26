@@ -27,7 +27,7 @@ workflow ALPHAFOLD3 {
 
     take:
     ch_samplesheet       // channel: samplesheet read in from --input
-    ch_alphafold3_params // channel: path(alphafold2_params)
+    ch_alphafold3_params // channel: path(alphafold3_params)
     ch_small_bfd         // channel: path(small_bfd)
     ch_mgnify            // channel: path(mgnify)
     ch_mmcif_files       // channel: path(mmcif_files)
@@ -64,15 +64,13 @@ workflow ALPHAFOLD3 {
         ch_uniprot
     )
 
-    // Convert mmcif to pdbs
-    RUN_ALPHAFOLD3
-            .out
-            .cif
-            .groupTuple()
-            .map {
-                meta, files ->
-                [ meta, files.flatten() ]
-            }
+    //
+    // MODULE: Run AlphaFold3 inference using pre-computed data JSON
+    //
+    RUN_ALPHAFOLD3_INFERENCE (
+        RUN_ALPHAFOLD3_DATAPIPELINE.out.data_json,
+        ch_alphafold3_params
+    )
 
     // Convert models mmcifs to pdbs
     MMCIF2PDB_MODELS (
