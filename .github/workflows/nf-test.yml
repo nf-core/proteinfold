@@ -45,35 +45,12 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Select nf-test paths.   Expensive full runs followed scientific metric validation excluded from PRs except targeting a release to 'main'
+      - name: Select nf-test paths.   Expensive scientific metric validation is excluded from the GitHub CI test matrix
         id: select-paths
         shell: bash
         run: |
-          # Add files here to exclude from non-release PR CI runs.
-          # This can be anything that is too heavy to bother the 'regular' CI, but should be validated before release
-          # Can also exclude anything that's intended for a dev to execute locally, but not push through the CI/CD system - KR
-          excluded_tests=(
-            "tests/scientific_validation.nf.test"
-          )
-
-          ls_args=('tests/*.nf.test')
-          apply_exclusions=true
-          if [[ "${{ github.event_name }}" == "pull_request" && ( "${{ github.base_ref }}" == "master" || "${{ github.base_ref }}" == "main" ) ]]; then
-            apply_exclusions=false
-          fi
-
-          if [[ "$apply_exclusions" == true ]]; then
-            for excluded in "${excluded_tests[@]}"; do
-            #:(exclude) is a special 'magic' pathspec syntax for git ls-files to exclude files from the output list - KR
-              ls_args+=(":(exclude)$excluded")
-            done
-          fi
-
-          test_paths=""
-          while IFS= read -r test_file; do
-            test_paths+="${test_file} "
-          done < <(git ls-files "${ls_args[@]}" | sort)
-
+          # Keep scientific_validation out of the default GitHub CI matrix.
+          test_paths=$(git ls-files 'tests/*.nf.test' ':(exclude)tests/scientific_validation.nf.test' | sort | tr '\n' ' ')
           echo "test_paths=${test_paths% }" >> "$GITHUB_OUTPUT"
 
       - name: get number of shards
