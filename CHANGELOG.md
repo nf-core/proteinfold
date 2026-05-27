@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[#620](https://github.com/nf-core/proteinfold/pull/620)] - Update `fix_obsolete.py` to avoid infinite loop.
 - [[#586](https://github.com/nf-core/proteinfold/pull/586)] - Allow local msa for Boltz with non-protein entities.
 - [[#618](https://github.com/nf-core/proteinfold/pull/618)] - Resolve boltz `ext.args` in closure.
+- [[PR #626](https://github.com/nf-core/proteinfold/pull/618)] - Move scientific validation tests and BioPython setup to manual workflow.
 
 | Old parameter              | New parameter   |
 | -------------------------- | --------------- |
