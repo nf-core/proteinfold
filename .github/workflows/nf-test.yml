@@ -33,7 +33,6 @@ jobs:
     outputs:
       shard: ${{ steps.set-shards.outputs.shard }}
       total_shards: ${{ steps.set-shards.outputs.total_shards }}
-      test_paths: ${{ steps.select-paths.outputs.test_paths }}
     steps:
       - name: Clean Workspace # Purge the workspace in case it's running on a self-hosted runner
         run: |
@@ -45,13 +44,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Select nf-test paths
-        id: select-paths
-        shell: bash
-        run: |
-          test_paths=$(git ls-files 'tests/*.nf.test' | sort | tr '\n' ' ')
-          echo "test_paths=${test_paths% }" >> "$GITHUB_OUTPUT"
-
       - name: get number of shards
         id: set-shards
         uses: ./.github/actions/get-shards
@@ -60,8 +52,6 @@ jobs:
           SKIP_SCIENTIFIC: "true"
         with:
           max_shards: 7
-          paths: ${{ steps.select-paths.outputs.test_paths }}
-          changed_since: HEAD^
 
       - name: debug
         run: |
@@ -107,8 +97,6 @@ jobs:
           NXF_VERSION: ${{ matrix.NXF_VER }}
           SKIP_SCIENTIFIC: "true"
         with:
-          paths: ${{ needs.nf-test-changes.outputs.test_paths }}
-          changed_since: HEAD^
           profile: ${{ matrix.profile }}
           shard: ${{ matrix.shard }}
           total_shards: ${{ env.TOTAL_SHARDS }}
