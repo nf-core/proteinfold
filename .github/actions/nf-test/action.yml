@@ -12,7 +12,10 @@ inputs:
     required: true
   paths:
     description: "Test paths"
-    required: true
+    required: false
+  changed_since:
+    description: "Git ref for nf-test --changed-since (leave empty to disable)"
+    required: false
   tags:
     description: "Tags to pass as argument for nf-test --tag parameter"
     required: false
@@ -28,6 +31,10 @@ runs:
       uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6
       with:
         python-version: "3.14"
+
+    - name: Install BioPython for proper structure parsing and validation
+      shell: bash
+      run: pip install -r tests/requirements.txt
 
     - name: Install nf-test
       uses: nf-core/setup-nf-test@4069fbbaabe94c08faba4ad261bfa88225ba133f # v2
@@ -62,10 +69,11 @@ runs:
         NFT_WORKDIR: ${{ env.NFT_WORKDIR }}
       run: |
         nf-test test \
+          ${{ inputs.paths }} \
           --profile=+${{ inputs.profile }} \
           $(if [ -n "${{ inputs.tags }}" ]; then echo "--tag ${{ inputs.tags }}"; fi) \
+          $(if [ -n "${{ inputs.changed_since }}" ]; then echo "--changed-since ${{ inputs.changed_since }}"; fi) \
           --ci \
-          --changed-since HEAD^ \
           --verbose \
           --tap=test.tap \
           --shard ${{ inputs.shard }}/${{ inputs.total_shards }}

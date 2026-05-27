@@ -33,6 +33,7 @@ jobs:
     outputs:
       shard: ${{ steps.set-shards.outputs.shard }}
       total_shards: ${{ steps.set-shards.outputs.total_shards }}
+      test_paths: ${{ steps.select-paths.outputs.test_paths }}
     steps:
       - name: Clean Workspace # Purge the workspace in case it's running on a self-hosted runner
         run: |
@@ -44,6 +45,14 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Select nf-test paths.   Expensive scientific metric validation is excluded from the GitHub CI test matrix
+        id: select-paths
+        shell: bash
+        run: |
+          # Keep scientific_validation out of the default GitHub CI matrix.
+          test_paths=$(git ls-files 'tests/*.nf.test' ':(exclude)tests/scientific_validation.nf.test' | sort | tr '\n' ' ')
+          echo "test_paths=${test_paths% }" >> "$GITHUB_OUTPUT"
+
       - name: get number of shards
         id: set-shards
         uses: ./.github/actions/get-shards
@@ -51,6 +60,8 @@ jobs:
           NFT_VER: ${{ env.NFT_VER }}
         with:
           max_shards: 7
+          paths: ${{ steps.select-paths.outputs.test_paths }}
+          changed_since: HEAD^
 
       - name: debug
         run: |
@@ -95,6 +106,8 @@ jobs:
           NFT_WORKDIR: ${{ env.NFT_WORKDIR }}
           NXF_VERSION: ${{ matrix.NXF_VER }}
         with:
+          paths: ${{ needs.nf-test-changes.outputs.test_paths }}
+          changed_since: HEAD^
           profile: ${{ matrix.profile }}
           shard: ${{ matrix.shard }}
           total_shards: ${{ env.TOTAL_SHARDS }}
