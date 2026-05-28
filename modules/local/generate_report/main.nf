@@ -47,9 +47,9 @@ process GENERATE_REPORT {
 
     stub:
     """
-    touch test_alphafold2_report.html
-    touch test_seq_coverage.png
-    touch test_LDDT.html
+    touch ${meta.id}_${meta.model}_report.html
+    touch ${meta.id}_${meta.model}_seq_coverage.png
+    touch ${meta.id}_coverage_LDDT.html
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
