@@ -11,6 +11,7 @@ import tempfile
 import numpy as np
 import csv
 import string
+import re
 from utils import plddt_from_struct_b_factor, get_chain_ids
 
 # TODO: Issue #309, make into a proper separate process, it its own module so that dependencies can be managed better
@@ -128,6 +129,41 @@ def write_tsv(file_path, rows):
         writer.writerows(rows)
 
 
+def infer_model_rank(file_path):
+    basename = os.path.basename(file_path)
+    rank_patterns = [
+        r"ranked_(\d+)",
+        r"_rank_(\d+)",
+        r"_model_(\d+)",
+        r"-rank(\d+)",
+    ]
+
+    for pattern in rank_patterns:
+        match = re.search(pattern, basename)
+        if match:
+            return int(match.group(1))
+
+    return None
+
+
+def sort_paths_by_rank(paths):
+    def sort_key(path):
+        rank = infer_model_rank(path)
+        if rank is None:
+            return (1, os.path.basename(path))
+        return (0, rank, os.path.basename(path))
+
+    return sorted(paths, key=sort_key)
+
+
+def build_struct_map(struct_files):
+    struct_map = {}
+    for idx, struct_file in enumerate(sort_paths_by_rank(struct_files)):
+        rank = infer_model_rank(struct_file)
+        struct_map[rank if rank is not None else idx] = struct_file
+    return struct_map
+
+
 def resolve_struct_for_model(struct_map, model_id):
     if model_id in struct_map:
         return struct_map[model_id]
@@ -135,7 +171,7 @@ def resolve_struct_for_model(struct_map, model_id):
         numeric_model_id = int(model_id)
     except (TypeError, ValueError):
         return None
-    return struct_map.get(numeric_model_id, struct_map.get(numeric_model_id - 1))
+    return struct_map.get(numeric_model_id)
 
 
 def parse_ipsae_text_report(report_path):
@@ -222,13 +258,17 @@ def extract_structs_plddt_to_tsv(name, structures):
     Write out a tsv file contain pLDDTs for reading by MultiQC in nf-core/proteinfold
     Uses utils function with BioPython PDB package to extract residue pLDDT values from the b-factor column.
     """
-    plddt_cols = [plddt_from_struct_b_factor(structure) for structure in structures]
+    sorted_structures = sort_paths_by_rank(structures)
+    plddt_cols = [plddt_from_struct_b_factor(structure) for structure in sorted_structures]
     res_counts = [len(plddt_col) for plddt_col in plddt_cols]
 
     if len(set(res_counts)) != 1:
         raise ValueError("Not all structures have the same number of residues!")
 
-    rank_names = [f"rank_{i}" for i in range(len(structures))]
+    rank_names = []
+    for idx, structure in enumerate(sorted_structures):
+        rank = infer_model_rank(structure)
+        rank_names.append(f"rank_{rank}" if rank is not None else f"rank_{idx}")
     # Create header as the first row
     plddt_rows =  [["Positions"] + rank_names]
     res_id_col = list(range(len(plddt_cols[0])))
@@ -244,10 +284,7 @@ def read_pkl(name, pkl_files, struct_files=None):
     ipsae_data = {}
     chainwise_iptm = {}
     chainwise_ipsae = {}
-    struct_map = {}
-    if struct_files:
-        for idx, struct_file in enumerate(sorted(struct_files)):
-            struct_map[idx] = struct_file
+    struct_map = build_struct_map(struct_files) if struct_files else {}
     for pkl_file in pkl_files:
         print(f"Processing {pkl_file}")
         data = pickle.load(open(pkl_file, "rb"))
@@ -357,10 +394,7 @@ def read_a3m(name, a3m_files):
 def read_npz(name, npz_files, struct_files=None):
     ipsae_rows = []
     chainwise_ipsae = {}
-    struct_map = {}
-    if struct_files:
-        for idx, struct_file in enumerate(sorted(struct_files)):
-            struct_map[idx] = struct_file
+    struct_map = build_struct_map(struct_files) if struct_files else {}
     for idx, npz_file in enumerate(npz_files):
         data = np.load(npz_file)
         #Boltz PAE files if --write_full_pae is used
@@ -467,10 +501,7 @@ def read_json(name, json_files, struct_files=None):
     chain_pair_entries = {}
     chainwise_ptms = {}
     chain_ids = []
-    struct_map = {}
-    if struct_files:
-        for idx, struct_file in enumerate(sorted(struct_files)):
-            struct_map[idx] = struct_file
+    struct_map = build_struct_map(struct_files) if struct_files else {}
 
     for idx, json_file in enumerate(json_files):
         with open(json_file, 'r') as f:
@@ -632,14 +663,13 @@ def read_colabfold_metrics(name, colabfold_metrics_fns, struct_files=None):
     ipsae_rows = []
     chainwise_iptm = {}
     chainwise_ipsae = {}
-    struct_map = {}
-    if struct_files:
-        for idx, struct_file in enumerate(sorted(struct_files)):
-            struct_map[idx] = struct_file
+    struct_map = build_struct_map(struct_files) if struct_files else {}
     for fn in colabfold_metrics_fns:
         with open(fn) as f:
             data = json.load(f)
-        rank_id = int(fn.split("rank_")[1].split("_")[0])-1
+        rank_id = infer_model_rank(fn)
+        if rank_id is None:
+            raise ValueError(f"Unable to infer ColabFold rank from metrics filename: {fn}")
         if "pae" in data:
             write_tsv(f"{name}_{rank_id}_pae.tsv", format_pae_rows(data["pae"]))
         if "ptm" in data:
