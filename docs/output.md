@@ -224,7 +224,7 @@ Examples include:
 
 - `alphafold2/<MODE>/<SEQUENCE NAME>/raw/`
 - `colabfold/<SEQUENCE NAME>/raw/`
-- `boltz/<SEQUENCE NAME>/boltz_results_*/`
+- `boltz/<SEQUENCE NAME>/boltz_results_<SEQUENCE NAME>/`
 - `rosettafold_all_atom/<SEQUENCE NAME>/raw/`
 - `alphafold3/<SEQUENCE NAME>/raw/`
 - `helixfold3/<SEQUENCE NAME>/raw/`
