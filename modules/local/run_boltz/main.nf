@@ -18,14 +18,14 @@ process RUN_BOLTZ {
 
     output:
     tuple val(meta), path ("boltz_results_${meta.id}")                        , optional: true, emit: intermediates
-    tuple val(meta), path ("boltz_results_*/processed/msa/*.npz")             , emit: msa
-    tuple val(meta), path ("boltz_results_*/processed/structures/*.npz")      , emit: structures
-    tuple val(meta), path ("boltz_results_*/predictions/*/confidence*.json")  , emit: confidence
+    tuple val(meta), path ("boltz_results_${meta.id}/processed/msa/*.npz")             , emit: msa
+    tuple val(meta), path ("boltz_results_${meta.id}/processed/structures/*.npz")      , emit: structures
+    tuple val(meta), path ("boltz_results_${meta.id}/predictions/${meta.id}/confidence*.json")  , emit: confidence
     tuple val(meta), path ("${meta.id}_plddt_mqc.tsv")                        , emit: multiqc
     tuple val(meta), path ("${meta.id}_boltz.pdb")                            , emit: top_ranked_pdb
-    tuple val(meta), path ("boltz_results_*/predictions/*/*.pdb")             , emit: pdb
-    tuple val(meta), path ("boltz_results_*/predictions/*/plddt_*model_0.npz"), emit: plddt
-    tuple val(meta), path ("boltz_results_*/predictions/*/pae_*model_0.npz")  , emit: pae
+    tuple val(meta), path ("boltz_results_${meta.id}/predictions/${meta.id}/*.pdb")             , emit: pdb
+    tuple val(meta), path ("boltz_results_${meta.id}/predictions/${meta.id}/plddt_*model_0.npz"), emit: plddt
+    tuple val(meta), path ("boltz_results_${meta.id}/predictions/${meta.id}/pae_*model_0.npz")  , emit: pae
     tuple val(meta), path ("${meta.id}_plddt_mqc.tsv")                        , emit: plddt_raw
     tuple val(meta), path ("${meta.id}_boltz_msa.tsv")                        , emit: msa_raw
     tuple val(meta), path ("${meta.id}_*_pae.tsv")                            , emit: pae_raw
@@ -63,17 +63,17 @@ process RUN_BOLTZ {
         boltz predict "${meta.id}.yaml" --output_format "pdb" ${args} --cache ./
     fi
 
-    cp boltz_results_*/predictions/${meta.id}/*_0.pdb ./${meta.id}_boltz.pdb
+    cp boltz_results_${meta.id}/predictions/${meta.id}/*_0.pdb ./${meta.id}_boltz.pdb
 
     # For consistency between server and local
-    if compgen -G "boltz_results_*/msa/${meta.id}*.csv" > /dev/null; then
-        cp boltz_results_*/msa/${meta.id}_*.csv ./
+    if compgen -G "boltz_results_${meta.id}/msa/${meta.id}*.csv" > /dev/null; then
+        cp boltz_results_${meta.id}/msa/${meta.id}_*.csv ./
     fi
 
     extract_metrics.py --name ${meta.id} \\
-        --structs boltz_results_*/predictions/${meta.id}/*.pdb \\
-        --jsons boltz_results_*/predictions/${meta.id}/confidence_*_model_*.json \\
-        --npzs boltz_results_*/predictions/${meta.id}/pae_*_model_*.npz \\
+        --structs boltz_results_${meta.id}/predictions/${meta.id}/*.pdb \\
+        --jsons boltz_results_${meta.id}/predictions/${meta.id}/confidence_*_model_*.json \\
+        --npzs boltz_results_${meta.id}/predictions/${meta.id}/pae_*_model_*.npz \\
         --csvs ${meta.id}_*.csv
 
     touch "${meta.id}_iptm.tsv" "${meta.id}_ipsae.tsv" "${meta.id}_chainwise_iptm.tsv" "${meta.id}_chainwise_ipsae.tsv"
