@@ -175,7 +175,6 @@
                 },
                 "colabfold_use_gpu_relax": {
                     "type": "boolean",
-                    "default": false,
                     "description": "Use GPU for Amber relaxation in ColabFold",
                     "fa_icon": "fas fa-microchip"
                 },
@@ -188,7 +187,6 @@
                 },
                 "colabfold_use_templates": {
                     "type": "boolean",
-                    "default": false,
                     "description": "Use PDB templates. Local ColabFold runs require colabfold_template_path to avoid remote template lookups.",
                     "fa_icon": "fas fa-paste"
                 },
