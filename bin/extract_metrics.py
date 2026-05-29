@@ -86,13 +86,15 @@ def format_iptm_rows(chain_pair_entries, chain_ids=None):
                 break
         return result
 
+    sorted_entries = sorted(chain_pair_entries.items(), key=lambda item: sort_model_label(item[0]))
+
     if chain_ids:
         #would be better with some model_id sorting
-        iptm_rows = [[""]+[f"{chain_ids[idx[0]]}:{chain_ids[idx[1]]}" for idx, val in next(iter(chain_pair_entries.values()))]]
+        iptm_rows = [[""]+[f"{chain_ids[idx[0]]}:{chain_ids[idx[1]]}" for idx, val in sorted_entries[0][1]]]
     else:
-        iptm_rows = [[""]+[f"{idx_to_letter(idx[0])}:{idx_to_letter(idx[1])}" for idx, val in next(iter(chain_pair_entries.values()))]]
+        iptm_rows = [[""]+[f"{idx_to_letter(idx[0])}:{idx_to_letter(idx[1])}" for idx, val in sorted_entries[0][1]]]
 
-    for model_idx, chain_pair_entries_values in chain_pair_entries.items():
+    for model_idx, chain_pair_entries_values in sorted_entries:
         iptm_rows.append([model_idx]+[f"{val:.4f}" for idx, val in chain_pair_entries_values])
 
     return [list(row) for row in zip(*iptm_rows)]
@@ -103,7 +105,7 @@ def format_pair_score_rows(pair_score_entries, pair_labels=None):
         pair_labels = sorted({label for score_values in pair_score_entries.values() for label, _ in score_values})
 
     rows = [[""] + pair_labels]
-    for model_idx, score_values in pair_score_entries.items():
+    for model_idx, score_values in sorted(pair_score_entries.items(), key=lambda item: sort_model_label(item[0])):
         score_map = {label: value for label, value in score_values}
         rows.append([model_idx] + [f"{score_map[label]:.4f}" if label in score_map else "n/a" for label in pair_labels])
 
@@ -128,18 +130,23 @@ def write_tsv(file_path, rows):
         writer = csv.writer(out_f, delimiter='\t')
         writer.writerows(rows)
 
+def sort_model_label(label):
+    try:
+        return (0, int(label))
+    except (TypeError, ValueError):
+        return (1, str(label))
 
 def infer_model_rank(file_path):
-    basename = os.path.basename(file_path)
+    normalized_path = file_path.replace(os.sep, "/")
     rank_patterns = [
         r"ranked_(\d+)",
         r"_rank_(\d+)",
+        r"-rank(\d+)(?:/|$)",
         r"_model_(\d+)",
-        r"-rank(\d+)",
     ]
 
     for pattern in rank_patterns:
-        match = re.search(pattern, basename)
+        match = re.search(pattern, normalized_path)
         if match:
             return int(match.group(1))
 
