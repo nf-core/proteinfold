@@ -51,10 +51,10 @@
                 "rna_complex.pdb:md5,d41d8cd98f00b204e9800998ecf8427e"
             ]
         ],
+        "timestamp": "2026-05-29T12:00:28.18549971",
         "meta": {
-            "nf-test": "0.9.3",
-            "nextflow": "25.10.4"
-        },
-        "timestamp": "2026-05-07T17:25:05.15820443"
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.0"
+        }
     }
 }
