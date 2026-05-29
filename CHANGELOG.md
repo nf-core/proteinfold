@@ -24,8 +24,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[#619](https://github.com/nf-core/proteinfold/issues/619)] - Fix `extract_metrics.py` shebang to use `python3` for compatibility with minimal containers.
 - [[#209](https://github.com/nf-core/proteinfold/issues/209)] - Prevent local ColabFold runs from enabling remote template lookups unless `--colabfold_template_path` is provided.
 - [[#456](https://github.com/nf-core/proteinfold/issues/456)] - Derive ranked metric ordering from structure filenames when generating TSV outputs.
-- [[#365](https://github.com/nf-core/proteinfold/issues/365)] - Run nf-tests with module containers so captured versions match.
 - [[#489](https://github.com/nf-core/proteinfold/issues/489)] - Specified Boltz output paths on `boltz_results_<sample_id>/`.
+- [[#576](https://github.com/nf-core/proteinfold/issues/576)] - Preserve native metric rank numbering and sort rank-derived outputs numerically.
 
 | Old parameter              | New parameter   |
 | -------------------------- | --------------- |
