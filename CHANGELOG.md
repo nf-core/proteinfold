@@ -29,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[PR #633](https://github.com/nf-core/proteinfold/pull/633)] - Fix comparison reports with esmfold for multirow samplesheets.
 - [[PR #634](https://github.com/nf-core/proteinfold/pull/634)] - Add support for outputs in cif format.
 - [[PR #636](https://github.com/nf-core/proteinfold/pull/636)] - Resolve alphafold2 `ext.args` in closure.
+- [[#365](https://github.com/nf-core/proteinfold/issues/365)] - Run nf-tests with module containers so captured versions match.
 
 | Old parameter              | New parameter   |
 | -------------------------- | --------------- |
