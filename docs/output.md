@@ -124,7 +124,7 @@ In the HTML reports, chainwise iPTM and ipSAE are displayed as chain-by-chain ma
 Predicted alignment error of residues `j` aligned by residue `i`, rounded to 4 decimal places.
 The row number gives you the index of residue `i` and the column value within the row gives the index of residue `j` for the 2D PAE matrix.
 
-Each model prediction generates a separate file containing the rank number. The `_0_pae.tsv` file corresponds to the top ranked model, other ranked results are stored within the `paes/` folder.
+Each model prediction generates a separate file containing the rank number. Rank numbering follows the native convention of the underlying tool, so top-ranked models may appear as either `_0_pae.tsv` or `_1_pae.tsv` depending on the mode. Additional ranked results are stored within the `paes/` folder.
 
 ```
 0.2500	1.5710	3.9037	6.2177	8.4471	11.4583	12.9679	15.1237	18.0263	18.3868	18.9381	20.5747	19.3314	20.1825	21.6145	23.2190
