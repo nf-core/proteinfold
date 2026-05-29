@@ -85,10 +85,10 @@
                 "test_alphafold2_report.html:md5,d41d8cd98f00b204e9800998ecf8427e"
             ]
         ],
+        "timestamp": "2026-05-29T12:06:47.424380551",
         "meta": {
-            "nf-test": "0.9.2",
-            "nextflow": "25.10.4"
-        },
-        "timestamp": "2026-04-24T10:41:52.280585558"
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.0"
+        }
     }
 }

@@ -49,6 +49,12 @@
     "Boltz: BioPython structure validation": {
         "content": [
             {
+                "BOLTZ_FASTA": {
+                    "python": "3.8.3"
+                },
+                "BOLTZ_YAML_TO_COLABFOLD_FASTA": {
+                    "python": "3.14.0"
+                },
                 "GENERATE_REPORT": {
                     "python": "3.12.7",
                     "generate_report.py": "Python 3.12.7"
@@ -61,17 +67,17 @@
                     "boltz": "2.2.1"
                 },
                 "SPLIT_MSA": {
-                    "python": "3.8.3"
+                    "python": "3.14.0"
                 },
                 "Workflow": {
                     "nf-core/proteinfold": "v2.1.0dev"
                 }
             }
         ],
-        "timestamp": "2026-05-22T15:48:52.149573252",
+        "timestamp": "2026-05-28T15:45:28.059583051",
         "meta": {
             "nf-test": "0.9.5",
-            "nextflow": "26.04.2"
+            "nextflow": "26.04.1"
         }
     },
     "HelixFold3: BioPython structure validation": {
@@ -147,10 +153,10 @@
                 }
             }
         ],
-        "timestamp": "2026-05-22T15:19:53.579103078",
+        "timestamp": "2026-05-28T15:40:56.83446726",
         "meta": {
             "nf-test": "0.9.5",
-            "nextflow": "26.04.2"
+            "nextflow": "26.04.1"
         }
     },
     "AlphaFold2: BioPython structure validation": {
