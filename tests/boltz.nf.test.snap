@@ -14,11 +14,11 @@
                     "generate_report.py": "Python 3.12.7"
                 },
                 "MMSEQS_COLABFOLDSEARCH": {
-                    "colabfold_search": "unknown",
-                    "mmseqs": null
+                    "colabfold_search": "1.6.1",
+                    "mmseqs": "74c9370d45ba10446fe049c3603bf5f877817e95"
                 },
                 "RUN_BOLTZ": {
-                    "boltz": "unknown"
+                    "boltz": "2.2.1"
                 },
                 "SPLIT_MSA": {
                     "python": "3.14.0"
@@ -73,7 +73,8 @@
                 "pipeline_info",
                 "pipeline_info/nf_core_proteinfold_software_mqc_versions.yml",
                 "reports",
-                "reports/test_alphafold2_report.html",
+                "reports/T1024_boltz_report.html",
+                "reports/T1026_boltz_report.html",
                 "split",
                 "split/output_msa",
                 "split/output_msa/A.csv",
@@ -112,14 +113,15 @@
                 "T1026.json:md5,d41d8cd98f00b204e9800998ecf8427e",
                 ".stub:md5,d41d8cd98f00b204e9800998ecf8427e",
                 ".stub:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "test_alphafold2_report.html:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1024_boltz_report.html:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1026_boltz_report.html:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "A.csv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "B.csv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1024.yaml:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1026.yaml:md5,d41d8cd98f00b204e9800998ecf8427e"
             ]
         ],
-        "timestamp": "2026-05-29T11:58:46.633453978",
+        "timestamp": "2026-05-29T12:02:37.248096039",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.04.0"

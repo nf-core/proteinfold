@@ -4,8 +4,8 @@
             7,
             {
                 "COLABFOLD_BATCH": {
-                    "alphafold_colabfold": "unknown",
-                    "colabfold_batch": "unknown"
+                    "alphafold_colabfold": "2.3.10",
+                    "colabfold_batch": "1.5.5"
                 },
                 "GENERATE_REPORT": {
                     "python": "3.12.7",
@@ -62,7 +62,8 @@
                 "pipeline_info",
                 "pipeline_info/nf_core_proteinfold_software_mqc_versions.yml",
                 "reports",
-                "reports/test_alphafold2_report.html"
+                "reports/T1024_colabfold_report.html",
+                "reports/T1026_colabfold_report.html"
             ],
             [
                 "T1024_chainwise_ipsae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
@@ -94,10 +95,11 @@
                 "input.csv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 ".stub:md5,d41d8cd98f00b204e9800998ecf8427e",
                 ".stub:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "test_alphafold2_report.html:md5,d41d8cd98f00b204e9800998ecf8427e"
+                "T1024_colabfold_report.html:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1026_colabfold_report.html:md5,d41d8cd98f00b204e9800998ecf8427e"
             ]
         ],
-        "timestamp": "2026-05-29T15:02:24.412363191",
+        "timestamp": "2026-05-29T12:03:19.488094161",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.04.0"

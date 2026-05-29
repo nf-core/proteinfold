@@ -4,10 +4,10 @@
             25,
             {
                 "ARIA2": {
-                    "aria2": null
+                    "aria2": "1.36.0"
                 },
                 "ARIA2_PDB_SEQRES": {
-                    "aria2": null
+                    "aria2": "1.36.0"
                 },
                 "COMBINE_UNIPROT": {
                     "sed": 4.7
@@ -21,12 +21,12 @@
                     "generate_report.py": "Python 3.12.7"
                 },
                 "RUN_ALPHAFOLD2": {
-                    "python": "unknown",
+                    "python": "3.11.14",
                     "alphafold2": "unknown",
-                    "jax": "unknown",
-                    "jaxlib": "unknown",
-                    "numpy": "unknown",
-                    "biopython": "unknown"
+                    "jax": "0.4.26",
+                    "jaxlib": "0.4.26",
+                    "numpy": "1.24.3",
+                    "biopython": 1.79
                 },
                 "Workflow": {
                     "nf-core/proteinfold": "v2.1.0dev"
@@ -88,7 +88,8 @@
                 "pipeline_info",
                 "pipeline_info/nf_core_proteinfold_software_mqc_versions.yml",
                 "reports",
-                "reports/test_alphafold2_report.html"
+                "reports/T1024_alphafold2_report.html",
+                "reports/T1026_alphafold2_report.html"
             ],
             [
                 "mgy_clusters.fa:md5,d41d8cd98f00b204e9800998ecf8427e",
@@ -131,10 +132,11 @@
                 "T1026.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
                 ".stub:md5,d41d8cd98f00b204e9800998ecf8427e",
                 ".stub:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "test_alphafold2_report.html:md5,d41d8cd98f00b204e9800998ecf8427e"
+                "T1024_alphafold2_report.html:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1026_alphafold2_report.html:md5,d41d8cd98f00b204e9800998ecf8427e"
             ]
         ],
-        "timestamp": "2026-05-29T11:58:00.077126331",
+        "timestamp": "2026-05-29T12:01:54.780944659",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.04.0"
