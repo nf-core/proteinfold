@@ -70,6 +70,12 @@ jobs:
       fail-fast: false
       matrix:
         profile: [docker, singularity]
+        isMain:
+          - ${{ github.base_ref == 'master' || github.base_ref == 'main' }}
+        # # Exclude singularity on dev
+        exclude:
+          - isMain: false
+            profile: "singularity"
         shard: ${{ fromJson(needs.get-shards.outputs.shard) }}
         NXF_VER:
           - "25.10.4"
