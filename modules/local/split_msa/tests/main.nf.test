@@ -1,0 +1,33 @@
+nextflow_process {
+
+    name "Test Process SPLIT_MSA"
+    script "../main.nf"
+    process "SPLIT_MSA"
+
+    tag "modules"
+    tag "modules_local"
+    tag "split_msa"
+    profile "test_nostub"
+
+    test("splits msa from af3 json using yaml template") {
+
+        when {
+            process {
+                """
+                input[0] = [
+                    [ id: 'mixed_sample' ],
+                    file(params.pipelines_testdata_base_path + 'testdata/sequences/boltz/mixed.json', checkIfExists: true),
+                    file(params.pipelines_testdata_base_path + 'testdata/sequences/boltz/mixed.yaml', checkIfExists: true)
+                ]
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                { assert snapshot(process.out).match() }
+            )
+        }
+    }
+}
