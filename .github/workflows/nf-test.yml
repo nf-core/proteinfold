@@ -98,6 +98,7 @@ jobs:
           NFT_WORKDIR: ${{ env.NFT_WORKDIR }}
           NXF_VERSION: ${{ matrix.NXF_VER }}
           SKIP_SCIENTIFIC: "true"
+          SKIP_GPU: "true"
         with:
           profile: ${{ matrix.profile }}
           shard: ${{ matrix.shard }}
