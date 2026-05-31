@@ -10,7 +10,7 @@ nextflow_pipeline {
     script "../main.nf"
     tag "scientific"
     tag "output_validation"
-    profile "test_full,test_full_alphafold3,gpu"
+    profile "test_full,test_full_alphafold3,test_gpu"
 
     def modes = [
         [name: 'alphafold2',        displayName: 'AlphaFold2',  ext: '.pdb', tags: ['alphafold2']],
