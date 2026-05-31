@@ -1,13 +1,13 @@
 name: Run GPU nf-tests
 on:
   # TODO: un-comment when confirmed g5.xlarge OK for this pipeline (for bfloat16)
-  # pull_request:
-  #   paths-ignore:
-  #     - "docs/**"
-  #     - "**/meta.yml"
-  #     - "**/*.md"
-  #     - "**/*.png"
-  #     - "**/*.svg"
+  pull_request:
+    paths-ignore:
+      - "docs/**"
+      - "**/meta.yml"
+      - "**/*.md"
+      - "**/*.png"
+      - "**/*.svg"
   release:
     types: [published]
   workflow_dispatch:
