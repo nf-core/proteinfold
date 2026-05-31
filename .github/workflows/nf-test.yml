@@ -50,6 +50,7 @@ jobs:
         env:
           NFT_VER: ${{ env.NFT_VER }}
           SKIP_SCIENTIFIC: "true"
+          SKIP_GPU: "true"
         with:
           max_shards: 15
 
