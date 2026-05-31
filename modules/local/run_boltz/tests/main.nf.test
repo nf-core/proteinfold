@@ -38,7 +38,7 @@ nextflow_process {
                 //TODO: This needs to be reduced to 20 canonical + 4 DNA + 4 RNA + ATP + SEP
                 //def mols = file('s3://proteinfold-dataset/test-data/mini_dbs/params/mols', checkIfExists: true)
 
-                //After fixing above TODO this block can be deleted                
+                //After fixing above TODO this block can be deleted
                 def molNames = [
                     'ALA','A','ARG','ASN','ASP','ATP','C','CYS','DA','DC','DG','DT',
                     'GLN','GLU','GLY','G','HIS','ILE','LEU','LYS','MET','PHE','PRO',
@@ -55,7 +55,7 @@ nextflow_process {
                     dst.bytes = src.bytes
                 }
                 //
- 
+
                 //meta.id must currently match input basename
                 input[0] = [
                     [ id: 'mixed_sample' ],
