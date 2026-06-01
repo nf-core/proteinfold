@@ -25,11 +25,13 @@ include { PREPARE_ROSETTAFOLD2NA_DBS       } from './subworkflows/local/prepare_
 
 include { PREPARE_COLABFOLD_DBS  as PREPARE_COLABFOLD_DBS_COLABFOLD } from './subworkflows/local/prepare_colabfold_dbs'
 include { PREPARE_COLABFOLD_DBS  as PREPARE_COLABFOLD_DBS_BOLTZ     } from './subworkflows/local/prepare_colabfold_dbs'
+include { PREPARE_COLABFOLD_DBS  as PREPARE_COLABFOLD_DBS_ESMFOLD2  } from './subworkflows/local/prepare_colabfold_dbs'
 
 include { ALPHAFOLD2                       } from './workflows/alphafold2'
 include { ALPHAFOLD3                       } from './workflows/alphafold3'
 include { COLABFOLD                        } from './workflows/colabfold'
 include { ESMFOLD                          } from './workflows/esmfold'
+include { ESMFOLD2                         } from './workflows/esmfold2'
 include { ROSETTAFOLD_ALL_ATOM             } from './workflows/rosettafold_all_atom'
 include { HELIXFOLD3                       } from './workflows/helixfold3'
 include { BOLTZ                            } from './workflows/boltz'
@@ -582,6 +584,55 @@ workflow NFCORE_PROTEINFOLD {
         )
         ch_top_ranked_model         = ch_top_ranked_model.mix(BOLTZ.out.top_ranked_pdb)
     }
+
+    // WORKFLOW: Run ESMFold2
+    //
+    if (requested_modes.contains("esmfold2")) {
+
+        //PREPARE_ESMFOLD2_DBS(
+        //    params.esmfold2_db,
+        //    params.esmfold2_model_path,
+        //    params.esmfold2_model_link,
+        //)
+        //ch_versions = ch_versions.mix(PREPARE_BOLTZ_DBS.out.versions)
+
+        PREPARE_COLABFOLD_DBS_ESMFOLD2 (
+            params.colabfold_db,
+            params.use_msa_server,
+            params.colabfold_alphafold2_params_path,
+            params.colabfold_envdb_path,
+            params.colabfold_uniref30_path,
+            params.colabfold_alphafold2_params_link,
+            params.colabfold_db_link,
+            params.colabfold_uniref30_link,
+            params.colabfold_create_index
+        )
+        ch_versions = ch_versions.mix(PREPARE_COLABFOLD_DBS_ESMFOLD2.out.versions)
+
+        ESMFOLD2(
+            ch_samplesheet,
+            ch_versions,
+            channel.value(file(params.esmfold2_model_path, checkIfExists: true)),
+            PREPARE_COLABFOLD_DBS_ESMFOLD2.out.colabfold_db,
+            PREPARE_COLABFOLD_DBS_ESMFOLD2.out.uniref30,
+            params.use_msa_server
+        )
+        ch_multiqc                  = ch_multiqc.mix(ESMFOLD2.out.multiqc_report)
+        ch_versions                 = ch_versions.mix(ESMFOLD2.out.versions)
+        ch_report_input             = ch_report_input.mix(
+            ESMFOLD2.out.pdb
+            .join(ESMFOLD2.out.msa)
+            .join(ESMFOLD2.out.pae)
+            .join(ESMFOLD2.out.iptm)
+            .combine(ch_dummy_file)
+    //        .join(ESMFOLD2.out.ipsae)
+            .join(ESMFOLD2.out.chainwise_iptm)
+    //        .join(ESMFOLD2.out.chainwise_ipsae)
+            .combine(ch_dummy_file)
+        )
+        ch_top_ranked_model         = ch_top_ranked_model.mix(ESMFOLD2.out.top_ranked_pdb)
+    }
+
     //
     // POST PROCESSING: generate visualisation reports
     //

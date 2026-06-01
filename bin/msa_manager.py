@@ -212,7 +212,7 @@ def parse_msa(msa_path, output_dir, meta_id):
                 for seq in unpaired_sequences:
                     out_file.write(f"-1,{seq}\n")
 
-def parse_msa_json(msa_path, output_dir, meta_id, template_yaml=None):
+def parse_msa_json(msa_path, output_dir, meta_id, template_yaml=None, msa_output_format="csv"):
     os.makedirs(output_dir, exist_ok=True)
     with open(msa_path, "r") as file:
         msa_data = json.load(file)
@@ -325,18 +325,31 @@ def parse_msa_json(msa_path, output_dir, meta_id, template_yaml=None):
             # Keep MSA numbering aligned with entity order in YAML so non-protein
             # entities (e.g. RNA/ligands) preserve index gaps, matching server mode.
             msa_idx = idx
-            seq_details_out["msa"] = f"{meta_id}_{msa_idx}.csv"
+            msa_ext = "csv" if msa_output_format == "csv" else "a3m"
+            seq_details_out["msa"] = f"{meta_id}_{msa_idx}.{msa_ext}"
 
-            with open(os.path.join(output_dir, f"{meta_id}_{msa_idx}.csv"), "w") as msa_out_file:
-                msa_out_file.write("key,sequence\n")
-                for msa_type in ["pairedMsa", "unpairedMsa"]:
-                    lines = seq_details[msa_type].splitlines()[1::2]
-                    final_seqs = "\n".join(
-                        f"{i + 1 if msa_type == 'pairedMsa' else -1},{x}" for i, x in enumerate(lines)
-                    )
-                    if len(final_seqs) > 0:
-                        msa_out_file.write(final_seqs)
-                        msa_out_file.write("\n")
+            with open(os.path.join(output_dir, f"{meta_id}_{msa_idx}.{msa_ext}"), "w") as msa_out_file:
+                if msa_output_format == "csv":
+                    msa_out_file.write("key,sequence\n")
+                    for msa_type in ["pairedMsa", "unpairedMsa"]:
+                        lines = seq_details[msa_type].splitlines()[1::2]
+                        final_seqs = "\n".join(
+                            f"{i + 1 if msa_type == 'pairedMsa' else -1},{x}" for i, x in enumerate(lines)
+                        )
+                        if len(final_seqs) > 0:
+                            msa_out_file.write(final_seqs)
+                            msa_out_file.write("\n")
+                else:
+                    for msa_type in ["pairedMsa", "unpairedMsa"]:
+                        lines = seq_details[msa_type].splitlines()
+                        headers = lines[0::2]
+                        sequences = lines[1::2]
+                        for i, (header, seq) in enumerate(zip(headers, sequences)):
+                            taxonomy_label = i + 1 if msa_type == "pairedMsa" else -1
+                            out_header = header if header.startswith(">") else f">{header}"
+                            if taxonomy_label >= 1:
+                                out_header = f"{out_header} key={taxonomy_label}"
+                            msa_out_file.write(f"{out_header}\n{seq}\n")
 
         output_sequences.append(seq_item_out)
 
@@ -357,9 +370,15 @@ def main():
     parser.add_argument("-o", "--output_dir", default="output_msa", help="Directory to write output CSVs")
     parser.add_argument("--meta_id", default="default", help="Prefix for MSA files")
     parser.add_argument("--template_yaml", default=None, help="Optional original Boltz YAML for entity order")
+    parser.add_argument(
+        "--msa_output_format",
+        choices=["csv", "a3m"],
+        default="csv",
+        help="Format for emitted per-entity MSA files; 'a3m' appends taxonomy labels as key={X} on FASTA headers for labels >= 1"
+    )
 
     args = parser.parse_args()
-    parse_msa_json(args.msa_path, args.output_dir, args.meta_id, args.template_yaml)
+    parse_msa_json(args.msa_path, args.output_dir, args.meta_id, args.template_yaml, args.msa_output_format)
 
 
 if __name__ == "__main__":

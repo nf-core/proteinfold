@@ -481,6 +481,7 @@ print("Starting...")
 version = "1.0.0"
 model_name = {
     "esmfold": "ESMFold",
+    "esmfold2": "ESMFold2",
     "alphafold2": "AlphaFold2",
     "alphafold3": "Alphafold3",
     "colabfold": "ColabFold",
