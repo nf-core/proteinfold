@@ -1,0 +1,21 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/nf-core/modules/master/modules/meta-schema.json
+
+name: "run_esmfold2"
+description: Run ESMFold2 to predict biomolecular 3D structures from sequence inputs within the nf-core/proteinfold pipeline.
+
+keywords:
+  - protein folding
+  - structure prediction
+  - deep learning
+  - esm
+  - biomolecules
+  - cif
+
+tools:
+  - "esmfold2":
+      description: Biohub's ESMFold2 structure prediction model for proteins and other biomolecules.
+      homepage: "https://github.com/Biohub/esm"
+      documentation: "https://huggingface.co/biohub/ESMFold2"
+      tool_dev_url: "https://github.com/Biohub/esm"
+      licence: "MIT"
+      identifier: ""
