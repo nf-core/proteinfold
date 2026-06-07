@@ -249,21 +249,31 @@ def parse_msa_json(msa_path, output_dir, meta_id, template_yaml=None):
     if template_yaml:
         template_order, template_entities = parse_template_yaml(template_yaml)
         for key in template_order:
-            # Prefer exact id/type match first
+            template_entity = template_entities.get(key)
+            template_type = None
+            template_payload = None
+
+            if template_entity is not None:
+                template_type = str(template_entity["seq_type"]).strip().lower()
+                template_payload = template_entity.get("seq_value")
+                if template_payload is not None:
+                    template_payload = str(template_payload).strip()
+
+            # Prefer exact id/type match first, but reject reshuffled ids whose sequence payload does not match the template
+            def payload_matches_template(entry):
+                return template_payload is None or entry["payload"] == template_payload
+
             matched = pop_match(
                 lambda entry: make_entity_key(entry["seq_type"], entry["seq_details"].get("id")) == key
+                and payload_matches_template(entry)
             )
 
             # Fallback: MMseqs may reshuffle/swap ids; match by type + sequence payload
-            if matched is None and key in template_entities:
-                template_type = str(template_entities[key]["seq_type"]).strip().lower()
-                template_payload = template_entities[key].get("seq_value")
-                if template_payload is not None:
-                    template_payload = str(template_payload).strip()
-                    matched = pop_match(
-                        lambda entry: str(entry["seq_type"]).strip().lower() == template_type
-                        and entry["payload"] == template_payload
-                    )
+            if matched is None and template_payload is not None:
+                matched = pop_match(
+                    lambda entry: str(entry["seq_type"]).strip().lower() == template_type
+                    and entry["payload"] == template_payload
+                )
 
             # Keep template entries even if no MMseqs match, so metadata is retained.
             ordered_entries.append(matched)

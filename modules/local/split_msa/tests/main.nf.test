@@ -30,4 +30,26 @@ nextflow_process {
             )
         }
     }
+
+    test("splits msa from af3 json with renamed chains using yaml template") {
+
+        when {
+            process {
+                """
+                input[0] = [
+                    [ id: 'renamed_sample' ],
+                    file(params.pipelines_testdata_base_path + 'testdata/sequences/boltz/renamed.json', checkIfExists: true),
+                    file(params.pipelines_testdata_base_path + 'testdata/sequences/boltz/original.yaml', checkIfExists: true)
+                ]
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                { assert snapshot(process.out).match() }
+            )
+        }
+    }
 }
