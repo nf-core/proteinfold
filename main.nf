@@ -218,7 +218,7 @@ workflow NFCORE_PROTEINFOLD {
                                             it[0],
                                             it[1].sort { path ->
                                                 def filename = path.name
-                                                def matcher = filename =~ /.*_ranked_(\d+)\.pdb/
+                                                def matcher = filename =~ /.*_ranked_(\d+)\.(?:pdb|cif|mmcif)/
                                                 if (matcher.matches()) {
                                                     return matcher[0][1].toInteger()
                                                 } else {

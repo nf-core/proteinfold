@@ -30,7 +30,7 @@ User-facing outputs are largely consistent across modes.
 <details markdown="1">
 <summary>Common output patterns</summary>
 
-- `<MODE>/top_ranked_structures/<SEQUENCE NAME>.pdb`
+- `<MODE>/top_ranked_structures/<SEQUENCE NAME>.{pdb,cif}` (format depends on the selected mode)
 - `<MODE>/<SEQUENCE NAME>/<SEQUENCE NAME>_plddt.tsv`
 - `<MODE>/<SEQUENCE NAME>/paes/<SEQUENCE NAME>_<RANK>_pae.tsv` (when available)
 - `<MODE>/<SEQUENCE NAME>/<SEQUENCE NAME>_<MODE>_msa.tsv` (mode-specific MSA summary)
