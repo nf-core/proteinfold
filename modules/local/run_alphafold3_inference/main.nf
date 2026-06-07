@@ -65,7 +65,7 @@ process RUN_ALPHAFOLD3_INFERENCE {
 
     ## Generate files with rank tag in raw directory
     echo "\$sorted_csv" | tail -n +2 | while IFS=',' read -r seed sample ranking_score; do
-        cp -n "\${name}/seed-\${seed}_sample-\${sample}/model.cif" "raw/seed_\${seed}_sample_\${sample}_ranked_\${rank}.cif"
+        cp -n "\${name}/seed-\${seed}_sample-\${sample}/model.cif" "raw/ranked_\${rank}_seed_\${seed}_sample_\${sample}.cif"
         rank=\$((rank + 1))
     done
 
@@ -97,11 +97,11 @@ process RUN_ALPHAFOLD3_INFERENCE {
     """
     mkdir -p raw
     touch ${prefix}_alphafold3.cif
-    touch raw/${prefix}_ranked_1.cif
-    touch raw/${prefix}_ranked_2.cif
-    touch raw/${prefix}_ranked_3.cif
-    touch raw/${prefix}_ranked_4.cif
-    touch raw/${prefix}_ranked_5.cif
+    touch raw/ranked_0_${prefix}.cif
+    touch raw/ranked_1_${prefix}.cif
+    touch raw/ranked_2_${prefix}.cif
+    touch raw/ranked_3_${prefix}.cif
+    touch raw/ranked_4_${prefix}.cif
     touch ${prefix}_plddt_mqc.tsv
     touch ${prefix}_alphafold3_msa.tsv
     touch ${prefix}_0_pae.tsv
