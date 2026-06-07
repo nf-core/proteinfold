@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[#456](https://github.com/nf-core/proteinfold/issues/456)] - Derive ranked metric ordering from structure filenames when generating TSV outputs.
 - [[#489](https://github.com/nf-core/proteinfold/issues/489)] - Specified Boltz output paths on `boltz_results_<sample_id>/`.
 - [[#576](https://github.com/nf-core/proteinfold/issues/576)] - Preserve native metric rank numbering and sort rank-derived outputs numerically.
+- [[ PR #633](https://github.com/nf-core/proteinfold/pull/633)] - Fix comparison reports with esmfold for multirow samplesheets.
 
 | Old parameter              | New parameter   |
 | -------------------------- | --------------- |
