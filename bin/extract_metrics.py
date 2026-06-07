@@ -615,6 +615,8 @@ def read_json(name, json_files, struct_files=None):
                     basename = os.path.basename(json_file)
                     dirname = os.path.dirname(json_file)
                     pdb_name = ".".join(basename[11:].split('.')[:-1])+'.pdb' #TODO: Fix magic number
+                    if not os.path.isfile(pdb_name):
+                        pdb_name = ".".join(basename[11:].split('.')[:-1])+'.cif'
                     chain_ids = get_chain_ids(os.path.join(dirname,pdb_name))
                 else:
                     raise ValueError("No chain-wise iPTM data found in the JSON file.")

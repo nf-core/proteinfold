@@ -314,12 +314,12 @@
                 <button
                   type="button"
                   class="w-28 rounded bg-green-600 py-3 text-sm font-semibold text-white shadow-md hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
-                  onclick="downloadPdb()"
+                  onclick="downloadCif()"
                 >
                   <span class="text-white mr-1">
                     <i class="bi bi-file-earmark-arrow-down-fill"></i>
                   </span>
-                  PDB
+                  CIF
                 </button>
               </div>
             </div>
@@ -457,11 +457,11 @@
     const MODELS = [];
 
     const MODELS_DATA = [
-      "*_data_ranked_0.pdb*",
-      "*_data_ranked_1.pdb*",
-      "*_data_ranked_2.pdb*",
-      "*_data_ranked_3.pdb*",
-      "*_data_ranked_4.pdb*",
+      "*_data_ranked_0.cif*",
+      "*_data_ranked_1.cif*",
+      "*_data_ranked_2.cif*",
+      "*_data_ranked_3.cif*",
+      "*_data_ranked_4.cif*",
     ];
 
     const COLORS = [
@@ -489,6 +489,9 @@
     };
 
     const uri = (i) => MODELS_DATA[i];
+    const modelStem = (model) => model.replace(/\.(cif|mmcif|pdb)$/i, "");
+    const modelId = (model) => modelStem(model).replace(/[^A-Za-z0-9_-]/g, "_");
+    const snapshotName = (model) => model.replace(/\.(cif|mmcif|pdb)$/i, ".png");
     // Switch to this function to return sample model URI (local dev)
     // const uri = (i) => `https://raw.githubusercontent.com/neoformit/alphafold-galaxy/main/data/${MODELS[i]}`;
 
@@ -528,7 +531,7 @@
 
     const loadModel = (modelIndex, color) => {
       const stringBlob = new Blob([uri(modelIndex)], { type: "text/plain" });
-      return stage.loadFile(stringBlob, { ext: "pdb" }).then((o) => {
+      return stage.loadFile(stringBlob, { ext: "cif" }).then((o) => {
         state.models[modelIndex] = o;
         state.models[modelIndex].addRepresentation("cartoon", {
           color: color,
@@ -542,7 +545,7 @@
     // Representations ---------------------------------------------------------
 
     const toggleModel = (modelIndex) => {
-      const button = document.getElementById(`btn-${MODELS[modelIndex].replace(".pdb", "")}`);
+      const button = document.getElementById(`btn-${modelId(MODELS[modelIndex])}`);
 
       if (state.models[modelIndex].reprList.length > 0) {
         removeModel(modelIndex);
@@ -680,7 +683,7 @@
       });
 
       tempStage
-        .loadFile(stringBlob, { ext: "pdb" })
+        .loadFile(stringBlob, { ext: "cif" })
         .then(function (o) {
           o.addRepresentation("cartoon", { colorScheme: COLORSCHEME });
           o.autoView();
@@ -688,7 +691,7 @@
           tempStage
             .makeImage(params)
             .then((blob) => {
-              const name = MODELS[state.selectedTab].replace(".pdb", ".png");
+              const name = snapshotName(MODELS[state.selectedTab]);
               const url = URL.createObjectURL(blob);
 
               makeDownload(url, name);
@@ -706,7 +709,7 @@
         });
     };
 
-    const downloadPdb = () => {
+    const downloadCif = () => {
       const blob = new Blob([uri(state.selectedTab)], {
         type: "text/plain",
       });
@@ -740,7 +743,7 @@
         const button = document.createElement("button");
         button.className =
           "btn selected w-48 truncate rounded-md bg-white border-2 border-gray-300 px-2 py-3 text-sm font-semibold text-gray-800 shadow-md hover:border-gray-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-800";
-        button.id = `btn-${model.replace(".pdb", "")}`;
+        button.id = `btn-${modelId(model)}`;
         button.onclick = () => toggleModel(index);
 
         const span = document.createElement("span");
@@ -749,7 +752,7 @@
         const icon = document.createElement("i");
         icon.className = "bi bi-check-circle-fill";
 
-        const text = document.createTextNode(`${model.replace(".pdb", "")}`);
+        const text = document.createTextNode(`${modelStem(model)}`);
 
         span.appendChild(icon);
         button.appendChild(span);
@@ -765,7 +768,7 @@
         const div = document.createElement("div");
         div.className = "flex gap-3 items-center leading-loose";
 
-        const text = `${model.replace(".pdb", "")}`;
+        const text = `${modelStem(model)}`;
         const color = document.createElement("div");
         color.className = `h-3 w-3 rounded-full bg-[${COLORS[index]}]`;
 
@@ -793,7 +796,7 @@
           button.classList.add("border-transparent", "hover:text-gray-600", "hover:border-gray-300");
         }
 
-        button.textContent = `${model.replace(".pdb", "")}`;
+        button.textContent = `${modelStem(model)}`;
 
         button.addEventListener("click", () => {
           state.selectedTab = index;
