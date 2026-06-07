@@ -430,12 +430,12 @@
                   <button
                     type="button"
                     class="w-28 rounded bg-green-600 py-3 text-sm font-semibold text-white shadow-md hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
-                    onclick="downloadPdb()"
+                    onclick="downloadCif()"
                   >
                     <span class="text-white mr-0.5">
                       <i class="bi bi-file-earmark-arrow-down-fill"></i>
                     </span>
-                    PDB
+                    CIF
                   </button>
                 </div>
               </div>
@@ -618,14 +618,14 @@
     // NGL color schemes https://nglviewer.org/ngl/api/manual/usage/coloring.html
     const COLORSCHEME = confidenceScheme; //'bfactor'
 
-    const MODELS = ["ranked_0.pdb", "ranked_1.pdb", "ranked_2.pdb", "ranked_3.pdb", "ranked_4.pdb"];
+    const MODELS = ["ranked_0.cif", "ranked_1.cif", "ranked_2.cif", "ranked_3.cif", "ranked_4.cif"];
 
     const MODELS_DATA = [
-      "*_data_ranked_0.pdb*",
-      "*_data_ranked_1.pdb*",
-      "*_data_ranked_2.pdb*",
-      "*_data_ranked_3.pdb*",
-      "*_data_ranked_4.pdb*",
+      "*_data_ranked_0.cif*",
+      "*_data_ranked_1.cif*",
+      "*_data_ranked_2.cif*",
+      "*_data_ranked_3.cif*",
+      "*_data_ranked_4.cif*",
     ];
 
     const LDDT_IMGS = [
@@ -663,6 +663,9 @@
     const hasScalarScore = (score) => score !== undefined && score !== null && score !== "" && score !== "n/a";
 
     const uri = (i) => MODELS_DATA[i];
+    const modelStem = (model) => model.replace(/\.(cif|mmcif|pdb)$/i, "");
+    const modelId = (model) => modelStem(model).replace(/[^A-Za-z0-9_-]/g, "_");
+    const snapshotName = (model) => model.replace(/\.(cif|mmcif|pdb)$/i, ".png");
     // Switch to this function to return sample model URI (local dev)
     // const uri = (i) => `https://raw.githubusercontent.com/neoformit/alphafold-galaxy/main/data/${MODELS[i]}`;
 
@@ -841,8 +844,8 @@
 
       var stringBlob = new Blob([uri(state.model)], { type: "text/plain" });
 
-      // Load PDB entry
-      return stage.loadFile(stringBlob, { ext: "pdb" }).then((o) => {
+      // Load mmCIF entry
+      return stage.loadFile(stringBlob, { ext: "cif" }).then((o) => {
         state.modelObject = o;
         reps.forEach((r) => addModelRepresentation(r));
         stage.setSpin(state.spin);
@@ -864,7 +867,7 @@
           stages.push(stage);
 
           stage
-            .loadFile(stringBlob, { ext: "pdb" })
+            .loadFile(stringBlob, { ext: "cif" })
             .then((o) => {
               o.addRepresentation("cartoon", {
                 colorScheme: COLORSCHEME,
@@ -978,15 +981,19 @@
         antialias: true,
       };
       stage.makeImage(params).then((blob) => {
-        const name = MODELS[state.model].replace(".pdb", ".png");
+        const name = snapshotName(MODELS[state.model]);
         const url = URL.createObjectURL(blob);
         makeDownload(url, name);
       });
     };
 
-    const downloadPdb = () => {
-      const url = uri(state.model);
-      const name = `alphafold_${MODELS[state.model]}`;
+    const downloadCif = () => {
+      const blob = new Blob([uri(state.model)], {
+        type: "text/plain",
+      });
+      const name = `${MODELS[state.model]}`;
+      const url = URL.createObjectURL(blob);
+
       makeDownload(url, name);
     };
 
@@ -1014,7 +1021,7 @@
         const button = document.createElement("button");
         button.className =
           "selected group btn btn-canvas w-24 rounded bg-white text-sm font-semibold text-white hover:text-gray-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-800";
-        button.id = `btn-${model.split(".")[0]}`;
+        button.id = `btn-${modelId(model)}`;
         button.onclick = () => setModel(index);
         button.innerHTML = `
             <img
@@ -1024,19 +1031,19 @@
           `;
         container.appendChild(button);
 
-        if (model.split(".")[0].length < 18) {
+        if (modelStem(model).length < 18) {
           button.innerHTML = `
               <img
                 id="image${index}"
                 class="inline-block w-20 h-20 border-2 border-gray-300 group-hover:border-gray-400 rounded-md mb-2"
               />
-            ${model.split(".")[0]}`;
+            ${modelStem(model)}`;
         } else {
           const tooltip = document.createElement("div");
-          tooltip.id = `tooltip-${model.split(".")[0]}`;
+          tooltip.id = `tooltip-${modelId(model)}`;
           tooltip.className =
             "absolute w-max top-0 left-0 bg-gray-800 text-white py-2 px-4 rounded text-sm opacity-0 group-hover:opacity-80";
-          tooltip.textContent = `${model.split(".")[0]}`;
+          tooltip.textContent = `${modelStem(model)}`;
           button.appendChild(tooltip);
 
           const cleanup = window.FloatingUIDOM.autoUpdate(button, tooltip, () => {
@@ -1055,7 +1062,7 @@
 
     const updateButtons = () => {
       MODELS.forEach((name, i) => {
-        const id = `#btn-${name.replace(".pdb", "")}`;
+        const id = `#btn-${modelId(name)}`;
         const btn = document.querySelector(id);
         if (!btn) return;
         i == state.model ? btn.classList.add("selected") : btn.classList.remove("selected");

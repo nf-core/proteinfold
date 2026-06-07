@@ -200,7 +200,6 @@ workflow BOLTZ {
     emit:
     versions        = ch_versions
     msa             = ch_msa
-    structures      = RUN_BOLTZ.out.structures
     confidence      = RUN_BOLTZ.out.confidence
     multiqc_report  = ch_multiqc_report
     top_ranked_pdb  = ch_top_ranked_pdb

@@ -104,30 +104,50 @@ def generate_output(plddt_data, name, out_dir, generate_tsv, pdb):
     ) as out_file:
         out_file.write(html_content)
 
-def align_structures(structures):
+def get_structure_parser(struct_file):
+    suffix = os.path.splitext(struct_file)[1].lower()
+    if suffix == ".pdb":
+        return PDB.PDBParser(QUIET=True)
+    if suffix in [".cif", ".mmcif"]:
+        return PDB.MMCIFParser(QUIET=True)
+    raise NotImplementedError("Reporting only supported for .pdb, .cif and .mmcif filetypes")
 
+
+def parse_structure(struct_file, structure_id):
+    parser = get_structure_parser(struct_file)
+    return parser.get_structure(structure_id, struct_file)
+
+
+def get_atom_id(atom):
+    residue = atom.get_parent()
+    chain = residue.get_parent()
+    return (chain.get_id(), residue.get_id(), atom.name)
+
+
+def get_non_hydrogen_atoms_by_id(structure):
+    return {
+        get_atom_id(atom): atom
+        for atom in structure.get_atoms()
+        if atom.element != "H"
+    }
+
+
+def align_structures(structures):
     if not structures:
         raise ValueError("No structures provided for alignment.")
 
-    if structures[0].endswith(".pdb"):
-        parser = PDB.PDBParser(QUIET=True)
-    elif structures[0].endswith(".cif"):
-        parser = PDB.MMCIFParser(QUIET=True)
-    else:
-        raise ValueError(f"{structure} is neither a PDB or mmCIF file!")
-
-    parsed_structures = [parser.get_structure(f"structure-{idx}", structure) for idx, structure in enumerate(structures)]
+    parsed_structures = [
+        parse_structure(structure, f"Structure_{idx}")
+        for idx, structure in enumerate(structures)
+    ]
     ref_structure = parsed_structures[0]
-
-    def get_atom_ids(structure):
-        # Note: this is a *set* of atom_ids due to the {} surrounding the comprehension
-        return {(atom.get_parent().get_parent().get_id(), atom.get_parent().get_id(), atom.name) for atom in structure.get_atoms() if atom.element != 'H'}
+    atom_maps = [get_non_hydrogen_atoms_by_id(structure) for structure in parsed_structures]
 
     # Find atoms common to all structures for sub-alignment
-    common_atoms = get_atom_ids(ref_structure)
+    common_atoms = set(atom_maps[0])
     initial_atom_count = len(common_atoms)
-    for structure in parsed_structures[1:]:
-        common_atoms.intersection_update(get_atom_ids(structure))
+    for atom_map in atom_maps[1:]:
+        common_atoms.intersection_update(atom_map)
 
     if len(common_atoms) < initial_atom_count:
         print(
@@ -139,11 +159,8 @@ def align_structures(structures):
     if not common_atoms:
         raise ValueError("No common atoms found between structures.")
 
-    def extract_atoms(structure, atom_ids):
-        # Note: this comprehension returns an atom *object* for each atom in the structure
-        return [atom for atom in structure.get_atoms() if (atom.get_parent().get_parent().get_id(), atom.get_parent().get_id(), atom.name) in atom_ids]
-
-    ref_atoms = extract_atoms(ref_structure, common_atoms)
+    ref_atom_ids = [atom_id for atom_id in atom_maps[0] if atom_id in common_atoms]
+    ref_atoms = [atom_maps[0][atom_id] for atom_id in ref_atom_ids]
     # The aligned structures will be the parsed structures aligned to the common atoms of the reference structure
     super_imposer = PDB.Superimposer()
     aligned_structures = []
@@ -152,14 +169,14 @@ def align_structures(structures):
         if idx == 0:
             aligned_structures.append(structure)
             continue
-        target_atoms = extract_atoms(structure, common_atoms)
+        target_atoms = [atom_maps[idx][atom_id] for atom_id in ref_atom_ids]
         super_imposer.set_atoms(ref_atoms, target_atoms)
         super_imposer.apply(structure.get_atoms())
 
-        io = PDB.PDBIO()
+        io = PDB.MMCIFIO()
         io.set_structure(structure)
-        io.save(f"aligned_structure_{idx}.pdb")
-        aligned_structures.append(f"aligned_structure_{idx}.pdb")
+        io.save(f"aligned_structure_{idx}.cif")
+        aligned_structures.append(f"aligned_structure_{idx}.cif")
 
     # Technically, parsed_structures now also points to the same aligned structures, but I've kept for readability
     return aligned_structures
@@ -172,16 +189,7 @@ def pdb_to_lddt(struct_files, generate_tsv):
     for struct_file in struct_files:
         plddt_values = []
 
-        if struct_file.endswith('.pdb'):
-            parser = PDB.PDBParser(QUIET=True)
-            suffix = ".pdb"
-        elif struct_file.endswith('.cif'):
-            parser = PDB.MMCIFParser(QUIET=True)
-            suffix = ".cif"
-        else:
-            raise NotImplementedError("Reporting only supported for .pdb and .cif filetypes")
-
-        structure = parser.get_structure("", struct_file)
+        structure = parse_structure(struct_file, "")
 
         for residue in structure.get_residues():
             res_pLDDT_tot = 0
@@ -242,22 +250,24 @@ generate_output(lddt_data, args.name, args.output_dir, args.generate_tsv, args.p
 
 print("generating html report...")
 
-# Preprocess "esmfold" PDB files, to reset residues on additional chains
-processed_pdbs = [
-    pdb_file.replace(".pdb", "_aligned.pdb") for pdb_file in args.pdb
-]
+# Preprocess PDB files to reset residues on additional chains.
+processed_structures = []
+for struct_file in args.pdb:
+    if os.path.splitext(struct_file)[1].lower() == ".pdb":
+        processed_structure = f"{os.path.splitext(struct_file)[0]}_aligned.pdb"
+        print("Reseting", struct_file, " into ", processed_structure)
+        reset_residue_numbers(struct_file, processed_structure)
+    else:
+        processed_structure = struct_file
+    processed_structures.append(processed_structure)
 
-for pdb_file in args.pdb:
-    print("Reseting", pdb_file, " into ", pdb_file.replace(".pdb", "_aligned.pdb"))
-    reset_residue_numbers(pdb_file, pdb_file.replace(".pdb", "_aligned.pdb"))
-
-structures = processed_pdbs  # Use the final processed list
-print("reference structure:", processed_pdbs[0])
-print("target structures:", ",".join(processed_pdbs[1:]))
+structures = processed_structures  # Use the final processed list
+print("reference structure:", processed_structures[0])
+print("target structures:", ",".join(processed_structures[1:]))
 aligned_structures = align_structures(structures)
 
-io = PDB.PDBIO()
-ref_structure_path = "aligned_structure_0.pdb"
+io = PDB.MMCIFIO()
+ref_structure_path = "aligned_structure_0.cif"
 io.set_structure(aligned_structures[0])
 io.save(ref_structure_path)
 aligned_structures[0] = ref_structure_path
@@ -267,7 +277,9 @@ comparision_template = comparision_template.replace("*sample_name*", args.name)
 comparision_template = comparision_template.replace("*prog_name*", args.in_type)
 
 args_pdb_array_js = (
-    "const MODELS = [" + ",\n".join([f'"{model}"' for model in structures]) + "];"
+    "const MODELS = ["
+    + ",\n".join([f'"{os.path.splitext(model)[0]}.cif"' for model in structures])
+    + "];"
 )
 comparision_template = comparision_template.replace("const MODELS = [];", args_pdb_array_js)
 
@@ -276,7 +288,7 @@ seq_cov_methods = []
 for msa, pdb in zip(args.msa, args.pdb):
     if msa != "NO_FILE":
         image_path = msa
-        method = pdb.split(".pdb")[0]
+        method = os.path.splitext(pdb)[0]
         seq_cov_methods.append(method)
         with open(image_path, "rb") as in_file:
             encoded_image = base64.b64encode(in_file.read()).decode("utf-8")
@@ -305,7 +317,7 @@ comparision_template = comparision_template.replace(
 i = 0
 for structure in aligned_structures:
     comparision_template = comparision_template.replace(
-        f"*_data_ranked_{i}.pdb*", open(structure, "r").read().replace("\n", "\\n")
+        f"*_data_ranked_{i}.cif*", open(structure, "r").read().replace("\n", "\\n")
     )
     i += 1
 

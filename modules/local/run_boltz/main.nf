@@ -18,14 +18,12 @@ process RUN_BOLTZ {
 
     output:
     tuple val(meta), path ("boltz_results_${meta.id}")                        , optional: true, emit: intermediates
-    tuple val(meta), path ("boltz_results_${meta.id}/processed/msa/*.npz")             , emit: msa
-    tuple val(meta), path ("boltz_results_${meta.id}/processed/structures/*.npz")      , emit: structures
-    tuple val(meta), path ("boltz_results_${meta.id}/predictions/${meta.id}/confidence*.json")  , emit: confidence
+    tuple val(meta), path ("boltz_results_*/predictions/*/confidence*.json")  , emit: confidence
     tuple val(meta), path ("${meta.id}_plddt_mqc.tsv")                        , emit: multiqc
-    tuple val(meta), path ("${meta.id}_boltz.pdb")                            , emit: top_ranked_pdb
-    tuple val(meta), path ("boltz_results_${meta.id}/predictions/${meta.id}/*.pdb")             , emit: pdb
-    tuple val(meta), path ("boltz_results_${meta.id}/predictions/${meta.id}/plddt_*model_0.npz"), emit: plddt
-    tuple val(meta), path ("boltz_results_${meta.id}/predictions/${meta.id}/pae_*model_0.npz")  , emit: pae
+    tuple val(meta), path ("${meta.id}_boltz.cif")                            , emit: top_ranked_pdb
+    tuple val(meta), path ("boltz_results_*/predictions/*/*.cif")             , emit: pdb
+    tuple val(meta), path ("boltz_results_*/predictions/*/plddt_*model_0.npz"), emit: plddt
+    tuple val(meta), path ("boltz_results_*/predictions/*/pae_*model_0.npz")  , emit: pae
     tuple val(meta), path ("${meta.id}_plddt_mqc.tsv")                        , emit: plddt_raw
     tuple val(meta), path ("${meta.id}_boltz_msa.tsv")                        , emit: msa_raw
     tuple val(meta), path ("${meta.id}_*_pae.tsv")                            , emit: pae_raw
@@ -58,12 +56,12 @@ process RUN_BOLTZ {
 
     if command -v nvidia-smi >/dev/null 2>&1 && nvidia-smi -L | grep -q "MIG"; then
         echo ">>> MIG mode detected. Mocking pynvml.nvmlDeviceGetNumGpuCores to avoid errors in Boltz. See https://github.com/nf-core/proteinfold/issues/417"
-        boltz_wrapper.py predict "${meta.id}.yaml" --output_format "pdb" ${args} --cache ./
+        boltz_wrapper.py predict "${meta.id}.yaml" ${args} --cache ./
     else
-        boltz predict "${meta.id}.yaml" --output_format "pdb" ${args} --cache ./
+        boltz predict "${meta.id}.yaml" ${args} --cache ./
     fi
 
-    cp boltz_results_${meta.id}/predictions/${meta.id}/*_0.pdb ./${meta.id}_boltz.pdb
+    cp boltz_results_*/predictions/${meta.id}/*_0.cif ./${meta.id}_boltz.cif
 
     # For consistency between server and local
     if compgen -G "boltz_results_${meta.id}/msa/${meta.id}*.csv" > /dev/null; then
@@ -71,9 +69,9 @@ process RUN_BOLTZ {
     fi
 
     extract_metrics.py --name ${meta.id} \\
-        --structs boltz_results_${meta.id}/predictions/${meta.id}/*.pdb \\
-        --jsons boltz_results_${meta.id}/predictions/${meta.id}/confidence_*_model_*.json \\
-        --npzs boltz_results_${meta.id}/predictions/${meta.id}/pae_*_model_*.npz \\
+        --structs boltz_results_*/predictions/${meta.id}/*.cif \\
+        --jsons boltz_results_*/predictions/${meta.id}/confidence_*_model_*.json \\
+        --npzs boltz_results_*/predictions/${meta.id}/pae_*_model_*.npz \\
         --csvs ${meta.id}_*.csv
 
     touch "${meta.id}_iptm.tsv" "${meta.id}_ipsae.tsv" "${meta.id}_chainwise_iptm.tsv" "${meta.id}_chainwise_ipsae.tsv"
@@ -91,18 +89,14 @@ process RUN_BOLTZ {
     mkdir -p ./home
     export HOME=./home
 
-    mkdir -p boltz_results_${meta.id}/processed/msa/
-    mkdir -p boltz_results_${meta.id}/processed/structures/
     mkdir -p boltz_results_${meta.id}/predictions/${meta.id}/
 
-    touch boltz_results_${meta.id}/processed/msa/${meta.id}.npz
-    touch boltz_results_${meta.id}/processed/structures/${meta.id}.npz
     touch boltz_results_${meta.id}/predictions/${meta.id}/confidence_${meta.id}.json
-    touch boltz_results_${meta.id}/predictions/${meta.id}/${meta.id}.pdb
+    touch boltz_results_${meta.id}/predictions/${meta.id}/${meta.id}.cif
     touch boltz_results_${meta.id}/predictions/${meta.id}/plddt_${meta.id}_model_0.npz
     touch boltz_results_${meta.id}/predictions/${meta.id}/pae_${meta.id}_model_0.npz
 
-    touch "${meta.id}_boltz.pdb"
+    touch "${meta.id}_boltz.cif"
     touch "${meta.id}_plddt_mqc.tsv"
     touch "${meta.id}_boltz_msa.tsv"
     touch "${meta.id}_0_pae.tsv"
