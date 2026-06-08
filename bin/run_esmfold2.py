@@ -4,11 +4,21 @@ import argparse
 import csv
 import inspect
 import os
+import re
 import string
 from pathlib import Path
 
 from Bio import PDB
 import yaml
+
+
+AA_TO_INT = {
+    "A": 0, "C": 1, "D": 2, "E": 3, "F": 4, "G": 5, "H": 6, "I": 7, "K": 8, "L": 9,
+    "M": 10, "N": 11, "P": 12, "Q": 13, "R": 14, "S": 15, "T": 16, "V": 17, "W": 18, "Y": 19,
+    ".": 20, "-": 21,
+}
+
+PAIRED_KEY_RE = re.compile(r"\bkey=(\d+)\b")
 
 
 def parse_args(args=None):
@@ -136,6 +146,64 @@ def _class_or_none(module, *names):
     return None
 
 
+def _normalize_modification_entry(entry: dict, seq_type: str) -> tuple[int, str]:
+    if not isinstance(entry, dict):
+        raise ValueError(f"Each '{seq_type}' modification entry must be a mapping")
+
+    position = entry.get("position")
+    ccd = entry.get("ccd")
+
+    if position is None:
+        raise ValueError(f"Each '{seq_type}' modification entry must include 'position'")
+    if ccd is None or not str(ccd).strip():
+        raise ValueError(f"Each '{seq_type}' modification entry must include non-empty 'ccd'")
+
+    try:
+        normalized_position = int(position)
+    except (TypeError, ValueError) as exc:
+        raise ValueError(
+            f"Invalid modification position for '{seq_type}': {position!r}"
+        ) from exc
+
+    return normalized_position, str(ccd).strip()
+
+
+def _build_modifications(details: dict, seq_type: str, esmfold2_module) -> list | None:
+    raw_modifications = details.get("modifications")
+    if raw_modifications is None:
+        return None
+    if not isinstance(raw_modifications, list):
+        raise ValueError(f"'{seq_type}' modifications must be provided as a list")
+    if len(raw_modifications) == 0:
+        return []
+
+    modification_cls = _class_or_none(esmfold2_module, "Modification")
+    if modification_cls is None:
+        raise RuntimeError(
+            "Boltz YAML includes modifications, but the installed esm package does not provide "
+            "a Modification input class"
+        )
+
+    accepted = set(inspect.signature(modification_cls).parameters)
+    modifications = []
+    for entry in raw_modifications:
+        position, ccd = _normalize_modification_entry(entry, seq_type)
+        modification_kwargs = {}
+        if "position" in accepted:
+            modification_kwargs["position"] = position
+        if "ccd" in accepted:
+            modification_kwargs["ccd"] = ccd
+
+        if "position" not in modification_kwargs or "ccd" not in modification_kwargs:
+            raise RuntimeError(
+                "Installed esm Modification class does not accept expected 'position' and 'ccd' fields"
+            )
+
+        modifications.append(modification_cls(**modification_kwargs))
+
+    return modifications
+
+
 def _parse_ligand_ccd(details: dict) -> list[str] | None:
     if "ccdCodes" in details and details["ccdCodes"] is not None:
         raw = details["ccdCodes"]
@@ -179,6 +247,101 @@ def _build_msa_from_path(msa_path: Path, esmfold2_module):
     return msa_cls.from_a3m(path=str(msa_path), remove_insertions=True, max_sequences=1000)
 
 
+def _a3m_sequence_to_int_row(sequence: str) -> list[str]:
+    filtered = "".join(char for char in sequence.strip() if not char.islower())
+    return [str(AA_TO_INT.get(char.upper(), 20)) for char in filtered]
+
+
+def _parse_a3m_entries(msa_path: Path) -> list[tuple[str, str]]:
+    entries = []
+    header = None
+    sequence_chunks = []
+
+    with msa_path.open() as handle:
+        for raw_line in handle:
+            line = raw_line.strip()
+            if not line:
+                continue
+            if line.startswith(">"):
+                if header is not None:
+                    entries.append((header, "".join(sequence_chunks)))
+                header = line
+                sequence_chunks = []
+                continue
+            if header is None:
+                continue
+            sequence_chunks.append(line)
+
+    if header is not None:
+        entries.append((header, "".join(sequence_chunks)))
+
+    return entries
+
+
+def _parse_chain_msa_rows(msa_path: Path) -> tuple[dict[int, list[str]], list[list[str]]]:
+    paired_rows = {}
+    unpaired_rows = []
+
+    for header, sequence in _parse_a3m_entries(msa_path):
+        int_row = _a3m_sequence_to_int_row(sequence)
+        match = PAIRED_KEY_RE.search(header)
+        if match is None:
+            unpaired_rows.append(int_row)
+            continue
+        paired_rows[int(match.group(1))] = int_row
+
+    return paired_rows, unpaired_rows
+
+
+def _build_msa_tsv_rows(chain_msas: list[dict]) -> list[list[str]]:
+    if not chain_msas:
+        return []
+
+    paired_key_sets = [set(chain["paired_rows"]) for chain in chain_msas if chain["paired_rows"]]
+    common_paired_keys = sorted(set.intersection(*paired_key_sets), key=int) if paired_key_sets else []
+
+    final_rows = []
+    for pair_key in common_paired_keys:
+        row = []
+        for chain in chain_msas:
+            row.extend(chain["paired_rows"][pair_key])
+        final_rows.append(row)
+
+    unpaired_rows_by_chain = []
+    for chain in chain_msas:
+        leftover_paired_rows = [
+            row for pair_key, row in sorted(chain["paired_rows"].items())
+            if pair_key not in common_paired_keys
+        ]
+        chain_unpaired_rows = leftover_paired_rows + chain["unpaired_rows"]
+        unpaired_rows_by_chain.append(chain_unpaired_rows)
+
+    msa_widths = []
+    for chain, chain_rows in zip(chain_msas, unpaired_rows_by_chain):
+        if chain_rows:
+            msa_widths.append(len(chain_rows[0]))
+        else:
+            msa_widths.append(chain["width"])
+
+    row_offsets = []
+    total_rows = 0
+    for chain_rows in unpaired_rows_by_chain:
+        next_total = total_rows + len(chain_rows)
+        row_offsets.append((total_rows, next_total))
+        total_rows = next_total
+
+    for row_idx in range(total_rows):
+        row = []
+        for chain_rows, width, (minrow, maxrow) in zip(unpaired_rows_by_chain, msa_widths, row_offsets):
+            if minrow <= row_idx < maxrow:
+                row.extend(chain_rows[row_idx - minrow])
+            else:
+                row.extend(["21"] * width)
+        final_rows.append(row)
+
+    return final_rows
+
+
 def build_spi_from_boltz_yaml(yaml_path: Path, esmfold2_module):
     data = yaml.safe_load(yaml_path.read_text()) or {}
     sequences = data.get("sequences")
@@ -195,6 +358,7 @@ def build_spi_from_boltz_yaml(yaml_path: Path, esmfold2_module):
         raise RuntimeError("Could not import required ESMFold2 input classes")
 
     spi_sequences = []
+    chain_msas = []
     for seq_item in sequences:
         if not isinstance(seq_item, dict) or len(seq_item) != 1:
             raise ValueError("Each Boltz YAML sequence entry must be a one-key mapping")
@@ -210,6 +374,7 @@ def build_spi_from_boltz_yaml(yaml_path: Path, esmfold2_module):
             sequence = str(details.get("sequence", "")).strip().upper()
             if not sequence:
                 raise ValueError(f"'{seq_type}' entity is missing required 'sequence'")
+            modifications = _build_modifications(details, seq_type, esmfold2_module)
 
             if seq_type == "protein":
                 input_cls = ProteinInput
@@ -230,6 +395,20 @@ def build_spi_from_boltz_yaml(yaml_path: Path, esmfold2_module):
                     if not msa_path.exists():
                         raise FileNotFoundError(f"MSA file does not exist: {msa_path}")
                     msa = _build_msa_from_path(msa_path, esmfold2_module)
+                    paired_rows, unpaired_rows = _parse_chain_msa_rows(msa_path)
+                    chain_width = 0
+                    if paired_rows:
+                        chain_width = len(next(iter(paired_rows.values())))
+                    elif unpaired_rows:
+                        chain_width = len(unpaired_rows[0])
+                    for _ in entity_ids:
+                        chain_msas.append(
+                            {
+                                "paired_rows": dict(paired_rows),
+                                "unpaired_rows": list(unpaired_rows),
+                                "width": chain_width,
+                            }
+                        )
 
             for entity_id in entity_ids:
                 spi_sequences.append(
@@ -238,6 +417,7 @@ def build_spi_from_boltz_yaml(yaml_path: Path, esmfold2_module):
                         id=entity_id,
                         sequence=sequence,
                         msa=msa,
+                        modifications=modifications,
                     )
                 )
             continue
@@ -254,7 +434,7 @@ def build_spi_from_boltz_yaml(yaml_path: Path, esmfold2_module):
         for entity_id in entity_ids:
             spi_sequences.append(_construct_input_object(LigandInput, id=entity_id, smiles=smiles, ccd=ccd))
 
-    return StructurePredictionInput(sequences=spi_sequences)
+    return StructurePredictionInput(sequences=spi_sequences), _build_msa_tsv_rows(chain_msas)
 
 
 def resolve_device(device: str, torch_module) -> str:
@@ -265,61 +445,6 @@ def resolve_device(device: str, torch_module) -> str:
     if device == "cuda" and not torch_module.cuda.is_available():
         raise RuntimeError("CUDA was requested but no GPU is available.")
     return device
-
-
-def mmcif_to_pdb(mmcif_file: Path, pdb_file: Path) -> None:
-    """Convert an mmCIF file to PDB format."""
-
-    def ensure_atom_site_occupancy(path: Path) -> None:
-        lines = path.read_text().splitlines()
-        i = 0
-        changed = False
-
-        while i < len(lines):
-            if lines[i].strip() != "loop_":
-                i += 1
-                continue
-
-            tag_start = i + 1
-            tag_end = tag_start
-            while tag_end < len(lines) and lines[tag_end].lstrip().startswith("_"):
-                tag_end += 1
-            tags = lines[tag_start:tag_end]
-
-            atom_site_tags = [t.strip() for t in tags if t.strip().startswith("_atom_site.")]
-            if not atom_site_tags:
-                i = tag_end
-                continue
-            if "_atom_site.occupancy" in atom_site_tags:
-                i = tag_end
-                continue
-
-            # Add missing tag and fill each atom_site row with occupancy=1.00.
-            lines.insert(tag_end, "_atom_site.occupancy")
-            row_idx = tag_end + 1
-            while row_idx < len(lines):
-                row = lines[row_idx]
-                row_stripped = row.strip()
-                if not row_stripped:
-                    row_idx += 1
-                    continue
-                if row_stripped == "#" or row_stripped == "loop_" or row_stripped.startswith("_"):
-                    break
-                lines[row_idx] = f"{row} 1.00"
-                row_idx += 1
-            changed = True
-            i = row_idx
-
-        if changed:
-            path.write_text("\n".join(lines) + "\n")
-
-    ensure_atom_site_occupancy(mmcif_file)
-    parser = PDB.MMCIFParser(QUIET=True)
-    structure = parser.get_structure("structure", str(mmcif_file))
-
-    io = PDB.PDBIO()
-    io.set_structure(structure)
-    io.save(str(pdb_file))
 
 
 def resolve_output_paths(args, input_path: Path) -> tuple[str, Path, Path | None]:
@@ -367,6 +492,13 @@ def write_scalar_metric_tsv(metric_value: float, output_path: Path) -> None:
     with output_path.open("w", newline="") as handle:
         writer = csv.writer(handle, delimiter="\t")
         writer.writerow([0, f"{float(metric_value):.3f}"])
+
+
+def write_msa_tsv(msa_rows: list[list[str]], output_path: Path) -> None:
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    with output_path.open("w", newline="") as handle:
+        writer = csv.writer(handle, delimiter="\t")
+        writer.writerows(msa_rows)
 
 
 def _idx_to_letter(idx: int) -> str:
@@ -440,11 +572,12 @@ def main(args=None):
         torch.cuda.manual_seed_all(args.seed)
 
     model = ESMFold2Model.from_pretrained("biohub/ESMFold2", local_files_only=True).to(device).eval()
+    #model = ESMFold2Model.from_pretrained("biohub/ESMFold2").to(device).eval()
 
     input_suffixes = {s.lower() for s in input_path.suffixes}
     if ".yaml" not in input_suffixes and ".yml" not in input_suffixes:
         raise ValueError(f"Input must be a Boltz YAML file (.yaml/.yml), got: {input_path}")
-    spi = build_spi_from_boltz_yaml(input_path, esmfold2_module)
+    spi, msa_rows = build_spi_from_boltz_yaml(input_path, esmfold2_module)
 
     result = ESMFold2InputBuilder().fold(
         model,
@@ -458,7 +591,10 @@ def main(args=None):
     #print(result)
 
     pae = result.pae.cpu().numpy()
+    msa_tsv_out = Path(args.output_dir) / f"{output_prefix}_esmfold2_msa.tsv"
     pae_tsv_out = Path(args.output_dir) / f"{output_prefix}_0_pae.tsv"
+    if len(msa_rows)>0:
+        write_msa_tsv(msa_rows, msa_tsv_out)
     write_pae_tsv(pae, pae_tsv_out)
     ptm_tsv_out = Path(args.output_dir) / f"{output_prefix}_ptm.tsv"
     iptm_tsv_out = Path(args.output_dir) / f"{output_prefix}_iptm.tsv"
@@ -470,10 +606,6 @@ def main(args=None):
     cif_out.parent.mkdir(parents=True, exist_ok=True)
     cif_out.write_text(result.complex.to_mmcif())
 
-    if pdb_out:
-        pdb_out.parent.mkdir(parents=True, exist_ok=True)
-        mmcif_to_pdb(cif_out, pdb_out)
-
     print(f"name={output_prefix}")
     print(f"input={input_path}")
     #if cache_path:
@@ -481,6 +613,7 @@ def main(args=None):
     print(f"saved_mmcif={cif_out}")
     if pdb_out:
         print(f"saved_pdb={pdb_out}")
+    print(f"saved_msa_tsv={msa_tsv_out}")
     print(f"saved_pae_tsv={pae_tsv_out}")
     print(f"saved_ptm_tsv={ptm_tsv_out}")
     print(f"saved_iptm_tsv={iptm_tsv_out}")

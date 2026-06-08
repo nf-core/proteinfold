@@ -106,7 +106,7 @@ workflow ESMFOLD2 {
 
     RUN_ESMFOLD2
         .out
-        .pdb
+        .cif
         .map { it ->
             def meta = it[0].clone();
             meta.model = "esmfold2"

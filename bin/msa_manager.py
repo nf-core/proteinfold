@@ -94,6 +94,13 @@ def format_yaml_id(seq_id):
     return seq_id
 
 
+def is_duplicate_entity_id(seq_id):
+    if isinstance(seq_id, list):
+        return len(seq_id) > 1
+    parsed_id = parse_yaml_id_text(seq_id)
+    return isinstance(parsed_id, list) and len(parsed_id) > 1
+
+
 def get_entry_payload(seq_type, seq_details):
     seq_type_norm = str(seq_type).strip().lower()
     if seq_type_norm in ["protein", "rna", "dna"]:
@@ -212,6 +219,87 @@ def parse_msa(msa_path, output_dir, meta_id):
                 for seq in unpaired_sequences:
                     out_file.write(f"-1,{seq}\n")
 
+
+def _as_id_list(entity_id):
+    if isinstance(entity_id, list):
+        return [str(x).strip() for x in entity_id]
+    if entity_id is None:
+        return []
+    return [str(entity_id).strip()]
+
+
+def build_entity_id_map(source_id, output_id):
+    """Build a mapping from AF3 entity IDs to final Boltz entity IDs.
+
+    This keeps bond conversion stable even when the output sequence order is
+    rearranged by template matching. For homomeric list IDs, the function maps
+    element-wise when source and output list lengths match.
+    """
+    mapping = {}
+
+    src_list = _as_id_list(source_id)
+    dst_list = _as_id_list(output_id)
+
+    if len(src_list) == 1 and len(dst_list) == 1:
+        mapping[normalize_id(src_list[0])] = dst_list[0]
+        return mapping
+
+    if len(src_list) == len(dst_list) and len(src_list) > 0:
+        for src, dst in zip(src_list, dst_list):
+            mapping[normalize_id(src)] = dst
+        # Also keep the whole entity address available as a fallback.
+        mapping[normalize_id(src_list)] = output_id
+        return mapping
+
+    # Fallback for unusual cases; this at least preserves direct identity for
+    # non-ambiguous scalar IDs.
+    if len(src_list) == 1:
+        mapping[normalize_id(src_list[0])] = output_id if len(dst_list) != 1 else dst_list[0]
+    else:
+        mapping[normalize_id(src_list)] = output_id
+    return mapping
+
+
+def resolve_entity_id(entity_id, entity_id_map):
+    normalized = normalize_id(entity_id)
+    if normalized in entity_id_map:
+        return entity_id_map[normalized]
+
+    if isinstance(entity_id, list):
+        resolved = []
+        for item in entity_id:
+            item_norm = normalize_id(item)
+            if item_norm not in entity_id_map:
+                raise ValueError(f"Could not map bondedAtomPairs entity id '{item}' to an output chain id")
+            resolved.append(entity_id_map[item_norm])
+        return resolved
+
+    if normalized is None:
+        raise ValueError("bondedAtomPairs entry is missing an entity id")
+
+    raise ValueError(f"Could not map bondedAtomPairs entity id '{entity_id}' to an output chain id")
+
+
+def convert_bonded_atom_pairs_to_constraints(bonded_atom_pairs, entity_id_map):
+    """Translate AlphaFold3 bondedAtomPairs into Boltz bond constraints."""
+    constraints = []
+    for pair in bonded_atom_pairs or []:
+        if not isinstance(pair, (list, tuple)) or len(pair) != 2:
+            raise ValueError(f"Invalid bondedAtomPairs entry: {pair!r}")
+
+        atom1, atom2 = pair
+        if not isinstance(atom1, (list, tuple)) or not isinstance(atom2, (list, tuple)):
+            raise ValueError(f"Invalid bondedAtomPairs atom entry: {pair!r}")
+        if len(atom1) != 3 or len(atom2) != 3:
+            raise ValueError(f"Expected bondedAtomPairs atoms to have 3 fields, got: {pair!r}")
+
+        atom1_out = [resolve_entity_id(atom1[0], entity_id_map), int(atom1[1]), str(atom1[2]).strip()]
+        atom2_out = [resolve_entity_id(atom2[0], entity_id_map), int(atom2[1]), str(atom2[2]).strip()]
+        constraints.append({"bond": {"atom1": atom1_out, "atom2": atom2_out}})
+
+    return constraints
+
+
 def parse_msa_json(msa_path, output_dir, meta_id, template_yaml=None, msa_output_format="csv"):
     os.makedirs(output_dir, exist_ok=True)
     with open(msa_path, "r") as file:
@@ -249,21 +337,31 @@ def parse_msa_json(msa_path, output_dir, meta_id, template_yaml=None, msa_output
     if template_yaml:
         template_order, template_entities = parse_template_yaml(template_yaml)
         for key in template_order:
-            # Prefer exact id/type match first
+            template_entity = template_entities.get(key)
+            template_type = None
+            template_payload = None
+            if template_entity is not None:
+                template_type = str(template_entity["seq_type"]).strip().lower()
+                template_payload = template_entity.get("seq_value")
+                if template_payload is not None:
+                    template_payload = str(template_payload).strip()
+
+            def payload_matches_template(entry):
+                return template_payload is None or entry["payload"] == template_payload
+
+            # Prefer exact id/type match first, but reject reshuffled ids whose
+            # sequence payload does not match the original template entity.
             matched = pop_match(
                 lambda entry: make_entity_key(entry["seq_type"], entry["seq_details"].get("id")) == key
+                and payload_matches_template(entry)
             )
 
             # Fallback: MMseqs may reshuffle/swap ids; match by type + sequence payload
-            if matched is None and key in template_entities:
-                template_type = str(template_entities[key]["seq_type"]).strip().lower()
-                template_payload = template_entities[key].get("seq_value")
-                if template_payload is not None:
-                    template_payload = str(template_payload).strip()
-                    matched = pop_match(
-                        lambda entry: str(entry["seq_type"]).strip().lower() == template_type
-                        and entry["payload"] == template_payload
-                    )
+            if matched is None and template_payload is not None:
+                matched = pop_match(
+                    lambda entry: str(entry["seq_type"]).strip().lower() == template_type
+                    and entry["payload"] == template_payload
+                )
 
             # Keep template entries even if no MMseqs match, so metadata is retained.
             ordered_entries.append(matched)
@@ -274,6 +372,8 @@ def parse_msa_json(msa_path, output_dir, meta_id, template_yaml=None, msa_output
         ordered_template_keys.append(None)
 
     output_sequences = []
+    entity_id_map = {}
+
     for idx, entry in enumerate(ordered_entries):
         seq_type = None
         seq_details = None
@@ -313,6 +413,12 @@ def parse_msa_json(msa_path, output_dir, meta_id, template_yaml=None, msa_output
                 seq_details_out["sequence"] = seq_details.get("sequence")
             seq_item_out = {seq_type_out: seq_details_out}
 
+        # Build a mapping from the original AF3 entity IDs to the final Boltz IDs.
+        if entry is not None:
+            source_id = seq_details.get("id")
+            output_id = seq_details_out.get("id")
+            entity_id_map.update(build_entity_id_map(source_id, output_id))
+
         if str(seq_type_out).strip().lower() == "protein":
             if entry is None:
                 raise ValueError(
@@ -322,34 +428,48 @@ def parse_msa_json(msa_path, output_dir, meta_id, template_yaml=None, msa_output
                 raise ValueError(
                     f"Protein entity '{seq_details_out.get('id')}' is missing pairedMsa/unpairedMsa in MMseqs JSON"
                 )
-            # Keep MSA numbering aligned with entity order in YAML so non-protein
-            # entities (e.g. RNA/ligands) preserve index gaps, matching server mode.
-            msa_idx = idx
-            msa_ext = "csv" if msa_output_format == "csv" else "a3m"
-            seq_details_out["msa"] = f"{meta_id}_{msa_idx}.{msa_ext}"
+            if seq_details["pairedMsa"] or seq_details['unpairedMsa']:
+                # Keep MSA numbering aligned with entity order in YAML so non-protein
+                # entities (e.g. RNA/ligands) preserve index gaps, matching server mode.
+                msa_idx = idx
+                msa_ext = "csv" if msa_output_format == "csv" else "a3m"
+                seq_details_out["msa"] = f"{meta_id}_{msa_idx}.{msa_ext}"
 
-            with open(os.path.join(output_dir, f"{meta_id}_{msa_idx}.{msa_ext}"), "w") as msa_out_file:
-                if msa_output_format == "csv":
-                    msa_out_file.write("key,sequence\n")
-                    for msa_type in ["pairedMsa", "unpairedMsa"]:
-                        lines = seq_details[msa_type].splitlines()[1::2]
-                        final_seqs = "\n".join(
-                            f"{i + 1 if msa_type == 'pairedMsa' else -1},{x}" for i, x in enumerate(lines)
-                        )
-                        if len(final_seqs) > 0:
-                            msa_out_file.write(final_seqs)
-                            msa_out_file.write("\n")
-                else:
-                    for msa_type in ["pairedMsa", "unpairedMsa"]:
-                        lines = seq_details[msa_type].splitlines()
-                        headers = lines[0::2]
-                        sequences = lines[1::2]
-                        for i, (header, seq) in enumerate(zip(headers, sequences)):
-                            taxonomy_label = i + 1 if msa_type == "pairedMsa" else -1
-                            out_header = header if header.startswith(">") else f">{header}"
-                            if taxonomy_label >= 1:
-                                out_header = f"{out_header} key={taxonomy_label}"
-                            msa_out_file.write(f"{out_header}\n{seq}\n")
+                with open(os.path.join(output_dir, f"{meta_id}_{msa_idx}.{msa_ext}"), "w") as msa_out_file:
+                    if msa_output_format == "csv":
+                        msa_out_file.write("key,sequence\n")
+                        for msa_type in ["pairedMsa", "unpairedMsa"]:
+                            try:
+                                lines = seq_details[msa_type].splitlines()[1::2]
+                            except AttributeError:
+                                continue
+                            final_seqs = "\n".join(
+                                f"{i + 1 if msa_type == 'pairedMsa' else -1},{x}" for i, x in enumerate(lines)
+                            )
+                            if len(final_seqs) > 0:
+                                msa_out_file.write(final_seqs)
+                                msa_out_file.write("\n")
+                    else:
+                        is_duplicate_entity = is_duplicate_entity_id(seq_details_out.get("id"))
+                        paired_count = len(seq_details["pairedMsa"].splitlines()) // 2
+                        for msa_type in ["pairedMsa", "unpairedMsa"]:
+                            try:
+                                lines = seq_details[msa_type].splitlines()
+                            except AttributeError:
+                                continue
+                            headers = lines[0::2]
+                            sequences = lines[1::2]
+                            for i, (header, seq) in enumerate(zip(headers, sequences)):
+                                if msa_type == "pairedMsa":
+                                    taxonomy_label = i + 1
+                                elif is_duplicate_entity:
+                                    taxonomy_label = paired_count + i + 1
+                                else:
+                                    taxonomy_label = -1
+                                out_header = header if header.startswith(">") else f">{header}"
+                                if taxonomy_label >= 1:
+                                    out_header = f"{out_header} key={taxonomy_label}"
+                                msa_out_file.write(f"{out_header}\n{seq}\n")
 
         output_sequences.append(seq_item_out)
 
@@ -360,9 +480,16 @@ def parse_msa_json(msa_path, output_dir, meta_id, template_yaml=None, msa_output
 
     output_yaml_data["sequences"] = output_sequences
 
+    if not template_yaml:
+        bonded_atom_pairs = msa_data.get("bondedAtomPairs", [])
+        bond_constraints = convert_bonded_atom_pairs_to_constraints(bonded_atom_pairs, entity_id_map)
+        if bond_constraints:
+            output_yaml_data["constraints"] = bond_constraints
+
     filename = os.path.join(output_dir, f"{meta_id}.yaml")
     with open(filename, "w", encoding="utf-8") as out_file:
         yaml.safe_dump(output_yaml_data, out_file, sort_keys=False)
+
 
 def main():
     parser = argparse.ArgumentParser(description="Split multi-A3M file into CSV sequences per section.")
