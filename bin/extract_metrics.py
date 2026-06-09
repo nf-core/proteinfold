@@ -528,7 +528,8 @@ def read_json(name, json_files, struct_files=None):
                 chains = len(data['sequences'])
                 final_rows = []
                 # Paired
-                for i in range(len(paired_msa_rows[0])): #The number of paired lines is common to all MSAs
+                paired_row_count = min((len(rows) for rows in paired_msa_rows), default=0)
+                for i in range(paired_row_count): #The number of paired lines is common to all MSAs
                     temp_row = []
                     #This needs to be fixed if inference is batched in future.
                     for j in range(chains):
@@ -536,7 +537,7 @@ def read_json(name, json_files, struct_files=None):
                     final_rows.append(temp_row)
 
                 # Un-paired
-                msa_widths = [len(paired_msa_rows[chain][0]) for chain in range(chains)]
+                msa_widths = [len(paired_msa_rows[chain][0]) if paired_msa_rows[chain] else (len(unpaired_msa_rows[chain][0]) if unpaired_msa_rows[chain] else 0) for chain in range(chains)]
                 msa_heights = [len(unpaired_msa_rows[chain]) for chain in range(chains)]
 
                 cum_total_rows = np.cumsum(msa_heights)
