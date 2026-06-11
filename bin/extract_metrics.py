@@ -7,6 +7,7 @@ import json
 import subprocess
 import sys
 import tempfile
+import warnings
 #import torch moved to a conditional import since too bulky import if not used
 import numpy as np
 import csv
@@ -157,6 +158,7 @@ def sort_paths_by_rank(paths):
     def sort_key(path):
         rank = infer_model_rank(path)
         if rank is None:
+            warnings.warn(f"Unable to infer model rank from path: {path}; falling back to basename sort")
             return (1, os.path.basename(path))
         return (0, rank, os.path.basename(path))
 
@@ -167,6 +169,8 @@ def build_struct_map(struct_files):
     struct_map = {}
     for idx, struct_file in enumerate(sort_paths_by_rank(struct_files)):
         rank = infer_model_rank(struct_file)
+        if rank is None:
+            warnings.warn(f"Unable to infer model rank from path: {struct_file}; falling back to index {idx}")
         struct_map[rank if rank is not None else idx] = struct_file
     return struct_map
 
@@ -275,6 +279,8 @@ def extract_structs_plddt_to_tsv(name, structures):
     rank_names = []
     for idx, structure in enumerate(sorted_structures):
         rank = infer_model_rank(structure)
+        if rank is None:
+            warnings.warn(f"Unable to infer model rank from path: {structure}; falling back to index {idx}")
         rank_names.append(f"rank_{rank}" if rank is not None else f"rank_{idx}")
     # Create header as the first row
     plddt_rows =  [["Positions"] + rank_names]
