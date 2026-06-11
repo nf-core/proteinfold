@@ -658,14 +658,14 @@ def read_pt(name, pt_files):
                 write_tsv(f"{name}_0_pae.tsv", format_pae_rows(np.squeeze(data["pae"].numpy())))
         break
 
-def read_colabfold_metrics(name, colabfold_metrics_fns, struct_files=None):
+def read_colabfold_metrics(name, colabfold_metrics_files, struct_files=None):
     ptm_rows = []
     iptm_rows = []
     ipsae_rows = []
     chainwise_iptm = {}
     chainwise_ipsae = {}
     struct_map = build_struct_map(struct_files) if struct_files else {}
-    for fn in colabfold_metrics_fns:
+    for fn in colabfold_metrics_files:
         with open(fn) as f:
             data = json.load(f)
         rank_id = infer_model_rank(fn)
@@ -708,7 +708,7 @@ def main():
     parser.add_argument("--paired_a3m", dest="paired_a3m", required=False) # For reading the ColabFold MSA format
     parser.add_argument("--csvs", dest="csvs", required=False, nargs="+") # For reading boltz csvs
     parser.add_argument("--jsons", dest="jsons", required=False, nargs="+") # For reading the AF3 MSA & PAE, HF3 PAE
-    parser.add_argument("--colabfold_metrics_fns", required=False, nargs="+")
+    parser.add_argument("--colabfold_metrics_files", required=False, nargs="+")
     parser.add_argument("--pts", dest="pts", required=False, nargs="+") # For read RFAA pytorch model to get PAE data
     parser.add_argument("--structs", dest="structs", required=False, nargs="+")
     parser.add_argument("--name", default="untitled", dest="name") # might need a --name $meta.id
@@ -730,8 +730,8 @@ def main():
         read_pt(args.name, args.pts)
     if args.structs:
         extract_structs_plddt_to_tsv(args.name, args.structs)
-    if args.colabfold_metrics_fns:
-        read_colabfold_metrics(args.name, args.colabfold_metrics_fns, args.structs)
+    if args.colabfold_metrics_files:
+        read_colabfold_metrics(args.name, args.colabfold_metrics_files, args.structs)
 
 if __name__ == "__main__":
     main()

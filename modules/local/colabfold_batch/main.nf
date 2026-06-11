@@ -60,7 +60,7 @@ process COLABFOLD_BATCH {
     fi
 
     extract_metrics.py --name ${meta.id} \\
-        --colabfold_metrics_fns raw/*scores_rank*.json \\
+        --colabfold_metrics_files raw/*scores_rank*.json \\
         --structs raw/*_\${prefix}_rank*.pdb \\
         --paired_a3m raw/${meta.id}.a3m
 
