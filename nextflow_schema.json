@@ -187,13 +187,8 @@
                 },
                 "colabfold_use_templates": {
                     "type": "boolean",
-                    "description": "Use PDB templates. Local ColabFold runs require colabfold_template_path to avoid remote template lookups.",
-                    "fa_icon": "fas fa-paste"
-                },
-                "colabfold_template_path": {
-                    "type": "string",
-                    "format": "directory-path",
-                    "description": "Path to a local ColabFold template directory. Required to use templates without --use_msa_server.",
+                    "default": false,
+                    "description": "Use PDB templates",
                     "fa_icon": "fas fa-paste"
                 },
                 "colabfold_create_index": {
