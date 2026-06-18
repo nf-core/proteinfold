@@ -526,22 +526,11 @@ def read_json(name, json_files, struct_files=None):
                     unpaired_MSA = chain['protein']['unpairedMsa']
                     unpaired_msa_lines = [''.join(c for c in line if not c.islower()) for line in unpaired_MSA.split("\n") if line.strip() and not line.startswith(">")]
                     unpaired_msa_rows.append([[str(AA_to_int.get(residue, 20)) for residue in line] for line in unpaired_msa_lines])
-                    paired_MSA = chain['protein']['pairedMsa'] # Sequences to be paired (not already paired when using AF3 pipeline)
-                    paired_msa_lines = [''.join(c for c in line if not c.islower()) for line in paired_MSA.split("\n") if line.strip() and not line.startswith(">")]
-                    paired_msa_rows.append([[str(AA_to_int.get(residue, 20)) for residue in line] for line in paired_msa_lines])
 
                 chains = len(data['sequences'])
                 final_rows = []
-                # Paired
-                #for i in range(len(paired_msa_rows[0])): #The number of paired lines is common to all MSAs
-                #    temp_row = []
-                #    #This needs to be fixed if inference is batched in future.
-                #    for j in range(chains):
-                #        temp_row.extend(paired_msa_rows[j][i])
-                #    final_rows.append(temp_row)
-
-                # Un-paired
-                msa_widths = [len(paired_msa_rows[chain][0]) for chain in range(chains)]
+                # Exclude the paired block for now; use the unpaired MSA only.
+                msa_widths = [len(unpaired_msa_rows[chain][0]) if unpaired_msa_rows[chain] else 0 for chain in range(chains)]
                 msa_heights = [len(unpaired_msa_rows[chain]) for chain in range(chains)]
 
                 cum_total_rows = np.cumsum(msa_heights)

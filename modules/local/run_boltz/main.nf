@@ -18,12 +18,12 @@ process RUN_BOLTZ {
 
     output:
     tuple val(meta), path ("boltz_results_${meta.id}")                        , optional: true, emit: intermediates
-    tuple val(meta), path ("boltz_results_*/predictions/*/confidence*.json")  , emit: confidence
+    tuple val(meta), path ("boltz_results_${meta.id}/predictions/${meta.id}/confidence*.json")  , emit: confidence
     tuple val(meta), path ("${meta.id}_plddt_mqc.tsv")                        , emit: multiqc
     tuple val(meta), path ("${meta.id}_boltz.cif")                            , emit: top_ranked_pdb
-    tuple val(meta), path ("boltz_results_*/predictions/*/*.cif")             , emit: pdb
-    tuple val(meta), path ("boltz_results_*/predictions/*/plddt_*model_0.npz"), emit: plddt
-    tuple val(meta), path ("boltz_results_*/predictions/*/pae_*model_0.npz")  , emit: pae
+    tuple val(meta), path ("boltz_results_${meta.id}/predictions/${meta.id}/*.cif")             , emit: pdb
+    tuple val(meta), path ("boltz_results_${meta.id}/predictions/${meta.id}/plddt_*model_0.npz"), emit: plddt
+    tuple val(meta), path ("boltz_results_${meta.id}/predictions/${meta.id}/pae_*model_0.npz")  , emit: pae
     tuple val(meta), path ("${meta.id}_plddt_mqc.tsv")                        , emit: plddt_raw
     tuple val(meta), path ("${meta.id}_boltz_msa.tsv")                        , emit: msa_raw
     tuple val(meta), path ("${meta.id}_*_pae.tsv")                            , emit: pae_raw
@@ -61,7 +61,7 @@ process RUN_BOLTZ {
         boltz predict "${meta.id}.yaml" ${args} --cache ./
     fi
 
-    cp boltz_results_*/predictions/${meta.id}/*_0.cif ./${meta.id}_boltz.cif
+    cp boltz_results_${meta.id}/predictions/${meta.id}/*_0.cif ./${meta.id}_boltz.cif
 
     # For consistency between server and local
     if compgen -G "boltz_results_${meta.id}/msa/${meta.id}*.csv" > /dev/null; then
@@ -69,9 +69,9 @@ process RUN_BOLTZ {
     fi
 
     extract_metrics.py --name ${meta.id} \\
-        --structs boltz_results_*/predictions/${meta.id}/*.cif \\
-        --jsons boltz_results_*/predictions/${meta.id}/confidence_*_model_*.json \\
-        --npzs boltz_results_*/predictions/${meta.id}/pae_*_model_*.npz \\
+        --structs boltz_results_${meta.id}/predictions/${meta.id}/*.cif \\
+        --jsons boltz_results_${meta.id}/predictions/${meta.id}/confidence_*_model_*.json \\
+        --npzs boltz_results_${meta.id}/predictions/${meta.id}/pae_*_model_*.npz \\
         --csvs ${meta.id}_*.csv
 
     touch "${meta.id}_iptm.tsv" "${meta.id}_ipsae.tsv" "${meta.id}_chainwise_iptm.tsv" "${meta.id}_chainwise_ipsae.tsv"
