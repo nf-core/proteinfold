@@ -28,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[#576](https://github.com/nf-core/proteinfold/issues/576)] - Preserve native metric rank numbering and sort rank-derived outputs numerically.
 - [[PR #633](https://github.com/nf-core/proteinfold/pull/633)] - Fix comparison reports with esmfold for multirow samplesheets.
 - [[PR #634](https://github.com/nf-core/proteinfold/pull/634)] - Add support for outputs in cif format.
+- [[PR #636](https://github.com/nf-core/proteinfold/pull/636)] - Resolve alphafold2 `ext.args` in closure.
 
 | Old parameter              | New parameter   |
 | -------------------------- | --------------- |
