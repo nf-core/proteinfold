@@ -1,7 +1,7 @@
 name: Run GPU nf-tests
 on:
-  # TODO: un-comment when confirmed g5.xlarge OK for this pipeline (for bfloat16)
-  pull_request:
+  push:
+    branches: [dev]
     paths-ignore:
       - "docs/**"
       - "**/meta.yml"
@@ -64,7 +64,7 @@ jobs:
     env:
       NXF_VER: ${{ matrix.NXF_VER }}
 
-    # Only run on push if number of shards is greater than 0
+    # Only run if number of shards is greater than 0
     if: ${{ needs.get-shards.outputs.total_shards > 0 }}
     strategy:
       fail-fast: false
