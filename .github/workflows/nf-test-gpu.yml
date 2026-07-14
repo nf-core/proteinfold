@@ -2,12 +2,10 @@ name: Run GPU nf-tests
 on:
   push:
     branches: [dev]
-    paths-ignore:
-      - "docs/**"
-      - "**/meta.yml"
-      - "**/*.md"
-      - "**/*.png"
-      - "**/*.svg"
+    paths:
+      - "conf/test_gpu.config"
+      - "modules/local/colabfold_batch/**"
+      - "modules/local/run_boltz/**"
   release:
     types: [published]
   workflow_dispatch:
