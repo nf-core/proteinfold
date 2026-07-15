@@ -10,7 +10,7 @@ nextflow_process {
     tag "colabfold_batch"
     tag "gpu"
     profile "test_nostub"
-    profile "test_gpu"
+    profile "gpu"
 
     test("runs colabfold_batch with minimal inputs") {
 
