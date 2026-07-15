@@ -3,7 +3,8 @@ on:
   push:
     branches: [dev]
     paths:
-      - "conf/test_gpu.config"
+      - "conf/test.config"
+      - "conf/test_nostub.config"
       - "modules/local/colabfold_batch/**"
       - "modules/local/run_boltz/**"
   release:
@@ -92,7 +93,7 @@ jobs:
       - name: Run nf-test Action
         uses: ./.github/actions/nf-test
         with:
-          profile: test_gpu,${{ matrix.profile }}
+          profile: test_nostub,${{ matrix.profile }},gpu
           shard: ${{ matrix.shard }}
           total_shards: ${{ needs.get-shards.outputs.total_shards }}
           filters: ${{ matrix.filters }}
