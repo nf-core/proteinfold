@@ -48,7 +48,7 @@ nextflow_process {
                 def mols = file('mols')
                 mols.mkdirs()
 
-                for (String molCode : molNames) {
+                molNames.each { molCode ->
                     def p = 's3://proteinfold-dataset/test-data/mini_dbs/params/mols/' + molCode + '.pkl'
                     def src = file(p, checkIfExists: true)
                     def dst = file('mols/' + molCode + '.pkl')
@@ -72,14 +72,21 @@ nextflow_process {
         }
 
         then {
+            def outputFilenames = process.out
+                .findAll { key, val -> !key.startsWith('versions') }
+                .collectEntries { key, val ->
+                    [key, val.collect { output ->
+                        output instanceof List ?
+                            output.collect { item -> item instanceof java.nio.file.Path ? file(item).name : item } :
+                            output instanceof java.nio.file.Path ? file(output).name : output
+                    }]
+                }
+
             assertAll(
                 { assert process.success },
                 { assert snapshot(
                     process.out.findAll { key, val -> key.startsWith('versions') },
-                    process.out.collect().flatten()
-                        .findAll { !(it instanceof Map) && it.toString().startsWith('/') }
-                        .collect { file(it).name }
-                        .sort()
+                    outputFilenames
                 ).match() }
             )
         }

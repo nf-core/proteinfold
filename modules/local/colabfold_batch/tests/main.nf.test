@@ -48,8 +48,22 @@ nextflow_process {
         }
 
         then {
+            def outputFilenames = process.out
+                .findAll { key, val -> !key.startsWith('versions') }
+                .collectEntries { key, val ->
+                    [key, val.collect { output ->
+                        output instanceof List ?
+                            output.collect { item -> item instanceof java.nio.file.Path ? file(item).name : item } :
+                            output instanceof java.nio.file.Path ? file(output).name : output
+                    }]
+                }
+
             assertAll(
-                { assert process.success }
+                { assert process.success },
+                { assert snapshot(
+                    process.out.findAll { key, val -> key.startsWith('versions') },
+                    outputFilenames
+                ).match() }
             )
         }
     }

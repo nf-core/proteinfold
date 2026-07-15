@@ -1,0 +1,227 @@
+{
+    "runs colabfold_batch with minimal inputs": {
+        "content": [
+            {
+                "versions": [
+                    "versions.yml:md5,7f5bf1e283695753ebd6e554eba80b36"
+                ]
+            },
+            {
+                "0": [
+                    [
+                        "cite.bibtex:md5,271ade47eec3d1963f498d79bd51f0dd",
+                        "config.json:md5,a46fb6635fc207529ed42316c4af8747",
+                        "log.txt:md5,94f76fe3154be6713b4a79fa42830a04",
+                        "test.a3m:md5,74eb64ef8ab1ad918e3b9826c53d5c44",
+                        "test.done.txt:md5,d41d8cd98f00b204e9800998ecf8427e",
+                        "test_coverage.png:md5,833c3ce2ecd5c004733153a84b2497c1",
+                        "test_pae.png:md5,4a72cd02383b54f26ee0ea546acde474",
+                        "test_plddt.png:md5,e6033063d5ed7dcf5ce6601fecbe2067",
+                        "test_predicted_aligned_error_v1.json:md5,2e233848a7e0bf1e1ff7a0d2f53cd24b",
+                        "test_scores_rank_001_alphafold2_ptm_model_3_seed_000.json:md5,0a7f6fda29b485cf25514e9cb1caaccf",
+                        "test_unrelaxed_rank_001_alphafold2_ptm_model_3_seed_000.pdb:md5,572cd24589723ca8835accefffe008f5"
+                    ]
+                ],
+                "1": [
+                    [
+                        {
+                            "id": "test"
+                        },
+                        "test_colabfold.pdb:md5,572cd24589723ca8835accefffe008f5"
+                    ]
+                ],
+                "10": [
+                    [
+                        {
+                            "id": "test"
+                        },
+                        "test_chainwise_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ],
+                "11": [
+                    [
+                        {
+                            "id": "test"
+                        },
+                        "test_chainwise_ipsae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ],
+                "12": [
+                    "versions.yml:md5,7f5bf1e283695753ebd6e554eba80b36"
+                ],
+                "2": [
+                    [
+                        {
+                            "id": "test"
+                        },
+                        "test_unrelaxed_rank_001_alphafold2_ptm_model_3_seed_000.pdb:md5,572cd24589723ca8835accefffe008f5"
+                    ]
+                ],
+                "3": [
+                    [
+                        {
+                            "id": "test"
+                        },
+                        "test_colabfold_msa.tsv:md5,938c963c623a5d6d482745fc4a43cb7b"
+                    ]
+                ],
+                "4": [
+                    [
+                        {
+                            "id": "test"
+                        },
+                        "test_plddt_mqc.tsv:md5,2fbab2be6e386e153b9444c6fd637d23"
+                    ]
+                ],
+                "5": [
+                    [
+                        {
+                            "id": "test"
+                        },
+                        "test_1_pae.tsv:md5,4a2d925a899a251f546c292b7638cbc0"
+                    ]
+                ],
+                "6": [
+                    [
+                        {
+                            "id": "test"
+                        },
+                        "test_1_pae.tsv:md5,4a2d925a899a251f546c292b7638cbc0"
+                    ]
+                ],
+                "7": [
+                    [
+                        {
+                            "id": "test"
+                        },
+                        "test_ptm.tsv:md5,4130000fc28fb0ad4663e20759001db3"
+                    ]
+                ],
+                "8": [
+                    [
+                        {
+                            "id": "test"
+                        },
+                        "test_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ],
+                "9": [
+                    [
+                        {
+                            "id": "test"
+                        },
+                        "test_ipsae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ],
+                "chainwise_ipsaes": [
+                    [
+                        {
+                            "id": "test"
+                        },
+                        "test_chainwise_ipsae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ],
+                "chainwise_iptms": [
+                    [
+                        {
+                            "id": "test"
+                        },
+                        "test_chainwise_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ],
+                "ipsaes": [
+                    [
+                        {
+                            "id": "test"
+                        },
+                        "test_ipsae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ],
+                "iptms": [
+                    [
+                        {
+                            "id": "test"
+                        },
+                        "test_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ],
+                "msa": [
+                    [
+                        {
+                            "id": "test"
+                        },
+                        "test_colabfold_msa.tsv:md5,938c963c623a5d6d482745fc4a43cb7b"
+                    ]
+                ],
+                "multiqc": [
+                    [
+                        {
+                            "id": "test"
+                        },
+                        "test_plddt_mqc.tsv:md5,2fbab2be6e386e153b9444c6fd637d23"
+                    ]
+                ],
+                "pae": [
+                    [
+                        {
+                            "id": "test"
+                        },
+                        "test_1_pae.tsv:md5,4a2d925a899a251f546c292b7638cbc0"
+                    ]
+                ],
+                "paes": [
+                    [
+                        {
+                            "id": "test"
+                        },
+                        "test_1_pae.tsv:md5,4a2d925a899a251f546c292b7638cbc0"
+                    ]
+                ],
+                "pdb": [
+                    [
+                        {
+                            "id": "test"
+                        },
+                        "test_unrelaxed_rank_001_alphafold2_ptm_model_3_seed_000.pdb:md5,572cd24589723ca8835accefffe008f5"
+                    ]
+                ],
+                "ptms": [
+                    [
+                        {
+                            "id": "test"
+                        },
+                        "test_ptm.tsv:md5,4130000fc28fb0ad4663e20759001db3"
+                    ]
+                ],
+                "raw": [
+                    [
+                        "cite.bibtex:md5,271ade47eec3d1963f498d79bd51f0dd",
+                        "config.json:md5,a46fb6635fc207529ed42316c4af8747",
+                        "log.txt:md5,94f76fe3154be6713b4a79fa42830a04",
+                        "test.a3m:md5,74eb64ef8ab1ad918e3b9826c53d5c44",
+                        "test.done.txt:md5,d41d8cd98f00b204e9800998ecf8427e",
+                        "test_coverage.png:md5,833c3ce2ecd5c004733153a84b2497c1",
+                        "test_pae.png:md5,4a72cd02383b54f26ee0ea546acde474",
+                        "test_plddt.png:md5,e6033063d5ed7dcf5ce6601fecbe2067",
+                        "test_predicted_aligned_error_v1.json:md5,2e233848a7e0bf1e1ff7a0d2f53cd24b",
+                        "test_scores_rank_001_alphafold2_ptm_model_3_seed_000.json:md5,0a7f6fda29b485cf25514e9cb1caaccf",
+                        "test_unrelaxed_rank_001_alphafold2_ptm_model_3_seed_000.pdb:md5,572cd24589723ca8835accefffe008f5"
+                    ]
+                ],
+                "top_ranked_pdb": [
+                    [
+                        {
+                            "id": "test"
+                        },
+                        "test_colabfold.pdb:md5,572cd24589723ca8835accefffe008f5"
+                    ]
+                ]
+            }
+        ],
+        "timestamp": "2026-07-15T21:12:00.385663338",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.6"
+        }
+    }
+}
