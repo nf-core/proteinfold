@@ -31,6 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[PR #636](https://github.com/nf-core/proteinfold/pull/636)] - Resolve alphafold2 `ext.args` in closure.
 - [[#365](https://github.com/nf-core/proteinfold/issues/365)] - Run nf-tests with module containers so captured versions match.
 - [[PR #640](https://github.com/nf-core/proteinfold/pull/640)] - Fix ro-crate with correct path to the metro map file.
+- [[PR #631](https://github.com/nf-core/proteinfold/pull/631)] - Add module tests for Boltz input conversion, MSA splitting, and ColabFold MMseqs search.
 
 | Old parameter              | New parameter   |
 | -------------------------- | --------------- |
