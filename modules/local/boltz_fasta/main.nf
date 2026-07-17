@@ -11,7 +11,7 @@ process BOLTZ_FASTA {
     tuple val(meta), path(fasta)
 
     output:
-    tuple val(meta), path ("output_fasta/*.fasta"), path(msa), emit: formatted_fasta
+    tuple val(meta), path ("output_fasta/*.fasta"), emit: formatted_fasta
     tuple val("${task.process}"), val('python'), eval("python3 --version | sed 's/Python //g'"), emit: versions_python, topic: versions
 
     when:
@@ -20,7 +20,7 @@ process BOLTZ_FASTA {
     script:
     def args = task.ext.args ?: ''
     """
-    fasta_to_boltz.py ${fasta} ${meta.id} ${msa_files}
+    fasta_to_boltz.py ${fasta} ${meta.id}
     """
 
     stub:
