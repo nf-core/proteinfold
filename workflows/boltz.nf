@@ -60,7 +60,6 @@ workflow BOLTZ {
 
     // Accept input FASTA and prepare input in Boltz YAML format
     BOLTZ_FASTA(ch_boltz_fasta_input)
-    ch_versions = ch_versions.mix(BOLTZ_FASTA.out.versions)
 
     // Downstream operations are independent of original input type
     BOLTZ_FASTA.out.boltz_yaml
@@ -78,9 +77,21 @@ workflow BOLTZ {
                 ch_uniref30
         )
 
+        // TODO: doing this to make DSL2 linkt happy. Wiring the MSA in seemed to be missing but I haven't studied the logic -KR
+        MMSEQS_COLABFOLDSEARCH.out.msa.set { ch_split_msa_input }
+
         SPLIT_MSA(
             ch_split_msa_input
         )
+
+        // TODO: linter complains if a channel not used in the following path. So using this LLM to set ch_input
+        ch_boltz_yaml_input
+        .branch { meta, yaml ->
+            monomer : !(meta.containsKey('multimer') && meta.multimer)
+            multimer:  (meta.containsKey('multimer') && meta.multimer)
+        }
+        .set { ch_input }
+
         ch_input.monomer
             .join(SPLIT_MSA.out.msa_csv)
             .mix(
