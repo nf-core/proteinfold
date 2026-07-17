@@ -73,44 +73,44 @@ workflow ALPHAFOLD3 {
     )
 
     // Convert models mmcifs to pdbs
-    MMCIF2PDB_MODELS (
-        RUN_ALPHAFOLD3
-            .out
-            .cif
-            .groupTuple()
-            .map {
-                meta, files ->
-                [ meta, files.flatten() ]
-            }
-    )
+    //MMCIF2PDB_MODELS (
+    //    RUN_ALPHAFOLD3
+    //      .out
+    //      .cif
+    //      .groupTuple()
+    //      .map {
+    //          meta, files ->
+    //          [ meta, files.flatten() ]
+    //      }
+    //)
 
-    MMCIF2PDB_MODELS
-        .out
-        .pdb
-        .map { it ->
-            def meta   = it[0].clone();
-            meta.model = "alphafold3";
-            def files = (it[1] instanceof List) ? it[1] : [ it[1] ]
-            [ meta, files ]
-        }
-        .set { ch_structure_final }
+  //MMCIF2PDB_MODELS
+  //    .out
+  //    .pdb
+  //    .map { it ->
+  //        def meta   = it[0].clone();
+  //        meta.model = "alphafold3";
+  //        def files = (it[1] instanceof List) ? it[1] : [ it[1] ]
+  //        [ meta, files ]
+  //    }
+  //    .set { ch_structure_final }
 
     // Convert top ranked mmcif to pdb
-    MMCIF2PDB_TOP_RANKED (
-        RUN_ALPHAFOLD3
-            .out
-            .top_ranked_cif
-    )
+ // MMCIF2PDB_TOP_RANKED (
+ //     RUN_ALPHAFOLD3
+ //         .out
+ //         .top_ranked_cif
+ // )
 
-    MMCIF2PDB_TOP_RANKED
-        .out
-        .pdb
-        .map { it ->
-            def meta = it[0].clone();
-            meta.model = "alphafold3";
-            [ meta, it[1] ]
-        }
-        .set { ch_top_ranked_structure }
+ // MMCIF2PDB_TOP_RANKED
+ //     .out
+ //     .pdb
+ //     .map { it ->
+ //         def meta = it[0].clone();
+ //         meta.model = "alphafold3";
+ //         [ meta, it[1] ]
+ //     }
+ //     .set { ch_top_ranked_structure }
 
     // Prepare msa input
     RUN_ALPHAFOLD3_INFERENCE
