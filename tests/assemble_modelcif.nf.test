@@ -6,9 +6,6 @@ nextflow_process {
 
     tag "assemble_modelcif"
     config "./assemble_modelcif_software.config"
-    params [
-      outdir = "$outputDir"
-    ]
 
     def assertModelcifOutput = { proc, modelcifPath, expectEmbeddedPAE, expectBinaryCIF ->
         assert proc.success
@@ -103,6 +100,9 @@ nextflow_process {
     test("dummy inputs produce modelcif with associated PAE") {
 
         when {
+          params {
+            outdir = "$outputDir"
+          }
             process {
                 """
                 input[0] = [
@@ -132,6 +132,9 @@ nextflow_process {
         config "./assemble_modelcif_embed.config"
 
         when {
+          params {
+            outdir = "$outputDir"
+          }
             process {
                 """
                 input[0] = [
@@ -163,6 +166,9 @@ nextflow_process {
         config "./assemble_modelcif_binary.config"
 
         when {
+          params {
+            outdir = "$outputDir"
+          }
             process {
                 """
                 input[0] = [
@@ -192,6 +198,9 @@ nextflow_process {
         config "./assemble_modelcif_all_structs.config"
 
         when {
+          params {
+            outdir = "$outputDir"
+          }
             process {
                 """
                 input[0] = [
