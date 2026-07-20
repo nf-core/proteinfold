@@ -586,7 +586,7 @@ workflow NFCORE_PROTEINFOLD {
         [m] + tupleData.drop(1)
     }
 
-    // Apease the nextflow linter by providing empty channels for signature before a simplified reporting refactor (proposing #574)
+    // Appease the nextflow linter by providing empty channels for signature before a simplified reporting refactor (proposing #574)
     ch_multiqc_config              = Channel.empty()
     ch_multiqc_custom_config       = Channel.empty()
     ch_multiqc_methods_description = Channel.empty()

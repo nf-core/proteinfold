@@ -124,8 +124,8 @@ PY
     mkdir -p raw
     touch "${meta.id}_rosettafold2na.pdb"
     touch raw/model_00.pdb
+    touch "${meta.id}_0_pae.tsv"
     touch "${meta.id}_plddt_mqc.tsv"
     touch "${meta.id}_rosettafold2na_msa.tsv"
-    touch "${meta.id}_0_pae.tsv"
     """
 }
