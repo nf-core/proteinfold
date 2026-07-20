@@ -6,7 +6,9 @@ nextflow_process {
 
     tag "modelcif_sw_entries"
     config "./assemble_modelcif_software.config"
-    outdir = "tests/results/modelcif_sw_entries"
+    params [
+      outdir = "results"
+    ]
 
     test("dummy inputs include model software and software groups") {
 

@@ -6,7 +6,9 @@ nextflow_process {
 
     tag "assemble_modelcif"
     config "./assemble_modelcif_software.config"
-    outdir = "tests/results/modelcif_validate"
+    params [
+      outdir = "results"
+    ]
 
     def assertModelcifOutput = { proc, modelcifPath, expectEmbeddedPAE, expectBinaryCIF ->
         assert proc.success
