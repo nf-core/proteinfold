@@ -32,7 +32,7 @@ nextflow_process {
         then {
             assert process.success
             assert file("$outputDir/modelcif_sw_entries/versions.yml").exists()
-            snapshot(file("$outputDir/modelcif_sw_entries/versions.yml")).match() 
+            snapshot(file("$outputDir/modelcif_sw_entries/versions.yml")).match()
             assert process.out.modelcif.size() == 1
 
             def modelcifPath = path(process.out.modelcif[0][1])

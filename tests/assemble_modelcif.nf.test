@@ -123,7 +123,7 @@ nextflow_process {
             def modelcifPath = path(process.out.modelcif[0][1])
             assertModelcifOutput(process, modelcifPath, false, false)
             assertVersionsOutput(process)
-            assert file("$outputDir/assemble_modelcif/versions.yml").exists() 
+            assert file("$outputDir/assemble_modelcif/versions.yml").exists()
             snapshot(file("$outputDir/assemble_modelcif/versions.yml")).match()
         }
     }
@@ -155,8 +155,8 @@ nextflow_process {
             def modelcifPath = path(process.out.modelcif[0][1])
             assertModelcifOutput(process, modelcifPath, true, false)
             assertVersionsOutput(process)
-            assert file("$outputDir/assemble_modelcif/versions.yml").exists() 
-            snapshot(file("$outputDir/assemble_modelcif/versions.yml")).match() 
+            assert file("$outputDir/assemble_modelcif/versions.yml").exists()
+            snapshot(file("$outputDir/assemble_modelcif/versions.yml")).match()
 
 
         }
@@ -189,7 +189,7 @@ nextflow_process {
             def modelcifPath = path(process.out.modelcif[0][1])
             assertModelcifOutput(process, modelcifPath, false, true)
             assertVersionsOutput(process)
-            assert file("$outputDir/assemble_modelcif/versions.yml").exists() 
+            assert file("$outputDir/assemble_modelcif/versions.yml").exists()
             snapshot(file("$outputDir/assemble_modelcif/versions.yml")).match()
         }
     }

@@ -39,7 +39,7 @@ nextflow_process {
                 { assert process.success },
                 { assertVersionsOutput(process) },
                 { assert file("$outputDir/modelcif_validate/versions.yml").exists() },
-                { snapshot(file("$outputDir/modelcif_validate/versions.yml")).match() }   
+                { snapshot(file("$outputDir/modelcif_validate/versions.yml")).match() }
             )
         }
     }
@@ -62,7 +62,7 @@ nextflow_process {
                 { assert process.success },
                 { assertVersionsOutput(process) },
                 { assert file("$outputDir/modelcif_validate/versions.yml").exists() },
-                { snapshot(file("$outputDir/modelcif_validate/versions.yml")).match() }   
+                { snapshot(file("$outputDir/modelcif_validate/versions.yml")).match() }
             )
         }
     }
