@@ -33,6 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[PR #640](https://github.com/nf-core/proteinfold/pull/640)] - Fix ro-crate with correct path to the metro map file.
 - [[PR #631](https://github.com/nf-core/proteinfold/pull/631)] - Add module tests for Boltz input conversion, MSA splitting, and ColabFold MMseqs search.
 - [[PR #632](https://github.com/nf-core/proteinfold/pull/632)] - Add GPU actions workflow and RUN_BOLTZ module test.
+- [[PR #641](https://github.com/nf-core/proteinfold/pull/641)] - Stabilise GPU nf-test snapshots and set a deterministic test random seed.
 
 | Old parameter              | New parameter   |
 | -------------------------- | --------------- |
