@@ -26,7 +26,7 @@ nextflow_process {
         when {
             process {
                 """
-                outdir = "$outputDir" 
+                outdir = "$outputDir"
                 input[0] = [ [ id: 'test' ], file("$projectDir/assets/DUMMY_MODELCIF.mmcif", checkIfExists: true) ]
                 """
             }
@@ -42,7 +42,7 @@ nextflow_process {
         when {
             process {
                 """
-                outdir = "$outputDir" 
+                outdir = "$outputDir"
                 input[0] = [ [ id: 'real' ], file("$projectDir/assets/ma-atiya1-gk-01-AUGMENTED.cif", checkIfExists: true) ]
                 """
             }
