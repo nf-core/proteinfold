@@ -1,4 +1,4 @@
-nextflow_process {
+xtflow_process {
 
     name "Test Process CIFCHECK"
     script "../modules/local/cifcheck/main.nf"
@@ -26,7 +26,7 @@ nextflow_process {
         when {
             process {
                 """
-                params.outdir = "${launchDir}/.nf-test.out"
+                params.outdir = "${launchDir}/.nf-test/results"
                 input[0] = [ [ id: 'test' ], file("$projectDir/assets/DUMMY_MODELCIF.mmcif", checkIfExists: true) ]
                 """
             }
@@ -42,6 +42,7 @@ nextflow_process {
         when {
             process {
                 """
+                params.outdir = "${launchDir}/.nf-test/results"
                 input[0] = [ [ id: 'real' ], file("$projectDir/assets/ma-atiya1-gk-01-AUGMENTED.cif", checkIfExists: true) ]
                 """
             }
@@ -50,7 +51,9 @@ nextflow_process {
         then {
             assertAll(
                 { assert process.success },
-                { assertVersionsOutput(process) }
+                { assertVersionsOutput(process) },
+                { assert file("${params.outdir}/cifcheck/versions.yml").exists() },
+                { snapshot(file("${params.outdir}/cifcheck/versions.yml")).match() }
             )
         }
     }

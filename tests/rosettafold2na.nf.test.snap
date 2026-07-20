@@ -2,7 +2,6 @@
     "-profile test_rosettafold2na": {
         "content": [
             4,
-<<<<<<< HEAD
             {
                 "GENERATE_REPORT": {
                     "python": "3.12.7",
@@ -19,8 +18,6 @@
                     "nf-core/proteinfold": "v2.1.0dev"
                 }
             },
-=======
->>>>>>> d0f9565f (Add the named _msa.tsv from contemporary approach to the RF2NA stub)
             [
                 "multiqc",
                 "multiqc/multiqc_data",
@@ -53,17 +50,10 @@
                 "rna_complex.pdb:md5,d41d8cd98f00b204e9800998ecf8427e"
             ]
         ],
-<<<<<<< HEAD
-        "timestamp": "2026-05-29T12:04:34.383277932",
-        "meta": {
-            "nf-test": "0.9.5",
-            "nextflow": "26.04.0"
-=======
         "timestamp": "2026-05-26T11:01:47.404736173",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.04.2"
->>>>>>> d0f9565f (Add the named _msa.tsv from contemporary approach to the RF2NA stub)
         }
     }
 }
