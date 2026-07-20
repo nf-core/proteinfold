@@ -8,7 +8,7 @@ nextflow_process {
     params [
       outdir = "results"
     ]
-  
+
 
     def assertVersionsOutput = { proc ->
         def versionChannels = proc.out.findAll { key, _ -> key.startsWith('versions') }
