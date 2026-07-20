@@ -77,35 +77,9 @@ def getWorkflowVersion() {
 //
 // Get software versions for pipeline
 //
-def processVersionsFromYAML(version_entry) {
-    if (version_entry instanceof List && version_entry.size() >= 3) {
-        def process_name = version_entry[0].toString().tokenize(':')[-1]
-        def tool_name = version_entry[1].toString()
-        def tool_version = version_entry[2].toString()
-
-        return """
-        ${process_name}:
-            ${tool_name}: ${tool_version}
-        """.stripIndent().trim()
-    }
-
-    def yaml_text
-    if (version_entry instanceof CharSequence) {
-        yaml_text = version_entry.toString()
-    } else {
-        try {
-            yaml_text = version_entry.text
-        } catch (Exception ignored) {
-            yaml_text = version_entry.toString()
-        }
-    }
-
+def processVersionsFromYAML(yaml_file) {
     def yaml = new org.yaml.snakeyaml.Yaml()
-    def loaded = yaml.load(yaml_text)
-    if (!(loaded instanceof Map)) {
-        throw new IllegalArgumentException("Unsupported version entry type: ${version_entry?.getClass()?.getName()}")
-    }
-    def versions = loaded.collectEntries { k, v -> [k.toString().tokenize(':')[-1], v] }
+    def versions = yaml.load(yaml_file).collectEntries { k, v -> [k.tokenize(':')[-1], v] }
     return yaml.dumpAsMap(versions).trim()
 }
 
