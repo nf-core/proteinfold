@@ -4,8 +4,8 @@ process FASTA2YAML {
 
     conda "${moduleDir}/environment.yml"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/python:3.8.3' :
-        'biocontainers/python:3.8.3' }"
+        'https://depot.galaxyproject.org/singularity/python:3.14' :
+        'biocontainers/python:3.14' }"
 
     input:
     tuple val(meta), path(fasta)
@@ -13,7 +13,7 @@ process FASTA2YAML {
     output:
     tuple val(meta), path ("*.yaml"), emit: yaml
     tuple val(meta), path ("out_fasta/*.fasta"), emit: fasta
-    path "versions.yml"        , emit: versions
+    tuple val("${task.process}"), val('python'), eval("python3 --version | sed 's/Python //g'"), emit: versions_python, topic: versions
 
     when:
     task.ext.when == null || task.ext.when
@@ -21,11 +21,6 @@ process FASTA2YAML {
     script:
     """
     fasta_to_yaml.py ${fasta} ${meta.id}
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        python: \$(python3 --version | sed 's/Python //g')
-    END_VERSIONS
     """
 
     stub:
@@ -34,10 +29,5 @@ process FASTA2YAML {
     mkdir out_fasta
     touch "out_fasta/A.fasta"
     touch "out_fasta/B.fasta"
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        python: \$(python3 --version | sed 's/Python //g')
-    END_VERSIONS
     """
 }

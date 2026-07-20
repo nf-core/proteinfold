@@ -16,7 +16,8 @@ process DOWNLOAD_PDBMMCIF {
 
     output:
     path ('mmcif_files'), emit: ch_db
-    path "versions.yml" , emit: versions
+    tuple val("${task.process}"), val('sed'), eval('sed --version 2>&1 | head -1 | sed "s/^.*GNU sed) //; s/ .*$//"'), emit: versions_sed, topic: versions
+    tuple val("${task.process}"), val('rsync'), eval('rsync --version | head -1 | sed "s/^rsync  version //; s/  protocol version [[:digit:]]*//"'), emit: versions_rsync, topic: versions
 
     when:
     task.ext.when == null || task.ext.when
@@ -51,23 +52,11 @@ process DOWNLOAD_PDBMMCIF {
 
     # Delete empty download directory structure.
     find ./raw -type d -empty -delete
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        sed: \$(echo \$(sed --version 2>&1) | head -1 | sed 's/^.*GNU sed) //; s/ .*\$//')
-        rsync: \$(rsync --version | head -1 | sed 's/^rsync  version //; s/  protocol version [[:digit:]]*//')
-    END_VERSIONS
     """
 
     stub:
     """
     touch obsolete.dat
     mkdir mmcif_files
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        sed: \$(echo \$(sed --version 2>&1) | head -1 | sed 's/^.*GNU sed) //; s/ .*\$//')
-        rsync: \$(rsync --version | head -1 | sed 's/^rsync  version //; s/  protocol version [[:digit:]]*//')
-    END_VERSIONS
     """
 }

@@ -1,0 +1,106 @@
+nextflow_process {
+
+    name "Test Process MODELCIF_VALIDATE"
+    script "../modules/local/modelcif_validate/main.nf"
+    process "MODELCIF_VALIDATE"
+
+    tag "modelcif_validate"
+
+    def assertVersionsOutput = { proc ->
+        def versionChannels = proc.out.findAll { key, _ -> key.startsWith('versions') }
+        assert versionChannels.size() >= 2
+
+        def versions = versionChannels.collectMany { _, rows -> rows }
+        assert versions.size() >= 2
+
+        def tools = versions.collect { it[1] } as Set
+        assert tools.containsAll(['modelcif', 'python'])
+
+        assert versions.every { row ->
+            row[0] == 'MODELCIF_VALIDATE' && row[2] != null && row[2].toString().trim()
+        }
+    }
+
+    test("dummy modelcif") {
+
+        when {
+          params {
+            outdir = "$outputDir"
+          }
+            process {
+                """
+                input[0] = [ [ id: 'test' ], file("$projectDir/assets/DUMMY_MODELCIF.mmcif", checkIfExists: true) ]
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                { assertVersionsOutput(process) },
+                { assert file("$outputDir/modelcif_validate/versions.yml").exists() },
+                { snapshot(file("$outputDir/modelcif_validate/versions.yml")).match() }
+            )
+        }
+    }
+
+    test("real modelarchive file (augmented)") {
+
+        when {
+          params {
+            outdir = "$outputDir"
+          }
+            process {
+                """
+                input[0] = [ [ id: 'real' ], file("$projectDir/assets/ma-atiya1-gk-01-AUGMENTED.cif", checkIfExists: true) ]
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                { assertVersionsOutput(process) },
+                { assert file("$outputDir/modelcif_validate/versions.yml").exists() },
+                { snapshot(file("$outputDir/modelcif_validate/versions.yml")).match() }
+            )
+        }
+    }
+
+    test("rejects plain pdbx without ma content") {
+
+        when {
+          params {
+            outdir = "$outputDir"
+          }
+            process {
+                """
+                input[0] = [ [ id: 'pdbx' ], file("$projectDir/assets/DUMMY_PDBX.mmcif", checkIfExists: true) ]
+                """
+            }
+        }
+
+        then {
+            assert process.failed
+        }
+    }
+
+    test("rejects invalid mmcif") {
+
+        when {
+          params {
+            outdir = "$outputDir"
+          }
+            process {
+                """
+                input[0] = [ [ id: 'invalid' ], file("$projectDir/assets/DUMMY_INVALID.mmcif", checkIfExists: true) ]
+                """
+            }
+        }
+
+        then {
+            assert process.failed
+        }
+    }
+
+}

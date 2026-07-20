@@ -12,7 +12,7 @@ process ZSTD_DECOMPRESS {
 
     output:
     tuple val(meta), path("$prefix"), emit: decompressed
-    path "versions.yml"             , emit: versions
+    tuple val("${task.process}"), val('zstd'), eval('zstd --version 2>&1 | grep -oP "v\\d+\\.\\d+\\.\\d+"'), emit: versions_zstd, topic: versions
 
     when:
     task.ext.when == null || task.ext.when
@@ -25,21 +25,11 @@ process ZSTD_DECOMPRESS {
         --decompress \\
         $args \\
         $archive
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        zstd: \$(echo \$(zstd --version 2>&1) | grep -o 'v[0-9]\\+\\.[0-9]\\+\\.[0-9]\\+')
-    END_VERSIONS
     """
 
     stub:
     prefix   = task.ext.prefix ?: ( meta.id ? "${meta.id}" : archive.baseName.toString().replaceFirst(/\.zst$/, ""))
     """
     touch ${prefix}
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        zstd: \$(echo \$(zstd --version 2>&1) | grep -o 'v[0-9]\\+\\.[0-9]\\+\\.[0-9]\\+')
-    END_VERSIONS
     """
 }

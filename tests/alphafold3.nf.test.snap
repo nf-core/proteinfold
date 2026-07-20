@@ -1,33 +1,7 @@
 {
     "-profile test_alphafold3_standard": {
         "content": [
-            9,
-            {
-                "FASTA_TO_ALPHAFOLD3_JSON": {
-                    "python": "3.13.7"
-                },
-                "GENERATE_REPORT": {
-                    "python": "3.12.7",
-                    "generate_report.py": "Python 3.12.7"
-                },
-                "RUN_ALPHAFOLD3_DATAPIPELINE": {
-                    "python": "3.11.12",
-                    "alphafold3": "unknown",
-                    "hmmer": 3.4
-                },
-                "RUN_ALPHAFOLD3_INFERENCE": {
-                    "python": "3.11.12",
-                    "alphafold3": "unknown",
-                    "jax": "0.4.34",
-                    "jaxlib": "0.4.34",
-                    "numpy": "2.1.3",
-                    "biopython": 1.85,
-                    "rdkit": "2024.03.5"
-                },
-                "Workflow": {
-                    "nf-core/proteinfold": "v2.1.0dev"
-                }
-            },
+            13,
             [
                 "alphafold3",
                 "alphafold3/T1024",
@@ -54,10 +28,23 @@
                 "alphafold3/T1026/paes/T1026_0_pae.tsv",
                 "alphafold3/top_ranked_structures",
                 "alphafold3/top_ranked_structures/T1024.cif",
+                "alphafold3/top_ranked_structures/T1024.pdb",
                 "alphafold3/top_ranked_structures/T1026.cif",
+                "alphafold3/top_ranked_structures/T1026.pdb",
                 "fasta",
                 "fasta/T1024.json",
                 "fasta/T1026.json",
+                "mmcif2pdb",
+                "mmcif2pdb/T1024_ranked_1.cif.pdb",
+                "mmcif2pdb/T1024_ranked_2.cif.pdb",
+                "mmcif2pdb/T1024_ranked_3.cif.pdb",
+                "mmcif2pdb/T1024_ranked_4.cif.pdb",
+                "mmcif2pdb/T1024_ranked_5.cif.pdb",
+                "mmcif2pdb/T1026_ranked_1.cif.pdb",
+                "mmcif2pdb/T1026_ranked_2.cif.pdb",
+                "mmcif2pdb/T1026_ranked_3.cif.pdb",
+                "mmcif2pdb/T1026_ranked_4.cif.pdb",
+                "mmcif2pdb/T1026_ranked_5.cif.pdb",
                 "multiqc",
                 "multiqc/multiqc_data",
                 "multiqc/multiqc_data/.stub",
@@ -65,10 +52,8 @@
                 "multiqc/multiqc_plots/.stub",
                 "multiqc/multiqc_report.html",
                 "pipeline_info",
-                "pipeline_info/nf_core_proteinfold_software_mqc_versions.yml",
                 "reports",
-                "reports/T1024_alphafold3_report.html",
-                "reports/T1026_alphafold3_report.html"
+                "reports/test_alphafold2_report.html"
             ],
             [
                 "T1024_alphafold3_msa.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
@@ -90,19 +75,30 @@
                 "T1026_ptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1026_0_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1024.cif:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1024.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1026.cif:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1026.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1024.json:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1026.json:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1024_ranked_1.cif.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1024_ranked_2.cif.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1024_ranked_3.cif.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1024_ranked_4.cif.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1024_ranked_5.cif.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1026_ranked_1.cif.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1026_ranked_2.cif.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1026_ranked_3.cif.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1026_ranked_4.cif.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1026_ranked_5.cif.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
                 ".stub:md5,d41d8cd98f00b204e9800998ecf8427e",
                 ".stub:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "T1024_alphafold3_report.html:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "T1026_alphafold3_report.html:md5,d41d8cd98f00b204e9800998ecf8427e"
+                "test_alphafold2_report.html:md5,d41d8cd98f00b204e9800998ecf8427e"
             ]
         ],
-        "timestamp": "2026-05-29T12:02:22.195461228",
+        "timestamp": "2026-05-26T16:11:56.123456",
         "meta": {
             "nf-test": "0.9.5",
-            "nextflow": "26.04.0"
+            "nextflow": "25.10.4"
         }
     }
 }

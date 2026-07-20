@@ -25,7 +25,6 @@ workflow PREPARE_COLABFOLD_DBS {
     ch_params       = channel.empty()
     ch_colabfold_db = channel.empty()
     ch_uniref30     = channel.empty()
-    ch_versions     = channel.empty()
 
     if (colabfold_db) {
         ch_params = channel.value(files(colabfold_alphafold2_params_path,  type: 'any', checkIfExists: true))
@@ -46,13 +45,10 @@ workflow PREPARE_COLABFOLD_DBS {
                             dir -> dir.listFiles().findAll { it -> it.isFile() }
                         }
 
-        ch_versions = ch_versions.mix(ARIA2_COLABFOLD_PARAMS.out.versions)
-
         if (!use_msa_server) {
             ARIA2_COLABFOLD_DB (
                 colabfold_db_link
             )
-            ch_versions = ch_versions.mix(ARIA2_COLABFOLD_DB.out.versions)
 
             ch_colabfold_db = ARIA2_COLABFOLD_DB.out.db
 
@@ -70,7 +66,6 @@ workflow PREPARE_COLABFOLD_DBS {
                                     .map { _meta, dir ->
                                         files("${dir}/*")
                                     }
-                ch_versions = ch_versions.mix(MMSEQS_CREATEINDEX_COLABFOLDDB.out.versions)
 
             } else {
                 ch_colabfold_db = ch_colabfold_db
@@ -82,8 +77,6 @@ workflow PREPARE_COLABFOLD_DBS {
             ARIA2_UNIREF30(
                 colabfold_uniref30_link
             )
-            ch_versions = ch_versions.mix(ARIA2_UNIREF30.out.versions)
-
             ch_uniref30 = ARIA2_UNIREF30.out.db
 
             if (colabfold_create_index) {
@@ -100,7 +93,6 @@ workflow PREPARE_COLABFOLD_DBS {
                                 .map { _meta, dir ->
                                     files("${dir}/*")
                                 }
-                ch_versions = ch_versions.mix(MMSEQS_CREATEINDEX_UNIPROT30.out.versions)
 
             } else {
                 ch_uniref30 = ch_uniref30
@@ -115,5 +107,4 @@ workflow PREPARE_COLABFOLD_DBS {
     params       = ch_params
     colabfold_db = ch_colabfold_db
     uniref30     = ch_uniref30
-    versions     = ch_versions
 }

@@ -28,7 +28,6 @@ workflow HELIXFOLD3 {
 
     take:
     ch_samplesheet
-    ch_versions                    // channel: [ path(versions.yml) ]
     uniref30_prefix                //  string: Prefix for uniref30 database files
     ch_helixfold3_uniclust30       // channel: path(uniclust30)
     ch_helixfold3_ccd_preprocessed // channel: path(ccd_preprocessed)
@@ -88,7 +87,6 @@ workflow HELIXFOLD3 {
         .set { ch_multiqc_report }
 
     ch_pdb      = ch_pdb.mix(RUN_HELIXFOLD3.out.pdb)
-    ch_versions = ch_versions.mix(RUN_HELIXFOLD3.out.versions)
 
     RUN_HELIXFOLD3
         .out
@@ -128,7 +126,6 @@ workflow HELIXFOLD3 {
     chainwise_iptm = ch_chainwise_iptm_final // channel: [ id, /path/to/*_chainwise_iptm.tsv ]
     chainwise_ipsae = ch_chainwise_ipsae_final // channel: [ id, /path/to/*_chainwise_ipsae.tsv ]
     multiqc_report = ch_multiqc_report // channel: /path/to/multiqc_report.html
-    versions       = ch_versions       // channel: [ path(versions.yml) ]
 }
 
 /*

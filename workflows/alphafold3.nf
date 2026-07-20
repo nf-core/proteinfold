@@ -27,7 +27,6 @@ workflow ALPHAFOLD3 {
 
     take:
     ch_samplesheet       // channel: samplesheet read in from --input
-    ch_versions          // channel: [ path(versions.yml) ]
     ch_alphafold3_params // channel: path(alphafold3_params)
     ch_small_bfd         // channel: path(small_bfd)
     ch_mgnify            // channel: path(mgnify)
@@ -49,7 +48,6 @@ workflow ALPHAFOLD3 {
     }.set { ch_input_by_ext }
 
     FASTA_TO_ALPHAFOLD3_JSON(ch_input_by_ext.fasta)
-    ch_versions = ch_versions.mix(FASTA_TO_ALPHAFOLD3_JSON.out.versions)
 
     ch_json = ch_input_by_ext.json.mix(FASTA_TO_ALPHAFOLD3_JSON.out.json)
 
@@ -65,7 +63,6 @@ workflow ALPHAFOLD3 {
         ch_pdb_seqres,
         ch_uniprot
     )
-    ch_versions = ch_versions.mix(RUN_ALPHAFOLD3_DATAPIPELINE.out.versions)
 
     //
     // MODULE: Run AlphaFold3 inference using pre-computed data JSON
@@ -74,31 +71,46 @@ workflow ALPHAFOLD3 {
         RUN_ALPHAFOLD3_DATAPIPELINE.out.data_json,
         ch_alphafold3_params
     )
-    ch_versions = ch_versions.mix(RUN_ALPHAFOLD3_INFERENCE.out.versions)
 
-    // Prepare model mmCIFs for visualisation reports
-    RUN_ALPHAFOLD3_INFERENCE
-        .out
-        .cif
-        .groupTuple()
-        .map {
-            meta, files ->
-            def report_meta   = meta.clone();
-            report_meta.model = "alphafold3";
-            [ report_meta, files.flatten() ]
-        }
-        .set { ch_structure_final }
+    // Convert models mmcifs to pdbs
+    //MMCIF2PDB_MODELS (
+    //    RUN_ALPHAFOLD3
+    //      .out
+    //      .cif
+    //      .groupTuple()
+    //      .map {
+    //          meta, files ->
+    //          [ meta, files.flatten() ]
+    //      }
+    //)
 
-    // Prepare top ranked mmCIF for post-processing
-    RUN_ALPHAFOLD3_INFERENCE
-        .out
-        .top_ranked_cif
-        .map { it ->
-            def meta = it[0].clone();
-            meta.model = "alphafold3";
-            [ meta, it[1] ]
-        }
-        .set { ch_top_ranked_structure }
+  //MMCIF2PDB_MODELS
+  //    .out
+  //    .pdb
+  //    .map { it ->
+  //        def meta   = it[0].clone();
+  //        meta.model = "alphafold3";
+  //        def files = (it[1] instanceof List) ? it[1] : [ it[1] ]
+  //        [ meta, files ]
+  //    }
+  //    .set { ch_structure_final }
+
+    // Convert top ranked mmcif to pdb
+ // MMCIF2PDB_TOP_RANKED (
+ //     RUN_ALPHAFOLD3
+ //         .out
+ //         .top_ranked_cif
+ // )
+
+ // MMCIF2PDB_TOP_RANKED
+ //     .out
+ //     .pdb
+ //     .map { it ->
+ //         def meta = it[0].clone();
+ //         meta.model = "alphafold3";
+ //         [ meta, it[1] ]
+ //     }
+ //     .set { ch_top_ranked_structure }
 
     // Prepare msa input
     RUN_ALPHAFOLD3_INFERENCE
@@ -182,8 +194,7 @@ workflow ALPHAFOLD3 {
     ipsae           = ch_ipsae_final           // channel: [ meta, path/to/*_ipsae.tsv ]
     chainwise_iptm  = ch_chainwise_iptm_final  // channel: [ meta, path/to/*_chainwise_iptm.tsv ]
     chainwise_ipsae = ch_chainwise_ipsae_final // channel: [ meta, path/to/*_chainwise_ipsae.tsv ]
-    multiqc_report  = ch_multiqc_report        // channel: /path/to/multiqc_report.html
-    versions        = ch_versions              // channel: [ path(versions.yml) ]
+    multiqc_report = ch_multiqc_report // channel: /path/to/multiqc_report.html
 }
 
 /*

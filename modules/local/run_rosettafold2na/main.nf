@@ -23,7 +23,8 @@ process RUN_ROSETTAFOLD2NA {
     tuple val(meta), path("${meta.id}_plddt_mqc.tsv")         , emit: multiqc
     tuple val(meta), path("${meta.id}_rosettafold2na_msa.tsv"), emit: msa
     tuple val(meta), path("${meta.id}_0_pae.tsv")             , emit: pae
-    path "versions.yml"                                       , emit: versions
+    tuple val("${task.process}"), val('python'), eval("python3 --version | sed 's/Python //g'"), emit: versions_python, topic: versions
+    tuple val("${task.process}"), val('rosettafold2na'), val('v0.2'), emit: versions_rosettafold2na, topic: versions
 
     when:
     task.ext.when == null || task.ext.when
@@ -41,7 +42,6 @@ process RUN_ROSETTAFOLD2NA {
         ln -s /app/RoseTTAFold2NA/run_RF2NA.sh ./
         mkdir ./input_prep
         ln -s /app/RoseTTAFold2NA/input_prep/* ./input_prep
-        ln -s /app/RoseTTAFold2NA/network/* ./network
     fi
 
     # RF2NA hard-codes the UniRef30_2020_06 database prefix. Allow a staged
@@ -116,12 +116,6 @@ PY
 
     ## Move rf2na output directory to raw for save_intermediates
     mv ${meta.id}_rf2na_output/* raw/
-
-cat <<-END_VERSIONS > versions.yml
-"${task.process}":
-    python: \$(python3 --version | sed 's/Python //g')
-    rosettafold2na: "${VERSION}"
-END_VERSIONS
     """
 
     stub:
@@ -131,13 +125,7 @@ END_VERSIONS
     touch "${meta.id}_rosettafold2na.pdb"
     touch raw/model_00.pdb
     touch "${meta.id}_plddt_mqc.tsv"
-    touch "${meta.id}_0_pae.tsv"
     touch "${meta.id}_rosettafold2na_msa.tsv"
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        python: \$(python3 --version 2>/dev/null | sed 's/Python //g' || echo "unknown")
-        rosettafold2na: "${VERSION}"
-    END_VERSIONS
+    touch "${meta.id}_0_pae.tsv"
     """
 }

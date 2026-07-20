@@ -7,7 +7,6 @@
 //
 include { paramsSummaryMap       } from 'plugin/nf-schema'
 include { paramsSummaryMultiqc   } from '../nf-core/utils_nfcore_pipeline'
-include { softwareVersionsToYAML } from '../nf-core/utils_nfcore_pipeline'
 include { methodsDescriptionText } from './utils_nfcore_proteinfold_pipeline'
 
 include { GENERATE_REPORT     } from '../../modules/local/generate_report'
@@ -29,7 +28,6 @@ workflow POST_PROCESSING {
     foldseek_db_path
     skip_multiqc
     outdir
-    ch_versions
     ch_multiqc_rep
     ch_multiqc_config
     ch_multiqc_custom_config
@@ -46,7 +44,6 @@ workflow POST_PROCESSING {
             ch_report_input,
             ch_report_template
         )
-        ch_versions = ch_versions.mix(GENERATE_REPORT.out.versions)
 
         if (requested_modes_size > 1){
             def dummy_file = file("$projectDir/assets/NO_FILE", checkIfExists: true)
@@ -91,7 +88,6 @@ workflow POST_PROCESSING {
                     },
                 ch_comparison_template
             )
-            ch_versions = ch_versions.mix(COMPARE_STRUCTURES.out.versions)
         }
     }
 
@@ -109,17 +105,6 @@ workflow POST_PROCESSING {
     }
 
     //
-    // Collate and save software versions
-    //
-    def ch_collated_versions = softwareVersionsToYAML(ch_versions)
-        .collectFile(
-            storeDir: "${outdir}/pipeline_info",
-            name: 'nf_core_'  +  'proteinfold_software_'  + 'mqc_'  + 'versions.yml',
-            sort: true,
-            newLine: true
-        )
-
-    //
     // MODULE: MultiQC
     //
     ch_multiqc_report = channel.empty()
@@ -130,17 +115,16 @@ workflow POST_PROCESSING {
         ch_multiqc_files       = ch_multiqc_files.mix(ch_workflow_summary.collectFile(name: 'workflow_summary_mqc.yaml'))
         ch_methods_description = channel.value(methodsDescriptionText(ch_multiqc_methods_description))
         ch_multiqc_files       = ch_multiqc_files.mix(ch_methods_description.collectFile(name: 'methods_description_mqc.yaml', sort: true))
-        ch_multiqc_files       = ch_multiqc_files.mix(ch_collated_versions)
 
         MULTIQC (
             ch_multiqc_rep
                 .combine(ch_multiqc_files.collect())
                 .combine(ch_multiqc_config.collect().ifEmpty([]))
                 .combine(ch_multiqc_custom_config.collect().ifEmpty([]))
-                .map { meta, rep_files, methods_file, workflow_file, versions_file, config_file ->
+                .map { meta, report_files, methods_file, workflow_file, config_file ->
                     [
                         meta,
-                        rep_files + [methods_file, workflow_file, versions_file],  // All multiqc input files
+                        report_files + [methods_file, workflow_file],  // All multiqc input files
                         config_file,
                         multiqc_logo ? file(multiqc_logo, checkIfExists: true) : [],
                         [],
@@ -152,6 +136,5 @@ workflow POST_PROCESSING {
     }
 
     emit:
-    versions       = ch_versions
     multiqc_report = ch_multiqc_report
 }
