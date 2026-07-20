@@ -5,6 +5,7 @@ nextflow_process {
     process "MODELCIF_VALIDATE"
 
     tag "modelcif_validate"
+    outdir = "tests/results/modelcif_validate"
 
     def assertVersionsOutput = { proc ->
         def versionChannels = proc.out.findAll { key, _ -> key.startsWith('versions') }
