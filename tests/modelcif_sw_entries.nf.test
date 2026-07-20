@@ -7,7 +7,7 @@ nextflow_process {
     tag "modelcif_sw_entries"
     config "./assemble_modelcif_software.config"
     params [
-      outdir = "results"
+      outdir = "$outputDir"
     ]
 
     test("dummy inputs include model software and software groups") {
@@ -31,6 +31,8 @@ nextflow_process {
 
         then {
             assert process.success
+            assert file("$outputDir/modelcif_sw_entries/versions.yml").exists()
+            snapshot(file("$outputDir/modelcif_sw_entries/versions.yml")).match() 
             assert process.out.modelcif.size() == 1
 
             def modelcifPath = path(process.out.modelcif[0][1])

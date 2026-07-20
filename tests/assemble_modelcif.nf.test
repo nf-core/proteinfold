@@ -7,7 +7,7 @@ nextflow_process {
     tag "assemble_modelcif"
     config "./assemble_modelcif_software.config"
     params [
-      outdir = "results"
+      outdir = "$outputDir"
     ]
 
     def assertModelcifOutput = { proc, modelcifPath, expectEmbeddedPAE, expectBinaryCIF ->
@@ -123,6 +123,8 @@ nextflow_process {
             def modelcifPath = path(process.out.modelcif[0][1])
             assertModelcifOutput(process, modelcifPath, false, false)
             assertVersionsOutput(process)
+            assert file("$outputDir/assemble_modelcif/versions.yml").exists() 
+            snapshot(file("$outputDir/assemble_modelcif/versions.yml")).match()
         }
     }
 
@@ -150,6 +152,10 @@ nextflow_process {
             def modelcifPath = path(process.out.modelcif[0][1])
             assertModelcifOutput(process, modelcifPath, true, false)
             assertVersionsOutput(process)
+            assert file("$outputDir/assemble_modelcif/versions.yml").exists() 
+            snapshot(file("$outputDir/assemble_modelcif/versions.yml")).match() 
+
+
         }
     }
 
@@ -177,6 +183,8 @@ nextflow_process {
             def modelcifPath = path(process.out.modelcif[0][1])
             assertModelcifOutput(process, modelcifPath, false, true)
             assertVersionsOutput(process)
+            assert file("$outputDir/assemble_modelcif/versions.yml").exists() 
+            snapshot(file("$outputDir/assemble_modelcif/versions.yml")).match()
         }
     }
 
@@ -216,7 +224,9 @@ nextflow_process {
                 { assert mmcif.contains("test_multi rank_1") },
                 { assert mmcif.contains("test_multi rank_2") },
                 { assert mmcif.contains("test_multi rank_3") },
-                { assert mmcif.contains("test_multi rank_4") }
+                { assert mmcif.contains("test_multi rank_4") },
+                { assert file("$outputDir/assemble_modelcif/versions.yml").exists() },
+                { snapshot(file("$outputDir/assemble_modelcif/versions.yml")).match() }
             )
             assertVersionsOutput(process)
         }

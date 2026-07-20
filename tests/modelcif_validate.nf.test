@@ -6,7 +6,7 @@ nextflow_process {
 
     tag "modelcif_validate"
     params [
-      outdir = "results"
+      outdir = "$outputDir"
     ]
 
 
@@ -38,7 +38,9 @@ nextflow_process {
         then {
             assertAll(
                 { assert process.success },
-                { assertVersionsOutput(process) }
+                { assertVersionsOutput(process) },
+                { assert file("$outputDir/modelcif_validate/versions.yml").exists() },
+                { snapshot(file("$outputDir/modelcif_validate/versions.yml")).match() }   
             )
         }
     }
@@ -56,7 +58,9 @@ nextflow_process {
         then {
             assertAll(
                 { assert process.success },
-                { assertVersionsOutput(process) }
+                { assertVersionsOutput(process) },
+                { assert file("$outputDir/modelcif_validate/versions.yml").exists() },
+                { snapshot(file("$outputDir/modelcif_validate/versions.yml")).match() }   
             )
         }
     }
