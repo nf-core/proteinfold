@@ -34,10 +34,10 @@
                 "mode": {
                     "type": "string",
                     "default": "alphafold2",
-                    "description": "Specifies the mode in which the pipeline will be run. mode can be any combination of ['alphafold2', 'alphafold3', 'colabfold', 'esmfold', 'rosettafold_all_atom', 'boltz', 'helixfold3', 'rosettafold2na'] separated by a comma (',') with no spaces.",
+                    "description": "Specifies the mode in which the pipeline will be run. mode can be any combination of [\"alphafold2\", \"alphafold3\", \"colabfold\", \"esmfold\", \"boltz\"] separated by a comma with no spaces.",
                     "fa_icon": "fas fa-cogs",
-                    "pattern": "^(alphafold2|alphafold3|colabfold|esmfold|rosettafold_all_atom|helixfold3|boltz|rosettafold2na|)(,(alphafold2|alphafold3|colabfold|esmfold|rosettafold_all_atom|helixfold3|boltz|rosettafold2na)?,?)*(?<!,)$",
-                    "errorMessage": "Mode must be a comma-separated list containing any combination of 'alphafold2', 'alphafold3', 'colabfold', 'esmfold', 'rosettafold_all_atom', 'boltz', or 'helixfold3' with no spaces."
+                    "pattern": "^(alphafold2|alphafold3|colabfold|esmfold|boltz)(,(alphafold2|alphafold3|colabfold|esmfold|boltz))*$",
+                    "errorMessage": "Mode must be a comma-separated list containing alphafold2, alphafold3, colabfold, esmfold, or boltz with no spaces."
                 },
                 "use_gpu": {
                     "type": "boolean",
@@ -227,21 +227,6 @@
                 }
             }
         },
-        "rosettafold2na_options": {
-            "title": "RosettaFold2NA options",
-            "type": "object",
-            "fa_icon": "fas fa-dna",
-            "description": "RosettaFold2NA options.",
-            "properties": {
-                "rosettafold2na_db": {
-                    "type": "string",
-                    "format": "path",
-                    "exists": true,
-                    "description": "Specifies the DB and PARAMS path used by 'RosettaFold2NA' mode",
-                    "fa_icon": "fas fa-database"
-                }
-            }
-        },
         "boltz_options": {
             "title": "Boltz options",
             "type": "object",
@@ -291,31 +276,6 @@
                     "type": "string",
                     "description": "Specifies the arguments to be passed to foldseek easysearch command",
                     "fa_icon": "fas fa-server"
-                }
-            }
-        },
-        "helixfold3_options": {
-            "title": "HelixFold3 options",
-            "type": "object",
-            "description": "HelixFold3 options",
-            "default": "",
-            "properties": {
-                "helixfold3_precision": {
-                    "type": "string",
-                    "enum": ["bf16", "fp32"],
-                    "description": "The numerical precision used by the HelixFold3 model.",
-                    "default": "bf16"
-                },
-                "helixfold3_infer_times": {
-                    "type": "integer",
-                    "default": 4,
-                    "minimum": 1,
-                    "description": "Number of independent predictions made with the HelixFold3 model"
-                },
-                "helixfold3_max_template_date": {
-                    "type": "string",
-                    "default": "2038-01-19",
-                    "description": "No PDB template released after this date will be used to guide predictions."
                 }
             }
         },
@@ -867,79 +827,6 @@
                 }
             }
         },
-        "rosettafold2na_dbs_and_parameters_link_options": {
-            "title": "RosettaFold2NA DBs and parameters links options",
-            "type": "object",
-            "fa_icon": "fas fa-database",
-            "description": "Parameters used to provide the links to the DBs and parameters public resources to RosettaFold2NA.",
-            "properties": {
-                "rosettafold2na_uniref30_link": {
-                    "type": "string",
-                    "default": "http://wwwuser.gwdg.de/~compbiol/uniclust/2020_06/UniRef30_2020_06_hhsuite.tar.gz"
-                },
-                "rosettafold2na_bfd_link": {
-                    "type": "string",
-                    "default": "https://bfd.mmseqs.com/bfd_metaclust_clu_complete_id30_c90_final_seq.sorted_opt.tar.gz"
-                },
-                "rosettafold2na_pdb100_link": {
-                    "type": "string",
-                    "default": "https://files.ipd.uw.edu/pub/RoseTTAFold/pdb100_2021Mar03.tar.gz"
-                },
-                "rosettafold2na_weights_link": {
-                    "type": "string",
-                    "default": "https://files.ipd.uw.edu/dimaio/RF2NA_apr23.tgz"
-                },
-                "rfam_full_region_link": {
-                    "type": "string",
-                    "default": "ftp://ftp.ebi.ac.uk/pub/databases/Rfam/CURRENT/Rfam.full_region.gz"
-                },
-                "rfam_cm_link": {
-                    "type": "string",
-                    "default": "ftp://ftp.ebi.ac.uk/pub/databases/Rfam/CURRENT/Rfam.cm.gz"
-                },
-                "rnacentral_rfam_annotations_link": {
-                    "type": "string",
-                    "default": "ftp://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/rfam/rfam_annotations.tsv.gz"
-                },
-                "rnacentral_id_mapping_link": {
-                    "type": "string",
-                    "default": "ftp://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/id_mapping/id_mapping.tsv.gz"
-                },
-                "rnacentral_sequences_link": {
-                    "type": "string",
-                    "default": "ftp://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/sequences/rnacentral_species_specific_ids.fasta.gz"
-                }
-            }
-        },
-        "rosettafold2na_dbs_and_parameters_path_options": {
-            "title": "RosettaFold2NA DBs and parameters paths options",
-            "type": "object",
-            "description": "Parameters used to provide the paths to the DBs and parameters for RosettaFold2NA.",
-            "default": "",
-            "properties": {
-                "rosettafold2na_uniref30_path": {
-                    "type": "string",
-                    "default": "null/UniRef30_2020_06/*"
-                },
-                "rosettafold2na_bfd_path": {
-                    "type": "string",
-                    "default": "null/bfd/*"
-                },
-                "rosettafold2na_pdb100_path": {
-                    "type": "string",
-                    "default": "null/pdb100/*"
-                },
-                "rosettafold2na_weights_path": {
-                    "type": "string",
-                    "default": "null/params/network/weights/RF2NA_apr23.pt"
-                },
-                "rosettafold2na_rna_path": {
-                    "type": "string",
-                    "description": "Path to the RNA folder containing all necessary RNA databases for RF2NA",
-                    "default": "null/RNA/*"
-                }
-            }
-        },
         "generic_options": {
             "title": "Generic options",
             "type": "object",
@@ -1050,221 +937,6 @@
                     "description": "Display hidden parameters in the help message (only works when --help or --help_full are provided)."
                 }
             }
-        },
-        "rosettafold_all_atom_dbs_and_parameters_links_options": {
-            "title": "RoseTTAFold All Atom DBs and parameters links options",
-            "type": "object",
-            "description": "Parameters used to provide the paths to the DBs and parameters for RoseTTAFold All Atom.",
-            "default": "",
-            "properties": {
-                "rosettafold_all_atom_uniref30_link": {
-                    "type": "string",
-                    "default": "https://wwwuser.gwdguser.de/~compbiol/uniclust/2023_02/UniRef30_2023_02_hhsuite.tar.gz",
-                    "description": "Link to the UniRef30 database for RoseTTAFold All Atom"
-                },
-                "rosettafold_all_atom_bfd_link": {
-                    "type": "string",
-                    "default": "https://bfd.mmseqs.com/bfd_metaclust_clu_complete_id30_c90_final_seq.sorted_opt.tar.gz",
-                    "description": "Link to the BFD database for RoseTTAFold All Atom"
-                },
-                "rosettafold_all_atom_pdb100_link": {
-                    "type": "string",
-                    "default": "https://files.ipd.uw.edu/pub/RoseTTAFold/pdb100_2021Mar03.tar.gz",
-                    "description": "Link to the PDB100 database for RoseTTAFold All Atom"
-                },
-                "rosettafold_all_atom_paper_weights_link": {
-                    "type": "string",
-                    "default": "http://files.ipd.uw.edu/pub/RF-All-Atom/weights/RFAA_paper_weights.pt",
-                    "description": "Link to the RoseTTAFold All Atom paper weights"
-                }
-            }
-        },
-        "rosettafold_all_atom_dbs_and_parameters_paths_options": {
-            "title": "RoseTTAFold All Atom DBs and parameters paths options",
-            "type": "object",
-            "description": "Parameters used to provide the paths to the DBs and parameters for RoseTTAFold All Atom.",
-            "default": "",
-            "properties": {
-                "rosettafold_all_atom_db": {
-                    "type": "string",
-                    "description": "Path to RoseTTAFold All Atom database"
-                },
-                "rosettafold_all_atom_uniref30_path": {
-                    "type": "string",
-                    "default": "null/uniref30/*",
-                    "description": "Path to UniRef30 database for RoseTTAFold All Atom"
-                },
-                "rosettafold_all_atom_bfd_path": {
-                    "type": "string",
-                    "default": "null/bfd/*",
-                    "description": "Path to BFD database for RoseTTAFold All Atom"
-                },
-                "rosettafold_all_atom_pdb100_path": {
-                    "type": "string",
-                    "default": "null/pdb100/*",
-                    "description": "Path to PDB100 database for RoseTTAFold All Atom"
-                },
-                "rosettafold_all_atom_paper_weights_path": {
-                    "type": "string",
-                    "default": "null/params/RFAA_paper_weights.pt",
-                    "description": "Path to RoseTTAFold All Atom paper weights"
-                }
-            }
-        },
-        "helixfold3_dbs_and_parameters_paths_options": {
-            "title": "HelixFold3 dbs and parameters paths options",
-            "type": "object",
-            "description": "Parameters used to provide the paths to the DBs and parameters for HelixFold3.",
-            "default": "",
-            "properties": {
-                "helixfold3_db": {
-                    "type": "string",
-                    "description": "Path to HelixFold3 database"
-                },
-                "helixfold3_init_models_path": {
-                    "type": "string",
-                    "default": "null/params/HelixFold3-240814.pdparams",
-                    "description": "Path to HelixFold3 init models"
-                },
-                "helixfold3_uniclust30_path": {
-                    "type": "string",
-                    "default": "null/uniref30/*",
-                    "description": "Path to UniRef30 database for HelixFold3"
-                },
-                "helixfold3_ccd_preprocessed_path": {
-                    "type": "string",
-                    "default": "null/params/ccd_preprocessed_etkdg.pkl.gz",
-                    "description": "Path to CCD preprocessed file for HelixFold3"
-                },
-                "helixfold3_rfam_path": {
-                    "type": "string",
-                    "default": "null/rfam/Rfam-14.9_rep_seq.fasta",
-                    "description": "Path to Rfam database for HelixFold3"
-                },
-                "helixfold3_bfd_path": {
-                    "type": "string",
-                    "default": "null/bfd/*",
-                    "description": "Path to BFD database for HelixFold3"
-                },
-                "helixfold3_small_bfd_path": {
-                    "type": "string",
-                    "default": "null/small_bfd/*",
-                    "description": "Path to reduced BFD database for HelixFold3"
-                },
-                "helixfold3_uniprot_path": {
-                    "type": "string",
-                    "default": "null/uniprot/*",
-                    "description": "Path to UniProt database for HelixFold3"
-                },
-                "helixfold3_pdb_seqres_path": {
-                    "type": "string",
-                    "default": "null/pdb_seqres/*",
-                    "description": "Path to PDB SEQRES database for HelixFold3"
-                },
-                "helixfold3_uniref90_path": {
-                    "type": "string",
-                    "default": "null/uniref90/*",
-                    "description": "Path to UniRef90 database for HelixFold3"
-                },
-                "helixfold3_mgnify_path": {
-                    "type": "string",
-                    "default": "null/mgnify/*",
-                    "description": "Path to MGnify database for HelixFold3"
-                },
-                "helixfold3_pdb_mmcif_path": {
-                    "type": "string",
-                    "default": "null/pdb_mmcif/mmcif_files",
-                    "description": "Path to PDB mmCIF database for HelixFold3"
-                },
-                "helixfold3_maxit_src_path": {
-                    "type": "string",
-                    "default": "null/maxit-v11.200-prod-src",
-                    "description": "Path to Maxit Suite for HelixFold3"
-                },
-                "helixfold3_obsolete_path": {
-                    "type": "string",
-                    "default": "null/pdb_mmcif/obsolete.dat",
-                    "description": "Path to obsolete PDB file for HelixFold3"
-                }
-            }
-        },
-        "helixfold3_dbs_and_parameters_link_options": {
-            "title": "HelixFold3 dbs and parameters link options",
-            "type": "object",
-            "description": "Parameters used to provide the links to the parameters public resources to HelixFold3.",
-            "default": "",
-            "properties": {
-                "helixfold3_init_models_link": {
-                    "type": "string",
-                    "default": "https://paddlehelix.bd.bcebos.com/HelixFold3/params/HelixFold3-params-240814.zip",
-                    "description": "Link to HelixFold3 init models"
-                },
-                "helixfold3_uniclust30_link": {
-                    "type": "string",
-                    "default": "https://wwwuser.gwdguser.de/~compbiol/uniclust/2023_02/UniRef30_2023_02_hhsuite.tar.gz",
-                    "description": "Link to UniRef30 database for HelixFold3"
-                },
-                "helixfold3_ccd_preprocessed_link": {
-                    "type": "string",
-                    "default": "https://paddlehelix.bd.bcebos.com/HelixFold3/CCD/ccd_preprocessed_etkdg.pkl.gz",
-                    "description": "Link to CCD preprocessed file for HelixFold3"
-                },
-                "helixfold3_rfam_link": {
-                    "type": "string",
-                    "default": "https://paddlehelix.bd.bcebos.com/HelixFold3/MSA/Rfam-14.9_rep_seq.fasta",
-                    "description": "Link to Rfam database for HelixFold3"
-                },
-                "helixfold3_bfd_link": {
-                    "type": "string",
-                    "default": "https://storage.googleapis.com/alphafold-databases/casp14_versions/bfd_metaclust_clu_complete_id30_c90_final_seq.sorted_opt.tar.gz",
-                    "description": "Link to BFD database for HelixFold3"
-                },
-                "helixfold3_small_bfd_link": {
-                    "type": "string",
-                    "default": "https://storage.googleapis.com/alphafold-databases/reduced_dbs/bfd-first_non_consensus_sequences.fasta.gz",
-                    "description": "Link to reduced BFD database for HelixFold3"
-                },
-                "helixfold3_pdb_seqres_link": {
-                    "type": "string",
-                    "default": "https://files.wwpdb.org/pub/pdb/derived_data/pdb_seqres.txt",
-                    "description": "Link to PDB SEQRES database for HelixFold3"
-                },
-                "helixfold3_uniref90_link": {
-                    "type": "string",
-                    "default": "ftp://ftp.uniprot.org/pub/databases/uniprot/uniref/uniref90/uniref90.fasta.gz",
-                    "description": "Link to UniRef90 database for HelixFold3"
-                },
-                "helixfold3_mgnify_link": {
-                    "type": "string",
-                    "default": "https://ftp.ebi.ac.uk/pub/databases/metagenomics/peptide_database/2024_04/mgy_clusters.fa.gz",
-                    "description": "Link to MGnify database for HelixFold3"
-                },
-                "helixfold3_pdb_mmcif_link": {
-                    "type": "string",
-                    "default": "rsync.rcsb.org::ftp_data/structures/divided/mmCIF/",
-                    "description": "Link to PDB mmCIF database for HelixFold3"
-                },
-                "helixfold3_uniprot_sprot_link": {
-                    "type": "string",
-                    "default": "ftp://ftp.ebi.ac.uk/pub/databases/uniprot/current_release/knowledgebase/complete/uniprot_sprot.fasta.gz",
-                    "description": "Link to UniProt SwissProt database for HelixFold3"
-                },
-                "helixfold3_uniprot_trembl_link": {
-                    "type": "string",
-                    "default": "ftp://ftp.ebi.ac.uk/pub/databases/uniprot/current_release/knowledgebase/complete/uniprot_trembl.fasta.gz",
-                    "description": "Link to UniProt TrEMBL database for HelixFold3"
-                },
-                "helixfold3_obsolete_link": {
-                    "type": "string",
-                    "default": "https://files.rcsb.org/pub/pdb/data/status/obsolete.dat",
-                    "description": "Link to obsolete PDB file for HelixFold3"
-                },
-                "helixfold3_maxit_src_link": {
-                    "type": "string",
-                    "default": "https://proteinfold-dataset.s3.amazonaws.com/test-data/db/helixfold3/maxit-v11.200-prod-src.tar.gz",
-                    "description": "Link to Maxit Suite for HelixFold3"
-                }
-            }
         }
     },
     "allOf": [
@@ -1285,9 +957,6 @@
         },
         {
             "$ref": "#/$defs/foldseek_options"
-        },
-        {
-            "$ref": "#/$defs/helixfold3_options"
         },
         {
             "$ref": "#/$defs/process_skipping_options"
@@ -1327,27 +996,6 @@
         },
         {
             "$ref": "#/$defs/generic_options"
-        },
-        {
-            "$ref": "#/$defs/rosettafold_all_atom_dbs_and_parameters_links_options"
-        },
-        {
-            "$ref": "#/$defs/rosettafold_all_atom_dbs_and_parameters_paths_options"
-        },
-        {
-            "$ref": "#/$defs/rosettafold2na_options"
-        },
-        {
-            "$ref": "#/$defs/rosettafold2na_dbs_and_parameters_link_options"
-        },
-        {
-            "$ref": "#/$defs/rosettafold2na_dbs_and_parameters_path_options"
-        },
-        {
-            "$ref": "#/$defs/helixfold3_dbs_and_parameters_link_options"
-        },
-        {
-            "$ref": "#/$defs/helixfold3_dbs_and_parameters_paths_options"
         }
     ]
 }

@@ -13,15 +13,12 @@ The pipeline is built using [Nextflow](https://www.nextflow.io/) and predicts pr
 - [Boltz](https://github.com/jwohlwend/boltz)
 - [ColabFold](https://github.com/sokrypton/ColabFold)
 - [ESMFold](https://github.com/facebookresearch/esm)
-- [RoseTTAFold2NA](https://github.com/uw-ipd/RoseTTAFold2NA)
-- [RoseTTAFold-All-Atom](https://github.com/baker-laboratory/RoseTTAFold-All-Atom/)
-- [HelixFold3](https://github.com/PaddlePaddle/PaddleHelix/tree/dev/apps/protein_folding/helixfold3)
 
 See main [README.md](https://github.com/nf-core/proteinfold/blob/master/README.md) for a condensed overview of the steps in the pipeline, and the bioinformatics tools used at each step.
 
 The directories listed below will be created in the output directory after the pipeline has finished. All paths are relative to the top-level results directory.
 
-Exact subdirectories depend on the selected mode(s). In a multi-mode run (for example `alphafold2,boltz,rosettafold_all_atom`) you will typically see top-level directories such as `alphafold2/`, `boltz/`, `rosettafold_all_atom/`, `multiqc/`, `reports/`, `compare/`, and `pipeline_info/`.
+Exact subdirectories depend on the selected mode(s). In a multi-mode run (for example `alphafold2,boltz`) you will typically see top-level directories such as `alphafold2/`, `boltz/`, `multiqc/`, `reports/`, `compare/`, and `pipeline_info/`.
 
 ### Prediction outputs (all modes)
 
@@ -225,10 +222,7 @@ Examples include:
 - `alphafold2/<MODE>/<SEQUENCE NAME>/raw/`
 - `colabfold/<SEQUENCE NAME>/raw/`
 - `boltz/<SEQUENCE NAME>/boltz_results_<SEQUENCE NAME>/`
-- `rosettafold_all_atom/<SEQUENCE NAME>/raw/`
 - `alphafold3/<SEQUENCE NAME>/raw/`
-- `helixfold3/<SEQUENCE NAME>/raw/`
-- `rosettafold2na/<SEQUENCE NAME>/raw/`
 
 These raw outputs are intended for advanced debugging, reproducibility and method-specific downstream analyses. For detailed, canonical tool-specific native output specifications, see:
 
@@ -237,6 +231,3 @@ These raw outputs are intended for advanced debugging, reproducibility and metho
 - [Boltz](https://github.com/jwohlwend/boltz/blob/main/docs/prediction.md#output)
 - [ColabFold](https://www.ebi.ac.uk/training/online/courses/alphafold/advanced-modeling-and-applications-of-predicted-protein-structures/customising-alphafold-structure-predictions/outputs-from-colabfold/)
 - [ESMFold](https://github.com/facebookresearch/esm)
-- [RosettaFold2NA](https://github.com/uw-ipd/RoseTTAFold2NA?tab=readme-ov-file#expected-outputs)
-- [RoseTTAFold-All-Atom](https://github.com/baker-laboratory/RoseTTAFold-All-Atom/?tab=readme-ov-file#understanding-model-outputs)
-- [HelixFold3](https://github.com/PaddlePaddle/PaddleHelix/tree/dev/apps/protein_folding/helixfold3#-understanding-model-output)

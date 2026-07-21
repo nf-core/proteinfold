@@ -25,7 +25,6 @@ from utils import plddt_from_struct_b_factor, get_chain_ids
 # match ${meta.mode}:
 #     case 'alphafold2':
 #        ...
-#     case 'rosettafold_all_atom':
 #        ...
 #...
 # ^ overwrought with duplication, but can catch program specific weirdness, and lower barrier to adding new programs in the future.
@@ -303,7 +302,7 @@ def read_pkl(name, pkl_files, struct_files=None):
         data = pickle.load(open(pkl_file, "rb"))
 
         # Process MSA data
-        if pkl_file.endswith("final_features.pkl"): # HelixFold3 - This one must be first
+        if pkl_file.endswith("final_features.pkl"):
             write_tsv(f"{name}_msa.tsv", format_msa_rows(data["feat"]["msa"]))
         elif pkl_file.endswith("features.pkl"): # AlphaFold2.3
             try:
@@ -555,15 +554,11 @@ def read_json(name, json_files, struct_files=None):
                 write_tsv(f"{name}_msa.tsv", final_rows)
                 continue  # _data.json contains only MSA; no PAE or score fields to process
 
-            #AF3 output with PAE info, or HF3 PAE data. TODO: Need to make sure the workflow points to [protein]/[protein]_rank1/all_results.json
-
             # TODO: I think I need to capture model_id and inference_id  -- MUST FIX since this is so fragile and will be different for different programs.
             #if '_alphafold2_ptm_model_' in json_file: # ColabFold, multimer or monomer
             ## Might want to cut more if I just want ${meta.id}_[metric].tsv
             #    model_id = os.path.basename(json_file)
             #    print(model_id)
-            if 'all_results' in json_file: # Individual predictions in HF3
-                model_id = int(os.path.dirname(json_file).split('-rank')[-1]) #Use re-ranked output
             if 'predictions' in json_file: # Boltz-1 confidences in predictions/[protein]/confidence_[protein]_model_*.json
             # TODO: haven't tested this for multiple models with --diffusion_samples
                 model_id = os.path.basename(json_file).split('_model_')[-1].split('.json')[0]
@@ -650,7 +645,6 @@ def read_json(name, json_files, struct_files=None):
 
 def read_pt(name, pt_files):
     import torch # moved to a conditional import since too bulky import if not used
-    #TODO: Handle this better when refactored - Is this just RFAA??
     for pt_file in pt_files:
         with open(pt_file, 'rb') as f:   # TODO: point to [protein]_aux.pt
             data = torch.load(f, map_location="cpu")
@@ -704,14 +698,13 @@ def read_colabfold_metrics(name, colabfold_metrics_files, struct_files=None):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--pkls", dest="pkls", required=False, nargs="+") # For reading both HelixFold3 and AlphaFold2 MSA formats
+    parser.add_argument("--pkls", dest="pkls", required=False, nargs="+") # For reading AlphaFold2 MSA formats
     parser.add_argument("--npzs", dest="npzs", required=False, nargs="+") # For reading the Boltz-1 PAE formats. TODO: Boltz-1 MSA not implemented (go straight to .a3m file), implement
-    parser.add_argument("--a3ms", dest="a3ms", required=False, nargs="+") # For reading the RosettaFold-All-Atom MSA formats
+    parser.add_argument("--a3ms", dest="a3ms", required=False, nargs="+")
     parser.add_argument("--paired_a3m", dest="paired_a3m", required=False) # For reading the ColabFold MSA format
     parser.add_argument("--csvs", dest="csvs", required=False, nargs="+") # For reading boltz csvs
-    parser.add_argument("--jsons", dest="jsons", required=False, nargs="+") # For reading the AF3 MSA & PAE, HF3 PAE
+    parser.add_argument("--jsons", dest="jsons", required=False, nargs="+") # For reading AlphaFold3 MSA and PAE
     parser.add_argument("--colabfold_metrics_files", required=False, nargs="+")
-    parser.add_argument("--pts", dest="pts", required=False, nargs="+") # For read RFAA pytorch model to get PAE data
     parser.add_argument("--structs", dest="structs", required=False, nargs="+")
     parser.add_argument("--name", default="untitled", dest="name") # might need a --name $meta.id
     args = parser.parse_args()

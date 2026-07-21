@@ -31,9 +31,6 @@ jobs:
             "esmfold",
             "esmfold_multimer",
             "boltz",
-            "helixfold3",
-            "rosettafold_all_atom",
-            "rosettafold2na",
           ]
     steps:
       - name: Set revision variable

@@ -22,7 +22,7 @@
                 },
                 "RUN_ALPHAFOLD2": {
                     "python": "3.11.14",
-                    "alphafold2": "unknown",
+                    "alphafold2": "e9b68483fc8764e7a1906e74a5d1f0ea2137311d",
                     "jax": "0.4.26",
                     "jaxlib": "0.4.26",
                     "numpy": "1.24.3",
@@ -136,10 +136,10 @@
                 "T1026_alphafold2_report.html:md5,d41d8cd98f00b204e9800998ecf8427e"
             ]
         ],
-        "timestamp": "2026-05-29T12:01:54.780944659",
+        "timestamp": "2026-07-21T10:14:29.371254346",
         "meta": {
             "nf-test": "0.9.5",
-            "nextflow": "26.04.0"
+            "nextflow": "26.04.6"
         }
     }
 }

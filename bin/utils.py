@@ -94,7 +94,7 @@ def plddt_from_struct_b_factor_biopython(struct_file):
 
                 res_plddt = float(atom_plddt_tot / len(atom_list))
 
-                if (res_plddt < 1):  # RFAA the multiplication of mean isn't failing. Anyway covering to a [0,100] range for any structure file1
+                if (res_plddt < 1):
                     res_plddt *= 100
                 res_plddt = _convert_plddt_to_100(res_plddt)
 
