@@ -5,7 +5,7 @@ process RUN_ALPHAFOLD3_INFERENCE {
     tag "$meta.id"
     label 'process_medium'
     label 'process_gpu'
-    container "nf-core/proteinfold_alphafold3_standard:2.0.0"
+    container "nf-core/proteinfold_alphafold3_standard:2.1.0"
 
     input:
     tuple val(meta), path(data_json)

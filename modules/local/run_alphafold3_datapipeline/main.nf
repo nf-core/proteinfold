@@ -4,7 +4,7 @@
 process RUN_ALPHAFOLD3_DATAPIPELINE {
     tag "$meta.id"
     label 'process_medium'
-    container "nf-core/proteinfold_alphafold3_standard:2.0.0"
+    container "nf-core/proteinfold_alphafold3_standard:2.1.0"
 
     input:
     tuple val(meta), path(json)
