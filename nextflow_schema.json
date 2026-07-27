@@ -175,7 +175,6 @@
                 },
                 "colabfold_use_gpu_relax": {
                     "type": "boolean",
-                    "default": false,
                     "description": "Use GPU for Amber relaxation in ColabFold",
                     "fa_icon": "fas fa-microchip"
                 },

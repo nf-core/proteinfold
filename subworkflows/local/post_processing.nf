@@ -49,16 +49,15 @@ workflow POST_PROCESSING {
         ch_versions = ch_versions.mix(GENERATE_REPORT.out.versions)
 
         if (requested_modes_size > 1){
-            ch_dummy_file = channel.fromPath("$projectDir/assets/NO_FILE")
+            def dummy_file = file("$projectDir/assets/NO_FILE", checkIfExists: true)
 
             def esm = ch_top_ranked_model.filter { it ->it[0].model == 'esmfold' }
             def not_esm = ch_top_ranked_model.filter { it -> it[0].model != 'esmfold' }
 
             esm = esm
-                    .map { it ->
-                        [it[0], it[1]]
+                    .map { meta, pdb ->
+                        [meta, pdb, dummy_file]
                     }
-                    .merge(ch_dummy_file)
 
             not_esm = not_esm
                         .map { it ->  [it[0], it[1]] }

@@ -29,7 +29,7 @@
                     "@id": "main.nf"
                 },
                 {
-                    "@id": "docs/images/nf-core-proteinfold_metro_map_2.0.0.png"
+                    "@id": "docs/images/nf-core-proteinfold_metro_map_2.1.0.png"
                 },
                 {
                     "@id": "assets/"
@@ -135,7 +135,7 @@
                 "SoftwareSourceCode",
                 "ComputationalWorkflow"
             ],
-            "contributor": [
+            "author": [
                 {
                     "@id": "https://orcid.org/0000-0002-7495-1218"
                 },
@@ -143,14 +143,55 @@
                     "@id": "https://orcid.org/0000-0002-1541-042X"
                 },
                 {
-                    "@id": "#9d719121-af3f-49a9-b83f-a5f67f8e9902"
+                    "@id": "https://orcid.org/0000-0002-5992-0771"
+                },
+                {
+                    "@id": "https://orcid.org/0000-0001-8442-9709"
+                }
+            ],
+            "contributor": [
+                {
+                    "@id": "https://orcid.org/0000-0002-5992-0771"
+                },
+                {
+                    "@id": "https://orcid.org/0000-0001-8442-9709"
+                },
+                {
+                    "@id": "https://orcid.org/0000-0003-2707-7940"
+                },
+                {
+                    "@id": "https://orcid.org/0000-0002-9374-0969"
+                },
+                {
+                    "@id": "https://orcid.org/0000-0001-6955-1167"
+                },
+                {
+                    "@id": "https://orcid.org/0000-0001-7034-3744"
+                },
+                {
+                    "@id": "https://orcid.org/0000-0002-4863-3865"
+                },
+                {
+                    "@id": "https://orcid.org/0000-0002-4032-5331"
+                },
+                {
+                    "@id": "#b5f01813-e5de-4d8d-9ab1-3903fac2fe95"
+                },
+                {
+                    "@id": "https://orcid.org/0000-0001-9132-8981"
+                },
+                {
+                    "@id": "https://orcid.org/0000-0001-6104-9260"
+                },
+                {
+                    "@id": "https://orcid.org/0000-0003-0662-9101"
                 }
             ],
             "dateCreated": "",
-            "dateModified": "2026-07-24T12:35:59Z",
+            "dateModified": "2026-07-09T11:56:45Z",
             "dct:conformsTo": "https://bioschemas.org/profiles/ComputationalWorkflow/1.0-RELEASE/",
             "image": {
-                "@id": "docs/images/nf-core-proteinfold_metro_map_2.0.0.png"
+                "@id": "docs/images/nf-core-proteinfold_metro_map_2.1.0.png"
             },
             "keywords": [
                 "nf-core",
@@ -168,19 +209,22 @@
             ],
             "maintainer": [
                 {
-                    "@id": "https://orcid.org/0000-0002-4032-5331"
+                    "@id": "https://orcid.org/0000-0002-7495-1218"
+                },
+                {
+                    "@id": "https://orcid.org/0000-0002-1541-042X"
+                },
+                {
+                    "@id": "https://orcid.org/0000-0002-9374-0969"
                 },
                 {
                     "@id": "https://orcid.org/0000-0001-6955-1167"
                 },
                 {
-                    "@id": "#drpatelhh@gmail.com"
+                    "@id": "https://orcid.org/0000-0001-7034-3744"
                 },
                 {
-                    "@id": "#petrislp@gmail.com"
-                },
-                {
-                    "@id": "https://orcid.org/0000-0002-7495-1218"
+                    "@id": "https://orcid.org/0000-0002-4863-3865"
                 }
             ],
             "name": [
@@ -213,11 +257,19 @@
             "version": "!>=25.10.4"
         },
         {
-            "@id": "#7298d9a1-9919-48bd-8077-16820cc3ee2a",
+            "@id": "docs/images/nf-core-proteinfold_metro_map_2.1.0.png",
+            "@type": [
+                "File",
+                "ImageObject"
+            ],
+            "name": "Workflow diagram"
+        },
+        {
+            "@id": "#ac8bc02e-6a57-4023-be25-ea6c7e2d70ea",
             "@type": "TestSuite",
             "instance": [
                 {
-                    "@id": "#ebbb978d-9523-4edf-b5ef-49777c575cae"
+                    "@id": "#54d1c5d5-bf72-4b6a-9992-e6716af44c74"
                 }
             ],
             "mainEntity": {
@@ -365,52 +417,119 @@
             "url": "https://nf-co.re/"
         },
         {
-            "@id": "https://orcid.org/0000-0002-4032-5331",
+            "@id": "https://orcid.org/0000-0002-7495-1218",
             "@type": "Person",
-            "email": "zb7008@hichip.zb7008.ll61.ps.gadi.nci.org.au",
-            "name": "Ziad Al Bkhetan"
-        },
-        {
-            "@id": "#tomlitfin@gmail.com",
-            "@type": "Person",
-            "email": "tomlitfin@gmail.com",
-            "name": "Tom Litfin"
-        },
-        {
-            "@id": "https://orcid.org/0000-0002-4863-3865",
-            "@type": "Person",
-            "email": "t.litfin@unsw.edu.au",
-            "name": "Thomas Litfin"
+            "affiliation": "Centre for Genomic Regulation, Spain",
+            "email": "baltzis.athanasios@gmail.com",
+            "name": "Athanasios Baltzis",
+            "url": "https://github.com/athbaltzis"
         },
         {
             "@id": "https://orcid.org/0000-0002-1541-042X",
             "@type": "Person",
+            "affiliation": "Centre for Genomic Regulation, Spain",
             "email": "kadomu@gmail.com",
-            "name": "Jose Espinosa-Carrasco"
+            "name": "Jose Espinosa-Carrasco",
+            "url": "https://github.com/joseespinosa"
+        },
+        {
+            "@id": "https://orcid.org/0000-0002-5992-0771",
+            "@type": "Person",
+            "affiliation": "Centre for Genomic Regulation, Spain",
+            "email": "luisa.santus95@gmail.com",
+            "name": "Luisa Santus",
+            "url": "https://github.com/luisas"
+        },
+        {
+            "@id": "https://orcid.org/0000-0001-8442-9709",
+            "@type": "Person",
+            "affiliation": "Centre for Genomic Regulation, Spain",
+            "email": "48998340+l-mansouri@users.noreply.github.com",
+            "name": "Leila Mansouri",
+            "url": "https://github.com/l-mansouri"
+        },
+        {
+            "@id": "https://orcid.org/0000-0003-2707-7940",
+            "@type": "Person",
+            "affiliation": "Seqera",
+            "email": "drpatelhh@gmail.com",
+            "name": "Harshil Patel",
+            "url": "https://github.com/drpatelh"
+        },
+        {
+            "@id": "https://orcid.org/0000-0002-9374-0969",
+            "@type": "Person",
+            "affiliation": "UNSW Structural Biology Facility, Australia",
+            "name": "Joshua Caley",
+            "url": "https://github.com/jscgh"
         },
         {
             "@id": "https://orcid.org/0000-0001-6955-1167",
             "@type": "Person",
+            "affiliation": "UNSW Structural Biology Facility, Australia",
             "email": "54380465+keiran-rowell-unsw@users.noreply.github.com",
-            "name": "Keiran Rowell"
+            "name": "Keiran Rowell",
+            "url": "https://github.com/keiran-rowell-unsw"
         },
         {
-            "@id": "#drpatelhh@gmail.com",
+            "@id": "https://orcid.org/0000-0001-7034-3744",
             "@type": "Person",
-            "email": "drpatelhh@gmail.com",
-            "name": "Harshil Patel"
-        },
-        {
-            "@id": "#petrislp@gmail.com",
-            "@type": "Person",
+            "affiliation": "Pompeu Fabra University, Spain",
             "email": "petrislp@gmail.com",
-            "name": "Patricia Bota"
+            "name": "Patricia Bota",
+            "url": "https://github.com/abotlp"
         },
         {
-            "@id": "https://orcid.org/0000-0002-7495-1218",
+            "@id": "https://orcid.org/0000-0002-4863-3865",
             "@type": "Person",
-            "email": "baltzis.athanasios@gmail.com",
-            "name": "Athanasios Baltzis"
+            "affiliation": [
+                "UNSW Structural Biology Facility, Australia",
+                "Australian BioCommons"
+            ],
+            "email": "t.litfin@unsw.edu.au",
+            "name": "Thomas Litfin",
+            "url": "https://github.com/tlitfin"
+        },
+        {
+            "@id": "https://orcid.org/0000-0002-4032-5331",
+            "@type": "Person",
+            "affiliation": "Australian BioCommons",
+            "email": "ziadbkh@users.noreply.github.com",
+            "name": "Ziad Al-Bkhetan",
+            "url": "https://github.com/ziadbkh"
+        },
+        {
+            "@id": "#b5f01813-e5de-4d8d-9ab1-3903fac2fe95",
+            "@type": "Person",
+            "affiliation": "UNSW Structural Biology Facility, Australia",
+            "email": "n.glades@unsw.edu.au",
+            "name": "Nathan Glades",
+            "url": "https://github.com/nbtm-sh"
+        },
+        {
+            "@id": "https://orcid.org/0000-0001-9132-8981",
+            "@type": "Person",
+            "affiliation": "EMBL-EBI, UK",
+            "email": "32259775+vagkaratzas@users.noreply.github.com",
+            "name": "Evangelos Karatzas",
+            "url": "https://github.com/vagkaratzas"
+        },
+        {
+            "@id": "https://orcid.org/0000-0001-6104-9260",
+            "@type": "Person",
+            "affiliation": "Centre for Genomic Regulation, Spain",
+            "name": "Júlia Mir-Pedrol",
+            "url": "https://github.com/mirpedrol"
+        },
+        {
+            "@id": "https://orcid.org/0000-0003-0662-9101",
+            "@type": "Person",
+            "affiliation": [
+                "Sydney Informatics Hub, The University of Sydney, Australia",
+                "Australian BioCommons"
+            ],
+            "name": "Mitchell J O Brien",
+            "url": "https://github.com/mitchob"
         }
     ]
 }

@@ -63,6 +63,10 @@ workflow NFCORE_PROTEINFOLD {
     requested_modes      = params.mode.toLowerCase().split(",")
     requested_modes_size = requested_modes.size()
 
+    if (requested_modes.contains("colabfold") && params.colabfold_use_templates && !params.use_msa_server) {
+        error("`--colabfold_use_templates` requires `--use_msa_server` in ColabFold mode.")
+    }
+
     ch_dummy_file = channel.fromPath("$projectDir/assets/NO_FILE")
     ch_dummy_file_pae = channel.fromPath("$projectDir/assets/NO_FILE_PAE")
 
@@ -214,7 +218,7 @@ workflow NFCORE_PROTEINFOLD {
                                             it[0],
                                             it[1].sort { path ->
                                                 def filename = path.name
-                                                def matcher = filename =~ /.*_ranked_(\d+)\.pdb/
+                                                def matcher = filename =~ /.*_ranked_(\d+)\.(?:pdb|cif|mmcif)/
                                                 if (matcher.matches()) {
                                                     return matcher[0][1].toInteger()
                                                 } else {

@@ -44,6 +44,30 @@ process RUN_ROSETTAFOLD2NA {
         ln -s /app/RoseTTAFold2NA/network/* ./network
     fi
 
+    # RF2NA hard-codes the UniRef30_2020_06 database prefix. Allow a staged
+    # UniRef30 hhsuite database from another release by adding local aliases.
+    expected_uniref30_prefix="UniRef30_2020_06/UniRef30_2020_06"
+    if [ ! -s "\${expected_uniref30_prefix}_cs219.ffdata" ]; then
+        detected_uniref30_cs219="\$(find UniRef30_2020_06 -maxdepth 1 -name 'UniRef30_*_cs219.ffdata' -print -quit)"
+        if [ -z "\$detected_uniref30_cs219" ]; then
+            echo "[ROSETTAFOLD2NA] Could not find a staged UniRef30 *_cs219.ffdata file in UniRef30_2020_06/." >&2
+            exit 1
+        fi
+
+        detected_uniref30_prefix="\${detected_uniref30_cs219%_cs219.ffdata}"
+        for ext in a3m.ffdata a3m.ffindex cs219.ffdata cs219.ffindex hhm.ffdata hhm.ffindex; do
+            src="\${detected_uniref30_prefix}_\${ext}"
+            dst="\${expected_uniref30_prefix}_\${ext}"
+            if [ ! -s "\$src" ]; then
+                echo "[ROSETTAFOLD2NA] Missing staged UniRef30 database file: \$src" >&2
+                exit 1
+            fi
+            if [ ! -e "\$dst" ]; then
+                ln -s "\$(basename "\$src")" "\$dst"
+            fi
+        done
+    fi
+
     rf2na_input_dir="\${rf2na_input:-rf2na_input}"
 
     chain_map="\${rf2na_input_dir}/chain_map.tsv"

@@ -41,7 +41,7 @@ process COMPARE_STRUCTURES {
 
     stub:
     """
-    touch test_alphafold2_report.html
+    touch ${meta.id}_comparison_report.html
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

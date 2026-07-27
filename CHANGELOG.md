@@ -21,6 +21,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[#586](https://github.com/nf-core/proteinfold/pull/586)] - Allow local msa for Boltz with non-protein entities.
 - [[#618](https://github.com/nf-core/proteinfold/pull/618)] - Resolve boltz `ext.args` in closure.
 - [[PR #626](https://github.com/nf-core/proteinfold/pull/618)] - Move scientific validation tests and BioPython setup to manual workflow.
+- [[#619](https://github.com/nf-core/proteinfold/issues/619)] - Fix `extract_metrics.py` shebang to use `python3` for compatibility with minimal containers.
+- [[#209](https://github.com/nf-core/proteinfold/issues/209)] - Prevent ColabFold template runs unless `--use_msa_server` is enabled.
+- [[#456](https://github.com/nf-core/proteinfold/issues/456)] - Derive ranked metric ordering from structure filenames when generating TSV outputs.
+- [[#489](https://github.com/nf-core/proteinfold/issues/489)] - Specified Boltz output paths on `boltz_results_<sample_id>/`.
+- [[#576](https://github.com/nf-core/proteinfold/issues/576)] - Preserve native metric rank numbering and sort rank-derived outputs numerically.
+- [[PR #633](https://github.com/nf-core/proteinfold/pull/633)] - Fix comparison reports with esmfold for multirow samplesheets.
+- [[PR #634](https://github.com/nf-core/proteinfold/pull/634)] - Add support for outputs in cif format.
+- [[PR #636](https://github.com/nf-core/proteinfold/pull/636)] - Resolve alphafold2 `ext.args` in closure.
+- [[#365](https://github.com/nf-core/proteinfold/issues/365)] - Run nf-tests with module containers so captured versions match.
+- [[PR #640](https://github.com/nf-core/proteinfold/pull/640)] - Fix ro-crate with correct path to the metro map file.
+- [[PR #631](https://github.com/nf-core/proteinfold/pull/631)] - Add module tests for Boltz input conversion, MSA splitting, and ColabFold MMseqs search.
+- [[PR #632](https://github.com/nf-core/proteinfold/pull/632)] - Add GPU actions workflow and RUN_BOLTZ module test.
+- [[PR #641](https://github.com/nf-core/proteinfold/pull/641)] - Stabilise GPU nf-test snapshots and set a deterministic test random seed.
 - [[PR #644](https://github.com/nf-core/proteinfold/pull/644)] - Update pipeline template to [nf-core/tools 4.0.3](https://github.com/nf-core/tools/releases/tag/4.0.3).
 
 | Old parameter              | New parameter   |
