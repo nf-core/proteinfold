@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[#586](https://github.com/nf-core/proteinfold/pull/586)] - Allow local msa for Boltz with non-protein entities.
 - [[#618](https://github.com/nf-core/proteinfold/pull/618)] - Resolve boltz `ext.args` in closure.
 - [[PR #626](https://github.com/nf-core/proteinfold/pull/618)] - Move scientific validation tests and BioPython setup to manual workflow.
+- [[PR #644](https://github.com/nf-core/proteinfold/pull/644)] - Update pipeline template to [nf-core/tools 4.0.3](https://github.com/nf-core/tools/releases/tag/4.0.3).
 
 | Old parameter              | New parameter   |
 | -------------------------- | --------------- |
