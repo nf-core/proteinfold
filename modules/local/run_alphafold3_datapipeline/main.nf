@@ -14,6 +14,9 @@ process RUN_ALPHAFOLD3_DATAPIPELINE {
     path "uniref90/*"
     path "pdb_seqres/*"
     path "uniprot/*"
+    path "ntrna/*"
+    path "rfam/*"
+    path "rnacentral/*"
 
     output:
     tuple val(meta), path ("${meta.id}_data.json"), emit: data_json
@@ -65,6 +68,9 @@ process RUN_ALPHAFOLD3_DATAPIPELINE {
         --small_bfd_database_path=./small_bfd/bfd-first_non_consensus_sequences.fasta \\
         --uniprot_cluster_annot_database_path=\$uniprot \\
         --seqres_database_path=\$pdb_seqres \\
+        --ntrna_database_path=\$ntrna \\
+        --rfam_database_path=\$rfam \\
+        --rna_central_database_path=\$rna_central \\
         --output_dir=\$PWD \\
         --run_data_pipeline=true \\
         --run_inference=false \\
