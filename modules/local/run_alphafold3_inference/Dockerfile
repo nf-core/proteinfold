@@ -55,9 +55,12 @@ RUN (cd /hmmer_build/hmmer-3.4 && ./configure --prefix /hmmer) && \
     rm -R /hmmer_build
 
 # Clone AlphaFold3
+ARG ALPHAFOLD3_COMMIT=8a84535f4f5caeb01a5a1b3fc7ee03251c6035cd
+
 RUN git clone https://github.com/google-deepmind/alphafold3.git /app/alphafold && \
     cd /app/alphafold && \
-    git checkout 8a84535f4f5caeb01a5a1b3fc7ee03251c6035cd && \
+    git checkout "$ALPHAFOLD3_COMMIT" && \
+    printf '%s\n' "$ALPHAFOLD3_COMMIT" > /app/alphafold/COMMIT \
     cd -
 
 WORKDIR /app/alphafold
