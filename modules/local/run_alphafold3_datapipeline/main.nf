@@ -66,7 +66,7 @@ process RUN_ALPHAFOLD3_DATAPIPELINE {
         exit 1
     fi
 
-    rfam=\$(ls -v ./rfam/rfam*.fasta 2>/dev/null | tail -n 1 || echo "")
+    rfam=\$(ls -v ./rfam/Rfam-*.fasta 2>/dev/null | tail -n 1 || echo "")
     if [[ -z "\$rfam" ]]; then
         echo "ERROR: No Rfam database found"
         exit 1
