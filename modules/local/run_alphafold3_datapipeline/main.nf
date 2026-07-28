@@ -61,19 +61,19 @@ process RUN_ALPHAFOLD3_DATAPIPELINE {
     fi
 
     nt_rna=$(ls -v ./ntrna/nt_rna*.fasta 2>/dev/null | tail -n 1 || echo "")
-    if [[ -z "$nt_rna" ]]; then
+    if [[ -z "\$nt_rna" ]]; then
         echo "ERROR: No NT-RNA database found"
         exit 1
     fi
 
     rfam=$(ls -v ./rfam/rfam*.fasta 2>/dev/null | tail -n 1 || echo "")
-    if [[ -z "$rfam" ]]; then
+    if [[ -z "\$rfam" ]]; then
         echo "ERROR: No Rfam database found"
         exit 1
     fi
 
     rna_central=$(ls -v ./rnacentral/rnacentral*.fasta 2>/dev/null | tail -n 1 || echo "")
-    if [[ -z "$rna_central" ]]; then
+    if [[ -z "\$rna_central" ]]; then
         echo "ERROR: No RNAcentral database found"
         exit 1
     fi
