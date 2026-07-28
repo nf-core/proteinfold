@@ -60,8 +60,8 @@ ARG ALPHAFOLD3_COMMIT=8a84535f4f5caeb01a5a1b3fc7ee03251c6035cd
 RUN git clone https://github.com/google-deepmind/alphafold3.git /app/alphafold && \
     cd /app/alphafold && \
     git checkout "$ALPHAFOLD3_COMMIT" && \
-    printf '%s\n' "$ALPHAFOLD3_COMMIT" > /app/alphafold/COMMIT 
-    
+    printf '%s\n' "$ALPHAFOLD3_COMMIT" > /app/alphafold/COMMIT
+
 WORKDIR /app/alphafold
 
 # Install the exact dependency tree using uv and cache the build artifacts.
