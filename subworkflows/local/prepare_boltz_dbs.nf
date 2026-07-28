@@ -23,8 +23,6 @@ workflow PREPARE_BOLTZ_DBS {
     boltz2_mols_link
 
     main:
-    ch_versions     = channel.empty()
-
     if (boltz_db) {
         ch_boltz_ccd    = channel.value(files(boltz_ccd, checkIfExists: true))
         ch_boltz_model  = channel.value(files(boltz_model, checkIfExists: true))
@@ -39,7 +37,6 @@ workflow PREPARE_BOLTZ_DBS {
             ]
         )
         ch_boltz_ccd = ARIA2_BOLTZ_CCD.out.downloaded_file.map { it -> it[1] }
-        ch_versions = ch_versions.mix(ARIA2_BOLTZ_CCD.out.versions)
 
         ARIA2_BOLTZ_MODEL(
             [
@@ -48,7 +45,6 @@ workflow PREPARE_BOLTZ_DBS {
             ]
         )
         ch_boltz_model = ARIA2_BOLTZ_MODEL.out.downloaded_file.map { it ->  it[1] }
-        ch_versions = ch_versions.mix(ARIA2_BOLTZ_MODEL.out.versions)
 
         ARIA2_BOLTZ2_AFF(
             [
@@ -57,7 +53,6 @@ workflow PREPARE_BOLTZ_DBS {
             ]
         )
         ch_boltz2_aff = ARIA2_BOLTZ2_AFF.out.downloaded_file.map { it -> it[1] }
-        ch_versions = ch_versions.mix(ARIA2_BOLTZ2_AFF.out.versions)
 
         ARIA2_BOLTZ2_CONF(
             [
@@ -66,13 +61,11 @@ workflow PREPARE_BOLTZ_DBS {
             ]
         )
         ch_boltz2_conf = ARIA2_BOLTZ2_CONF.out.downloaded_file.map { it -> it[1] }
-        ch_versions = ch_versions.mix(ARIA2_BOLTZ2_CONF.out.versions)
 
 	ARIA2_UNCOMPRESS(
                 boltz2_mols_link
         )
         ch_boltz2_mols = ARIA2_UNCOMPRESS.out.db
-        ch_versions = ch_versions.mix(ARIA2_UNCOMPRESS.out.versions)
     }
 
     emit:
@@ -81,5 +74,4 @@ workflow PREPARE_BOLTZ_DBS {
     boltz2_aff   = ch_boltz2_aff
     boltz2_conf  = ch_boltz2_conf
     boltz2_mols  = ch_boltz2_mols
-    versions     = ch_versions
 }

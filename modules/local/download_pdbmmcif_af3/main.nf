@@ -16,7 +16,8 @@ process DOWNLOAD_PDBMMCIF_AF3 {
 
     output:
     path ('mmcif_files/*.cif'), emit: ch_db
-    path "versions.yml"       , emit: versions
+    tuple val("${task.process}"), val('wget'), eval('wget --version 2>&1 | grep "GNU Wget" | cut -f3 -d " "'), emit: versions_wget, topic: versions
+    tuple val("${task.process}"), val('untar'), eval('tar --version 2>&1 | sed "s/^.*(GNU tar) //; s/ Copyright.*//"'), emit: versions_untar, topic: versions
 
     when:
     task.ext.when == null || task.ext.when
@@ -30,23 +31,11 @@ process DOWNLOAD_PDBMMCIF_AF3 {
         --strip-components 1 \\
         -xf - \\
         --directory="./mmcif_files"
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        wget: \$(echo \$(wget --version 2>&1) | grep 'GNU Wget' | cut -f3 -d ' ')
-        untar: \$(echo \$(tar --version 2>&1) | sed 's/^.*(GNU tar) //; s/ Copyright.*\$//')
-    END_VERSIONS
     """
 
     stub:
     """
     mkdir mmcif_files
     touch mmcif_files/stub.cif
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        wget: \$(echo \$(wget --version 2>&1) | grep 'GNU Wget' | cut -f3 -d ' ' || echo "unknown")
-        untar: \$(echo \$(tar --version 2>&1 | sed 's/^.*(GNU tar) //; s/ Copyright.*\$//' | grep -m1 '^[0-9]' || echo unknown)
-    END_VERSIONS
     """
 }

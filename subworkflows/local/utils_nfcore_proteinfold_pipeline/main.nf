@@ -39,8 +39,6 @@ workflow PIPELINE_INITIALISATION {
 
     main:
 
-    ch_versions = channel.empty()
-
     //
     // Print version and exit if required and dump pipeline parameters to JSON file
     //
@@ -136,7 +134,6 @@ ${colors.purple}  nf-core/proteinfold ${workflow.manifest.version}${colors.reset
 
     emit:
     samplesheet  = ch_samplesheet
-    versions     = ch_versions
 }
 
 /*
@@ -277,7 +274,7 @@ def methodsDescriptionText(mqc_methods_yaml) {
     // TODO nf-core: Only uncomment below if logic in toolCitationText/toolBibliographyText has been filled!
     // meta["tool_citations"] = toolCitationText().replaceAll(", \\.", ".").replaceAll("\\. \\.", ".").replaceAll(", \\.", ".")
     // meta["tool_bibliography"] = toolBibliographyText()
-    def methods_text = mqc_methods_yaml.text
+    def methods_text = mqc_methods_yaml.getText()
 
     def engine =  new groovy.text.SimpleTemplateEngine()
     def description_html = engine.createTemplate(methods_text).make(meta)

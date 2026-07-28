@@ -13,7 +13,11 @@ process DOWNLOAD_RNA_DATABASES {
 
     output:
     path "RNA", emit: ch_db
-    path "versions.yml", emit: versions
+    tuple val("${task.process}"), val('cmpress'), eval("cmpress -h | grep -oP 'INFERNAL \\K\\d+\\.\\d+'"), emit: versions_cmpress, topic: versions
+    tuple val("${task.process}"), val('makeblastdb'), eval("makeblastdb -version | grep -oP 'makeblastdb: \\K\\d+\\.\\d+\\.\\d+'"), emit: versions_makeblastdb, topic: versions
+    tuple val("${task.process}"), val('update_blastdb'), eval("update_blastdb.pl --version | grep -oP 'Update BLAST databases \\K\\d+\\.\\d+\\.\\d+'"), emit: versions_update_blastdb, topic: versions
+    tuple val("${task.process}"), val('perl'), eval("perl --version | grep -oP 'This is perl.*\\K\\d+\\.\\d+\\.\\d+'"), emit: versions_perl, topic: versions
+    tuple val("${task.process}"), val('rf2na'), eval("grep \"version\" /app/RoseTTAFold2NA/README.md | awk '{print \$2}'"), emit: versions_rf2na, topic: versions
 
     when:
     task.ext.when == null || task.ext.when
@@ -48,30 +52,12 @@ process DOWNLOAD_RNA_DATABASES {
     update_blastdb.pl --decompress nt
 
     cd ..
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        cmpress: \$(cmpress -h | grep -oP 'INFERNAL \\K\\d+\\.\\d+')
-        makeblastdb: \$(makeblastdb -version | grep -oP 'makeblastdb: \\K\\d+\\.\\d+\\.\\d+')
-        update_blastdb: \$(update_blastdb.pl --version | grep -oP 'Update BLAST databases \\K\\d+\\.\\d+\\.\\d+')
-        perl: \$(perl --version | grep -oP 'This is perl.*\\K\\d+\\.\\d+\\.\\d+')
-        rf2na: \$(grep "version" /app/RoseTTAFold2NA/README.md | awk '{print \$2}')
-    END_VERSIONS
     """
 
     stub:
     """
     mkdir -p RNA
     touch RNA/Rfam.full_region RNA/Rfam.cm RNA/id_mapping.tsv RNA/rfam_annotations.tsv RNA/rnacentral.fasta
-    touch RNA/nt.00.nhr RNA/nt.00.nin RNA/nt.00.nsq
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        cmpress: 1.1.4
-        makeblastdb: 2.12.0
-        update_blastdb: 2.12.0
-        perl: 5.32.1
-        rf2na: 1.0.0
     END_VERSIONS
     """
 }
