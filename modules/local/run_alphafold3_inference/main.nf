@@ -83,7 +83,7 @@ process RUN_ALPHAFOLD3_INFERENCE {
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         python: \$(python3 --version | sed 's/Python //g')
-        alphafold3: \$(cd /app/alphafold && git rev-parse HEAD 2>/dev/null || echo "unknown")
+        alphafold3: \$(cat /app/alphafold/COMMIT 2>/dev/null || echo "unknown")
         jax: \$(python3 -c "import jax; print(jax.__version__)" 2>/dev/null || echo "unknown")
         jaxlib: \$(python3 -c "import jaxlib; print(jaxlib.__version__)" 2>/dev/null || echo "unknown")
         numpy: \$(python3 -c "import numpy; print(numpy.__version__)" 2>/dev/null || echo "unknown")
@@ -114,7 +114,7 @@ process RUN_ALPHAFOLD3_INFERENCE {
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         python: \$(python3 --version 2>/dev/null | sed 's/Python //g' || echo "unknown")
-        alphafold3: \$(cd /app/alphafold && git rev-parse HEAD 2>/dev/null || echo "unknown")
+        alphafold3: \$(cat /app/alphafold/COMMIT 2>/dev/null || echo "unknown")
         jax: \$(python3 -c "import jax; print(jax.__version__)" 2>/dev/null || echo "unknown")
         jaxlib: \$(python3 -c "import jaxlib; print(jaxlib.__version__)" 2>/dev/null || echo "unknown")
         numpy: \$(python3 -c "import numpy; print(numpy.__version__)" 2>/dev/null || echo "unknown")
