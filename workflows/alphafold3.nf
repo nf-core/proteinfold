@@ -35,6 +35,9 @@ workflow ALPHAFOLD3 {
     ch_uniref90          // channel: path(uniref90)
     ch_pdb_seqres        // channel: path(pdb_seqres)
     ch_uniprot           // channel: path(uniprot)
+    ch_nt_rna             // channel: path(ntrna)
+    ch_rfam              // channel: path(rfam)
+    ch_rnacentral        // channel: path(rnacentral)
 
     main:
     ch_structure_final      = channel.empty()
@@ -63,7 +66,10 @@ workflow ALPHAFOLD3 {
         ch_mmcif_files,
         ch_uniref90,
         ch_pdb_seqres,
-        ch_uniprot
+        ch_uniprot,
+        ch_nt_rna,
+        ch_rfam,
+        ch_rnacentral
     )
     ch_versions = ch_versions.mix(RUN_ALPHAFOLD3_DATAPIPELINE.out.versions)
 
