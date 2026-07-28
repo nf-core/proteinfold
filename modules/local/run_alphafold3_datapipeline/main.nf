@@ -14,7 +14,7 @@ process RUN_ALPHAFOLD3_DATAPIPELINE {
     path "uniref90/*"
     path "pdb_seqres/*"
     path "uniprot/*"
-    path "ntrna/*"
+    path "nt_rna/*"
     path "rfam/*"
     path "rnacentral/*"
 
@@ -60,7 +60,7 @@ process RUN_ALPHAFOLD3_DATAPIPELINE {
         exit 1
     fi
 
-    nt_rna=\$(ls -v ./ntrna/nt_rna*.fasta 2>/dev/null | tail -n 1 || echo "")
+    nt_rna=\$(ls -v ./nt_rna/nt_rna*.fasta 2>/dev/null | tail -n 1 || echo "")
     if [[ -z "\$nt_rna" ]]; then
         echo "ERROR: No NT-RNA database found"
         exit 1
