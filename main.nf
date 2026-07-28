@@ -203,7 +203,10 @@ workflow NFCORE_PROTEINFOLD {
             PREPARE_ALPHAFOLD3_DBS.out.pdb_mmcif,
             PREPARE_ALPHAFOLD3_DBS.out.uniref90,
             PREPARE_ALPHAFOLD3_DBS.out.pdb_seqres,
-            PREPARE_ALPHAFOLD3_DBS.out.uniprot
+            PREPARE_ALPHAFOLD3_DBS.out.uniprot,
+            PREPARE_ALPHAFOLD3_DBS.out.nt_rna,
+            PREPARE_ALPHAFOLD3_DBS.out.rfam,
+            PREPARE_ALPHAFOLD3_DBS.out.rnacentral
         )
 
         ch_multiqc      = ch_multiqc.mix(ALPHAFOLD3.out.multiqc_report)

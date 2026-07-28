@@ -60,6 +60,24 @@ process RUN_ALPHAFOLD3_DATAPIPELINE {
         exit 1
     fi
 
+    nt_rna=$(ls -v ./ntrna/nt_rna*.fasta 2>/dev/null | tail -n 1 || echo "")
+    if [[ -z "$nt_rna" ]]; then
+        echo "ERROR: No NT-RNA database found"
+        exit 1
+    fi
+
+    rfam=$(ls -v ./rfam/rfam*.fasta 2>/dev/null | tail -n 1 || echo "")
+    if [[ -z "$rfam" ]]; then
+        echo "ERROR: No Rfam database found"
+        exit 1
+    fi
+
+    rna_central=$(ls -v ./rnacentral/rnacentral*.fasta 2>/dev/null | tail -n 1 || echo "")
+    if [[ -z "$rna_central" ]]; then
+        echo "ERROR: No RNAcentral database found"
+        exit 1
+    fi
+
     python3 /app/alphafold/run_alphafold.py \\
         --json_path=${json} \\
         --uniref90_database_path=\$uniref90 \\
@@ -68,7 +86,7 @@ process RUN_ALPHAFOLD3_DATAPIPELINE {
         --small_bfd_database_path=./small_bfd/bfd-first_non_consensus_sequences.fasta \\
         --uniprot_cluster_annot_database_path=\$uniprot \\
         --seqres_database_path=\$pdb_seqres \\
-        --ntrna_database_path=\$ntrna \\
+        --ntrna_database_path=\$nt_rna \\
         --rfam_database_path=\$rfam \\
         --rna_central_database_path=\$rna_central \\
         --output_dir=\$PWD \\
