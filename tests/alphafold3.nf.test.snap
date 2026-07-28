@@ -11,17 +11,17 @@
                     "generate_report.py": "Python 3.12.7"
                 },
                 "RUN_ALPHAFOLD3_DATAPIPELINE": {
-                    "python": "3.11.12",
-                    "alphafold3": "unknown",
+                    "python": "3.11.15",
+                    "alphafold3": "3c27a149a25b6c8930ce68cfeb2a6cbb9afb3359",
                     "hmmer": 3.4
                 },
                 "RUN_ALPHAFOLD3_INFERENCE": {
-                    "python": "3.11.12",
-                    "alphafold3": "unknown",
+                    "python": "3.11.15",
+                    "alphafold3": "3c27a149a25b6c8930ce68cfeb2a6cbb9afb3359",
                     "jax": "0.4.34",
                     "jaxlib": "0.4.34",
                     "numpy": "2.1.3",
-                    "biopython": 1.85,
+                    "biopython": 1.87,
                     "rdkit": "2024.03.5"
                 },
                 "Workflow": {
@@ -99,10 +99,10 @@
                 "T1026_alphafold3_report.html:md5,d41d8cd98f00b204e9800998ecf8427e"
             ]
         ],
-        "timestamp": "2026-05-29T12:02:22.195461228",
         "meta": {
-            "nf-test": "0.9.5",
-            "nextflow": "26.04.0"
-        }
+            "nf-test": "0.9.3",
+            "nextflow": "25.10.4"
+        },
+        "timestamp": "2026-07-27T23:15:55.868260211"
     }
 }
