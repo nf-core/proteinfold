@@ -2,8 +2,11 @@ lint:
   files_unchanged:
     - .github/workflows/linting.yml
     - .github/CONTRIBUTING.md
+    - .github/workflows/branch.yml
   actions_schema_validation: false
   multiqc_config: false
+  files_exist:
+    - .github/workflows/linting_comment.yml
 nf_core_version: 3.5.1
 repository_type: pipeline
 template:
