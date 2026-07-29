@@ -35,15 +35,15 @@ workflow ALPHAFOLD3 {
     ch_uniref90          // channel: path(uniref90)
     ch_pdb_seqres        // channel: path(pdb_seqres)
     ch_uniprot           // channel: path(uniprot)
-    ch_nt_rna             // channel: path(ntrna)
+    ch_nt_rna            // channel: path(ntrna)
     ch_rfam              // channel: path(rfam)
     ch_rnacentral        // channel: path(rnacentral)
 
     main:
     ch_structure_final      = channel.empty()
     ch_top_ranked_structure = channel.empty()
-    ch_msa_final           = channel.empty()
-    ch_multiqc_report      = channel.empty()
+    ch_msa_final            = channel.empty()
+    ch_multiqc_report       = channel.empty()
 
     ch_samplesheet
         .branch { it ->
@@ -180,9 +180,9 @@ workflow ALPHAFOLD3 {
         .set { ch_chainwise_ipsae_final }
 
     emit:
-    top_ranked_pdb  = ch_top_ranked_structure // channel: [ meta, /path/to/*.cif ] (common output label)
-    pdb             = ch_structure_final      // channel: [ meta, /path/to/*.cif, ...,/path/to/*.cif ] (common output label)
-    msa             = ch_msa_final            // channel: [ meta, /path/to/*_alphafold3_msa.tsv ]
+    top_ranked_pdb  = ch_top_ranked_structure  // channel: [ meta, /path/to/*.cif ] (common output label)
+    pdb             = ch_structure_final       // channel: [ meta, /path/to/*.cif, ...,/path/to/*.cif ] (common output label)
+    msa             = ch_msa_final             // channel: [ meta, /path/to/*_alphafold3_msa.tsv ]
     pae             = ch_pae_final             // channel: [ meta, path/to/*_pae.tsv ]
     iptm            = ch_iptm_final            // channel: [ meta, path/to/*_iptm.tsv ]
     ipsae           = ch_ipsae_final           // channel: [ meta, path/to/*_ipsae.tsv ]
