@@ -36,6 +36,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[PR #641](https://github.com/nf-core/proteinfold/pull/641)] - Stabilise GPU nf-test snapshots and set a deterministic test random seed.
 - [[PR #644](https://github.com/nf-core/proteinfold/pull/644)] - Update pipeline template to [nf-core/tools 4.0.3](https://github.com/nf-core/tools/releases/tag/4.0.3).
 - [[PR #645](https://github.com/nf-core/proteinfold/pull/645)] - Update image version for alphafold3 modules and `colabfold_batch`.
+- [[PR #647](https://github.com/nf-core/proteinfold/pull/647)] - Fix missing X character in AF3 and Boltz fasta processing.
 
 | Old parameter              | New parameter   |
 | -------------------------- | --------------- |
