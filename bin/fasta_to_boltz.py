@@ -65,7 +65,7 @@ def infer_entity_type(header, sequence):
     if len(seq_set - set("ACTGN")) == 0:
         return "dna"
     # Protein: only 20 AA, not just A,C,T,G,U,N
-    protein_letters = set("ACDEFGHIKLMNPQRSTVWY")
+    protein_letters = set("ACDEFGHIKLMNPQRSTVWYX")
     if len(seq_set - protein_letters) == 0 and not (seq_set <= set("ACUGTN")):
         return "protein"
     # SMILES: fallback
