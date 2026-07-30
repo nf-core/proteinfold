@@ -592,6 +592,23 @@ workflow NFCORE_PROTEINFOLD {
     //
     // POST PROCESSING: generate visualisation reports
     //
+    // TODO: we need to validate the rest of foldseek parameters if foldseek is set to run
+    // TODO: maybe create a parameter that is run_foldseek or skip_foldsee instead as there are no more mode than can be use now
+
+    // TODO move it to pdb.config? asign as in prepare dbs
+    if (params.foldseek_search == "easysearch"){
+        ch_foldseek_db = channel.value([
+            [
+                id: params.foldseek_db,
+            ],
+            file(params.foldseek_db_path, checkIfExists: true)
+        ])
+    }
+
+    ch_multiqc_config        = channel.fromPath("$projectDir/assets/multiqc_config.yml", checkIfExists: true).first()
+    ch_multiqc_custom_config = params.multiqc_config ? channel.fromPath( params.multiqc_config ).first()  : channel.fromPath("${projectDir}/multiqc_proteinfold/multiqc_proteinfold_config.yml")
+    ch_multiqc_logo          = params.multiqc_logo   ? channel.fromPath( params.multiqc_logo ).first()    : channel.empty()
+    ch_multiqc_methods_description = params.multiqc_methods_description ? file(params.multiqc_methods_description, checkIfExists: true) : file("$projectDir/assets/methods_description_template.yml", checkIfExists: true)
     ch_report_template     = channel.value(file("$projectDir/assets/report_template.html", checkIfExists: true))
     ch_comparison_template = channel.value(file("$projectDir/assets/comparison_template.html", checkIfExists: true))
 
