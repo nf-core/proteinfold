@@ -1,0 +1,26 @@
+{
+    "dummy cifcheck": {
+        "content": [
+            [
+                "versions.yml:md5,5d10abf44b0e96b56d6aac1fa7486774"
+            ]
+        ],
+        "timestamp": "2026-05-15T14:47:19.997267286",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "25.10.4"
+        }
+    },
+    "real modelarchive file (augmented)": {
+        "content": [
+            [
+                "versions.yml:md5,5d10abf44b0e96b56d6aac1fa7486774"
+            ]
+        ],
+        "timestamp": "2026-05-15T14:47:27.288869941",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "25.10.4"
+        }
+    }
+}

@@ -1,0 +1,207 @@
+nextflow_process {
+
+    name "Test metrics are inserted properly by ASSEMBLE_MODELCIF process"
+    script "../modules/local/assemble_modelcif/main.nf"
+    process "ASSEMBLE_MODELCIF"
+
+    tag "assemble_modelcif"
+    config "./assemble_modelcif_software.config"
+
+    def assertModelcifOutput = { proc, modelcifPath, expectEmbeddedPAE, expectBinaryCIF ->
+        assert proc.success
+        assert proc.out.modelcif.size() == 1
+
+        def outName = modelcifPath.getFileName().toString()
+        if (expectBinaryCIF) {
+            assert outName.endsWith('.bcif')
+            assert modelcifPath.bytes.length > 0
+
+            def parseCmd = [
+                'python3',
+                '-c',
+                'import sys, modelcif.reader; '\
+                + 'f=open(sys.argv[1],"rb"); '\
+                + 'systems=modelcif.reader.read(f); '\
+                + 'assert len(systems) > 0; '\
+                + 'print(len(systems))',
+                modelcifPath.toString(),
+            ]
+            def parseProc = parseCmd.execute()
+            def stdout = new StringBuffer()
+            def stderr = new StringBuffer()
+            parseProc.consumeProcessOutput(stdout, stderr)
+            def exitCode = parseProc.waitFor()
+            assert exitCode == 0 : "BinaryCIF parse failed (exit=${exitCode}). stdout='${stdout.toString().trim()}' stderr='${stderr.toString().trim()}'"
+            return
+        }
+
+        def mmcif = modelcifPath.text
+        assertAll(
+            { assert outName.endsWith('.mmcif') },
+            { assert mmcif.contains("_ma_qa_metric_local"),
+                "pLDDT qa_metric table missing from output mmCIF" },
+
+            { assert mmcif.contains("_ma_qa_metric_global"),
+                "Global qa_metric table (pTM/ipTM) missing from output mmCIF" },
+
+            { assert mmcif.contains("pTM"),
+                "pTM metric type missing from output mmCIF" },
+
+            { assert mmcif.contains("ipTM"),
+                "ipTM metric type missing from output mmCIF" },
+
+            {
+                if (expectEmbeddedPAE) {
+                    assert mmcif.contains("_ma_qa_metric_local_pairwise")
+                } else {
+                    assert mmcif.contains("_ma_entry_associated_files")
+                }
+            },
+
+            {
+                if (expectEmbeddedPAE) {
+                    assert mmcif.contains("PAE")
+                } else {
+                    assert (mmcif =~ /\S+\.tsv[^\n]*QA metrics/).find()
+                }
+            },
+
+            {
+                if (expectEmbeddedPAE) {
+                    assert !mmcif.contains("_ma_entry_associated_files")
+                } else {
+                    assert (mmcif =~ /Predicted aligned error|\bPAE\b/).find()
+                }
+            },
+
+            { assert mmcif.contains("coevolution MSA"),
+                "Coevolution MSA protocol step missing from output mmCIF" },
+
+            { assert mmcif.contains("modeling"),
+                "Modeling protocol step missing from output mmCIF" }
+        )
+    }
+
+    test("dummy inputs produce modelcif with associated PAE") {
+
+        when {
+            process {
+                """
+                input[0] = [
+                    [ id: 'test', model: 'alphafold2', msa_tool: 'jackhmmer' ],
+                    file("$projectDir/assets/DUMMY_MODELCIF.mmcif", checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_MSA.tsv",         checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_PLDDT.tsv",       checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_PAE.tsv",         checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_PTM.tsv",         checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_IPTM.tsv",        checkIfExists: true),
+                    file("$projectDir/assets/NO_FILE",               checkIfExists: true)
+                ]
+                """
+            }
+        }
+
+        then {
+            def modelcifPath = path(process.out.modelcif[0][1])
+            assertModelcifOutput(process, modelcifPath, false, false)
+            assert snapshot(process.out.versions).match()
+        }
+    }
+
+    test("dummy inputs produce modelcif with embedded PAE") {
+        config "./assemble_modelcif_embed.config"
+
+        when {
+            process {
+                """
+                input[0] = [
+                    [ id: 'test_embed', model: 'alphafold2', msa_tool: 'jackhmmer' ],
+                    file("$projectDir/assets/DUMMY_MODELCIF.mmcif", checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_MSA.tsv",         checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_PLDDT.tsv",       checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_PAE.tsv",         checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_PTM.tsv",         checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_IPTM.tsv",        checkIfExists: true),
+                    file("$projectDir/assets/NO_FILE",               checkIfExists: true)
+                ]
+                """
+            }
+        }
+
+        then {
+            def modelcifPath = path(process.out.modelcif[0][1])
+            assertModelcifOutput(process, modelcifPath, true, false)
+            assert snapshot(process.out.versions).match()
+        }
+    }
+
+    test("dummy inputs produce binaryCIF") {
+        config "./assemble_modelcif_binary.config"
+
+        when {
+            process {
+                """
+                input[0] = [
+                    [ id: 'test_binary', model: 'alphafold2', msa_tool: 'jackhmmer' ],
+                    file("$projectDir/assets/DUMMY_MODELCIF.mmcif", checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_MSA.tsv",         checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_PLDDT.tsv",       checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_PAE.tsv",         checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_PTM.tsv",         checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_IPTM.tsv",        checkIfExists: true),
+                    file("$projectDir/assets/NO_FILE",               checkIfExists: true)
+                ]
+                """
+            }
+        }
+
+        then {
+            def modelcifPath = path(process.out.modelcif[0][1])
+            assertModelcifOutput(process, modelcifPath, false, true)
+            assert snapshot(process.out.versions).match()
+        }
+    }
+
+    test("dummy inputs produce modelcif from five mmcif structures") {
+        config "./assemble_modelcif_all_structs.config"
+
+        when {
+            process {
+                """
+                input[0] = [
+                    [ id: 'test_multi', model: 'alphafold2', msa_tool: 'jackhmmer' ],
+                    [
+                        file("$projectDir/assets/DUMMY_MMCIF_rank_0.mmcif", checkIfExists: true),
+                        file("$projectDir/assets/DUMMY_MMCIF_rank_1.mmcif", checkIfExists: true),
+                        file("$projectDir/assets/DUMMY_MMCIF_rank_2.mmcif", checkIfExists: true),
+                        file("$projectDir/assets/DUMMY_MMCIF_rank_3.mmcif", checkIfExists: true),
+                        file("$projectDir/assets/DUMMY_MMCIF_rank_4.mmcif", checkIfExists: true)
+                    ],
+                    file("$projectDir/assets/DUMMY_MSA.tsv",         checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_PLDDT.tsv",       checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_PAE.tsv",         checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_PTM.tsv",         checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_IPTM.tsv",        checkIfExists: true),
+                    file("$projectDir/assets/NO_FILE",               checkIfExists: true)
+                ]
+                """
+            }
+        }
+
+        then {
+            def modelcifPath = path(process.out.modelcif[0][1])
+            assertModelcifOutput(process, modelcifPath, false, false)
+
+            def mmcif = modelcifPath.text
+            assertAll(
+                { assert mmcif.contains("test_multi rank_0") },
+                { assert mmcif.contains("test_multi rank_1") },
+                { assert mmcif.contains("test_multi rank_2") },
+                { assert mmcif.contains("test_multi rank_3") },
+                { assert mmcif.contains("test_multi rank_4") }
+            )
+            assert process.out.versions.size() == 1
+        }
+    }
+
+}
