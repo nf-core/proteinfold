@@ -7,7 +7,7 @@ ARG CUDA_VERSION
 
 LABEL org.opencontainers.image.title="nf-core/proteinfold_colabfold" \
     org.opencontainers.image.description="Docker image containing all software requirements to run the COLABFOLD_BATCH module using the nf-core/proteinfold pipeline" \
-    org.opencontainers.image.version="2.0.0" \
+    org.opencontainers.image.version="2.1.0" \
     org.opencontainers.image.authors="Joshua Storm Caley <j.caley@unsw.edu.au>" \
     org.opencontainers.image.source="https://github.com/nf-core/proteinfold" \
     org.opencontainers.image.licenses="MIT"
@@ -25,10 +25,10 @@ RUN apt-get update && \
     CONDA_OVERRIDE_CUDA=$(echo $CUDA_VERSION | cut -d'.' -f1,2) mamba install -c conda-forge -c nvidia -c bioconda \
         openmm pdbfixer kalign2=2.04 hhsuite=3.3.0 -y && \
     \
-    pip install --no-cache-dir --no-warn-conflicts "colabfold[alphafold-minus-jax] @ git+https://github.com/sokrypton/ColabFold.git@e8ebd9a" && \
+    pip install --no-cache-dir --no-warn-conflicts "colabfold[alphafold-minus-jax] @ git+https://github.com/sokrypton/ColabFold.git@v1.6.2" && \
     pip install --no-cache-dir silence_tensorflow && \
     pip uninstall -y jax jaxlib || true && \
-    pip install --no-cache-dir "jax[cuda12]==0.5.3" "jaxlib==0.5.3" && \
+    pip install --no-cache-dir "jax[cuda12]==0.6.2" && \
     \
     mamba clean -a -y && \
     rm -rf /usr/local/pkgs && \
