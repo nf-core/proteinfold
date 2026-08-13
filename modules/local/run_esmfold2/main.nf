@@ -5,7 +5,8 @@ process RUN_ESMFOLD2 {
     label 'process_gpu'
 
     //container "nf-core/proteinfold_esmfold2:2.0.0"
-    container "ghcr.io/jscgh/proteinfold_esmfold2:0.1.0"
+    //container "ghcr.io/jscgh/proteinfold_esmfold2:0.1.0"
+    container "ghcr.io/tlitfin/esmfold2:1.0"
 
     input:
     tuple val(meta), path(input_seq), path(msa_csv)
@@ -36,13 +37,17 @@ process RUN_ESMFOLD2 {
     export TRITON_CACHE_DIR="$PWD/.triton"
     export TORCHINDUCTOR_CACHE_DIR="$PWD/.torchinductor"
     export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
+    export HOME="$PWD/"
+    #export LD_LIBRARY_PATH="/usr/local/lib/python3.12/site-packages/cuequivariance_ops/lib:\$LD_LIBRARY_PATH"
 
     run_esmfold2.py \\
         --input ${input_seq} \\
         --id ${meta.id} \\
         --output_dir . \\
-        --output_format both \\
         --num-loops 20 \\
+        --seed 0 \\
+        --num-seeds 4 \\
+        --num-diffusion-samples 5 \\
         $args
 
     if [ -f "${meta.id}.cif" ]; then

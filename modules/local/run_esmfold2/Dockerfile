@@ -1,56 +1,68 @@
-ARG CUDA_VERSION=12.4.1
-FROM nvidia/cuda:${CUDA_VERSION}-cudnn-runtime-ubuntu22.04
-# FROM directive resets ARGS, so we specify again (the value is retained if
-# previously set).
-ARG CUDA_VERSION
-ARG MINIFORGE_VERSION=24.11.3-0
-ARG ESM_COMMIT=c94ed8d
-ARG TRANSFORMERS_COMMIT=3a8956fb4d4ea16b0ec8e71deef2c2909b6a5cbf
-ARG PYTHON_VERSION=3.12
-ARG TORCH_VERSION=2.6.0
+FROM nvidia/cuda:12.6.3-cudnn-devel-ubuntu24.04 AS builder
 
-LABEL org.opencontainers.image.title="nf-core/proteinfold_esmfold2" \
-    org.opencontainers.image.description="Docker image containing all software requirements to run ESMFold2 using the nf-core/proteinfold pipeline" \
-    org.opencontainers.image.version="2.0.0" \
-    org.opencontainers.image.authors="Joshua Storm Caley <j.caley@unsw.edu.au>" \
-    org.opencontainers.image.source="https://github.com/nf-core/proteinfold" \
-    org.opencontainers.image.licenses="MIT"
+ENV DEBIAN_FRONTEND=noninteractive \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    PYTHONUNBUFFERED=1 \
+    TOKENIZERS_PARALLELISM=false \
+    VIRTUAL_ENV=/opt/venv \
+    PATH=/opt/venv/bin:$PATH
 
-# Add env variables
-ENV PATH="/conda/bin:$PATH"
-
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-    build-essential \
-    wget \
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3 \
+    python3-pip \
+    python3-venv \
+    python3-dev \
     git \
+    build-essential \
+    ninja-build \
+    ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Miniconda package manager
-# Avoids using defaults channel
-RUN wget -q -P /tmp \
-    "https://github.com/conda-forge/miniforge/releases/download/${MINIFORGE_VERSION}/Miniforge3-$(uname)-$(uname -m).sh" && \
-    bash /tmp/Miniforge3-$(uname)-$(uname -m).sh -b -p /conda && \
-    rm -rf /tmp/Miniforge3-$(uname)-$(uname -m).sh /var/lib/apt/lists/* && \
-    apt-get autoremove -y && apt-get clean -y
+RUN python3 -m venv "$VIRTUAL_ENV"
 
-RUN /conda/bin/conda install --quiet -y -c conda-forge \
-    conda=24.11.3 \
-    pip \
-    python=${PYTHON_VERSION} \
-    biopython \
-    rdkit \
-    && /conda/bin/conda clean --all --force-pkgs-dirs --yes
+RUN pip install --upgrade pip setuptools wheel psutil
 
-RUN /conda/bin/pip install --no-cache-dir --upgrade pip setuptools wheel
+RUN python3 -m pip install \
+    --index-url https://download.pytorch.org/whl/cu126 \
+    torch torchvision torchaudio
 
-RUN /conda/bin/pip install --no-cache-dir \
-    --index-url https://download.pytorch.org/whl/cu124 \
-    torch==${TORCH_VERSION}
+RUN pip install cuequivariance cuequivariance-torch cuequivariance-ops-torch-cu12
+RUN pip install --no-build-isolation flash-attn
 
-RUN /conda/bin/pip install --no-cache-dir \
-    "transformers @ git+https://github.com/Biohub/transformers.git@${TRANSFORMERS_COMMIT}" \
-    "esm @ git+https://github.com/Biohub/esm.git@${ESM_COMMIT}"
+ARG ESM_REF=main
+RUN pip install "esm @ git+https://github.com/Biohub/esm.git@${ESM_REF}"
 
-WORKDIR /app
+RUN pip check
 
-COPY bin/run_esmfold2.py /app/run_esmfold2.py
+
+#FROM nvidia/cuda:12.6.3-cudnn-runtime-ubuntu24.04 AS runtime
+FROM nvidia/cuda:12.6.3-cudnn-devel-ubuntu24.04 AS runtime
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    PYTHONUNBUFFERED=1 \
+    TOKENIZERS_PARALLELISM=false \
+    VIRTUAL_ENV=/opt/venv \
+    PATH=/opt/venv/bin:$PATH \
+    CC=/usr/bin/gcc \
+    CXX=/usr/bin/g++
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3 \
+    python3-dev \
+    ca-certificates \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN useradd --create-home --uid 10001 --shell /bin/bash appuser
+
+COPY --from=builder /opt/venv /opt/venv
+
+RUN mkdir -p /workspace && chown -R appuser:appuser /workspace
+
+WORKDIR /workspace
+USER appuser
+
+CMD ["python"]

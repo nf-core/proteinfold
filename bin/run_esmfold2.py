@@ -3,6 +3,7 @@
 import argparse
 import csv
 import inspect
+import math
 import os
 import re
 import string
@@ -50,15 +51,6 @@ def parse_args(args=None):
         help="Output directory for derived structure file paths. Default: current directory",
     )
     parser.add_argument(
-        "--output_format",
-        choices=["cif", "pdb", "both"],
-        default="cif",
-        help=(
-            "Output structure format when explicit output paths are not provided. "
-            "Default: cif"
-        ),
-    )
-    parser.add_argument(
         "--cache-dir",
         default="",
         help=(
@@ -74,7 +66,6 @@ def parse_args(args=None):
     )
     parser.add_argument(
         "--num-loops",
-        "--num-recycles",
         type=int,
         dest="num_loops",
         default=3,
@@ -94,11 +85,16 @@ def parse_args(args=None):
     )
     parser.add_argument(
         "--seed",
-        "--model_seed",
         type=int,
         dest="seed",
         default=0,
-        help="Random seed. Default: 0",
+        help="Initial random seed. Default: 0",
+    )
+    parser.add_argument(
+        "--num-seeds",
+        type=int,
+        default=1,
+        help="Number of sequential seeds to evaluate starting from --seed. Default: 1",
     )
     return parser.parse_args(args)
 
@@ -138,14 +134,6 @@ def _construct_input_object(input_cls, **kwargs):
     return input_cls(**safe_kwargs)
 
 
-def _class_or_none(module, *names):
-    for name in names:
-        cls = getattr(module, name, None)
-        if cls is not None:
-            return cls
-    return None
-
-
 def _normalize_modification_entry(entry: dict, seq_type: str) -> tuple[int, str]:
     if not isinstance(entry, dict):
         raise ValueError(f"Each '{seq_type}' modification entry must be a mapping")
@@ -177,13 +165,7 @@ def _build_modifications(details: dict, seq_type: str, esmfold2_module) -> list 
     if len(raw_modifications) == 0:
         return []
 
-    modification_cls = _class_or_none(esmfold2_module, "Modification")
-    if modification_cls is None:
-        raise RuntimeError(
-            "Boltz YAML includes modifications, but the installed esm package does not provide "
-            "a Modification input class"
-        )
-
+    modification_cls = esmfold2_module.Modification
     accepted = set(inspect.signature(modification_cls).parameters)
     modifications = []
     for entry in raw_modifications:
@@ -229,21 +211,7 @@ def _resolve_input_path(path_text: str, yaml_path: Path) -> Path:
 
 
 def _build_msa_from_path(msa_path: Path, esmfold2_module):
-    msa_cls = _class_or_none(esmfold2_module, "MSA")
-    if msa_cls is None:
-        try:
-            from esm.data import MSA as esm_data_msa_cls
-            msa_cls = esm_data_msa_cls
-        except Exception:
-            msa_cls = None
-    if msa_cls is None:
-        raise RuntimeError(
-            "MSA was requested in YAML, but no MSA class was found in the installed esm package"
-        )
-
-    if not hasattr(msa_cls, "from_a3m"):
-        raise RuntimeError("MSA class does not provide from_a3m(path=..., ...) method")
-
+    msa_cls = esmfold2_module.MSA
     return msa_cls.from_a3m(path=str(msa_path), remove_insertions=True, max_sequences=1000)
 
 
@@ -348,14 +316,11 @@ def build_spi_from_boltz_yaml(yaml_path: Path, esmfold2_module):
     if not isinstance(sequences, list) or len(sequences) == 0:
         raise ValueError("Boltz YAML must contain a non-empty 'sequences' list")
 
-    ProteinInput = _class_or_none(esmfold2_module, "ProteinInput")
-    DNAInput = _class_or_none(esmfold2_module, "DNAInput", "DnaInput")
-    RNAInput = _class_or_none(esmfold2_module, "RNAInput", "RnaInput")
-    LigandInput = _class_or_none(esmfold2_module, "LigandInput")
-    StructurePredictionInput = _class_or_none(esmfold2_module, "StructurePredictionInput")
-
-    if StructurePredictionInput is None or ProteinInput is None:
-        raise RuntimeError("Could not import required ESMFold2 input classes")
+    ProteinInput = esmfold2_module.ProteinInput
+    DNAInput = esmfold2_module.DNAInput
+    RNAInput = esmfold2_module.RNAInput
+    LigandInput = esmfold2_module.LigandInput
+    StructurePredictionInput = esmfold2_module.StructurePredictionInput
 
     spi_sequences = []
     chain_msas = []
@@ -379,12 +344,8 @@ def build_spi_from_boltz_yaml(yaml_path: Path, esmfold2_module):
             if seq_type == "protein":
                 input_cls = ProteinInput
             elif seq_type == "rna":
-                if RNAInput is None:
-                    raise RuntimeError("RNAInput/RnaInput class not available in installed esm package")
                 input_cls = RNAInput
             else:
-                if DNAInput is None:
-                    raise RuntimeError("DNAInput/DnaInput class not available in installed esm package")
                 input_cls = DNAInput
 
             msa = None
@@ -423,8 +384,6 @@ def build_spi_from_boltz_yaml(yaml_path: Path, esmfold2_module):
             continue
 
         # ligand
-        if LigandInput is None:
-            raise RuntimeError("LigandInput class not available in installed esm package")
         smiles = details.get("smiles")
         ccd = _parse_ligand_ccd(details)
         if not smiles and not ccd:
@@ -447,20 +406,15 @@ def resolve_device(device: str, torch_module) -> str:
     return device
 
 
-def resolve_output_paths(args, input_path: Path) -> tuple[str, Path, Path | None]:
-    """Resolve output prefix and structure output paths."""
+def resolve_output_paths(args, input_path: Path) -> tuple[str, Path]:
+    """Resolve output prefix and structure output path."""
 
     output_dir = Path(args.output_dir)
     output_prefix = args.output_prefix or sanitised_name(input_path.stem)
 
     cif_out = output_dir / f"{output_prefix}_esmfold2.cif"
 
-    if args.output_format in {"pdb", "both"}:
-        pdb_out = output_dir / f"{output_prefix}_esmfold2.pdb"
-    else:
-        pdb_out = None
-
-    return output_prefix, cif_out, pdb_out
+    return output_prefix, cif_out
 
 
 def configure_model_cache(cache_dir: str) -> Path | None:
@@ -555,23 +509,91 @@ def write_chainwise_iptm_tsv(pair_chains_iptm, output_path: Path) -> None:
         writer.writerows(formatted_rows)
 
 
+def _metric_to_float(metric_value) -> float | None:
+    if metric_value is None:
+        return None
+    if hasattr(metric_value, "detach"):
+        metric_value = metric_value.detach().cpu()
+    if hasattr(metric_value, "item"):
+        metric_value = metric_value.item()
+    try:
+        metric_float = float(metric_value)
+    except (TypeError, ValueError):
+        return None
+    if math.isnan(metric_float):
+        return None
+    return metric_float
+
+
+def _score_result(result) -> tuple[int, float, str]:
+    iptm_score = _metric_to_float(getattr(result, "iptm", None))
+    if iptm_score is not None:
+        return 1, iptm_score, "iptm"
+
+    ptm_score = _metric_to_float(getattr(result, "ptm", None))
+    if ptm_score is not None:
+        return 0, ptm_score, "ptm"
+
+    raise RuntimeError("Prediction result is missing both iptm and ptm scores")
+
+
+def _select_best_result(result):
+    if not isinstance(result, list):
+        metric_priority, ranking_score, ranking_metric = _score_result(result)
+        return {
+            "result": result,
+            "metric_priority": metric_priority,
+            "score": ranking_score,
+            "metric": ranking_metric,
+        }
+
+    if not result:
+        raise RuntimeError("Prediction returned an empty result list")
+
+    best_result = None
+    for item in result:
+        metric_priority, ranking_score, ranking_metric = _score_result(item)
+        candidate = {
+            "result": item,
+            "metric_priority": metric_priority,
+            "score": ranking_score,
+            "metric": ranking_metric,
+        }
+        if best_result is None or (
+            candidate["metric_priority"],
+            candidate["score"],
+        ) > (
+            best_result["metric_priority"],
+            best_result["score"],
+        ):
+            best_result = candidate
+
+    return best_result
+
+
+def _write_optional_scalar_metric_tsv(metric_value, output_path: Path) -> None:
+    metric_float = _metric_to_float(metric_value)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    if metric_float is None:
+        output_path.touch()
+        return
+    write_scalar_metric_tsv(metric_float, output_path)
+
+
 def main(args=None):
     args = parse_args(args)
-    cache_path = configure_model_cache(args.cache_dir)
+    configure_model_cache(args.cache_dir)
     import torch
     from esm.models import esmfold2 as esmfold2_module
     from esm.models.esmfold2 import ESMFold2InputBuilder
     from transformers.models.esmfold2.modeling_esmfold2 import ESMFold2Model
 
     input_path = Path(args.input).expanduser().resolve()
-    output_prefix, cif_out, pdb_out = resolve_output_paths(args, input_path)
+    output_prefix, cif_out = resolve_output_paths(args, input_path)
     device = resolve_device(args.device, torch)
 
-    torch.manual_seed(args.seed)
-    if device == "cuda":
-        torch.cuda.manual_seed_all(args.seed)
-
     model = ESMFold2Model.from_pretrained("biohub/ESMFold2", local_files_only=True).to(device).eval()
+    model.set_kernel_backend("cuequivariance")
     #model = ESMFold2Model.from_pretrained("biohub/ESMFold2").to(device).eval()
 
     input_suffixes = {s.lower() for s in input_path.suffixes}
@@ -579,14 +601,46 @@ def main(args=None):
         raise ValueError(f"Input must be a Boltz YAML file (.yaml/.yml), got: {input_path}")
     spi, msa_rows = build_spi_from_boltz_yaml(input_path, esmfold2_module)
 
-    result = ESMFold2InputBuilder().fold(
-        model,
-        spi,
-        num_loops=args.num_loops,
-        num_sampling_steps=args.num_sampling_steps,
-        num_diffusion_samples=args.num_diffusion_samples,
-        seed=args.seed,
-    )
+    if args.num_seeds < 1:
+        raise ValueError(f"--num-seeds must be at least 1, got: {args.num_seeds}")
+
+    seeds = list(range(int(args.seed), int(args.seed) + int(args.num_seeds)))
+    input_builder = ESMFold2InputBuilder()
+    best_prediction = None
+    for seed in seeds:
+        torch.manual_seed(seed)
+        if device == "cuda":
+            torch.cuda.manual_seed_all(seed)
+
+        result = input_builder.fold(
+            model,
+            spi,
+            num_loops=args.num_loops,
+            num_sampling_steps=args.num_sampling_steps,
+            num_diffusion_samples=args.num_diffusion_samples,
+            seed=seed,
+        )
+        best_seed_result = _select_best_result(result)
+        candidate_prediction = {
+            "seed": seed,
+            "result": best_seed_result["result"],
+            "metric_priority": best_seed_result["metric_priority"],
+            "score": best_seed_result["score"],
+            "metric": best_seed_result["metric"],
+        }
+        if best_prediction is None or (
+            candidate_prediction["metric_priority"],
+            candidate_prediction["score"],
+        ) > (
+            best_prediction["metric_priority"],
+            best_prediction["score"],
+        ):
+            best_prediction = candidate_prediction
+
+    if best_prediction is None:
+        raise RuntimeError("No predictions were produced")
+
+    result = best_prediction["result"]
 
     #print(result)
 
@@ -598,21 +652,20 @@ def main(args=None):
     write_pae_tsv(pae, pae_tsv_out)
     ptm_tsv_out = Path(args.output_dir) / f"{output_prefix}_ptm.tsv"
     iptm_tsv_out = Path(args.output_dir) / f"{output_prefix}_iptm.tsv"
-    write_scalar_metric_tsv(result.ptm, ptm_tsv_out)
-    write_scalar_metric_tsv(result.iptm, iptm_tsv_out)
+    _write_optional_scalar_metric_tsv(getattr(result, "ptm", None), ptm_tsv_out)
+    _write_optional_scalar_metric_tsv(getattr(result, "iptm", None), iptm_tsv_out)
     chainwise_iptm_tsv_out = Path(args.output_dir) / f"{output_prefix}_chainwise_iptm.tsv"
     write_chainwise_iptm_tsv(getattr(result, "pair_chains_iptm", None), chainwise_iptm_tsv_out)
 
     cif_out.parent.mkdir(parents=True, exist_ok=True)
     cif_out.write_text(result.complex.to_mmcif())
 
+
     print(f"name={output_prefix}")
     print(f"input={input_path}")
     #if cache_path:
     #    print(f"hf_cache={cache_path}")
     print(f"saved_mmcif={cif_out}")
-    if pdb_out:
-        print(f"saved_pdb={pdb_out}")
     print(f"saved_msa_tsv={msa_tsv_out}")
     print(f"saved_pae_tsv={pae_tsv_out}")
     print(f"saved_ptm_tsv={ptm_tsv_out}")
@@ -620,8 +673,12 @@ def main(args=None):
     print(f"saved_chainwise_iptm_tsv={chainwise_iptm_tsv_out}")
     print(f"device={device}")
     print(f"plddt_mean={float(result.plddt.mean()):.3f}")
-    print(f"ptm={float(result.ptm):.3f}")
-    print(f"iptm={float(result.iptm):.3f}")
+    print(f"selected_seed={best_prediction['seed']}")
+    print(f"selection_metric={best_prediction['metric']}")
+    print(f"selection_score={best_prediction['score']:.3f}")
+    print(f"tested_seeds={','.join(str(seed) for seed in seeds)}")
+    print(f"ptm={_metric_to_float(getattr(result, 'ptm', None))}")
+    print(f"iptm={_metric_to_float(getattr(result, 'iptm', None))}")
 
 
 if __name__ == "__main__":
