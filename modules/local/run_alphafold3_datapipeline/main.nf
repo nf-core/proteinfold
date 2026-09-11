@@ -4,7 +4,7 @@
 process RUN_ALPHAFOLD3_DATAPIPELINE {
     tag "$meta.id"
     label 'process_medium'
-    container "nf-core/proteinfold_alphafold3_standard:2.1.0"
+    container "nf-core/proteinfold_alphafold3_standard:2.0.0"
 
     input:
     tuple val(meta), path(json)
@@ -14,13 +14,12 @@ process RUN_ALPHAFOLD3_DATAPIPELINE {
     path "uniref90/*"
     path "pdb_seqres/*"
     path "uniprot/*"
-    path "nt_rna/*"
-    path "rfam/*"
-    path "rnacentral/*"
 
     output:
     tuple val(meta), path ("${meta.id}_data.json"), emit: data_json
-    path "versions.yml"                           , emit: versions
+    tuple val("${task.process}"), val('python'), eval("python3 --version | sed 's/Python //g'"), emit: versions_python, topic: versions
+    tuple val("${task.process}"), val('alphafold3'), eval('cd /app/alphafold && git rev-parse HEAD 2>/dev/null || echo "unknown"'), emit: versions_alphafold3, topic: versions
+    tuple val("${task.process}"), val('hmmer'), eval("hmmsearch -h | grep -o '^# HMMER [0-9.]*' | sed 's/^# HMMER //' || echo 'unknown'"), emit: versions_hmmer, topic: versions
 
     when:
     task.ext.when == null || task.ext.when
@@ -60,24 +59,6 @@ process RUN_ALPHAFOLD3_DATAPIPELINE {
         exit 1
     fi
 
-    nt_rna=\$(ls -v ./nt_rna/nt_rna*.fasta 2>/dev/null | tail -n 1 || echo "")
-    if [[ -z "\$nt_rna" ]]; then
-        echo "ERROR: No NT-RNA database found"
-        exit 1
-    fi
-
-    rfam=\$(ls -v ./rfam/Rfam-*.fasta 2>/dev/null | tail -n 1 || echo "")
-    if [[ -z "\$rfam" ]]; then
-        echo "ERROR: No Rfam database found"
-        exit 1
-    fi
-
-    rna_central=\$(ls -v ./rnacentral/rnacentral*.fasta 2>/dev/null | tail -n 1 || echo "")
-    if [[ -z "\$rna_central" ]]; then
-        echo "ERROR: No RNAcentral database found"
-        exit 1
-    fi
-
     python3 /app/alphafold/run_alphafold.py \\
         --json_path=${json} \\
         --uniref90_database_path=\$uniref90 \\
@@ -86,34 +67,17 @@ process RUN_ALPHAFOLD3_DATAPIPELINE {
         --small_bfd_database_path=./small_bfd/bfd-first_non_consensus_sequences.fasta \\
         --uniprot_cluster_annot_database_path=\$uniprot \\
         --seqres_database_path=\$pdb_seqres \\
-        --ntrna_database_path=\$nt_rna \\
-        --rfam_database_path=\$rfam \\
-        --rna_central_database_path=\$rna_central \\
         --output_dir=\$PWD \\
         --run_data_pipeline=true \\
         --run_inference=false \\
         $args
 
     cp ${af3_id}/${af3_id}_data.json ${prefix}_data.json
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        python: \$(python3 --version | sed 's/Python //g')
-        alphafold3: \$(cat /app/alphafold/COMMIT 2>/dev/null || echo "unknown")
-        hmmer: \$(hmmsearch -h | grep -o '^# HMMER [0-9.]*' | sed 's/^# HMMER //' || echo "unknown")
-    END_VERSIONS
     """
 
     stub:
     def prefix = task.ext.prefix ?: "${meta.id}"
     """
     touch ${prefix}_data.json
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        python: \$(python3 --version 2>/dev/null | sed 's/Python //g' || echo "unknown")
-        alphafold3: \$(cat /app/alphafold/COMMIT 2>/dev/null || echo "unknown")
-        hmmer: \$(hmmsearch -h | grep -o '^# HMMER [0-9.]*' | sed 's/^# HMMER //' || echo "unknown")
-    END_VERSIONS
     """
 }

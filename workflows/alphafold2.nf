@@ -28,7 +28,6 @@ workflow ALPHAFOLD2 {
 
     take:
     ch_samplesheet          // channel: samplesheet read in from --input
-    ch_versions             // channel: [ path(versions.yml) ]
     alphafold2_full_dbs     // boolean: Use full databases (otherwise reduced version)
     alphafold2_mode         //  string: Mode to run Alphafold2 in
     alphafold2_model_preset //  string: Model preset used for single-entry FASTA inputs
@@ -102,7 +101,6 @@ workflow ALPHAFOLD2 {
         ch_ipsae          = ch_ipsae.mix(RUN_ALPHAFOLD2.out.ipsaes)
         ch_chainwise_iptm = ch_chainwise_iptm.mix(RUN_ALPHAFOLD2.out.chainwise_iptms)
         ch_chainwise_ipsae = ch_chainwise_ipsae.mix(RUN_ALPHAFOLD2.out.chainwise_ipsaes)
-        ch_versions       = ch_versions.mix(RUN_ALPHAFOLD2.out.versions)
 
     } else if (alphafold2_mode == 'split_msa_prediction') {
         //
@@ -124,7 +122,6 @@ workflow ALPHAFOLD2 {
             ch_pdb_seqres,
             ch_uniprot
         )
-        ch_versions = ch_versions.mix(RUN_ALPHAFOLD2_MSA.out.versions)
 
         //synchronize
         ch_samplesheet_prepared
@@ -167,7 +164,6 @@ workflow ALPHAFOLD2 {
         ch_ipsae          = ch_ipsae.mix(RUN_ALPHAFOLD2_PRED.out.ipsaes)
         ch_chainwise_iptm = ch_chainwise_iptm.mix(RUN_ALPHAFOLD2_PRED.out.chainwise_iptms)
         ch_chainwise_ipsae = ch_chainwise_ipsae.mix(RUN_ALPHAFOLD2_PRED.out.chainwise_ipsaes)
-        ch_versions       = ch_versions.mix(RUN_ALPHAFOLD2_PRED.out.versions)
     }
 
     ch_pdb
@@ -244,7 +240,6 @@ workflow ALPHAFOLD2 {
     chainwise_iptm = ch_chainwise_iptm_final // channel: [ meta, /path/to/*_chainwise_iptm.tsv ]
     chainwise_ipsae = ch_chainwise_ipsae_final // channel: [ meta, /path/to/*_chainwise_ipsae.tsv ]
     multiqc_report = ch_multiqc_report       // channel: /path/to/multiqc_report.html
-    versions       = ch_versions             // channel: [ path(versions.yml) ]
 }
 
 /*

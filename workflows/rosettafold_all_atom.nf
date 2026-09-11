@@ -28,7 +28,6 @@ workflow ROSETTAFOLD_ALL_ATOM {
 
     take:
     ch_samplesheet          // channel: samplesheet read in from --input
-    ch_versions             // channel: [ path(versions.yml) ]
     uniref30_prefix         //  string: Prefix for uniref30 database files
     ch_bfd                  // channel: path(bfd)
     ch_uniref30             // channel: path(uniref30)
@@ -62,7 +61,6 @@ workflow ROSETTAFOLD_ALL_ATOM {
         ch_rfaa_paper_weights,
         ch_rosetta_all_atom_in.map { it -> it[2] }
     )
-    ch_versions = ch_versions.mix(RUN_ROSETTAFOLD_ALL_ATOM.out.versions)
 
     RUN_ROSETTAFOLD_ALL_ATOM
         .out
@@ -83,7 +81,6 @@ workflow ROSETTAFOLD_ALL_ATOM {
     msa            = ch_msa_final      // channel: [ id, /path/to/*_msa.tsv ]
     pae            = ch_pae_final      // channel: [ id, /path/to/*_pae.tsv ]
     multiqc_report = ch_multiqc_report // channel: /path/to/multiqc_report.html
-    versions       = ch_versions       // channel: [ path(versions.yml) ]
 }
 
 /*

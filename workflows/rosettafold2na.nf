@@ -20,7 +20,6 @@ workflow ROSETTAFOLD2NA {
 
     take:
     ch_samplesheet            // channel: samplesheet read in from --input
-    ch_versions               // channel: [ path(versions.yml) ]
     ch_bfd                    // channel: path(bfd)
     ch_uniref30               // channel: path(uniref30)
     ch_pdb100                 // channel: path(pdb100)
@@ -33,7 +32,6 @@ workflow ROSETTAFOLD2NA {
     ROSETTAFOLD2NA_FASTA(
         ch_samplesheet
     )
-    ch_versions = ch_versions.mix(ROSETTAFOLD2NA_FASTA.out.versions)
 
     RUN_ROSETTAFOLD2NA (
         ROSETTAFOLD2NA_FASTA.out.rf2na_input,
@@ -43,7 +41,6 @@ workflow ROSETTAFOLD2NA {
         ch_rna,
         ch_rosettafold2na_weights
     )
-    ch_versions = ch_versions.mix(RUN_ROSETTAFOLD2NA.out.versions)
 
     RUN_ROSETTAFOLD2NA
         .out
@@ -90,7 +87,6 @@ workflow ROSETTAFOLD2NA {
     pae            = ch_pae_final      // channel: [ id, /path/to/*_pae.tsv ]
     msa            = ch_msa_final      // channel: [ id, /path/to/*_msa.tsv ]
     multiqc_report = ch_multiqc_report // channel: /path/to/multiqc_report.html
-    versions       = ch_versions       // channel: [ path(versions.yml) ]
 }
 
 /*

@@ -1,0 +1,73 @@
+# Placeholder protocol/software metadata for modelCIF population.
+# Pass this file explicitly to bin/populate_modelcif.py with --software_details.
+# Structure:
+#   defaults: used for every mode unless overridden
+#   programs.<mode>: per-mode overrides keyed by meta.model values
+
+defaults:
+  modeling_software:
+    classification: protein structure prediction
+    description: Neural-network-based structure prediction
+    type: program
+
+  execution_software:
+    enabled: true
+    name: nf-core/proteinfold
+    classification: workflow management
+    description: Workflow orchestration and software environment management
+    location: https://github.com/nf-core/proteinfold
+    type: package
+
+  protocol:
+    msa_step:
+      # Use the step type (CoevolutionMSAStep) and optional metadata overrides.
+      details: Multiple sequence alignment generation and coevolution feature extraction
+      use_main_software: true
+      use_execution_software: false
+
+    modeling_step:
+      name: Structure prediction
+      details: Coordinate generation from sequence and model features
+      use_main_software: true
+      use_execution_software: true
+
+programs:
+  alphafold2:
+    modeling_software:
+      name: AlphaFold2
+      location: https://github.com/google-deepmind/alphafold
+
+  alphafold3:
+    modeling_software:
+      name: AlphaFold3
+      location: https://github.com/google-deepmind/alphafold3
+
+  boltz:
+    modeling_software:
+      name: Boltz
+      location: https://github.com/jwohlwend/boltz
+
+  colabfold:
+    modeling_software:
+      name: ColabFold
+      location: https://github.com/sokrypton/ColabFold
+
+  esmfold:
+    modeling_software:
+      name: ESMFold
+      location: https://github.com/facebookresearch/esm
+
+  helixfold3:
+    modeling_software:
+      name: HelixFold3
+      location: https://github.com/PaddlePaddle/PaddleHelix
+
+  rosettafold2na:
+    modeling_software:
+      name: RoseTTAFold2NA
+      location: https://github.com/uw-ipd/RoseTTAFold2NA
+
+  rosettafold_all_atom:
+    modeling_software:
+      name: RoseTTAFold-All-Atom
+      location: https://github.com/baker-laboratory/RoseTTAFold-All-Atom

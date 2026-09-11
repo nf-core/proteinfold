@@ -10,21 +10,15 @@ process SPLIT_MSA {
     input:
     tuple val(meta), path(msa), path(template_yaml, stageAs: 'original.yaml')
     output:
-    tuple val(meta), path ("output_msa/*.yaml"), path ("output_msa/*.csv"), emit: boltz_data
-
-    path "versions.yml"        , emit: versions
+    tuple val(meta), path ("output_msa/*.csv"), emit: msa_csv
+    tuple val("${task.process}"), val('python'), eval("python3 --version | sed 's/Python //g'"), emit: versions_python, topic: versions
 
     when:
     task.ext.when == null || task.ext.when
 
     script:
     """
-    msa_manager.py ${msa} -o output_msa --meta_id ${meta.id} --template_yaml ${template_yaml}
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        python: \$(python3 --version | sed 's/Python //g')
-    END_VERSIONS
+    msa_manager.py ${msa} -o output_msa --meta_id ${meta.id}
     """
 
     stub:
@@ -32,11 +26,5 @@ process SPLIT_MSA {
     mkdir output_msa
     touch "output_msa/A.csv"
     touch "output_msa/B.csv"
-    touch "output_msa/${meta.id}.yaml"
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        python: \$(python3 --version | sed 's/Python //g')
-    END_VERSIONS
     """
 }

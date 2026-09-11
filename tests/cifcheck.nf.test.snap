@@ -1,0 +1,14 @@
+{
+    "dummy cifcheck": {
+        "content": [
+            [
+                "versions.yml:md5,5d10abf44b0e96b56d6aac1fa7486774"
+            ]
+        ],
+        "timestamp": "2026-05-15T11:53:57.371968018",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "25.10.4"
+        }
+    }
+}

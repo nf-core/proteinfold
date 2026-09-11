@@ -1,0 +1,77 @@
+nextflow_process {
+
+    name "Test Process CIFCHECK"
+    script "../modules/local/cifcheck/main.nf"
+    process "CIFCHECK"
+
+    tag "cifcheck"
+
+    def assertVersionsOutput = { proc ->
+        def versionChannels = proc.out.findAll { key, _ -> key.startsWith('versions') }
+        assert versionChannels.size() >= 1
+
+        def versions = versionChannels.collectMany { _, rows -> rows }
+        assert versions.size() >= 1
+
+        def tools = versions.collect { it[1] } as Set
+        assert tools.contains('CifCheck')
+
+        assert versions.every { row ->
+            row[0] == 'CIFCHECK' && row[2] != null && row[2].toString().trim()
+        }
+    }
+
+    test("dummy modelcif fails strict cifcheck") {
+
+        when {
+            process {
+                """
+                outdir = "$outputDir"
+                input[0] = [ [ id: 'test' ], file("$projectDir/assets/DUMMY_MODELCIF.mmcif", checkIfExists: true) ]
+                """
+            }
+        }
+
+        then {
+            assert process.failed
+        }
+    }
+
+    test("real modelarchive file (augmented)") {
+
+        when {
+            process {
+                """
+                outdir = "$outputDir"
+                input[0] = [ [ id: 'real' ], file("$projectDir/assets/ma-atiya1-gk-01-AUGMENTED.cif", checkIfExists: true) ]
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                { assertVersionsOutput(process) },
+                { assert file("$outputDir/cifcheck/versions.yml").exists() },
+                { snapshot(file("$outputDir/cifcheck/versions.yml")).match() }
+            )
+        }
+    }
+
+    test("rejects invalid mmcif") {
+
+        when {
+            process {
+                """
+                outdir = "$outputDir"
+                input[0] = [ [ id: 'invalid' ], file("$projectDir/assets/DUMMY_INVALID.mmcif", checkIfExists: true) ]
+                """
+            }
+        }
+
+        then {
+            assert process.failed
+        }
+    }
+
+}

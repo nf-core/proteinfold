@@ -30,8 +30,6 @@ workflow PREPARE_ROSETTAFOLD2NA_DBS {
     rnacentral_sequences_link
 
     main:
-    ch_versions = channel.empty()
-
     if (rosettafold2na_db) {
         ch_bfd      = channel.value(files(rosettafold2na_bfd_path, checkIfExists: true))
         ch_uniref30 = channel.value(files(rosettafold2na_uniref30_path, checkIfExists: true))
@@ -44,21 +42,18 @@ workflow PREPARE_ROSETTAFOLD2NA_DBS {
                     .out
                     .db
                     .map { dir -> dir.listFiles().findAll {  it -> it.isFile() } }
-        ch_versions = ch_versions.mix(ARIA2_BFD.out.versions)
 
         ARIA2_UNIREF30(rosettafold2na_uniref30_link)
         ch_uniref30 = ARIA2_UNIREF30
                         .out
                         .db
                         .map { dir -> dir.listFiles().findAll { it -> it.isFile() } }
-        ch_versions = ch_versions.mix(ARIA2_UNIREF30.out.versions)
 
         ARIA2_PDB100(rosettafold2na_pdb100_link)
         ch_pdb100 = ARIA2_PDB100
                         .out
                         .db
                         .map { dir -> dir.listFiles().findAll { it -> it.isFile() } }
-        ch_versions = ch_versions.mix(ARIA2_PDB100.out.versions)
 
         DOWNLOAD_RNA_DATABASES(
             rfam_full_region_link,
@@ -71,15 +66,12 @@ workflow PREPARE_ROSETTAFOLD2NA_DBS {
                     .out
                     .ch_db
                     .map { dir -> dir.listFiles().findAll { it -> it.isFile() } }
-        ch_versions = ch_versions.mix(DOWNLOAD_RNA_DATABASES.out.versions)
 
         ARIA2_WEIGHTS(rosettafold2na_weights_link)
         ch_weights = ARIA2_WEIGHTS
 			.out
 			.db
 			.map { dir -> dir.listFiles().findAll { it -> it.isFile() } }
-        ch_versions = ch_versions.mix(ARIA2_WEIGHTS.out.versions)
-
     }
 
     emit:
@@ -88,5 +80,4 @@ workflow PREPARE_ROSETTAFOLD2NA_DBS {
     pdb100          = ch_pdb100
     rna             = ch_rna
     rosettafold2na_weights = ch_weights
-    versions        = ch_versions
 }

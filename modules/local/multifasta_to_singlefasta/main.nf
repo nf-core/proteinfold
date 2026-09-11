@@ -12,7 +12,7 @@ process MULTIFASTA_TO_SINGLEFASTA {
 
     output:
     tuple val(meta), path("${meta.id}.fasta"), emit: input_fasta
-    path "versions.yml", emit: versions
+    tuple val("${task.process}"), val('sed'), eval('sed --version 2>&1 | sed "s/^.*GNU sed() //; s/ .*$//"'), emit: versions_sed, topic: versions
 
     when:
     task.ext.when == null || task.ext.when
@@ -21,20 +21,10 @@ process MULTIFASTA_TO_SINGLEFASTA {
     """
     awk '/^>/ {printf("\\n%s\\n",\$0);next; } { printf("%s",\$0);}  END {printf("\\n");}' ${fasta} > single_line.fasta
     echo -e '>'${meta.id}'\\n'`awk '!/^>/ {print \$0}' single_line.fasta | tr '\\n' ':' | sed 's/:\$//' | sed 's/^://'` > ${meta.id}.fasta
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        sed: \$(echo \$(sed --version 2>&1) | sed 's/^.*GNU sed) //; s/ .*\$//')
-    END_VERSIONS
     """
 
     stub:
     """
     touch ${meta.id}.fasta
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        sed: \$(echo \$(sed --version 2>&1) | sed 's/^.*GNU sed) //; s/ .*\$//')
-    END_VERSIONS
     """
 }

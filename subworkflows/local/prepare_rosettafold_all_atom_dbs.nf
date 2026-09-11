@@ -24,8 +24,6 @@ workflow PREPARE_ROSETTAFOLD_ALL_ATOM_DBS {
     rosettafold_all_atom_paper_weights_link
 
     main:
-    ch_versions                 = channel.empty()
-
     if (rosettafold_all_atom_db) {
         ch_bfd                  = channel.value(files(rosettafold_all_atom_bfd_path, checkIfExists: true))
         ch_uniref30             = channel.value(files(rosettafold_all_atom_uniref30_path, checkIfExists: true))
@@ -41,8 +39,6 @@ workflow PREPARE_ROSETTAFOLD_ALL_ATOM_DBS {
                         dir -> dir.listFiles().findAll { it -> it.isFile() }
                     }
 
-        ch_versions = ch_versions.mix(ARIA2_BFD.out.versions)
-
         ARIA2_UNIREF30(rosettafold_all_atom_uniref30_link)
         ch_uniref30 = ARIA2_UNIREF30
                         .out
@@ -50,7 +46,6 @@ workflow PREPARE_ROSETTAFOLD_ALL_ATOM_DBS {
                         .map {
                             dir -> dir.listFiles().findAll { it -> it.isFile() }
                         }
-        ch_versions = ch_versions.mix(ARIA2_UNIREF30.out.versions)
 
         ARIA2_PDB100(rosettafold_all_atom_pdb100_link)
         ch_pdb100 = ARIA2_PDB100
@@ -59,11 +54,9 @@ workflow PREPARE_ROSETTAFOLD_ALL_ATOM_DBS {
                         .map {
                             dir -> dir.listFiles().findAll { it -> it.isFile() }
                         }
-        ch_versions = ch_versions.mix(ARIA2_PDB100.out.versions)
 
         ARIA2_WEIGHTS(rosettafold_all_atom_paper_weights_link)
         ch_rfaa_paper_weights = ARIA2_WEIGHTS.out.db
-        ch_versions = ch_versions.mix(ARIA2_WEIGHTS.out.versions)
     }
 
     emit:
@@ -71,5 +64,4 @@ workflow PREPARE_ROSETTAFOLD_ALL_ATOM_DBS {
     uniref30            = ch_uniref30
     pdb100              = ch_pdb100
     rfaa_paper_weights  = ch_rfaa_paper_weights
-    versions            = ch_versions
 }

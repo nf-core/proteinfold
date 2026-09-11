@@ -11,29 +11,27 @@ process BOLTZ_YAML_TO_COLABFOLD_FASTA {
     tuple val(meta), path(boltz_yaml)
 
     output:
-    tuple val(meta), path("${meta.id}.fasta"), emit: query_fasta
-    path "versions.yml", emit: versions
+    tuple val(meta), path("*.pdb"), emit: pdb
+    tuple val("${task.process}"), val('python'), eval("python3 --version | sed 's/Python //g'"), emit: versions_python, topic: versions
 
     when:
     task.ext.when == null || task.ext.when
 
     script:
     """
-    boltz_yaml_to_colabfold_fasta.py ${boltz_yaml} --id ${meta.id} --output ${meta.id}.fasta
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        python: \$(python3 --version | sed 's/Python //g')
-    END_VERSIONS
+    for mmcif in *.cif
+    do
+        pdb_out=\$(basename "\$mmcif" .cif)
+        mmcif_to_pdb.py \${mmcif} --pdb_out "\${pdb_out}.pdb"
+    done
     """
 
     stub:
     """
-    touch "${meta.id}.fasta"
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        python: \$(python3 --version | sed 's/Python //g')
-    END_VERSIONS
+    for mmcif in *.cif
+    do
+        pdb_out=\$(basename "\$mmcif")
+        touch \${pdb_out}.pdb
+    done
     """
 }
