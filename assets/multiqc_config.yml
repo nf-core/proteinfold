@@ -15,5 +15,6 @@ run_modules:
   - custom_content
   - run_alphafold2_pred
   - colabfold_batch
+  - proteinfold
 
 disable_version_detection: true
