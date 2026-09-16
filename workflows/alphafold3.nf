@@ -120,7 +120,7 @@ workflow ALPHAFOLD3 {
     // Prepare multiqc input
     RUN_ALPHAFOLD3_INFERENCE
         .out
-        .multiqc
+        .plddt
         .map { it -> it[1] }
         .toSortedList()
         .map { it ->
