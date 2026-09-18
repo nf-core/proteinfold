@@ -119,7 +119,7 @@ workflow NFCORE_PROTEINFOLD {
             PREPARE_ALPHAFOLD2_DBS.out.pdb_seqres,
             PREPARE_ALPHAFOLD2_DBS.out.uniprot
         )
-        ch_multiqc          = ch_multiqc.mix(ALPHAFOLD2.out.multiqc_report.collect())
+        ch_multiqc          = ch_multiqc.mix(ALPHAFOLD2.out.multiqc_report)
         ch_report_input     = ch_report_input
                                 .mix(ALPHAFOLD2
                                 .out
@@ -309,7 +309,7 @@ workflow NFCORE_PROTEINFOLD {
             params.esmfold_num_recycles
         )
 
-        ch_multiqc      = ch_multiqc.mix(ESMFOLD.out.multiqc_report.collect())
+        ch_multiqc      = ch_multiqc.mix(ESMFOLD.out.multiqc_report)
         ch_report_input = ch_report_input.mix(
             ESMFOLD.out.pdb
                 .combine(ch_dummy_file)

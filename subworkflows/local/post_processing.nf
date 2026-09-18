@@ -117,14 +117,15 @@ workflow POST_PROCESSING {
         ch_multiqc_files       = ch_multiqc_files.mix(ch_methods_description.collectFile(name: 'methods_description_mqc.yaml', sort: true))
         MULTIQC (
             ch_multiqc_rep
-                .combine(ch_multiqc_files.collect())
-                .combine(ch_multiqc_config.collect().ifEmpty([]))
-                .combine(ch_multiqc_custom_config.collect().ifEmpty([]))
-                .map { meta, report_files, methods_file, workflow_file, config_file ->
+                // Wrap each collected list so combine() keeps it as one tuple field.
+                .combine(ch_multiqc_files.collect().map { [it] })
+                .combine(ch_multiqc_config.collect().ifEmpty([]).map { [it] })
+                .combine(ch_multiqc_custom_config.collect().ifEmpty([]).map { [it] })
+                .map { meta, report_files, extra_files, config_file, custom_config_file ->
                     [
                         meta,
-                        report_files + [methods_file, workflow_file],  // All multiqc input files
-                        config_file,
+                        report_files + extra_files,  // All multiqc input files
+                        config_file + custom_config_file,
                         multiqc_logo ? file(multiqc_logo, checkIfExists: true) : [],
                         [],
                         []

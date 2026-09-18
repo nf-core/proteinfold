@@ -8,6 +8,8 @@ from multiqc.plots.table_object import ColumnDict
 
 from typing import Dict, Any, cast
 
+import logging
+log = logging.getLogger(__name__)
 
 class MultiqcModule(BaseMultiqcModule):
     """
@@ -89,8 +91,8 @@ class MultiqcModule(BaseMultiqcModule):
 
             mode_samplename = f"{raw_samplename}_{mode}"
             samplename = self.clean_s_name(mode_samplename, f)
-            self.log.debug(filepath)
-            self.log.debug(samplename)
+            log.debug(filepath)
+            log.debug(samplename)
 
             self.proteinfold_data.setdefault(samplename, {})  # Set default creates if doesn't already exist
 
