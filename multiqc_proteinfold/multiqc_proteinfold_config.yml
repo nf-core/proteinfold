@@ -1,3 +1,8 @@
 sp:
   proteinfold:
-    fn: "*_{plddt,msa,ptm,iptm,pae}.tsv"
+    fn: 
+     - "*_plddt.tsv"
+     - "*_msa.tsv"
+     - "*_ptm.tsv"
+     - "*_iptm.tsv"
+     - "*_pae.tsv"
