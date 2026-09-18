@@ -1,7 +1,7 @@
 sp:
   proteinfold:
-     - fn: "*_plddt.tsv"
-     - fn: "*_msa.tsv"
-     - fn: "*_ptm.tsv"
-     - fn: "*_iptm.tsv"
-     - fn: "*_pae.tsv"
+    - fn: "*_plddt.tsv"
+    - fn: "*_msa.tsv"
+    - fn: "*_ptm.tsv"
+    - fn: "*_iptm.tsv"
+    - fn: "*_pae.tsv"
