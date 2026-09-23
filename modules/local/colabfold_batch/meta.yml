@@ -44,14 +44,14 @@ output:
           type: file
           description: ColabFold multiple sequence alignment metrics.
           pattern: "*_colabfold_msa.tsv"
-  multiqc:
+  plddt:
     - - meta:
           type: map
           description: Groovy Map containing sample information.
-      - "${meta.id}_plddt_mqc.tsv":
+      - "${meta.id}_plddt.tsv":
           type: file
           description: pLDDT metrics formatted for MultiQC.
-          pattern: "*_plddt_mqc.tsv"
+          pattern: "*_plddt.tsv"
   paes:
     - - meta:
           type: map

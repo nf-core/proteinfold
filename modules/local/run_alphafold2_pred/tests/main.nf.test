@@ -56,7 +56,7 @@ nextflow_process {
 
         then {
             def topRanked = path(process.out.top_ranked_pdb[0][1])
-            def plddt = path(process.out.multiqc[0][1])
+            def plddt = path(process.out.plddt[0][1])
             assertAll(
                 { assert process.success },
                 { assert process.out.top_ranked_pdb[0][0].id == 'T1026' },

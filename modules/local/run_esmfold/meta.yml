@@ -31,11 +31,11 @@ output:
       - "*.pdb":
           type: file
           description: Predicted PDB structure files.
-  multiqc:
+  plddt:
     - - meta:
           type: map
           description: Groovy Map containing sample information.
-      - "${meta.id}_plddt_mqc.tsv":
+      - "${meta.id}_plddt.tsv":
           type: file
           description: pLDDT metrics for MultiQC.
   versions_esmfold:
