@@ -34,7 +34,7 @@ nextflow_process {
                 { assert topRanked.size() > 0 },
                 { assert topRanked.text.contains('ATOM') },
                 { assert plddt.size() > 0 },
-                { assert process.out.versions }
+                { assert process.out.versions_esmfold }
             )
         }
     }

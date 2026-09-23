@@ -36,7 +36,9 @@ nextflow_process {
 
                 def paramsPattern = db.startsWith('s3://') ?
                     db + '/params/alphafold_params_2022-12-06/*' :
-                    db + '/params/alphafold_params/*'
+                    (file(db + '/params/alphafold_params_2022-12-06').exists() ?
+                        db + '/params/alphafold_params_2022-12-06/*' :
+                        db + '/params/alphafold_params/*')
 
                 input[0] = [[id: 'T1026'], file(params.pipelines_testdata_base_path + 'testdata/sequences/T1026.fasta', checkIfExists: true), features, 'monomer_ptm']
                 input[1] = files(paramsPattern, checkIfExists: true)
@@ -63,7 +65,7 @@ nextflow_process {
                 { assert topRanked.size() > 0 },
                 { assert topRanked.text.contains('ATOM') },
                 { assert plddt.size() > 0 },
-                { assert process.out.versions }
+                { assert process.out.versions_alphafold2 }
             )
         }
     }
