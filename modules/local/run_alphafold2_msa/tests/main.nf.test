@@ -1,0 +1,54 @@
+nextflow_process {
+
+    name "Test Process RUN_ALPHAFOLD2_MSA"
+    script "../main.nf"
+    process "RUN_ALPHAFOLD2_MSA"
+    config "./nextflow.config"
+
+    tag "modules"
+    tag "modules_local"
+    tag "run_alphafold2_msa"
+    profile "test_nostub"
+
+    test("creates deterministic AlphaFold2 features with micro databases") {
+        when {
+            process {
+                """
+                def db = System.getenv('PROTEINFOLD_TEST_DB') ?: 's3://proteinfold-dataset/test-data/mini_dbs'
+
+                def dummyParams = file('dummy_params')
+                dummyParams.mkdirs()
+                file('dummy_params/unused').text = 'not used by the MSA-only process'
+
+                input[0] = [[id: 'T1026'], file(params.pipelines_testdata_base_path + 'testdata/sequences/T1026.fasta', checkIfExists: true), 'monomer_ptm']
+                input[1] = false
+                input[2] = 'uniref30_2302_db'
+                input[3] = files('dummy_params/*', checkIfExists: true)
+                input[4] = file('dummy_params/unused', checkIfExists: true)
+                input[5] = files(db + '/small_bfd/*', checkIfExists: true)
+                input[6] = files(db + '/mgnify/*', checkIfExists: true)
+                input[7] = files(db + '/pdb70/*', checkIfExists: true)
+                input[8] = file(db + '/pdb_mmcif/mmcif_files', checkIfExists: true)
+                input[9] = file(db + '/pdb_mmcif/obsolete.dat', checkIfExists: true)
+                input[10] = files(db + '/uniref30/*', checkIfExists: true)
+                input[11] = files(db + '/uniref90/*', checkIfExists: true)
+                input[12] = files(db + '/pdb_seqres/*', checkIfExists: true)
+                input[13] = files(db + '/uniprot/*', checkIfExists: true)
+                """
+            }
+        }
+
+        then {
+            def features = file(process.out.features[0][1])
+            assertAll(
+                { assert process.success },
+                { assert features.size() > 0 },
+                { assert snapshot(process.out.features).match() },
+                { assert process.out.versions_python },
+                { assert process.out.versions_alphafold2 },
+                { assert process.out.versions_numpy },
+                { assert process.out.versions_biopython }
+            )
+        }
+    }
+}

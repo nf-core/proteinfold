@@ -1,0 +1,2 @@
+multiqc>=1.15
+pandas

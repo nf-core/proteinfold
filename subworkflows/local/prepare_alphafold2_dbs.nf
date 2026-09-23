@@ -49,7 +49,6 @@ workflow PREPARE_ALPHAFOLD2_DBS {
     main:
     ch_bfd        = channel.value([])
     ch_small_bfd  = channel.value([])
-    ch_versions   = channel.empty()
 
 
     if (alphafold2_db) {
@@ -83,13 +82,11 @@ workflow PREPARE_ALPHAFOLD2_DBS {
                         .map {
                             dir -> dir.listFiles().findAll { it -> it.isFile() }
                         }
-            ch_versions = ch_versions.mix(ARIA2_BFD.out.versions)
         } else {
             ARIA2_SMALL_BFD(
                 small_bfd_link
             )
             ch_small_bfd = ARIA2_SMALL_BFD.out.db
-            ch_versions = ch_versions.mix(ARIA2_SMALL_BFD.out.versions)
         }
 
         ARIA2_ALPHAFOLD2_PARAMS(
@@ -102,13 +99,10 @@ workflow PREPARE_ALPHAFOLD2_DBS {
                 dir -> dir.listFiles().findAll { it -> it.isFile() }
             }
 
-        ch_versions = ch_versions.mix(ARIA2_ALPHAFOLD2_PARAMS.out.versions)
-
         ARIA2_MGNIFY(
             mgnify_link
         )
         ch_mgnify = ARIA2_MGNIFY.out.db
-        ch_versions = ch_versions.mix(ARIA2_MGNIFY.out.versions)
 
         ARIA2_PDB70(
             pdb70_link
@@ -119,19 +113,16 @@ workflow PREPARE_ALPHAFOLD2_DBS {
                     .map {
                         dir -> dir.listFiles().findAll { it -> it.isFile() }
                     }
-        ch_versions = ch_versions.mix(ARIA2_PDB70.out.versions)
 
         DOWNLOAD_PDBMMCIF(
             pdb_mmcif_link,
         )
         ch_mmcif_files = DOWNLOAD_PDBMMCIF.out.ch_db
-        ch_versions    = ch_versions.mix(DOWNLOAD_PDBMMCIF.out.versions)
 
         ARIA2_OBSOLETE(
             pdb_obsolete_link
         )
         ch_obsolete = ARIA2_OBSOLETE.out.db
-        ch_versions = ch_versions.mix(ARIA2_OBSOLETE.out.versions)
 
         ARIA2_UNIREF30(
             alphafold2_uniref30_link
@@ -140,13 +131,11 @@ workflow PREPARE_ALPHAFOLD2_DBS {
 		      	        .out
 			            .db
 			            .map { dir -> dir.listFiles().findAll { it -> it.isFile() } }
-	    ch_versions = ch_versions.mix(ARIA2_UNIREF30.out.versions)
 
         ARIA2_UNIREF90(
             uniref90_link
         )
         ch_uniref90 = ARIA2_UNIREF90.out.db
-        ch_versions = ch_versions.mix(ARIA2_UNIREF90.out.versions)
 
         ARIA2_PDB_SEQRES (
             [
@@ -155,22 +144,18 @@ workflow PREPARE_ALPHAFOLD2_DBS {
             ]
         )
         ch_pdb_seqres = ARIA2_PDB_SEQRES.out.downloaded_file.map { it -> it[1] }
-        ch_versions = ch_versions.mix(ARIA2_PDB_SEQRES.out.versions)
 
         ARIA2_UNIPROT_SPROT(
             uniprot_sprot_link
         )
-        ch_versions = ch_versions.mix(ARIA2_UNIPROT_SPROT.out.versions)
         ARIA2_UNIPROT_TREMBL(
             uniprot_trembl_link
         )
-        ch_versions = ch_versions.mix(ARIA2_UNIPROT_TREMBL.out.versions)
         COMBINE_UNIPROT (
             ARIA2_UNIPROT_SPROT.out.db,
             ARIA2_UNIPROT_TREMBL.out.db
         )
         ch_uniprot  = COMBINE_UNIPROT.out.ch_db
-        ch_versions = ch_versions.mix(COMBINE_UNIPROT.out.versions)
     }
 
     emit:
@@ -185,5 +170,4 @@ workflow PREPARE_ALPHAFOLD2_DBS {
     uniref90     = ch_uniref90
     pdb_seqres   = ch_pdb_seqres
     uniprot      = ch_uniprot
-    versions     = ch_versions
 }

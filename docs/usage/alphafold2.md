@@ -22,7 +22,7 @@ nextflow run nf-core/proteinfold \
 ```
 
 > [!NOTE]
-> By default, this will run a fork of AlphaFold2 where MSA generation is split from the neural network inference. This enables more efficient utilization of resources by allowing the CPU-bound MSA generation to be executed without occupying an idle GPU. If you want to run the original implementation of AlphaFold2 you can use the `--alphafold2_mode standard`. However, please be advised that this will cause the allocated GPU to idle while MSAs are generated.
+> AlphaFold2 runs MSA generation separately from neural network inference. This enables more efficient resource utilization by allowing the CPU-bound MSA generation to run without occupying an idle GPU.
 
 ## File Structure
 

@@ -1,0 +1,1469 @@
+
+🚀[1m nf-test 0.9.5[0m
+https://www.nf-test.com
+Please cite: https://doi.org/10.1093/gigascience/giaf130
+(c) 2021 - 2026 Lukas Forer and Sebastian Schoenherr
+
+Load .nf-test/plugins/nft-utils/0.0.3/nft-utils-0.0.3.jar
+[31mError: org.codehaus.groovy.control.MultipleCompilationErrorsException: startup failed:
+/srv/scratch/z3374843/proteinfold-AusStructBioComp/tests/colabfold_download.nf.test: 1: Unexpected input: '{' @ line 1, column 19.
+   nextflow_pipeline {
+                     ^
+
+1 error
+[0m
+
+🚀[1m nf-test 0.9.5[0m
+https://www.nf-test.com
+Please cite: https://doi.org/10.1093/gigascience/giaf130
+(c) 2021 - 2026 Lukas Forer and Sebastian Schoenherr
+
+Load .nf-test/plugins/nft-utils/0.0.3/nft-utils-0.0.3.jar
+
+[1mTest Process BOLTZ_FASTA[0m
+
+  [1mTest[0m [ce0d5920] 'converts mixed fasta to boltz yaml' java.lang.RuntimeException: Different Snapshot:
+[													[
+    {													    {
+        "0": [												        "0": [
+            [												            [
+                {											                {
+                    "id": "mixed_sample"								                    "id": "mixed_sample"
+                },											                },
+                "mixed_sample.yaml:md5,52bdd0470032c2e6c93b886b50906c09"				                "mixed_sample.yaml:md5,52bdd0470032c2e6c93b886b50906c09"
+            ]												            ]
+        ],												        ],
+        "1": [												        "1": [
+            "versions.yml:md5,0d82efa297b86ccb1ae14852c66f16ab"					   |	            [
+												   >	                "BOLTZ_FASTA",
+												   >	                "python",
+												   >	                "3.10.8"
+												   >	            ]
+        ],												        ],
+        "boltz_yaml": [											        "boltz_yaml": [
+            [												            [
+                {											                {
+                    "id": "mixed_sample"								                    "id": "mixed_sample"
+                },											                },
+                "mixed_sample.yaml:md5,52bdd0470032c2e6c93b886b50906c09"				                "mixed_sample.yaml:md5,52bdd0470032c2e6c93b886b50906c09"
+            ]												            ]
+        ],												        ],
+        "versions": [										   |	        "versions_python": [
+            "versions.yml:md5,0d82efa297b86ccb1ae14852c66f16ab"					   |	            [
+												   >	                "BOLTZ_FASTA",
+												   >	                "python",
+												   >	                "3.10.8"
+												   >	            ]
+        ]												        ]
+    }													    }
+]													]
+
+[31mFAILED[0m (9.241s)
+
+  [31mAssertion failed: 
+  
+  1 of 2 assertions failed
+  [0m
+  [31mNextflow stdout:
+  
+  Nextflow stderr:
+  
+  [0m
+
+    Obsolete snapshots can only be checked if all tests of a file are executed successful.
+
+[1mTest Process BOLTZ_YAML_TO_COLABFOLD_FASTA[0m
+
+  [1mTest[0m [640579bd] 'converts boltz yaml to colabfold fasta' java.lang.RuntimeException: Different Snapshot:
+[													[
+    {													    {
+        "0": [												        "0": [
+            [												            [
+                {											                {
+                    "id": "mixed_sample"								                    "id": "mixed_sample"
+                },											                },
+                "mixed_sample.fasta:md5,475da65322d4589b4bfe1c6374a5b1a2"				                "mixed_sample.fasta:md5,475da65322d4589b4bfe1c6374a5b1a2"
+            ]												            ]
+        ],												        ],
+        "1": [												        "1": [
+            "versions.yml:md5,7f72de6c3c7727358d4638fd60c2a674"					   |	            [
+												   >	                "BOLTZ_YAML_TO_COLABFOLD_FASTA",
+												   >	                "python",
+												   >	                "3.10.8"
+												   >	            ]
+        ],												        ],
+        "query_fasta": [										        "query_fasta": [
+            [												            [
+                {											                {
+                    "id": "mixed_sample"								                    "id": "mixed_sample"
+                },											                },
+                "mixed_sample.fasta:md5,475da65322d4589b4bfe1c6374a5b1a2"				                "mixed_sample.fasta:md5,475da65322d4589b4bfe1c6374a5b1a2"
+            ]												            ]
+        ],												        ],
+        "versions": [										   |	        "versions_python": [
+            "versions.yml:md5,7f72de6c3c7727358d4638fd60c2a674"					   |	            [
+												   >	                "BOLTZ_YAML_TO_COLABFOLD_FASTA",
+												   >	                "python",
+												   >	                "3.10.8"
+												   >	            ]
+        ]												        ]
+    }													    }
+]													]
+
+[31mFAILED[0m (8.87s)
+
+  [31mAssertion failed: 
+  
+  1 of 2 assertions failed
+  [0m
+  [31mNextflow stdout:
+  
+  Nextflow stderr:
+  
+  [0m
+
+    Obsolete snapshots can only be checked if all tests of a file are executed successful.
+
+[1mTest Process COLABFOLD_BATCH[0m
+
+  [1mTest[0m [e0966cb1] 'runs colabfold_batch with minimal inputs' Assertion failed: 
+
+assert process.success
+       |       |
+       |       false
+       COLABFOLD_BATCH
+
+java.lang.RuntimeException: Different Snapshot:
+[												   /	null
+    [												   <
+        "versions.yml:md5,7f5bf1e283695753ebd6e554eba80b36"					   <
+    ]												   <
+]												   <
+
+[31mFAILED[0m (211.941s)
+
+  [31mAssertion failed: 
+  
+  2 of 2 assertions failed
+  [0m
+  [31mNextflow stdout:
+  
+  ERROR ~ Error executing process > 'COLABFOLD_BATCH (test)'
+  
+  Caused by:
+    Process `COLABFOLD_BATCH (test)` terminated with an error exit status (127)
+  
+  
+  Command executed:
+  
+    if compgen -G "params/alphafold_params_*" >/dev/null; then
+        ln -s $(realpath params/alphafold_params_*/*) params/
+    fi
+    
+    touch params/download_finished.txt
+    touch params/download_complexes_multimer_v3_finished.txt
+    touch params/download_complexes_multimer_v2_finished.txt
+    touch params/download_complexes_multimer_v1_finished.txt
+    
+    colabfold_batch \
+        --msa-mode single_sequence --num-models 1 --num-seeds 1 --model-order 3 --random-seed 0 \
+        --num-recycle 1 \
+        --data $PWD \
+        test.fasta \
+        raw/
+    
+    if [ ! -e `find raw/*_relaxed_rank_001_*.pdb` ]; then
+        prefix=relaxed
+        cp raw/*_relaxed_rank_001*.pdb test_colabfold.pdb
+    else
+        prefix=unrelaxed
+        cp raw/*_unrelaxed_rank_001*.pdb test_colabfold.pdb
+    fi
+    
+    extract_metrics.py --name test \
+        --colabfold_metrics_files raw/*scores_rank*.json \
+        --structs raw/*_${prefix}_rank*.pdb \
+        --paired_a3m raw/test.a3m
+    
+    touch "test_iptm.tsv" "test_ipsae.tsv" "test_chainwise_iptm.tsv" "test_chainwise_ipsae.tsv"
+    
+    cp raw/*_coverage.png test_seq_coverage.png
+    mv "test_msa.tsv" "test_colabfold_msa.tsv"
+  
+  Command exit status:
+    127
+  
+  Command output:
+    (empty)
+  
+  Command error:
+    .command.sh: line 12: colabfold_batch: command not found
+  
+  Work dir:
+    /srv/scratch/z3374843/proteinfold-AusStructBioComp/.nf-test/tests/e0966cb1b24cae5e4687388d02453891/work/b2/90c9585e7a180c9f4828b8c0999304
+  
+  Tip: view the complete command output by changing to the process work dir and entering the command `cat .command.out`
+  
+   -- Check '/srv/scratch/z3374843/proteinfold-AusStructBioComp/.nf-test/tests/e0966cb1b24cae5e4687388d02453891/meta/nextflow.log' file for details
+  Nextflow stderr:
+  
+  [0m
+
+    Obsolete snapshots can only be checked if all tests of a file are executed successful.
+
+[1mTest Process MMSEQS_COLABFOLDSEARCH[0m
+
+  [1mTest[0m [5ef83d2a] 'runs mmseqs colabfoldsearch' Assertion failed: 
+
+assert process.success
+       |       |
+       |       false
+       MMSEQS_COLABFOLDSEARCH
+
+java.lang.RuntimeException: Different Snapshot:
+[													[
+    {													    {
+        "0": [												        "0": [
+            [											   |	            
+                {										   <
+                    "id": "mixed"								   <
+                },										   <
+                "ubq.a3m:md5,48af8d06679fa8d083df615c1bbdafb4"					   <
+            ]											   <
+        ],												        ],
+        "1": [												        "1": [
+            [											   |	            
+                {										   <
+                    "id": "mixed"								   <
+                },										   <
+                "ubq.json:md5,1d038ed924926e239647485dc3219dae"					   <
+            ]											   <
+        ],												        ],
+        "2": [												        "2": [
+            "versions.yml:md5,4655c25b6d38ecaeb0960ba8d95c2a35"					   |	            
+        ],												        ],
+        "a3m": [											        "a3m": [
+            [											   |	            
+                {										   <
+                    "id": "mixed"								   <
+                },										   <
+                "ubq.a3m:md5,48af8d06679fa8d083df615c1bbdafb4"					   <
+            ]											   <
+        ],												        ],
+        "json": [										   |	        "versions_colabfold_search": [
+            [											   |	            
+                {										   <
+                    "id": "mixed"								   <
+                },										   <
+                "ubq.json:md5,1d038ed924926e239647485dc3219dae"					   <
+            ]											   <
+        ],												        ],
+        "versions": [										   |	        "versions_mmseqs": [
+            "versions.yml:md5,4655c25b6d38ecaeb0960ba8d95c2a35"					   |	            
+        ]												        ]
+    }													    }
+]													]
+
+[31mFAILED[0m (201.047s)
+
+  [31mAssertion failed: 
+  
+  2 of 2 assertions failed
+  [0m
+  [31mNextflow stdout:
+  
+  ERROR ~ Error executing process > 'MMSEQS_COLABFOLDSEARCH (mixed)'
+  
+  Caused by:
+    Process `MMSEQS_COLABFOLDSEARCH (mixed)` terminated with an error exit status (127)
+  
+  
+  Command executed:
+  
+    for f in uniref30/*; do
+        if [ ! -e "db/$(basename $f)" ]; then
+            ln -sf $(realpath $f) db/$(basename $f)
+        else
+            echo "WARNING: skipping uniref30/$(basename $f) -- already present from colabfold_db" >&2
+        fi
+    done
+    
+    colabfold_search \
+        --use-env=0 \
+        --threads 4 ubq.fasta \
+        ./db \
+        --af3-json \
+        "results/"
+  
+  Command exit status:
+    127
+  
+  Command output:
+    (empty)
+  
+  Command error:
+    .command.sh: line 11: colabfold_search: command not found
+  
+  Work dir:
+    /srv/scratch/z3374843/proteinfold-AusStructBioComp/.nf-test/tests/5ef83d2a50123e034267da2811ca1f88/work/90/4b70ffba16ece79bfa0b13d47b744f
+  
+  Tip: when you have fixed the problem you can continue the execution adding the option `-resume` to the run command line
+  
+   -- Check '/srv/scratch/z3374843/proteinfold-AusStructBioComp/.nf-test/tests/5ef83d2a50123e034267da2811ca1f88/meta/nextflow.log' file for details
+  Nextflow stderr:
+  
+  [0m
+
+    Obsolete snapshots can only be checked if all tests of a file are executed successful.
+
+[1mTest Process RUN_BOLTZ[0m
+
+  [1mTest[0m [4c291f3f] 'runs boltz with minimal inputs' Assertion failed: 
+
+assert process.success
+       |       |
+       |       false
+       RUN_BOLTZ
+
+java.lang.RuntimeException: Different Snapshot:
+[												   /	null
+    [												   <
+        "versions.yml:md5,d688c956022a49a6bec10bc6f601d3b3"					   <
+    ]												   <
+]												   <
+
+[31mFAILED[0m (259.256s)
+
+  [31mAssertion failed: 
+  
+  2 of 2 assertions failed
+  [0m
+  [31mNextflow stdout:
+  
+  ERROR ~ Error executing process > 'RUN_BOLTZ (mixed_sample)'
+  
+  Caused by:
+    Process `RUN_BOLTZ (mixed_sample)` terminated with an error exit status (127)
+  
+  
+  Command executed:
+  
+    mkdir -p ./home
+    export HOME=./home
+    
+    # Temporary workaround to upstream boltz bug requiring redownload
+    [ ! -f mols.tar ] && touch mols.tar
+    
+    # Staging user input from use_msa_server
+    [ ! -f "mixed_sample.yaml" ] && cp "mixed_sample.yaml" "mixed_sample.yaml"
+    
+    if command -v nvidia-smi >/dev/null 2>&1 && nvidia-smi -L | grep -q "MIG"; then
+        echo ">>> MIG mode detected. Mocking pynvml.nvmlDeviceGetNumGpuCores to avoid errors in Boltz. See https://github.com/nf-core/proteinfold/issues/417"
+        boltz_wrapper.py predict "mixed_sample.yaml"  --cache ./
+    else
+        boltz predict "mixed_sample.yaml"  --cache ./
+    fi
+    
+    cp boltz_results_mixed_sample/predictions/mixed_sample/*_0.cif ./mixed_sample_boltz.cif
+    
+    # For consistency between server and local
+    if compgen -G "boltz_results_mixed_sample/msa/mixed_sample*.csv" > /dev/null; then
+        cp boltz_results_mixed_sample/msa/mixed_sample_*.csv ./
+    fi
+    
+    extract_metrics.py --name mixed_sample \
+        --structs boltz_results_mixed_sample/predictions/mixed_sample/*.cif \
+        --jsons boltz_results_mixed_sample/predictions/mixed_sample/confidence_*_model_*.json \
+        --npzs boltz_results_mixed_sample/predictions/mixed_sample/pae_*_model_*.npz \
+        --csvs mixed_sample_*.csv
+    
+    touch "mixed_sample_iptm.tsv" "mixed_sample_ipsae.tsv" "mixed_sample_chainwise_iptm.tsv" "mixed_sample_chainwise_ipsae.tsv"
+    
+    mv "mixed_sample_msa.tsv" "mixed_sample_boltz_msa.tsv"
+  
+  Command exit status:
+    127
+  
+  Command output:
+    (empty)
+  
+  Command error:
+    .command.sh: line 15: boltz: command not found
+  
+  Work dir:
+    /srv/scratch/z3374843/proteinfold-AusStructBioComp/.nf-test/tests/4c291f3fe68e31ea2a54c25a88fa9bc8/work/77/b023f83956be281efa3221fbb35a96
+  
+  Tip: you can try to figure out what's wrong by changing to the process work dir and showing the script file named `.command.sh`
+  
+   -- Check '/srv/scratch/z3374843/proteinfold-AusStructBioComp/.nf-test/tests/4c291f3fe68e31ea2a54c25a88fa9bc8/meta/nextflow.log' file for details
+  Nextflow stderr:
+  
+  [0m
+
+    Obsolete snapshots can only be checked if all tests of a file are executed successful.
+
+[1mTest Process SPLIT_MSA[0m
+
+  [1mTest[0m [e8a8b755] 'splits msa from af3 json using yaml template' java.lang.RuntimeException: Different Snapshot:
+[													[
+    {													    {
+        "0": [												        "0": [
+            [												            [
+                {											                {
+                    "id": "mixed_sample"								                    "id": "mixed_sample"
+                },											                },
+                "mixed_sample.yaml:md5,57c46f0979af6e243fc1ea73119bd508",				                "mixed_sample.yaml:md5,57c46f0979af6e243fc1ea73119bd508",
+                [											                [
+                    "mixed_sample_0.csv:md5,9ff514c968f73b1cf9f6db8b7ae576d5",				                    "mixed_sample_0.csv:md5,9ff514c968f73b1cf9f6db8b7ae576d5",
+                    "mixed_sample_2.csv:md5,6ed43aa7595c4223b963007db8cfd538"				                    "mixed_sample_2.csv:md5,6ed43aa7595c4223b963007db8cfd538"
+                ]											                ]
+            ]												            ]
+        ],												        ],
+        "1": [												        "1": [
+            "versions.yml:md5,d68ad4d16c6dbfe3f799e7983057aa64"					   |	            [
+												   >	                "SPLIT_MSA",
+												   >	                "python",
+												   >	                "3.10.8"
+												   >	            ]
+        ],												        ],
+        "boltz_data": [											        "boltz_data": [
+            [												            [
+                {											                {
+                    "id": "mixed_sample"								                    "id": "mixed_sample"
+                },											                },
+                "mixed_sample.yaml:md5,57c46f0979af6e243fc1ea73119bd508",				                "mixed_sample.yaml:md5,57c46f0979af6e243fc1ea73119bd508",
+                [											                [
+                    "mixed_sample_0.csv:md5,9ff514c968f73b1cf9f6db8b7ae576d5",				                    "mixed_sample_0.csv:md5,9ff514c968f73b1cf9f6db8b7ae576d5",
+                    "mixed_sample_2.csv:md5,6ed43aa7595c4223b963007db8cfd538"				                    "mixed_sample_2.csv:md5,6ed43aa7595c4223b963007db8cfd538"
+                ]											                ]
+            ]												            ]
+        ],												        ],
+        "versions": [										   |	        "versions_python": [
+            "versions.yml:md5,d68ad4d16c6dbfe3f799e7983057aa64"					   |	            [
+												   >	                "SPLIT_MSA",
+												   >	                "python",
+												   >	                "3.10.8"
+												   >	            ]
+        ]												        ]
+    }													    }
+]													]
+
+[31mFAILED[0m (9.206s)
+
+  [31mAssertion failed: 
+  
+  1 of 2 assertions failed
+  [0m
+  [31mNextflow stdout:
+  
+  Nextflow stderr:
+  
+  [0m
+
+  [1mTest[0m [229a99de] 'splits msa from af3 json with renamed chains using yaml template' java.lang.RuntimeException: Different Snapshot:
+[													[
+    {													    {
+        "0": [												        "0": [
+            [												            [
+                {											                {
+                    "id": "renamed_sample"								                    "id": "renamed_sample"
+                },											                },
+                "renamed_sample.yaml:md5,b9c8781042323dcfde6e5122a0dc6946",				                "renamed_sample.yaml:md5,b9c8781042323dcfde6e5122a0dc6946",
+                [											                [
+                    "renamed_sample_0.csv:md5,b731c66ea86be7699860f96d79a50b8f",			                    "renamed_sample_0.csv:md5,b731c66ea86be7699860f96d79a50b8f",
+                    "renamed_sample_1.csv:md5,b6c5b7cb2032121e60ae68cc6d4204b6",			                    "renamed_sample_1.csv:md5,b6c5b7cb2032121e60ae68cc6d4204b6",
+                    "renamed_sample_2.csv:md5,e69ffc08e47926a49c3a69bd4f7ea02f"				                    "renamed_sample_2.csv:md5,e69ffc08e47926a49c3a69bd4f7ea02f"
+                ]											                ]
+            ]												            ]
+        ],												        ],
+        "1": [												        "1": [
+            "versions.yml:md5,d68ad4d16c6dbfe3f799e7983057aa64"					   |	            [
+												   >	                "SPLIT_MSA",
+												   >	                "python",
+												   >	                "3.10.8"
+												   >	            ]
+        ],												        ],
+        "boltz_data": [											        "boltz_data": [
+            [												            [
+                {											                {
+                    "id": "renamed_sample"								                    "id": "renamed_sample"
+                },											                },
+                "renamed_sample.yaml:md5,b9c8781042323dcfde6e5122a0dc6946",				                "renamed_sample.yaml:md5,b9c8781042323dcfde6e5122a0dc6946",
+                [											                [
+                    "renamed_sample_0.csv:md5,b731c66ea86be7699860f96d79a50b8f",			                    "renamed_sample_0.csv:md5,b731c66ea86be7699860f96d79a50b8f",
+                    "renamed_sample_1.csv:md5,b6c5b7cb2032121e60ae68cc6d4204b6",			                    "renamed_sample_1.csv:md5,b6c5b7cb2032121e60ae68cc6d4204b6",
+                    "renamed_sample_2.csv:md5,e69ffc08e47926a49c3a69bd4f7ea02f"				                    "renamed_sample_2.csv:md5,e69ffc08e47926a49c3a69bd4f7ea02f"
+                ]											                ]
+            ]												            ]
+        ],												        ],
+        "versions": [										   |	        "versions_python": [
+            "versions.yml:md5,d68ad4d16c6dbfe3f799e7983057aa64"					   |	            [
+												   >	                "SPLIT_MSA",
+												   >	                "python",
+												   >	                "3.10.8"
+												   >	            ]
+        ]												        ]
+    }													    }
+]													]
+
+[31mFAILED[0m (8.683s)
+
+  [31mAssertion failed: 
+  
+  1 of 2 assertions failed
+  [0m
+  [31mNextflow stdout:
+  
+  Nextflow stderr:
+  
+  [0m
+
+    Obsolete snapshots can only be checked if all tests of a file are executed successful.
+
+[1mTest alphafold2 download mode stub[0m
+
+  [1mTest[0m [e619d3ea] '-profile test_alphafold2_download' Error reading YAML file: /srv/scratch/z3374843/proteinfold-AusStructBioComp/.nf-test/tests/e619d3eaf822a99927e6eba40db5e088/output/pipeline_info/nf_core_proteinfold_software_mqc_versions.yml (No such file or directory)
+java.lang.RuntimeException: Different Snapshot:
+[													[
+    27,													    27,
+    {												   |	    null,
+        "ARIA2": {										   <
+            "aria2": "1.36.0"									   <
+        },											   <
+        "ARIA2_PDB_SEQRES": {									   <
+            "aria2": "1.36.0"									   <
+        },											   <
+        "COMBINE_UNIPROT": {									   <
+            "sed": 4.7										   <
+        },											   <
+        "DOWNLOAD_PDBMMCIF": {									   <
+            "sed": 4.9,										   <
+            "rsync": "3.3.0"									   <
+        },											   <
+        "GENERATE_REPORT": {									   <
+            "python": "3.12.7",									   <
+            "generate_report.py": "Python 3.12.7"						   <
+        },											   <
+        "RUN_ALPHAFOLD2_MSA": {									   <
+            "python": "3.11.14",								   <
+            "alphafold2": "1b3170e9409472ec8ad044f9935c92bedd7b4674",				   <
+            "numpy": "1.24.3",									   <
+            "biopython": 1.79									   <
+        },											   <
+        "RUN_ALPHAFOLD2_PRED": {								   <
+            "python": "3.11.14",								   <
+            "alphafold2": "1b3170e9409472ec8ad044f9935c92bedd7b4674",				   <
+            "jax": "0.4.26",									   <
+            "jaxlib": "0.4.26",									   <
+            "numpy": "1.24.3",									   <
+            "biopython": 1.79									   <
+        },											   <
+        "Workflow": {										   <
+            "nf-core/proteinfold": "v2.1.0dev"							   <
+        }											   <
+    },												   <
+    [													    [
+        "DBs",												        "DBs",
+        "DBs/alphafold2",										        "DBs/alphafold2",
+        "DBs/alphafold2/mgnify",									        "DBs/alphafold2/mgnify",
+        "DBs/alphafold2/mgnify/mgy_clusters.fa",							        "DBs/alphafold2/mgnify/mgy_clusters.fa",
+        "DBs/alphafold2/params",									        "DBs/alphafold2/params",
+        "DBs/alphafold2/params/alphafold_params_2022-12-06",						        "DBs/alphafold2/params/alphafold_params_2022-12-06",
+        "DBs/alphafold2/pdb70",										        "DBs/alphafold2/pdb70",
+        "DBs/alphafold2/pdb_mmcif",									        "DBs/alphafold2/pdb_mmcif",
+        "DBs/alphafold2/pdb_mmcif/mmcif_files",								        "DBs/alphafold2/pdb_mmcif/mmcif_files",
+        "DBs/alphafold2/pdb_mmcif/obsolete.dat",							        "DBs/alphafold2/pdb_mmcif/obsolete.dat",
+        "DBs/alphafold2/pdb_seqres",									        "DBs/alphafold2/pdb_seqres",
+        "DBs/alphafold2/pdb_seqres/pdb_seqres.txt",							        "DBs/alphafold2/pdb_seqres/pdb_seqres.txt",
+        "DBs/alphafold2/small_bfd",									        "DBs/alphafold2/small_bfd",
+        "DBs/alphafold2/small_bfd/bfd-first_non_consensus_sequences.fasta",				        "DBs/alphafold2/small_bfd/bfd-first_non_consensus_sequences.fasta",
+        "DBs/alphafold2/uniprot",									        "DBs/alphafold2/uniprot",
+        "DBs/alphafold2/uniprot/uniprot.fasta",								        "DBs/alphafold2/uniprot/uniprot.fasta",
+        "DBs/alphafold2/uniprot_sprot.fasta",								        "DBs/alphafold2/uniprot_sprot.fasta",
+        "DBs/alphafold2/uniprot_trembl.fasta",								        "DBs/alphafold2/uniprot_trembl.fasta",
+        "DBs/alphafold2/uniref30",									        "DBs/alphafold2/uniref30",
+        "DBs/alphafold2/uniref90",									        "DBs/alphafold2/uniref90",
+        "DBs/alphafold2/uniref90/uniref90.fasta",							        "DBs/alphafold2/uniref90/uniref90.fasta",
+        "alphafold2",											        "alphafold2",
+        "alphafold2/split_msa_prediction",								        "alphafold2/split_msa_prediction",
+        "alphafold2/split_msa_prediction/T1024",							        "alphafold2/split_msa_prediction/T1024",
+        "alphafold2/split_msa_prediction/T1024/T1024_alphafold2_msa.tsv",				        "alphafold2/split_msa_prediction/T1024/T1024_alphafold2_msa.tsv",
+        "alphafold2/split_msa_prediction/T1024/T1024_chainwise_ipsae.tsv",				        "alphafold2/split_msa_prediction/T1024/T1024_chainwise_ipsae.tsv",
+        "alphafold2/split_msa_prediction/T1024/T1024_chainwise_iptm.tsv",				        "alphafold2/split_msa_prediction/T1024/T1024_chainwise_iptm.tsv",
+        "alphafold2/split_msa_prediction/T1024/T1024_ipsae.tsv",					        "alphafold2/split_msa_prediction/T1024/T1024_ipsae.tsv",
+        "alphafold2/split_msa_prediction/T1024/T1024_iptm.tsv",						        "alphafold2/split_msa_prediction/T1024/T1024_iptm.tsv",
+        "alphafold2/split_msa_prediction/T1024/T1024_plddt.tsv",					        "alphafold2/split_msa_prediction/T1024/T1024_plddt.tsv",
+        "alphafold2/split_msa_prediction/T1024/T1024_ptm.tsv",						        "alphafold2/split_msa_prediction/T1024/T1024_ptm.tsv",
+        "alphafold2/split_msa_prediction/T1024/msa",							        "alphafold2/split_msa_prediction/T1024/msa",
+        "alphafold2/split_msa_prediction/T1024/msa/features.pkl",					        "alphafold2/split_msa_prediction/T1024/msa/features.pkl",
+        "alphafold2/split_msa_prediction/T1024/paes",							        "alphafold2/split_msa_prediction/T1024/paes",
+        "alphafold2/split_msa_prediction/T1024/paes/T1024_0_pae.tsv",					        "alphafold2/split_msa_prediction/T1024/paes/T1024_0_pae.tsv",
+        "alphafold2/split_msa_prediction/T1026",							        "alphafold2/split_msa_prediction/T1026",
+        "alphafold2/split_msa_prediction/T1026/T1026_alphafold2_msa.tsv",				        "alphafold2/split_msa_prediction/T1026/T1026_alphafold2_msa.tsv",
+        "alphafold2/split_msa_prediction/T1026/T1026_chainwise_ipsae.tsv",				        "alphafold2/split_msa_prediction/T1026/T1026_chainwise_ipsae.tsv",
+        "alphafold2/split_msa_prediction/T1026/T1026_chainwise_iptm.tsv",				        "alphafold2/split_msa_prediction/T1026/T1026_chainwise_iptm.tsv",
+        "alphafold2/split_msa_prediction/T1026/T1026_ipsae.tsv",					        "alphafold2/split_msa_prediction/T1026/T1026_ipsae.tsv",
+        "alphafold2/split_msa_prediction/T1026/T1026_iptm.tsv",						        "alphafold2/split_msa_prediction/T1026/T1026_iptm.tsv",
+        "alphafold2/split_msa_prediction/T1026/T1026_plddt.tsv",					        "alphafold2/split_msa_prediction/T1026/T1026_plddt.tsv",
+        "alphafold2/split_msa_prediction/T1026/T1026_ptm.tsv",						        "alphafold2/split_msa_prediction/T1026/T1026_ptm.tsv",
+        "alphafold2/split_msa_prediction/T1026/msa",							        "alphafold2/split_msa_prediction/T1026/msa",
+        "alphafold2/split_msa_prediction/T1026/msa/features.pkl",					        "alphafold2/split_msa_prediction/T1026/msa/features.pkl",
+        "alphafold2/split_msa_prediction/T1026/paes",							        "alphafold2/split_msa_prediction/T1026/paes",
+        "alphafold2/split_msa_prediction/T1026/paes/T1026_0_pae.tsv",					        "alphafold2/split_msa_prediction/T1026/paes/T1026_0_pae.tsv",
+        "alphafold2/split_msa_prediction/top_ranked_structures",					        "alphafold2/split_msa_prediction/top_ranked_structures",
+        "alphafold2/split_msa_prediction/top_ranked_structures/T1024.pdb",				        "alphafold2/split_msa_prediction/top_ranked_structures/T1024.pdb",
+        "alphafold2/split_msa_prediction/top_ranked_structures/T1026.pdb",				        "alphafold2/split_msa_prediction/top_ranked_structures/T1026.pdb",
+        "multiqc",											        "multiqc",
+        "multiqc/multiqc_data",										        "multiqc/multiqc_data",
+        "multiqc/multiqc_data/.stub",									        "multiqc/multiqc_data/.stub",
+        "multiqc/multiqc_plots",									        "multiqc/multiqc_plots",
+        "multiqc/multiqc_plots/.stub",									        "multiqc/multiqc_plots/.stub",
+        "multiqc/multiqc_report.html",									        "multiqc/multiqc_report.html",
+        "pipeline_info",										        "pipeline_info",
+        "pipeline_info/nf_core_proteinfold_software_mqc_versions.yml",				   <
+        "reports",											        "reports",
+        "reports/T1024_alphafold2_report.html",								        "reports/T1024_alphafold2_report.html",
+        "reports/T1026_alphafold2_report.html"								        "reports/T1026_alphafold2_report.html"
+    ],													    ],
+    [													    [
+        "mgy_clusters.fa:md5,d41d8cd98f00b204e9800998ecf8427e",						        "mgy_clusters.fa:md5,d41d8cd98f00b204e9800998ecf8427e",
+        [												        [
+            "file.txt:md5,d41d8cd98f00b204e9800998ecf8427e"						            "file.txt:md5,d41d8cd98f00b204e9800998ecf8427e"
+        ],												        ],
+        [												        [
+            "file.txt:md5,d41d8cd98f00b204e9800998ecf8427e"						            "file.txt:md5,d41d8cd98f00b204e9800998ecf8427e"
+        ],												        ],
+        [												        [
+            												            
+        ],												        ],
+        "obsolete.dat:md5,d41d8cd98f00b204e9800998ecf8427e",						        "obsolete.dat:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "pdb_seqres.txt:md5,d41d8cd98f00b204e9800998ecf8427e",						        "pdb_seqres.txt:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "bfd-first_non_consensus_sequences.fasta:md5,d41d8cd98f00b204e9800998ecf8427e",			        "bfd-first_non_consensus_sequences.fasta:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "uniprot.fasta:md5,d41d8cd98f00b204e9800998ecf8427e",						        "uniprot.fasta:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "uniprot_sprot.fasta:md5,d41d8cd98f00b204e9800998ecf8427e",					        "uniprot_sprot.fasta:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "uniprot_trembl.fasta:md5,d41d8cd98f00b204e9800998ecf8427e",					        "uniprot_trembl.fasta:md5,d41d8cd98f00b204e9800998ecf8427e",
+        [												        [
+            "file.txt:md5,d41d8cd98f00b204e9800998ecf8427e"						            "file.txt:md5,d41d8cd98f00b204e9800998ecf8427e"
+        ],												        ],
+        "uniref90.fasta:md5,d41d8cd98f00b204e9800998ecf8427e",						        "uniref90.fasta:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1024_alphafold2_msa.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",				        "T1024_alphafold2_msa.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1024_chainwise_ipsae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",				        "T1024_chainwise_ipsae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1024_chainwise_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",				        "T1024_chainwise_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1024_ipsae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1024_ipsae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1024_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1024_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1024_plddt.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1024_plddt.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1024_ptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1024_ptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "features.pkl:md5,d41d8cd98f00b204e9800998ecf8427e",						        "features.pkl:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1024_0_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1024_0_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1026_alphafold2_msa.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",				        "T1026_alphafold2_msa.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1026_chainwise_ipsae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",				        "T1026_chainwise_ipsae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1026_chainwise_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",				        "T1026_chainwise_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1026_ipsae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1026_ipsae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1026_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1026_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1026_plddt.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1026_plddt.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1026_ptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1026_ptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "features.pkl:md5,d41d8cd98f00b204e9800998ecf8427e",						        "features.pkl:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1026_0_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1026_0_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1024.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1024.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1026.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1026.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
+        ".stub:md5,d41d8cd98f00b204e9800998ecf8427e",							        ".stub:md5,d41d8cd98f00b204e9800998ecf8427e",
+        ".stub:md5,d41d8cd98f00b204e9800998ecf8427e",							        ".stub:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1024_alphafold2_report.html:md5,d41d8cd98f00b204e9800998ecf8427e",				        "T1024_alphafold2_report.html:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1026_alphafold2_report.html:md5,d41d8cd98f00b204e9800998ecf8427e"				        "T1026_alphafold2_report.html:md5,d41d8cd98f00b204e9800998ecf8427e"
+    ]													    ]
+]													]
+
+[31mFAILED[0m (19.519s)
+
+  [31mAssertion failed: 
+  
+  1 of 1 assertions failed
+  [0m
+  [31mNextflow stdout:
+  
+  Nextflow stderr:
+  
+  [0m
+
+    Obsolete snapshots can only be checked if all tests of a file are executed successful.
+
+[1mTest alphafold2 split mode stub[0m
+
+  [1mTest[0m [61a8b87a] '-profile test_alphafold2_split' Error reading YAML file: /srv/scratch/z3374843/proteinfold-AusStructBioComp/.nf-test/tests/61a8b87a2e99cd06c085d684241509dd/output/pipeline_info/nf_core_proteinfold_software_mqc_versions.yml (No such file or directory)
+java.lang.RuntimeException: Different Snapshot:
+[													[
+    7,													    7,
+    {												   |	    null,
+        "GENERATE_REPORT": {									   <
+            "python": "3.12.7",									   <
+            "generate_report.py": "Python 3.12.7"						   <
+        },											   <
+        "RUN_ALPHAFOLD2_MSA": {									   <
+            "python": "3.11.14",								   <
+            "alphafold2": "1b3170e9409472ec8ad044f9935c92bedd7b4674",				   <
+            "numpy": "1.24.3",									   <
+            "biopython": 1.79									   <
+        },											   <
+        "RUN_ALPHAFOLD2_PRED": {								   <
+            "python": "3.11.14",								   <
+            "alphafold2": "1b3170e9409472ec8ad044f9935c92bedd7b4674",				   <
+            "jax": "0.4.26",									   <
+            "jaxlib": "0.4.26",									   <
+            "numpy": "1.24.3",									   <
+            "biopython": 1.79									   <
+        },											   <
+        "Workflow": {										   <
+            "nf-core/proteinfold": "v2.1.0dev"							   <
+        }											   <
+    },												   <
+    [													    [
+        "alphafold2",											        "alphafold2",
+        "alphafold2/split_msa_prediction",								        "alphafold2/split_msa_prediction",
+        "alphafold2/split_msa_prediction/T1024",							        "alphafold2/split_msa_prediction/T1024",
+        "alphafold2/split_msa_prediction/T1024/T1024_alphafold2_msa.tsv",				        "alphafold2/split_msa_prediction/T1024/T1024_alphafold2_msa.tsv",
+        "alphafold2/split_msa_prediction/T1024/T1024_chainwise_ipsae.tsv",				        "alphafold2/split_msa_prediction/T1024/T1024_chainwise_ipsae.tsv",
+        "alphafold2/split_msa_prediction/T1024/T1024_chainwise_iptm.tsv",				        "alphafold2/split_msa_prediction/T1024/T1024_chainwise_iptm.tsv",
+        "alphafold2/split_msa_prediction/T1024/T1024_ipsae.tsv",					        "alphafold2/split_msa_prediction/T1024/T1024_ipsae.tsv",
+        "alphafold2/split_msa_prediction/T1024/T1024_iptm.tsv",						        "alphafold2/split_msa_prediction/T1024/T1024_iptm.tsv",
+        "alphafold2/split_msa_prediction/T1024/T1024_plddt.tsv",					        "alphafold2/split_msa_prediction/T1024/T1024_plddt.tsv",
+        "alphafold2/split_msa_prediction/T1024/T1024_ptm.tsv",						        "alphafold2/split_msa_prediction/T1024/T1024_ptm.tsv",
+        "alphafold2/split_msa_prediction/T1024/msa",							        "alphafold2/split_msa_prediction/T1024/msa",
+        "alphafold2/split_msa_prediction/T1024/msa/features.pkl",					        "alphafold2/split_msa_prediction/T1024/msa/features.pkl",
+        "alphafold2/split_msa_prediction/T1024/paes",							        "alphafold2/split_msa_prediction/T1024/paes",
+        "alphafold2/split_msa_prediction/T1024/paes/T1024_0_pae.tsv",					        "alphafold2/split_msa_prediction/T1024/paes/T1024_0_pae.tsv",
+        "alphafold2/split_msa_prediction/T1026",							        "alphafold2/split_msa_prediction/T1026",
+        "alphafold2/split_msa_prediction/T1026/T1026_alphafold2_msa.tsv",				        "alphafold2/split_msa_prediction/T1026/T1026_alphafold2_msa.tsv",
+        "alphafold2/split_msa_prediction/T1026/T1026_chainwise_ipsae.tsv",				        "alphafold2/split_msa_prediction/T1026/T1026_chainwise_ipsae.tsv",
+        "alphafold2/split_msa_prediction/T1026/T1026_chainwise_iptm.tsv",				        "alphafold2/split_msa_prediction/T1026/T1026_chainwise_iptm.tsv",
+        "alphafold2/split_msa_prediction/T1026/T1026_ipsae.tsv",					        "alphafold2/split_msa_prediction/T1026/T1026_ipsae.tsv",
+        "alphafold2/split_msa_prediction/T1026/T1026_iptm.tsv",						        "alphafold2/split_msa_prediction/T1026/T1026_iptm.tsv",
+        "alphafold2/split_msa_prediction/T1026/T1026_plddt.tsv",					        "alphafold2/split_msa_prediction/T1026/T1026_plddt.tsv",
+        "alphafold2/split_msa_prediction/T1026/T1026_ptm.tsv",						        "alphafold2/split_msa_prediction/T1026/T1026_ptm.tsv",
+        "alphafold2/split_msa_prediction/T1026/msa",							        "alphafold2/split_msa_prediction/T1026/msa",
+        "alphafold2/split_msa_prediction/T1026/msa/features.pkl",					        "alphafold2/split_msa_prediction/T1026/msa/features.pkl",
+        "alphafold2/split_msa_prediction/T1026/paes",							        "alphafold2/split_msa_prediction/T1026/paes",
+        "alphafold2/split_msa_prediction/T1026/paes/T1026_0_pae.tsv",					        "alphafold2/split_msa_prediction/T1026/paes/T1026_0_pae.tsv",
+        "alphafold2/split_msa_prediction/top_ranked_structures",					        "alphafold2/split_msa_prediction/top_ranked_structures",
+        "alphafold2/split_msa_prediction/top_ranked_structures/T1024.pdb",				        "alphafold2/split_msa_prediction/top_ranked_structures/T1024.pdb",
+        "alphafold2/split_msa_prediction/top_ranked_structures/T1026.pdb",				        "alphafold2/split_msa_prediction/top_ranked_structures/T1026.pdb",
+        "multiqc",											        "multiqc",
+        "multiqc/multiqc_data",										        "multiqc/multiqc_data",
+        "multiqc/multiqc_data/.stub",									        "multiqc/multiqc_data/.stub",
+        "multiqc/multiqc_plots",									        "multiqc/multiqc_plots",
+        "multiqc/multiqc_plots/.stub",									        "multiqc/multiqc_plots/.stub",
+        "multiqc/multiqc_report.html",									        "multiqc/multiqc_report.html",
+        "pipeline_info",										        "pipeline_info",
+        "pipeline_info/nf_core_proteinfold_software_mqc_versions.yml",				   <
+        "reports",											        "reports",
+        "reports/T1024_alphafold2_report.html",								        "reports/T1024_alphafold2_report.html",
+        "reports/T1026_alphafold2_report.html"								        "reports/T1026_alphafold2_report.html"
+    ],													    ],
+    [													    [
+        "T1024_alphafold2_msa.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",				        "T1024_alphafold2_msa.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1024_chainwise_ipsae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",				        "T1024_chainwise_ipsae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1024_chainwise_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",				        "T1024_chainwise_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1024_ipsae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1024_ipsae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1024_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1024_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1024_plddt.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1024_plddt.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1024_ptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1024_ptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "features.pkl:md5,d41d8cd98f00b204e9800998ecf8427e",						        "features.pkl:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1024_0_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1024_0_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1026_alphafold2_msa.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",				        "T1026_alphafold2_msa.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1026_chainwise_ipsae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",				        "T1026_chainwise_ipsae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1026_chainwise_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",				        "T1026_chainwise_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1026_ipsae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1026_ipsae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1026_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1026_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1026_plddt.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1026_plddt.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1026_ptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1026_ptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "features.pkl:md5,d41d8cd98f00b204e9800998ecf8427e",						        "features.pkl:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1026_0_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1026_0_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1024.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1024.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1026.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1026.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
+        ".stub:md5,d41d8cd98f00b204e9800998ecf8427e",							        ".stub:md5,d41d8cd98f00b204e9800998ecf8427e",
+        ".stub:md5,d41d8cd98f00b204e9800998ecf8427e",							        ".stub:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1024_alphafold2_report.html:md5,d41d8cd98f00b204e9800998ecf8427e",				        "T1024_alphafold2_report.html:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1026_alphafold2_report.html:md5,d41d8cd98f00b204e9800998ecf8427e"				        "T1026_alphafold2_report.html:md5,d41d8cd98f00b204e9800998ecf8427e"
+    ]													    ]
+]													]
+
+[31mFAILED[0m (14.654s)
+
+  [31mAssertion failed: 
+  
+  1 of 1 assertions failed
+  [0m
+  [31mNextflow stdout:
+  
+  Nextflow stderr:
+  
+  [0m
+
+    Obsolete snapshots can only be checked if all tests of a file are executed successful.
+
+[1mTest alphafold3 mode stub[0m
+
+  [1mTest[0m [deb727e0] '-profile test_alphafold3_standard' Error reading YAML file: /srv/scratch/z3374843/proteinfold-AusStructBioComp/.nf-test/tests/deb727e036d8e8cb0b040d0cbfe09040/output/pipeline_info/nf_core_proteinfold_software_mqc_versions.yml (No such file or directory)
+java.lang.RuntimeException: Different Snapshot:
+[													[
+    9,													    9,
+    {												   |	    null,
+        "FASTA_TO_ALPHAFOLD3_JSON": {								   <
+            "python": "3.13.7"									   <
+        },											   <
+        "GENERATE_REPORT": {									   <
+            "python": "3.12.7",									   <
+            "generate_report.py": "Python 3.12.7"						   <
+        },											   <
+        "RUN_ALPHAFOLD3_DATAPIPELINE": {							   <
+            "python": "3.12.3",									   <
+            "alphafold3": "8a84535f4f5caeb01a5a1b3fc7ee03251c6035cd",				   <
+            "hmmer": 3.4									   <
+        },											   <
+        "RUN_ALPHAFOLD3_INFERENCE": {								   <
+            "python": "3.12.3",									   <
+            "alphafold3": "8a84535f4f5caeb01a5a1b3fc7ee03251c6035cd",				   <
+            "jax": "0.10.2",									   <
+            "jaxlib": "0.10.2",									   <
+            "numpy": "2.4.1",									   <
+            "biopython": 1.87,									   <
+            "rdkit": "2025.09.4"								   <
+        },											   <
+        "Workflow": {										   <
+            "nf-core/proteinfold": "v2.1.0dev"							   <
+        }											   <
+    },												   <
+    [													    [
+        "alphafold3",											        "alphafold3",
+        "alphafold3/T1024",										        "alphafold3/T1024",
+        "alphafold3/T1024/T1024_alphafold3_msa.tsv",							        "alphafold3/T1024/T1024_alphafold3_msa.tsv",
+        "alphafold3/T1024/T1024_chainwise_ipsae.tsv",							        "alphafold3/T1024/T1024_chainwise_ipsae.tsv",
+        "alphafold3/T1024/T1024_chainwise_iptm.tsv",							        "alphafold3/T1024/T1024_chainwise_iptm.tsv",
+        "alphafold3/T1024/T1024_data.json",								        "alphafold3/T1024/T1024_data.json",
+        "alphafold3/T1024/T1024_ipsae.tsv",								        "alphafold3/T1024/T1024_ipsae.tsv",
+        "alphafold3/T1024/T1024_iptm.tsv",								        "alphafold3/T1024/T1024_iptm.tsv",
+        "alphafold3/T1024/T1024_plddt.tsv",								        "alphafold3/T1024/T1024_plddt.tsv",
+        "alphafold3/T1024/T1024_ptm.tsv",								        "alphafold3/T1024/T1024_ptm.tsv",
+        "alphafold3/T1024/paes",									        "alphafold3/T1024/paes",
+        "alphafold3/T1024/paes/T1024_0_pae.tsv",							        "alphafold3/T1024/paes/T1024_0_pae.tsv",
+        "alphafold3/T1026",										        "alphafold3/T1026",
+        "alphafold3/T1026/T1026_alphafold3_msa.tsv",							        "alphafold3/T1026/T1026_alphafold3_msa.tsv",
+        "alphafold3/T1026/T1026_chainwise_ipsae.tsv",							        "alphafold3/T1026/T1026_chainwise_ipsae.tsv",
+        "alphafold3/T1026/T1026_chainwise_iptm.tsv",							        "alphafold3/T1026/T1026_chainwise_iptm.tsv",
+        "alphafold3/T1026/T1026_data.json",								        "alphafold3/T1026/T1026_data.json",
+        "alphafold3/T1026/T1026_ipsae.tsv",								        "alphafold3/T1026/T1026_ipsae.tsv",
+        "alphafold3/T1026/T1026_iptm.tsv",								        "alphafold3/T1026/T1026_iptm.tsv",
+        "alphafold3/T1026/T1026_plddt.tsv",								        "alphafold3/T1026/T1026_plddt.tsv",
+        "alphafold3/T1026/T1026_ptm.tsv",								        "alphafold3/T1026/T1026_ptm.tsv",
+        "alphafold3/T1026/paes",									        "alphafold3/T1026/paes",
+        "alphafold3/T1026/paes/T1026_0_pae.tsv",							        "alphafold3/T1026/paes/T1026_0_pae.tsv",
+        "alphafold3/top_ranked_structures",								        "alphafold3/top_ranked_structures",
+        "alphafold3/top_ranked_structures/T1024.cif",							        "alphafold3/top_ranked_structures/T1024.cif",
+        "alphafold3/top_ranked_structures/T1026.cif",							        "alphafold3/top_ranked_structures/T1026.cif",
+        "fasta",											        "fasta",
+        "fasta/T1024.json",										        "fasta/T1024.json",
+        "fasta/T1026.json",										        "fasta/T1026.json",
+        "multiqc",											        "multiqc",
+        "multiqc/multiqc_data",										        "multiqc/multiqc_data",
+        "multiqc/multiqc_data/.stub",									        "multiqc/multiqc_data/.stub",
+        "multiqc/multiqc_plots",									        "multiqc/multiqc_plots",
+        "multiqc/multiqc_plots/.stub",									        "multiqc/multiqc_plots/.stub",
+        "multiqc/multiqc_report.html",									        "multiqc/multiqc_report.html",
+        "pipeline_info",										        "pipeline_info",
+        "pipeline_info/nf_core_proteinfold_software_mqc_versions.yml",				   <
+        "reports",											        "reports",
+        "reports/T1024_alphafold3_report.html",								        "reports/T1024_alphafold3_report.html",
+        "reports/T1026_alphafold3_report.html"								        "reports/T1026_alphafold3_report.html"
+    ],													    ],
+    [													    [
+        "T1024_alphafold3_msa.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",				        "T1024_alphafold3_msa.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1024_chainwise_ipsae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",				        "T1024_chainwise_ipsae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1024_chainwise_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",				        "T1024_chainwise_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1024_data.json:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1024_data.json:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1024_ipsae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1024_ipsae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1024_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1024_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1024_plddt.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1024_plddt.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1024_ptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1024_ptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1024_0_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1024_0_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1026_alphafold3_msa.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",				        "T1026_alphafold3_msa.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1026_chainwise_ipsae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",				        "T1026_chainwise_ipsae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1026_chainwise_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",				        "T1026_chainwise_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1026_data.json:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1026_data.json:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1026_ipsae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1026_ipsae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1026_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1026_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1026_plddt.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1026_plddt.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1026_ptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1026_ptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1026_0_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1026_0_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1024.cif:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1024.cif:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1026.cif:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1026.cif:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1024.json:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1024.json:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1026.json:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1026.json:md5,d41d8cd98f00b204e9800998ecf8427e",
+        ".stub:md5,d41d8cd98f00b204e9800998ecf8427e",							        ".stub:md5,d41d8cd98f00b204e9800998ecf8427e",
+        ".stub:md5,d41d8cd98f00b204e9800998ecf8427e",							        ".stub:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1024_alphafold3_report.html:md5,d41d8cd98f00b204e9800998ecf8427e",				        "T1024_alphafold3_report.html:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1026_alphafold3_report.html:md5,d41d8cd98f00b204e9800998ecf8427e"				        "T1026_alphafold3_report.html:md5,d41d8cd98f00b204e9800998ecf8427e"
+    ]													    ]
+]													]
+
+[31mFAILED[0m (13.374s)
+
+  [31mAssertion failed: 
+  
+  1 of 1 assertions failed
+  [0m
+  [31mNextflow stdout:
+  
+  Nextflow stderr:
+  
+  [0m
+
+    Obsolete snapshots can only be checked if all tests of a file are executed successful.
+
+[1mTest boltz mode stub[0m
+
+  [1mTest[0m [36af7ee4] '-profile test_boltz' [31mFAILED[0m (9.821s)
+
+  [31mAssertion failed: 
+  
+  assert workflow.success
+         |        |
+         workflow false
+  [0m
+  [31mNextflow stdout:
+  
+  ERROR ~ No such variable: Exception evaluating property 'json' for nextflow.script.ChannelOut, Reason: groovy.lang.MissingPropertyException: No such property: json for class: groovyx.gpars.dataflow.DataflowBroadcast
+  
+   -- Check script '/srv/scratch/z3374843/proteinfold-AusStructBioComp/workflows/boltz.nf' at line: 80 or see '/srv/scratch/z3374843/proteinfold-AusStructBioComp/.nf-test/tests/36af7ee45ad1973bb8dd53cbb13eb3fa/meta/nextflow.log' file for more details
+  Nextflow stderr:
+  
+  [0m
+
+
+[1mTest colabfold_download mode stub[0m
+
+  [1mTest[0m [60810257] '-profile test_colabfold_download' Error reading YAML file: /srv/scratch/z3374843/proteinfold-AusStructBioComp/.nf-test/tests/6081025711901a7eca390bd49f6eda38/output/pipeline_info/nf_core_proteinfold_software_mqc_versions.yml (No such file or directory)
+java.lang.RuntimeException: Different Snapshot:
+[													[
+    9,													    9,
+    {												   |	    null,
+        "ARIA2": {										   <
+            "aria2": "1.36.0"									   <
+        },											   <
+        "COLABFOLD_BATCH": {									   <
+            "alphafold_colabfold": "2.3.10",							   <
+            "colabfold_batch": "1.5.5"								   <
+        },											   <
+        "GENERATE_REPORT": {									   <
+            "python": "3.12.7",									   <
+            "generate_report.py": "Python 3.12.7"						   <
+        },											   <
+        "MULTIFASTA_TO_CSV": {									   <
+            "sed": 4.7										   <
+        },											   <
+        "Workflow": {										   <
+            "nf-core/proteinfold": "v2.1.0dev"							   <
+        }											   <
+    },												   <
+    [													    [
+        "DBs",												        "DBs",
+        "DBs/colabfold",										        "DBs/colabfold",
+        "DBs/colabfold/params",										        "DBs/colabfold/params",
+        "DBs/colabfold/params/alphafold_params_2022-12-06",						        "DBs/colabfold/params/alphafold_params_2022-12-06",
+        "colabfold",											        "colabfold",
+        "colabfold/T1024",										        "colabfold/T1024",
+        "colabfold/T1024/T1024_chainwise_ipsae.tsv",							        "colabfold/T1024/T1024_chainwise_ipsae.tsv",
+        "colabfold/T1024/T1024_chainwise_iptm.tsv",							        "colabfold/T1024/T1024_chainwise_iptm.tsv",
+        "colabfold/T1024/T1024_colabfold_msa.tsv",							        "colabfold/T1024/T1024_colabfold_msa.tsv",
+        "colabfold/T1024/T1024_ipsae.tsv",								        "colabfold/T1024/T1024_ipsae.tsv",
+        "colabfold/T1024/T1024_iptm.tsv",								        "colabfold/T1024/T1024_iptm.tsv",
+        "colabfold/T1024/T1024_plddt.tsv",								        "colabfold/T1024/T1024_plddt.tsv",
+        "colabfold/T1024/T1024_ptm.tsv",								        "colabfold/T1024/T1024_ptm.tsv",
+        "colabfold/T1024/paes",										        "colabfold/T1024/paes",
+        "colabfold/T1024/paes/T1024_1_pae.tsv",								        "colabfold/T1024/paes/T1024_1_pae.tsv",
+        "colabfold/T1024/paes/T1024_2_pae.tsv",								        "colabfold/T1024/paes/T1024_2_pae.tsv",
+        "colabfold/T1024/paes/T1024_3_pae.tsv",								        "colabfold/T1024/paes/T1024_3_pae.tsv",
+        "colabfold/T1024/paes/T1024_4_pae.tsv",								        "colabfold/T1024/paes/T1024_4_pae.tsv",
+        "colabfold/T1024/paes/T1024_5_pae.tsv",								        "colabfold/T1024/paes/T1024_5_pae.tsv",
+        "colabfold/T1026",										        "colabfold/T1026",
+        "colabfold/T1026/T1026_chainwise_ipsae.tsv",							        "colabfold/T1026/T1026_chainwise_ipsae.tsv",
+        "colabfold/T1026/T1026_chainwise_iptm.tsv",							        "colabfold/T1026/T1026_chainwise_iptm.tsv",
+        "colabfold/T1026/T1026_colabfold_msa.tsv",							        "colabfold/T1026/T1026_colabfold_msa.tsv",
+        "colabfold/T1026/T1026_ipsae.tsv",								        "colabfold/T1026/T1026_ipsae.tsv",
+        "colabfold/T1026/T1026_iptm.tsv",								        "colabfold/T1026/T1026_iptm.tsv",
+        "colabfold/T1026/T1026_plddt.tsv",								        "colabfold/T1026/T1026_plddt.tsv",
+        "colabfold/T1026/T1026_ptm.tsv",								        "colabfold/T1026/T1026_ptm.tsv",
+        "colabfold/T1026/paes",										        "colabfold/T1026/paes",
+        "colabfold/T1026/paes/T1026_1_pae.tsv",								        "colabfold/T1026/paes/T1026_1_pae.tsv",
+        "colabfold/T1026/paes/T1026_2_pae.tsv",								        "colabfold/T1026/paes/T1026_2_pae.tsv",
+        "colabfold/T1026/paes/T1026_3_pae.tsv",								        "colabfold/T1026/paes/T1026_3_pae.tsv",
+        "colabfold/T1026/paes/T1026_4_pae.tsv",								        "colabfold/T1026/paes/T1026_4_pae.tsv",
+        "colabfold/T1026/paes/T1026_5_pae.tsv",								        "colabfold/T1026/paes/T1026_5_pae.tsv",
+        "colabfold/top_ranked_structures",								        "colabfold/top_ranked_structures",
+        "colabfold/top_ranked_structures/T1024.pdb",							        "colabfold/top_ranked_structures/T1024.pdb",
+        "colabfold/top_ranked_structures/T1026.pdb",							        "colabfold/top_ranked_structures/T1026.pdb",
+        "multifasta",											        "multifasta",
+        "multifasta/input.csv",										        "multifasta/input.csv",
+        "multiqc",											        "multiqc",
+        "multiqc/multiqc_data",										        "multiqc/multiqc_data",
+        "multiqc/multiqc_data/.stub",									        "multiqc/multiqc_data/.stub",
+        "multiqc/multiqc_plots",									        "multiqc/multiqc_plots",
+        "multiqc/multiqc_plots/.stub",									        "multiqc/multiqc_plots/.stub",
+        "multiqc/multiqc_report.html",									        "multiqc/multiqc_report.html",
+        "pipeline_info",										        "pipeline_info",
+        "pipeline_info/nf_core_proteinfold_software_mqc_versions.yml",				   <
+        "reports",											        "reports",
+        "reports/T1024_colabfold_report.html",								        "reports/T1024_colabfold_report.html",
+        "reports/T1026_colabfold_report.html"								        "reports/T1026_colabfold_report.html"
+    ],													    ],
+    [													    [
+        [												        [
+            "file.txt:md5,d41d8cd98f00b204e9800998ecf8427e"						            "file.txt:md5,d41d8cd98f00b204e9800998ecf8427e"
+        ],												        ],
+        "T1024_chainwise_ipsae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",				        "T1024_chainwise_ipsae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1024_chainwise_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",				        "T1024_chainwise_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1024_colabfold_msa.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",					        "T1024_colabfold_msa.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1024_ipsae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1024_ipsae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1024_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1024_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1024_plddt.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1024_plddt.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1024_ptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1024_ptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1024_1_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1024_1_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1024_2_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1024_2_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1024_3_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1024_3_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1024_4_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1024_4_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1024_5_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1024_5_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1026_chainwise_ipsae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",				        "T1026_chainwise_ipsae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1026_chainwise_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",				        "T1026_chainwise_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1026_colabfold_msa.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",					        "T1026_colabfold_msa.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1026_ipsae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1026_ipsae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1026_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1026_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1026_plddt.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1026_plddt.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1026_ptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1026_ptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1026_1_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1026_1_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1026_2_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1026_2_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1026_3_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1026_3_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1026_4_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1026_4_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1026_5_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1026_5_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1024.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1024.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1026.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1026.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "input.csv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "input.csv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        ".stub:md5,d41d8cd98f00b204e9800998ecf8427e",							        ".stub:md5,d41d8cd98f00b204e9800998ecf8427e",
+        ".stub:md5,d41d8cd98f00b204e9800998ecf8427e",							        ".stub:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1024_colabfold_report.html:md5,d41d8cd98f00b204e9800998ecf8427e",				        "T1024_colabfold_report.html:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1026_colabfold_report.html:md5,d41d8cd98f00b204e9800998ecf8427e"				        "T1026_colabfold_report.html:md5,d41d8cd98f00b204e9800998ecf8427e"
+    ]													    ]
+]													]
+
+[31mFAILED[0m (23.166s)
+
+  [31mAssertion failed: 
+  
+  1 of 1 assertions failed
+  [0m
+  [31mNextflow stdout:
+  
+  Nextflow stderr:
+  
+  [0m
+
+    Obsolete snapshots can only be checked if all tests of a file are executed successful.
+
+[1mTest colabfold local mode stub[0m
+
+  [1mTest[0m [46822abb] '-profile test_colabfold_local' [31mFAILED[0m (13.749s)
+
+  [31mAssertion failed: 
+  
+  assert workflow.success
+         |        |
+         workflow false
+  [0m
+  [31mNextflow stdout:
+  
+  ERROR ~ Error executing process > 'NFCORE_PROTEINFOLD:COLABFOLD:MMSEQS_COLABFOLDSEARCH (T1026)'
+  
+  Caused by:
+    Unable to evaluate output
+  
+  
+  Command executed:
+  
+    mmseqs version
+  
+  Command exit status:
+    127
+  
+  Command output:
+    bash: mmseqs: command not found
+  
+  Work dir:
+    /srv/scratch/z3374843/proteinfold-AusStructBioComp/.nf-test/tests/46822abb21ec31c343f759b0c7cdae9c/work/4e/7aa068642fb4fb8f4c39ff5913a20b
+  
+   -- Check '/srv/scratch/z3374843/proteinfold-AusStructBioComp/.nf-test/tests/46822abb21ec31c343f759b0c7cdae9c/meta/nextflow.log' file for details
+  ERROR ~ Pipeline failed. Please refer to troubleshooting docs for common issues: https://nf-co.re/docs/running/troubleshooting
+  
+   -- Check '/srv/scratch/z3374843/proteinfold-AusStructBioComp/.nf-test/tests/46822abb21ec31c343f759b0c7cdae9c/meta/nextflow.log' file for details
+  Nextflow stderr:
+  
+  [0m
+
+
+[1mTest colabfold webserver mode stub[0m
+
+  [1mTest[0m [3134908a] '-profile test_colabfold_webserver' Error reading YAML file: /srv/scratch/z3374843/proteinfold-AusStructBioComp/.nf-test/tests/3134908ad41ed88e665363b572c38c98/output/pipeline_info/nf_core_proteinfold_software_mqc_versions.yml (No such file or directory)
+java.lang.RuntimeException: Different Snapshot:
+[													[
+    7,													    7,
+    {												   |	    null,
+        "COLABFOLD_BATCH": {									   <
+            "alphafold_colabfold": "2.3.10",							   <
+            "colabfold_batch": "1.5.5"								   <
+        },											   <
+        "GENERATE_REPORT": {									   <
+            "python": "3.12.7",									   <
+            "generate_report.py": "Python 3.12.7"						   <
+        },											   <
+        "MULTIFASTA_TO_CSV": {									   <
+            "sed": 4.7										   <
+        },											   <
+        "Workflow": {										   <
+            "nf-core/proteinfold": "v2.1.0dev"							   <
+        }											   <
+    },												   <
+    [													    [
+        "colabfold",											        "colabfold",
+        "colabfold/T1024",										        "colabfold/T1024",
+        "colabfold/T1024/T1024_chainwise_ipsae.tsv",							        "colabfold/T1024/T1024_chainwise_ipsae.tsv",
+        "colabfold/T1024/T1024_chainwise_iptm.tsv",							        "colabfold/T1024/T1024_chainwise_iptm.tsv",
+        "colabfold/T1024/T1024_colabfold_msa.tsv",							        "colabfold/T1024/T1024_colabfold_msa.tsv",
+        "colabfold/T1024/T1024_ipsae.tsv",								        "colabfold/T1024/T1024_ipsae.tsv",
+        "colabfold/T1024/T1024_iptm.tsv",								        "colabfold/T1024/T1024_iptm.tsv",
+        "colabfold/T1024/T1024_plddt.tsv",								        "colabfold/T1024/T1024_plddt.tsv",
+        "colabfold/T1024/T1024_ptm.tsv",								        "colabfold/T1024/T1024_ptm.tsv",
+        "colabfold/T1024/paes",										        "colabfold/T1024/paes",
+        "colabfold/T1024/paes/T1024_1_pae.tsv",								        "colabfold/T1024/paes/T1024_1_pae.tsv",
+        "colabfold/T1024/paes/T1024_2_pae.tsv",								        "colabfold/T1024/paes/T1024_2_pae.tsv",
+        "colabfold/T1024/paes/T1024_3_pae.tsv",								        "colabfold/T1024/paes/T1024_3_pae.tsv",
+        "colabfold/T1024/paes/T1024_4_pae.tsv",								        "colabfold/T1024/paes/T1024_4_pae.tsv",
+        "colabfold/T1024/paes/T1024_5_pae.tsv",								        "colabfold/T1024/paes/T1024_5_pae.tsv",
+        "colabfold/T1026",										        "colabfold/T1026",
+        "colabfold/T1026/T1026_chainwise_ipsae.tsv",							        "colabfold/T1026/T1026_chainwise_ipsae.tsv",
+        "colabfold/T1026/T1026_chainwise_iptm.tsv",							        "colabfold/T1026/T1026_chainwise_iptm.tsv",
+        "colabfold/T1026/T1026_colabfold_msa.tsv",							        "colabfold/T1026/T1026_colabfold_msa.tsv",
+        "colabfold/T1026/T1026_ipsae.tsv",								        "colabfold/T1026/T1026_ipsae.tsv",
+        "colabfold/T1026/T1026_iptm.tsv",								        "colabfold/T1026/T1026_iptm.tsv",
+        "colabfold/T1026/T1026_plddt.tsv",								        "colabfold/T1026/T1026_plddt.tsv",
+        "colabfold/T1026/T1026_ptm.tsv",								        "colabfold/T1026/T1026_ptm.tsv",
+        "colabfold/T1026/paes",										        "colabfold/T1026/paes",
+        "colabfold/T1026/paes/T1026_1_pae.tsv",								        "colabfold/T1026/paes/T1026_1_pae.tsv",
+        "colabfold/T1026/paes/T1026_2_pae.tsv",								        "colabfold/T1026/paes/T1026_2_pae.tsv",
+        "colabfold/T1026/paes/T1026_3_pae.tsv",								        "colabfold/T1026/paes/T1026_3_pae.tsv",
+        "colabfold/T1026/paes/T1026_4_pae.tsv",								        "colabfold/T1026/paes/T1026_4_pae.tsv",
+        "colabfold/T1026/paes/T1026_5_pae.tsv",								        "colabfold/T1026/paes/T1026_5_pae.tsv",
+        "colabfold/top_ranked_structures",								        "colabfold/top_ranked_structures",
+        "colabfold/top_ranked_structures/T1024.pdb",							        "colabfold/top_ranked_structures/T1024.pdb",
+        "colabfold/top_ranked_structures/T1026.pdb",							        "colabfold/top_ranked_structures/T1026.pdb",
+        "multifasta",											        "multifasta",
+        "multifasta/input.csv",										        "multifasta/input.csv",
+        "multiqc",											        "multiqc",
+        "multiqc/multiqc_data",										        "multiqc/multiqc_data",
+        "multiqc/multiqc_data/.stub",									        "multiqc/multiqc_data/.stub",
+        "multiqc/multiqc_plots",									        "multiqc/multiqc_plots",
+        "multiqc/multiqc_plots/.stub",									        "multiqc/multiqc_plots/.stub",
+        "multiqc/multiqc_report.html",									        "multiqc/multiqc_report.html",
+        "pipeline_info",										        "pipeline_info",
+        "pipeline_info/nf_core_proteinfold_software_mqc_versions.yml",				   <
+        "reports",											        "reports",
+        "reports/T1024_colabfold_report.html",								        "reports/T1024_colabfold_report.html",
+        "reports/T1026_colabfold_report.html"								        "reports/T1026_colabfold_report.html"
+    ],													    ],
+    [													    [
+        "T1024_chainwise_ipsae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",				        "T1024_chainwise_ipsae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1024_chainwise_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",				        "T1024_chainwise_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1024_colabfold_msa.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",					        "T1024_colabfold_msa.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1024_ipsae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1024_ipsae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1024_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1024_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1024_plddt.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1024_plddt.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1024_ptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1024_ptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1024_1_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1024_1_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1024_2_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1024_2_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1024_3_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1024_3_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1024_4_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1024_4_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1024_5_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1024_5_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1026_chainwise_ipsae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",				        "T1026_chainwise_ipsae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1026_chainwise_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",				        "T1026_chainwise_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1026_colabfold_msa.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",					        "T1026_colabfold_msa.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1026_ipsae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1026_ipsae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1026_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1026_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1026_plddt.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1026_plddt.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1026_ptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1026_ptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1026_1_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1026_1_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1026_2_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1026_2_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1026_3_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1026_3_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1026_4_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1026_4_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1026_5_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1026_5_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1024.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1024.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1026.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1026.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "input.csv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "input.csv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        ".stub:md5,d41d8cd98f00b204e9800998ecf8427e",							        ".stub:md5,d41d8cd98f00b204e9800998ecf8427e",
+        ".stub:md5,d41d8cd98f00b204e9800998ecf8427e",							        ".stub:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1024_colabfold_report.html:md5,d41d8cd98f00b204e9800998ecf8427e",				        "T1024_colabfold_report.html:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1026_colabfold_report.html:md5,d41d8cd98f00b204e9800998ecf8427e"				        "T1026_colabfold_report.html:md5,d41d8cd98f00b204e9800998ecf8427e"
+    ]													    ]
+]													]
+
+[31mFAILED[0m (14.325s)
+
+  [31mAssertion failed: 
+  
+  1 of 1 assertions failed
+  [0m
+  [31mNextflow stdout:
+  
+  Nextflow stderr:
+  
+  [0m
+
+    Obsolete snapshots can only be checked if all tests of a file are executed successful.
+
+[1mTest pipeline[0m
+
+  [1mTest[0m [e823d756] '-profile test' Error reading YAML file: /srv/scratch/z3374843/proteinfold-AusStructBioComp/.nf-test/tests/e823d75661e5e78c70603e506c8a6ba7/output/pipeline_info/nf_core_proteinfold_software_mqc_versions.yml (No such file or directory)
+java.lang.RuntimeException: Different Snapshot:
+[													[
+    {												   |	    null,
+        "GENERATE_REPORT": {									   <
+            "python": "3.12.7",									   <
+            "generate_report.py": "Python 3.12.7"						   <
+        },											   <
+        "RUN_ALPHAFOLD2_MSA": {									   <
+            "python": "3.11.14",								   <
+            "alphafold2": "1b3170e9409472ec8ad044f9935c92bedd7b4674",				   <
+            "numpy": "1.24.3",									   <
+            "biopython": 1.79									   <
+        },											   <
+        "RUN_ALPHAFOLD2_PRED": {								   <
+            "python": "3.11.14",								   <
+            "alphafold2": "1b3170e9409472ec8ad044f9935c92bedd7b4674",				   <
+            "jax": "0.4.26",									   <
+            "jaxlib": "0.4.26",									   <
+            "numpy": "1.24.3",									   <
+            "biopython": 1.79									   <
+        },											   <
+        "Workflow": {										   <
+            "nf-core/proteinfold": "v2.1.0dev"							   <
+        }											   <
+    },												   <
+    [													    [
+        "alphafold2",											        "alphafold2",
+        "alphafold2/split_msa_prediction",								        "alphafold2/split_msa_prediction",
+        "alphafold2/split_msa_prediction/T1024",							        "alphafold2/split_msa_prediction/T1024",
+        "alphafold2/split_msa_prediction/T1024/T1024_alphafold2_msa.tsv",				        "alphafold2/split_msa_prediction/T1024/T1024_alphafold2_msa.tsv",
+        "alphafold2/split_msa_prediction/T1024/T1024_chainwise_ipsae.tsv",				        "alphafold2/split_msa_prediction/T1024/T1024_chainwise_ipsae.tsv",
+        "alphafold2/split_msa_prediction/T1024/T1024_chainwise_iptm.tsv",				        "alphafold2/split_msa_prediction/T1024/T1024_chainwise_iptm.tsv",
+        "alphafold2/split_msa_prediction/T1024/T1024_ipsae.tsv",					        "alphafold2/split_msa_prediction/T1024/T1024_ipsae.tsv",
+        "alphafold2/split_msa_prediction/T1024/T1024_iptm.tsv",						        "alphafold2/split_msa_prediction/T1024/T1024_iptm.tsv",
+        "alphafold2/split_msa_prediction/T1024/T1024_plddt.tsv",					        "alphafold2/split_msa_prediction/T1024/T1024_plddt.tsv",
+        "alphafold2/split_msa_prediction/T1024/T1024_ptm.tsv",						        "alphafold2/split_msa_prediction/T1024/T1024_ptm.tsv",
+        "alphafold2/split_msa_prediction/T1024/msa",							        "alphafold2/split_msa_prediction/T1024/msa",
+        "alphafold2/split_msa_prediction/T1024/msa/features.pkl",					        "alphafold2/split_msa_prediction/T1024/msa/features.pkl",
+        "alphafold2/split_msa_prediction/T1024/paes",							        "alphafold2/split_msa_prediction/T1024/paes",
+        "alphafold2/split_msa_prediction/T1024/paes/T1024_0_pae.tsv",					        "alphafold2/split_msa_prediction/T1024/paes/T1024_0_pae.tsv",
+        "alphafold2/split_msa_prediction/T1026",							        "alphafold2/split_msa_prediction/T1026",
+        "alphafold2/split_msa_prediction/T1026/T1026_alphafold2_msa.tsv",				        "alphafold2/split_msa_prediction/T1026/T1026_alphafold2_msa.tsv",
+        "alphafold2/split_msa_prediction/T1026/T1026_chainwise_ipsae.tsv",				        "alphafold2/split_msa_prediction/T1026/T1026_chainwise_ipsae.tsv",
+        "alphafold2/split_msa_prediction/T1026/T1026_chainwise_iptm.tsv",				        "alphafold2/split_msa_prediction/T1026/T1026_chainwise_iptm.tsv",
+        "alphafold2/split_msa_prediction/T1026/T1026_ipsae.tsv",					        "alphafold2/split_msa_prediction/T1026/T1026_ipsae.tsv",
+        "alphafold2/split_msa_prediction/T1026/T1026_iptm.tsv",						        "alphafold2/split_msa_prediction/T1026/T1026_iptm.tsv",
+        "alphafold2/split_msa_prediction/T1026/T1026_plddt.tsv",					        "alphafold2/split_msa_prediction/T1026/T1026_plddt.tsv",
+        "alphafold2/split_msa_prediction/T1026/T1026_ptm.tsv",						        "alphafold2/split_msa_prediction/T1026/T1026_ptm.tsv",
+        "alphafold2/split_msa_prediction/T1026/msa",							        "alphafold2/split_msa_prediction/T1026/msa",
+        "alphafold2/split_msa_prediction/T1026/msa/features.pkl",					        "alphafold2/split_msa_prediction/T1026/msa/features.pkl",
+        "alphafold2/split_msa_prediction/T1026/paes",							        "alphafold2/split_msa_prediction/T1026/paes",
+        "alphafold2/split_msa_prediction/T1026/paes/T1026_0_pae.tsv",					        "alphafold2/split_msa_prediction/T1026/paes/T1026_0_pae.tsv",
+        "alphafold2/split_msa_prediction/top_ranked_structures",					        "alphafold2/split_msa_prediction/top_ranked_structures",
+        "alphafold2/split_msa_prediction/top_ranked_structures/T1024.pdb",				        "alphafold2/split_msa_prediction/top_ranked_structures/T1024.pdb",
+        "alphafold2/split_msa_prediction/top_ranked_structures/T1026.pdb",				        "alphafold2/split_msa_prediction/top_ranked_structures/T1026.pdb",
+        "multiqc",											        "multiqc",
+        "multiqc/multiqc_data",										        "multiqc/multiqc_data",
+        "multiqc/multiqc_data/.stub",									        "multiqc/multiqc_data/.stub",
+        "multiqc/multiqc_plots",									        "multiqc/multiqc_plots",
+        "multiqc/multiqc_plots/.stub",									        "multiqc/multiqc_plots/.stub",
+        "multiqc/multiqc_report.html",									        "multiqc/multiqc_report.html",
+        "pipeline_info",										        "pipeline_info",
+        "pipeline_info/nf_core_proteinfold_software_mqc_versions.yml",				   <
+        "reports",											        "reports",
+        "reports/T1024_alphafold2_report.html",								        "reports/T1024_alphafold2_report.html",
+        "reports/T1026_alphafold2_report.html"								        "reports/T1026_alphafold2_report.html"
+    ],													    ],
+    [													    [
+        "T1024_alphafold2_msa.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",				        "T1024_alphafold2_msa.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1024_chainwise_ipsae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",				        "T1024_chainwise_ipsae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1024_chainwise_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",				        "T1024_chainwise_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1024_ipsae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1024_ipsae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1024_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1024_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1024_plddt.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1024_plddt.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1024_ptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1024_ptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "features.pkl:md5,d41d8cd98f00b204e9800998ecf8427e",						        "features.pkl:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1024_0_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1024_0_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1026_alphafold2_msa.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",				        "T1026_alphafold2_msa.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1026_chainwise_ipsae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",				        "T1026_chainwise_ipsae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1026_chainwise_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",				        "T1026_chainwise_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1026_ipsae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1026_ipsae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1026_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1026_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1026_plddt.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1026_plddt.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1026_ptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1026_ptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "features.pkl:md5,d41d8cd98f00b204e9800998ecf8427e",						        "features.pkl:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1026_0_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1026_0_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1024.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1024.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1026.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1026.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
+        ".stub:md5,d41d8cd98f00b204e9800998ecf8427e",							        ".stub:md5,d41d8cd98f00b204e9800998ecf8427e",
+        ".stub:md5,d41d8cd98f00b204e9800998ecf8427e",							        ".stub:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1024_alphafold2_report.html:md5,d41d8cd98f00b204e9800998ecf8427e",				        "T1024_alphafold2_report.html:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1026_alphafold2_report.html:md5,d41d8cd98f00b204e9800998ecf8427e"				        "T1026_alphafold2_report.html:md5,d41d8cd98f00b204e9800998ecf8427e"
+    ]													    ]
+]													]
+
+[31mFAILED[0m (15.501s)
+
+  [31mAssertion failed: 
+  
+  1 of 1 assertions failed
+  [0m
+  [31mNextflow stdout:
+  
+  Nextflow stderr:
+  
+  [0m
+
+    Obsolete snapshots can only be checked if all tests of a file are executed successful.
+
+[1mTest esmfold mode stub[0m
+
+  [1mTest[0m [741dc058] '-profile test_esmfold' Error reading YAML file: /srv/scratch/z3374843/proteinfold-AusStructBioComp/.nf-test/tests/741dc0580d769dd15caf68f812e19fcf/output/pipeline_info/nf_core_proteinfold_software_mqc_versions.yml (No such file or directory)
+java.lang.RuntimeException: Different Snapshot:
+[													[
+    5,													    5,
+    {												   |	    null,
+        "GENERATE_REPORT": {									   <
+            "python": "3.12.7",									   <
+            "generate_report.py": "Python 3.12.7"						   <
+        },											   <
+        "RUN_ESMFOLD": {									   <
+            "esm-fold": "1.0.3",								   <
+            "python": "3.9.23",									   <
+            "pytorch": "2.0.0+cu118",								   <
+            "openfold": "1.0.0",								   <
+            "numpy": "1.23.5",									   <
+            "biopython": 1.85									   <
+        },											   <
+        "Workflow": {										   <
+            "nf-core/proteinfold": "v2.1.0dev"							   <
+        }											   <
+    },												   <
+    [													    [
+        "esmfold",											        "esmfold",
+        "esmfold/T1024",										        "esmfold/T1024",
+        "esmfold/T1024/T1024_plddt.tsv",								        "esmfold/T1024/T1024_plddt.tsv",
+        "esmfold/T1026",										        "esmfold/T1026",
+        "esmfold/T1026/T1026_plddt.tsv",								        "esmfold/T1026/T1026_plddt.tsv",
+        "esmfold/top_ranked_structures",								        "esmfold/top_ranked_structures",
+        "esmfold/top_ranked_structures/T1024.pdb",							        "esmfold/top_ranked_structures/T1024.pdb",
+        "esmfold/top_ranked_structures/T1026.pdb",							        "esmfold/top_ranked_structures/T1026.pdb",
+        "multiqc",											        "multiqc",
+        "multiqc/multiqc_data",										        "multiqc/multiqc_data",
+        "multiqc/multiqc_data/.stub",									        "multiqc/multiqc_data/.stub",
+        "multiqc/multiqc_plots",									        "multiqc/multiqc_plots",
+        "multiqc/multiqc_plots/.stub",									        "multiqc/multiqc_plots/.stub",
+        "multiqc/multiqc_report.html",									        "multiqc/multiqc_report.html",
+        "pipeline_info",										        "pipeline_info",
+        "pipeline_info/nf_core_proteinfold_software_mqc_versions.yml",				   <
+        "reports",											        "reports",
+        "reports/T1024_esmfold_report.html",								        "reports/T1024_esmfold_report.html",
+        "reports/T1026_esmfold_report.html"								        "reports/T1026_esmfold_report.html"
+    ],													    ],
+    [													    [
+        "T1024_plddt.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1024_plddt.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1026_plddt.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1026_plddt.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1024.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1024.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1026.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",						        "T1026.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
+        ".stub:md5,d41d8cd98f00b204e9800998ecf8427e",							        ".stub:md5,d41d8cd98f00b204e9800998ecf8427e",
+        ".stub:md5,d41d8cd98f00b204e9800998ecf8427e",							        ".stub:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1024_esmfold_report.html:md5,d41d8cd98f00b204e9800998ecf8427e",				        "T1024_esmfold_report.html:md5,d41d8cd98f00b204e9800998ecf8427e",
+        "T1026_esmfold_report.html:md5,d41d8cd98f00b204e9800998ecf8427e"				        "T1026_esmfold_report.html:md5,d41d8cd98f00b204e9800998ecf8427e"
+    ]													    ]
+]													]
+
+[31mFAILED[0m (14.138s)
+
+  [31mAssertion failed: 
+  
+  1 of 1 assertions failed
+  [0m
+  [31mNextflow stdout:
+  
+  Nextflow stderr:
+  
+  [0m
+
+    Obsolete snapshots can only be checked if all tests of a file are executed successful.
+
+[1mScientific validation: All structure prediction modes with full TSV parsing[0m
+
+  [1mTest[0m [245c3473] 'AlphaFold2: BioPython structure validation' ✓ Canary 1 passed - malformed PDB correctly rejected: No residues found - correctly rejected empty structure
+
+✓ Canary 2 passed - valid PDB correctly accepted: 1 residues
+
+✓ Canary 3 passed - invalid coordinates correctly rejected: PDBConstructionException: Blank altlocs in duplicate residue ALA (' ', 1, ' ') of chain 'A' at line 4.
+Exception ignored.
+Some atoms or residues may be missing in the data structure.
+
+/srv/scratch/z3374843/venvs/precommit/lib/python3.10/site-packages/Bio/PDB/StructureBuilder.py:137: PDBConstructionWarning: WARNING: Residue (' ', 1, ' ') redefined at line 4.
+  warnings.warn(
+
+✓ All 3 canary checks passed for alphafold2 - parser is sound, proceeding with validation
+Workflow failed with exit status: 1
+[31mFAILED[0m (599.558s)
+
+  [31mjava.lang.AssertionError: AlphaFold2 workflow failed - exit status: 1. Expression: workflow.success[0m
+  [31mNextflow stdout:
+  
+  ERROR ~ Error executing process > 'NFCORE_PROTEINFOLD:ALPHAFOLD2:RUN_ALPHAFOLD2_MSA (T1024)'
+  
+  Caused by:
+    Process `NFCORE_PROTEINFOLD:ALPHAFOLD2:RUN_ALPHAFOLD2_MSA (T1024)` terminated with an error exit status (2)
+  
+  
+  Command executed:
+  
+    fix_obsolete.py pdb_mmcif/obsolete.dat > clean_obsolete.dat
+    
+    ## Handles multiple versions of mgnify database and selects the latest version
+    mgnify_db_path=$(ls -v ./mgnify/mgy_clusters*.fa | tail -n 1)
+    
+    python3 /app/alphafold/run_msa.py         --fasta_paths=T1024.fasta         --model_preset=monomer_ptm --pdb70_database_path=./pdb70/pdb70          --db_preset=reduced_dbs --small_bfd_database_path=./small_bfd/bfd-first_non_consensus_sequences.fasta         --output_dir=$PWD         --data_dir=$PWD         --uniref90_database_path=./uniref90/uniref90.fasta         --mgnify_database_path=$mgnify_db_path         --template_mmcif_dir=./pdb_mmcif/mmcif_files         --obsolete_pdbs_path=./clean_obsolete.dat         --max_template_date 2038-01-19
+    
+    # Can't use fasta.baseName to batch outputs in publishDir
+    mv "T1024" raw/
+  
+  Command exit status:
+    2
+  
+  Command output:
+    (empty)
+  
+  Command error:
+    python3: can't open file '/app/alphafold/run_msa.py': [Errno 2] No such file or directory
+  
+  Work dir:
+    /srv/scratch/z3374843/proteinfold-AusStructBioComp/.nf-test/tests/245c3473d7a53c804f7dd1873061f9d4/work/9e/6dd56dc46c46ef76474b2eb40c4ac0
+  
+  Tip: you can try to figure out what's wrong by changing to the process work dir and showing the script file named `.command.sh`
+  
+   -- Check '/srv/scratch/z3374843/proteinfold-AusStructBioComp/.nf-test/tests/245c3473d7a53c804f7dd1873061f9d4/meta/nextflow.log' file for details
+  ERROR ~ Pipeline failed. Please refer to troubleshooting docs for common issues: https://nf-co.re/docs/running/troubleshooting
+  
+   -- Check '/srv/scratch/z3374843/proteinfold-AusStructBioComp/.nf-test/tests/245c3473d7a53c804f7dd1873061f9d4/meta/nextflow.log' file for details
+  Nextflow stderr:
+  
+  [0m
+
+  [1mTest[0m [de6cc2b1] 'AlphaFold3: BioPython structure validation' 

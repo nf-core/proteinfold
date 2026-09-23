@@ -1,0 +1,196 @@
+name: "run_alphafold2_pred"
+description: Run AlphaFold2 structure prediction from an input MSA feature set.
+tools: []
+input:
+  - - meta:
+        type: map
+        description: Groovy Map containing sample information.
+    - fasta:
+        type: file
+        description: Protein FASTA input.
+        pattern: "*.{fa,fasta}"
+    - features:
+        type: file
+        description: AlphaFold2 MSA features pickle.
+        pattern: "*.pkl"
+    - alphafold2_model_preset:
+        type: string
+        description: AlphaFold2 model preset, such as monomer or multimer.
+  - params:
+      type: directory
+      description: AlphaFold2 parameter files.
+      pattern: "params/*"
+  - bfd:
+      type: directory
+      description: BFD database files.
+      pattern: "bfd/*"
+  - small_bfd:
+      type: directory
+      description: Small BFD database files.
+      pattern: "small_bfd/*"
+  - mgnify:
+      type: directory
+      description: MGnify database files.
+      pattern: "mgnify/*"
+  - pdb70:
+      type: directory
+      description: PDB70 database files.
+      pattern: "pdb70/*"
+  - pdb_mmcif:
+      type: directory
+      description: PDB mmCIF database files.
+      pattern: "pdb_mmcif/*"
+  - uniref30:
+      type: directory
+      description: UniRef30 database files.
+      pattern: "uniref30/*"
+  - uniref90:
+      type: directory
+      description: UniRef90 database files.
+      pattern: "uniref90/*"
+  - pdb_seqres:
+      type: directory
+      description: PDB sequence-resolution database files.
+      pattern: "pdb_seqres/*"
+  - uniprot:
+      type: directory
+      description: UniProt database files.
+      pattern: "uniprot/*"
+output:
+  raw:
+    - "raw/**":
+        type: file
+        description: Raw AlphaFold2 prediction outputs.
+  top_ranked_pdb:
+    - - meta:
+          type: map
+          description: Groovy Map containing sample information.
+      - "${meta.id}_alphafold2.pdb":
+          type: file
+          description: Top-ranked predicted structure.
+  pdb:
+    - - meta:
+          type: map
+          description: Groovy Map containing sample information.
+      - "raw/ranked*.pdb":
+          type: file
+          description: Ranked predicted structures.
+  msa:
+    - - meta:
+          type: map
+          description: Groovy Map containing sample information.
+      - "${meta.id}_alphafold2_msa.tsv":
+          type: file
+          description: Multiple sequence alignment metrics.
+  multiqc:
+    - - meta:
+          type: map
+          description: Groovy Map containing sample information.
+      - "${meta.id}_plddt_mqc.tsv":
+          type: file
+          description: pLDDT metrics for MultiQC.
+  paes:
+    - - meta:
+          type: map
+          description: Groovy Map containing sample information.
+      - "${meta.id}_*_pae.tsv":
+          type: file
+          description: Predicted aligned error metrics.
+  pae:
+    - - meta:
+          type: map
+          description: Groovy Map containing sample information.
+      - "${meta.id}_0_pae.tsv":
+          type: file
+          description: Predicted aligned error metrics for model 0.
+  ptms:
+    - - meta:
+          type: map
+          description: Groovy Map containing sample information.
+      - "${meta.id}_ptm.tsv":
+          type: file
+          description: Predicted TM-score metrics.
+  iptms:
+    - - meta:
+          type: map
+          description: Groovy Map containing sample information.
+      - "${meta.id}_iptm.tsv":
+          type: file
+          description: Interface predicted TM-score metrics.
+  ipsaes:
+    - - meta:
+          type: map
+          description: Groovy Map containing sample information.
+      - "${meta.id}_ipsae.tsv":
+          type: file
+          description: Interface predicted aligned error metrics.
+  chainwise_iptms:
+    - - meta:
+          type: map
+          description: Groovy Map containing sample information.
+      - "${meta.id}_chainwise_iptm.tsv":
+          type: file
+          description: Chain-wise interface predicted TM-score metrics.
+  chainwise_ipsaes:
+    - - meta:
+          type: map
+          description: Groovy Map containing sample information.
+      - "${meta.id}_chainwise_ipsae.tsv":
+          type: file
+          description: Chain-wise interface predicted aligned error metrics.
+  versions_python:
+    - - "${task.process}": { type: string, description: The process the versions were collected from. }
+      - python: { type: string, description: The tool name. }
+      - 'python3 --version 2>/dev/null | sed ''s/Python //g'' || echo "unknown"':
+          { type: eval, description: The expression to obtain the version of the tool. }
+  versions_alphafold2:
+    - - "${task.process}": { type: string, description: The process the versions were collected from. }
+      - alphafold2: { type: string, description: The tool name. }
+      - 'cd /app/alphafold && git rev-parse HEAD 2>/dev/null || echo "unknown"':
+          { type: eval, description: The expression to obtain the version of the tool. }
+  versions_jax:
+    - - "${task.process}": { type: string, description: The process the versions were collected from. }
+      - jax: { type: string, description: The tool name. }
+      - 'python3 -c "import jax; print(jax.__version__)" 2>/dev/null || echo "unknown"':
+          { type: eval, description: The expression to obtain the version of the tool. }
+  versions_jaxlib:
+    - - "${task.process}": { type: string, description: The process the versions were collected from. }
+      - jaxlib: { type: string, description: The tool name. }
+      - 'python3 -c "import jaxlib; print(jaxlib.__version__)" 2>/dev/null || echo "unknown"':
+          { type: eval, description: The expression to obtain the version of the tool. }
+  versions_numpy:
+    - - "${task.process}": { type: string, description: The process the versions were collected from. }
+      - numpy: { type: string, description: The tool name. }
+      - 'python3 -c "import numpy; print(numpy.__version__)" 2>/dev/null || echo "unknown"':
+          { type: eval, description: The expression to obtain the version of the tool. }
+  versions_biopython:
+    - - "${task.process}": { type: string, description: The process the versions were collected from. }
+      - biopython: { type: string, description: The tool name. }
+      - 'python3 -c "import Bio; print(Bio.__version__)" 2>/dev/null || echo "unknown"':
+          { type: eval, description: The expression to obtain the version of the tool. }
+topics:
+  versions:
+    - - "${task.process}": { type: string, description: The process the versions were collected from. }
+      - python: { type: string, description: The tool name. }
+      - 'python3 --version 2>/dev/null | sed ''s/Python //g'' || echo "unknown"':
+          { type: eval, description: The expression to obtain the version of the tool. }
+    - - "${task.process}": { type: string, description: The process the versions were collected from. }
+      - alphafold2: { type: string, description: The tool name. }
+      - 'cd /app/alphafold && git rev-parse HEAD 2>/dev/null || echo "unknown"':
+          { type: eval, description: The expression to obtain the version of the tool. }
+    - - "${task.process}": { type: string, description: The process the versions were collected from. }
+      - jax: { type: string, description: The tool name. }
+      - 'python3 -c "import jax; print(jax.__version__)" 2>/dev/null || echo "unknown"':
+          { type: eval, description: The expression to obtain the version of the tool. }
+    - - "${task.process}": { type: string, description: The process the versions were collected from. }
+      - jaxlib: { type: string, description: The tool name. }
+      - 'python3 -c "import jaxlib; print(jaxlib.__version__)" 2>/dev/null || echo "unknown"':
+          { type: eval, description: The expression to obtain the version of the tool. }
+    - - "${task.process}": { type: string, description: The process the versions were collected from. }
+      - numpy: { type: string, description: The tool name. }
+      - 'python3 -c "import numpy; print(numpy.__version__)" 2>/dev/null || echo "unknown"':
+          { type: eval, description: The expression to obtain the version of the tool. }
+    - - "${task.process}": { type: string, description: The process the versions were collected from. }
+      - biopython: { type: string, description: The tool name. }
+      - 'python3 -c "import Bio; print(Bio.__version__)" 2>/dev/null || echo "unknown"':
+          { type: eval, description: The expression to obtain the version of the tool. }

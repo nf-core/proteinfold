@@ -39,8 +39,6 @@ workflow PREPARE_ALPHAFOLD3_DBS {
     rfam_link                  //    string: Specifies the link to download rfam
 
     main:
-    ch_versions   = channel.empty()
-
     if (alphafold3_db) {
         ch_params         = channel.value(files(alphafold3_params_path, checkIfExists: true))
         ch_small_bfd      = channel.value(files(small_bfd_path, checkIfExists: true))
@@ -58,7 +56,6 @@ workflow PREPARE_ALPHAFOLD3_DBS {
             small_bfd_link
         )
         ch_small_bfd = ARIA2_SMALL_BFD.out.db
-        ch_versions  = ch_versions.mix(ARIA2_SMALL_BFD.out.versions)
 
         ch_params = channel.value(file(alphafold3_params_path, checkIfExists: true))
 
@@ -66,55 +63,46 @@ workflow PREPARE_ALPHAFOLD3_DBS {
             mgnify_link
         )
         ch_mgnify   = ARIA2_MGNIFY.out.db
-        ch_versions = ch_versions.mix(ARIA2_MGNIFY.out.versions)
 
         ARIA2_MMCIF (
             pdb_mmcif_link
         )
         ch_mmcif    = ARIA2_MMCIF.out.db
-        ch_versions = ch_versions.mix(ARIA2_MMCIF.out.versions)
 
         DOWNLOAD_PDBMMCIF_AF3(
             pdb_mmcif_link
         )
         ch_mmcif    = DOWNLOAD_PDBMMCIF_AF3.out.ch_db
-        ch_versions = ch_versions.mix(DOWNLOAD_PDBMMCIF_AF3.out.versions)
 
         ARIA2_UNIREF90 (
             uniref90_link
         )
         ch_uniref90 = ARIA2_UNIREF90.out.db
-        ch_versions = ch_versions.mix(ARIA2_UNIREF90.out.versions)
 
         ARIA2_PDB_SEQRES (
             pdb_seqres_link
         )
         ch_pdb_seqres = ARIA2_PDB_SEQRES.out.db
-        ch_versions   = ch_versions.mix(ARIA2_PDB_SEQRES.out.versions)
 
         ARIA2_UNIPROT (
             uniprot_link
         )
         ch_uniprot  = ARIA2_UNIPROT.out.db
-        ch_versions = ch_versions.mix(ARIA2_UNIPROT.out.versions)
 
         ARIA2_RNACENTRAL_ACTIVE_SEQ (
             rnacentral_active_seq_link
         )
         ch_rnacentral = ARIA2_RNACENTRAL_ACTIVE_SEQ.out.db
-        ch_versions   = ch_versions.mix(ARIA2_RNACENTRAL_ACTIVE_SEQ.out.versions)
 
         ARIA2_NT_RNA_2023_02_23 (
             nt_rna_2023_02_23_link
         )
         ch_nt_rna = ARIA2_NT_RNA_2023_02_23.out.db
-        ch_versions = ch_versions.mix(ARIA2_NT_RNA_2023_02_23.out.versions)
 
         ARIA2_RFAM (
             rfam_link
         )
         ch_rfam = ARIA2_RFAM.out.db
-        ch_versions = ch_versions.mix(ARIA2_RFAM.out.versions)
     }
 
     emit:
@@ -128,5 +116,4 @@ workflow PREPARE_ALPHAFOLD3_DBS {
     rnacentral = ch_rnacentral
     nt_rna     = ch_nt_rna
     rfam       = ch_rfam
-    versions   = ch_versions
 }

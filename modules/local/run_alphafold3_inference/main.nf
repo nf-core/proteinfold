@@ -15,14 +15,24 @@ process RUN_ALPHAFOLD3_INFERENCE {
     path ("raw/**")                                         , emit: raw
     tuple val(meta), path ("${meta.id}_alphafold3.cif")     , emit: top_ranked_cif
     tuple val(meta), path ("raw/*ranked_*.cif")             , emit: cif
+<<<<<<< HEAD:modules/local/run_alphafold3/main.nf
+    tuple val(meta), path ("${meta.id}_plddt.tsv")          , emit: plddt
+=======
     tuple val(meta), path ("${meta.id}_plddt_mqc.tsv")      , emit: multiqc
+>>>>>>> origin/dev:modules/local/run_alphafold3_inference/main.nf
     tuple val(meta), path ("${meta.id}_alphafold3_msa.tsv") , emit: msa
     tuple val(meta), path ("${meta.id}_0_pae.tsv")          , emit: pae
+    tuple val(meta), path ("${meta.id}_*_pae.tsv")          , emit: paes
     tuple val(meta), path ("${meta.id}_ptm.tsv")            , emit: ptms
     tuple val(meta), path ("${meta.id}_iptm.tsv")           , optional: true, emit: iptms
+<<<<<<< HEAD:modules/local/run_alphafold3/main.nf
+    tuple val(meta), path ("${meta.id}_chainwise_ptm.tsv")  , optional: true, emit: chainwise_ptm
+    tuple val(meta), path ("${meta.id}_chainwise_iptm.tsv") , optional: true, emit: chainwise_iptm
+=======
     tuple val(meta), path ("${meta.id}_ipsae.tsv")          , optional: true, emit: ipsaes
     tuple val(meta), path ("${meta.id}_chainwise_iptm.tsv") , optional: true, emit: chainwise_iptms
     tuple val(meta), path ("${meta.id}_chainwise_ipsae.tsv"), optional: true, emit: chainwise_ipsaes
+>>>>>>> origin/dev:modules/local/run_alphafold3_inference/main.nf
     path "versions.yml"                                     , emit: versions
 
     when:
@@ -71,7 +81,7 @@ process RUN_ALPHAFOLD3_INFERENCE {
     done
 
     extract_metrics.py --name ${prefix} \\
-        --jsons ${af3_id}/${af3_id}_data.json ${af3_id}/${af3_id}_summary_confidences.json ${af3_id}/${af3_id}_confidences.json \\
+        --jsons "\${name}/\${name}_data.json" "\${name}/\${name}_summary_confidences.json" "\${name}/\${name}_confidences.json" \\
         --structs raw/*ranked_*.cif
 
     touch "${prefix}_iptm.tsv" "${prefix}_ipsae.tsv" "${prefix}_chainwise_iptm.tsv" "${prefix}_chainwise_ipsae.tsv"
@@ -108,9 +118,14 @@ process RUN_ALPHAFOLD3_INFERENCE {
     touch ${prefix}_0_pae.tsv
     touch ${prefix}_ptm.tsv
     touch ${prefix}_iptm.tsv
+<<<<<<< HEAD:modules/local/run_alphafold3/main.nf
+    touch ${prefix}_chainwise_ptm.tsv
+    touch ${prefix}_chainwise_iptm.tsv
+=======
     touch ${prefix}_ipsae.tsv
     touch ${prefix}_chainwise_iptm.tsv
     touch ${prefix}_chainwise_ipsae.tsv
+>>>>>>> origin/dev:modules/local/run_alphafold3_inference/main.nf
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

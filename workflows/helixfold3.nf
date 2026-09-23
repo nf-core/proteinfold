@@ -47,7 +47,6 @@ workflow HELIXFOLD3 {
     main:
     ch_pdb            = channel.empty()
     ch_top_ranked_pdb = channel.empty()
-    ch_multiqc_report = channel.empty()
 
     //
     // SUBWORKFLOW: Run helixfold3
@@ -77,57 +76,19 @@ workflow HELIXFOLD3 {
         ch_helixfold3_maxit_src
     )
 
-    RUN_HELIXFOLD3
-        .out
-        .multiqc
-        .map { it ->  it[1] }
-        .toSortedList()
-        .map { it ->
-            [ [ "model": "helixfold3" ], it.flatten() ]
-        }
-        .set { ch_multiqc_report }
-
     ch_pdb      = ch_pdb.mix(RUN_HELIXFOLD3.out.pdb)
     ch_versions = ch_versions.mix(RUN_HELIXFOLD3.out.versions)
 
-    RUN_HELIXFOLD3
-        .out
-        .top_ranked_pdb
-        .map { it ->
-            def meta = it[0].clone();
-            meta.model = "helixfold3";
-            [ meta, it[1] ]
-        }
-        .set { ch_top_ranked_pdb }
-
-    RUN_HELIXFOLD3
-        .out
-        .pdb
-        .map { it ->
-            def meta = it[0].clone();
-            meta.model = "helixfold3";
-            def files = (it[1] instanceof List) ? it[1] : [ it[1] ]
-            [ meta, files ]
-        }
-        .set { ch_pdb_final }
-
+    modeChannel(RUN_HELIXFOLD3.out.top_ranked_pdb, "helixfold3").set { ch_top_ranked_pdb }
+    modeChannel(RUN_HELIXFOLD3.out.pdb, "helixfold3", true).set { ch_pdb_final }
     modeChannel(RUN_HELIXFOLD3.out.msa, "helixfold3").set { ch_msa_final }
     modeChannel(RUN_HELIXFOLD3.out.pae, "helixfold3").set { ch_pae_final }
-    modeChannel(RUN_HELIXFOLD3.out.iptms, "helixfold3").set { ch_iptm_final }
-    modeChannel(RUN_HELIXFOLD3.out.ipsaes, "helixfold3").set { ch_ipsae_final }
-    modeChannel(RUN_HELIXFOLD3.out.chainwise_iptms, "helixfold3").set { ch_chainwise_iptm_final }
-    modeChannel(RUN_HELIXFOLD3.out.chainwise_ipsaes, "helixfold3").set { ch_chainwise_ipsae_final }
 
     emit:
     top_ranked_pdb = ch_top_ranked_pdb // channel: [ meta, /path/to/*.pdb ]
     pdb            = ch_pdb_final      // channel: [ id, /path/to/*.pdb ]
     msa            = ch_msa_final      // channel: [ id, /path/to/*_msa.tsv ]
     pae            = ch_pae_final      // channel: [ id, /path/to/*_pae.tsv ]
-    iptm           = ch_iptm_final     // channel: [ id, /path/to/*_iptm.tsv ]
-    ipsae          = ch_ipsae_final    // channel: [ id, /path/to/*_ipsae.tsv ]
-    chainwise_iptm = ch_chainwise_iptm_final // channel: [ id, /path/to/*_chainwise_iptm.tsv ]
-    chainwise_ipsae = ch_chainwise_ipsae_final // channel: [ id, /path/to/*_chainwise_ipsae.tsv ]
-    multiqc_report = ch_multiqc_report // channel: /path/to/multiqc_report.html
     versions       = ch_versions       // channel: [ path(versions.yml) ]
 }
 

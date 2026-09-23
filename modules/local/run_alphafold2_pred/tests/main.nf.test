@@ -1,0 +1,70 @@
+nextflow_process {
+
+    name "Test Process RUN_ALPHAFOLD2_PRED"
+    script "../main.nf"
+    process "RUN_ALPHAFOLD2_PRED"
+    config "./nextflow.config"
+
+    tag "modules"
+    tag "modules_local"
+    tag "run_alphafold2_pred"
+    tag "gpu"
+    profile "test_nostub"
+    profile "gpu"
+
+    test("predicts an AlphaFold2 structure from validated CPU features") {
+        when {
+            process {
+                """
+                def db = System.getenv('PROTEINFOLD_TEST_DB') ?: 's3://proteinfold-dataset/test-data/mini_dbs'
+
+                def featuresPath = System.getenv('PROTEINFOLD_AF2_FEATURES') ?:
+                    params.pipelines_testdata_base_path + 'testdata/cpu_outputs/alphafold2/T1026_features.pkl'
+                def features = file(featuresPath, checkIfExists: true)
+                def featuresSha256 = java.security.MessageDigest
+                    .getInstance('SHA-256')
+                    .digest(features.bytes)
+                    .encodeHex()
+                    .toString()
+                assert featuresSha256 == '51bd8ba32a548c5a76e2f1fa0ce5ab0f38b7383baa0f5999dda6f2f1de5b513b'
+
+                def unusedDb = file('unused_db')
+                unusedDb.text = 'Inference consumes the validated CPU artifact, not these database inputs.'
+                def unusedMmcif = file('unused_mmcif')
+                unusedMmcif.mkdirs()
+                file('unused_mmcif/README').text = 'Not used during inference.'
+
+                def paramsPattern = db.startsWith('s3://') ?
+                    db + '/params/alphafold_params_2022-12-06/*' :
+                    db + '/params/alphafold_params/*'
+
+                input[0] = [[id: 'T1026'], file(params.pipelines_testdata_base_path + 'testdata/sequences/T1026.fasta', checkIfExists: true), features, 'monomer_ptm']
+                input[1] = files(paramsPattern, checkIfExists: true)
+                input[2] = unusedDb
+                input[3] = unusedDb
+                input[4] = unusedDb
+                input[5] = unusedDb
+                input[6] = unusedMmcif
+                input[7] = unusedDb
+                input[8] = unusedDb
+                input[9] = unusedDb
+                input[10] = unusedDb
+                input[11] = unusedDb
+                """
+            }
+        }
+
+        then {
+            def topRanked = path(process.out.top_ranked_pdb[0][1])
+            def plddt = path(process.out.multiqc[0][1])
+            assertAll(
+                { assert process.success },
+                { assert process.out.top_ranked_pdb[0][0].id == 'T1026' },
+                { assert topRanked.size() > 0 },
+                { assert topRanked.text.contains('ATOM') },
+                { assert plddt.size() > 0 },
+                { assert process.out.versions }
+            )
+        }
+    }
+}

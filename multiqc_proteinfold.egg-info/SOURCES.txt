@@ -1,0 +1,11 @@
+LICENSE
+README.md
+setup.py
+multiqc_proteinfold/__init__.py
+multiqc_proteinfold/proteinfold.py
+multiqc_proteinfold.egg-info/PKG-INFO
+multiqc_proteinfold.egg-info/SOURCES.txt
+multiqc_proteinfold.egg-info/dependency_links.txt
+multiqc_proteinfold.egg-info/entry_points.txt
+multiqc_proteinfold.egg-info/requires.txt
+multiqc_proteinfold.egg-info/top_level.txt

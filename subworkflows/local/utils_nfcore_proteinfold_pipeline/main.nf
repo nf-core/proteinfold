@@ -39,8 +39,6 @@ workflow PIPELINE_INITIALISATION {
 
     main:
 
-    ch_versions = channel.empty()
-
     //
     // Print version and exit if required and dump pipeline parameters to JSON file
     //
@@ -136,7 +134,6 @@ ${colors.purple}  nf-core/proteinfold ${workflow.manifest.version}${colors.reset
 
     emit:
     samplesheet  = ch_samplesheet
-    versions     = ch_versions
 }
 
 /*
@@ -205,11 +202,12 @@ def validateInputParameters() {
     }
 }
 
-def modeChannel(ch, mode) {
+def modeChannel(ch, mode, asList = false) {
     return ch.map { meta, value ->
         def meta_clone = meta.clone()
         meta_clone.model = mode
-        [ meta_clone, value ]
+        def v = asList ? ((value instanceof List) ? value : [value]) : value
+        [ meta_clone, v ]
     }
 }
 

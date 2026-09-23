@@ -1,0 +1,41 @@
+nextflow_process {
+
+    name "Test Process RUN_ESMFOLD"
+    script "../main.nf"
+    process "RUN_ESMFOLD"
+    config "./nextflow.config"
+
+    tag "modules"
+    tag "modules_local"
+    tag "run_esmfold"
+    tag "gpu"
+    profile "test_nostub"
+    profile "gpu"
+
+    test("predicts an ESMFold structure from a deterministic FASTA") {
+        when {
+            process {
+                """
+                def db = System.getenv('PROTEINFOLD_TEST_DB') ?: 's3://proteinfold-dataset/test-data/mini_dbs'
+
+                input[0] = [[id: 'T1026'], file(params.pipelines_testdata_base_path + 'testdata/sequences/T1026.fasta', checkIfExists: true)]
+                input[1] = files(db + '/params/esm*.pt', checkIfExists: true)
+                input[2] = 1
+                """
+            }
+        }
+
+        then {
+            def topRanked = path(process.out.top_ranked_pdb[0][1])
+            def plddt = path(process.out.multiqc[0][1])
+            assertAll(
+                { assert process.success },
+                { assert process.out.top_ranked_pdb[0][0].id == 'T1026' },
+                { assert topRanked.size() > 0 },
+                { assert topRanked.text.contains('ATOM') },
+                { assert plddt.size() > 0 },
+                { assert process.out.versions }
+            )
+        }
+    }
+}

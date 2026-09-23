@@ -1,0 +1,37 @@
+nextflow_pipeline {
+
+    name "Scientific validation: AlphaFold2 split MSA and prediction"
+    script "../../main.nf"
+    tag "scientific"
+    tag "output_validation"
+    tag "structure_validation"
+    tag "alphafold2"
+    profile "test_full_alphafold2_split,gpu"
+
+    test("AlphaFold2 split: validate structures and metrics") {
+        options "--mode alphafold2 --use_gpu"
+
+        when {
+            params {
+                outdir       = "$outputDir"
+                input        = 'https://raw.githubusercontent.com/nf-core/test-datasets/proteinfold/testdata/samplesheet/v2.0/samplesheet.csv'
+                alphafold2_db = System.getenv("PROTEINFOLD_TEST_DB") ?: 's3://proteinfold-dataset/test-data/mini_dbs'
+            }
+        }
+
+        then {
+            assert workflow.success: "AlphaFold2 split workflow failed (exit ${workflow.exitStatus})"
+            def validator = new File("tests/scientific/validate_outputs.py").absolutePath
+            def command = ["python3", validator, "--mode", "alphafold2", "--display-name", "AlphaFold2 split",
+                           "--extension", ".pdb", "--outdir", params.outdir.toString(),
+                           "--samplesheet", params.input.toString()]
+            def process = command.execute()
+            def stdout = new StringBuffer()
+            def stderr = new StringBuffer()
+            process.consumeProcessOutput(stdout, stderr)
+            assert process.waitFor() == 0: "${stdout}\n${stderr}"
+            println stdout
+            assert file("${params.outdir}/pipeline_info/nf_core_proteinfold_software_mqc_versions.yml").size() > 0
+        }
+    }
+}

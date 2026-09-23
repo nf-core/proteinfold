@@ -2,26 +2,6 @@
     "-profile test_colabfold_local": {
         "content": [
             9,
-            {
-                "COLABFOLD_BATCH": {
-                    "alphafold_colabfold": "2.3.10",
-                    "colabfold_batch": "1.5.5"
-                },
-                "GENERATE_REPORT": {
-                    "python": "3.12.7",
-                    "generate_report.py": "Python 3.12.7"
-                },
-                "MMSEQS_COLABFOLDSEARCH": {
-                    "colabfold_search": "1.6.1",
-                    "mmseqs": "74c9370d45ba10446fe049c3603bf5f877817e95"
-                },
-                "MULTIFASTA_TO_CSV": {
-                    "sed": 4.7
-                },
-                "Workflow": {
-                    "nf-core/proteinfold": "v2.1.0dev"
-                }
-            },
             [
                 "colabfold",
                 "colabfold/T1024",
@@ -103,10 +83,10 @@
                 "T1026_colabfold_report.html:md5,d41d8cd98f00b204e9800998ecf8427e"
             ]
         ],
-        "timestamp": "2026-05-29T12:03:02.971630953",
+        "timestamp": "2026-09-22T16:39:07.753890514",
         "meta": {
             "nf-test": "0.9.5",
-            "nextflow": "26.04.0"
+            "nextflow": "26.04.6"
         }
     }
 }

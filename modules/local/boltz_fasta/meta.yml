@@ -1,0 +1,41 @@
+name: "boltz_fasta"
+description: Convert a protein FASTA file to a Boltz input YAML file.
+tools: []
+input:
+  - - meta:
+        type: map
+        description: Groovy Map containing sample information.
+    - fasta:
+        type: file
+        description: Protein FASTA input.
+        pattern: "*.{fa,fasta}"
+output:
+  boltz_yaml:
+    - - meta:
+          type: map
+          description: Groovy Map containing sample information.
+      - "*.yaml":
+          type: file
+          description: Boltz input YAML file.
+          pattern: "*.yaml"
+  versions_python:
+    - - "${task.process}":
+          type: string
+          description: The process the versions were collected from.
+      - python:
+          type: string
+          description: The tool name.
+      - "python3 --version | sed 's/Python //g'":
+          type: eval
+          description: The expression to obtain the version of the tool.
+topics:
+  versions:
+    - - "${task.process}":
+          type: string
+          description: The process the versions were collected from.
+      - python:
+          type: string
+          description: The tool name.
+      - "python3 --version | sed 's/Python //g'":
+          type: eval
+          description: The expression to obtain the version of the tool.

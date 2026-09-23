@@ -33,7 +33,8 @@ nextflow_process {
                 def boltz2Aff = file('boltz2_aff.ckpt')
                 boltz2Aff.text = 'x'
 
-                def boltz2Conf = file('s3://proteinfold-dataset/test-data/mini_dbs/params/boltz2_conf.ckpt', checkIfExists: true)
+                def db = System.getenv('PROTEINFOLD_TEST_DB') ?: 's3://proteinfold-dataset/test-data/mini_dbs'
+                def boltz2Conf = file(db + '/params/boltz2_conf.ckpt', checkIfExists: true)
 
                 //TODO: This needs to be reduced to 20 canonical + 4 DNA + 4 RNA + ATP + SEP
                 //def mols = file('s3://proteinfold-dataset/test-data/mini_dbs/params/mols', checkIfExists: true)
@@ -49,7 +50,7 @@ nextflow_process {
                 mols.mkdirs()
 
                 molNames.each { molCode ->
-                    def p = 's3://proteinfold-dataset/test-data/mini_dbs/params/mols/' + molCode + '.pkl'
+                    def p = db + '/params/mols/' + molCode + '.pkl'
                     def src = file(p, checkIfExists: true)
                     def dst = file('mols/' + molCode + '.pkl')
                     dst.bytes = src.bytes
@@ -74,7 +75,7 @@ nextflow_process {
         then {
             assertAll(
                 { assert process.success },
-                { assert snapshot(process.out.versions).match('versions') }
+                { assert snapshot(process.out.versions_boltz).match('versions') }
             )
         }
     }

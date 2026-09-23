@@ -2,31 +2,6 @@
     "-profile test_boltz": {
         "content": [
             13,
-            {
-                "BOLTZ_FASTA": {
-                    "python": "3.8.3"
-                },
-                "BOLTZ_YAML_TO_COLABFOLD_FASTA": {
-                    "python": "3.14.0"
-                },
-                "GENERATE_REPORT": {
-                    "python": "3.12.7",
-                    "generate_report.py": "Python 3.12.7"
-                },
-                "MMSEQS_COLABFOLDSEARCH": {
-                    "colabfold_search": "1.6.1",
-                    "mmseqs": "74c9370d45ba10446fe049c3603bf5f877817e95"
-                },
-                "RUN_BOLTZ": {
-                    "boltz": "2.2.1"
-                },
-                "SPLIT_MSA": {
-                    "python": "3.14.0"
-                },
-                "Workflow": {
-                    "nf-core/proteinfold": "v2.1.0dev"
-                }
-            },
             [
                 "boltz",
                 "boltz/T1024",
@@ -121,10 +96,10 @@
                 "T1026.yaml:md5,d41d8cd98f00b204e9800998ecf8427e"
             ]
         ],
-        "timestamp": "2026-05-29T12:02:37.248096039",
+        "timestamp": "2026-09-22T16:38:22.951149423",
         "meta": {
             "nf-test": "0.9.5",
-            "nextflow": "26.04.0"
+            "nextflow": "26.04.6"
         }
     }
 }

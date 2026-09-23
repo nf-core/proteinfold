@@ -17,6 +17,26 @@ process RUN_BOLTZ {
     path ('mols')
 
     output:
+<<<<<<< HEAD
+    tuple val(meta), path ("boltz_results_${meta.id}")                          , optional: true, emit: intermediates
+    tuple val(meta), path ("boltz_results_*/processed/structures/*.npz")        , emit: structures_npz
+    tuple val(meta), path ("boltz_results_*/predictions/*/plddt_*model_0.npz")  , emit: plddt_npz
+    tuple val(meta), path ("boltz_results_*/processed/msa/*.npz")               , emit: msa_npz
+    tuple val(meta), path ("boltz_results_*/predictions/*/pae_*model_0.npz")    , emit: pae_npz
+    tuple val(meta), path ("boltz_results_*/predictions/*/confidence*.json")    , emit: confidence
+    tuple val(meta), path ("${meta.id}_boltz.pdb")                              , emit: top_ranked_pdb
+    tuple val(meta), path ("boltz_results_*/predictions/*/*.pdb")               , emit: pdb
+    tuple val(meta), path ("${meta.id}_plddt.tsv")                              , emit: plddt
+    tuple val(meta), path ("${meta.id}_boltz_msa.tsv")                          , emit: msa
+    // Could potential remove the optional, but Boltz has the --write_full_pae False flag.
+    tuple val(meta), path ("${meta.id}_0_pae.tsv")                              , optional: true, emit: pae
+    tuple val(meta), path ("${meta.id}_*_pae.tsv")                              , optional: true, emit: paes
+    tuple val(meta), path ("${meta.id}_ptm.tsv")                                , emit: ptms
+    tuple val(meta), path ("${meta.id}_iptm.tsv")                               , optional: true, emit: iptms
+    tuple val(meta), path ("${meta.id}_chainwise_ptm.tsv")                      , optional: true, emit: chainwise_ptm
+    tuple val(meta), path ("${meta.id}_chainwise_iptm.tsv")                     , optional: true, emit: chainwise_iptm
+    path "versions.yml", emit: versions
+=======
     tuple val(meta), path ("boltz_results_${meta.id}")                        , optional: true, emit: intermediates
     tuple val(meta), path ("boltz_results_${meta.id}/predictions/${meta.id}/confidence*.json")  , emit: confidence
     tuple val(meta), path ("${meta.id}_plddt_mqc.tsv")                        , emit: multiqc
@@ -33,7 +53,8 @@ process RUN_BOLTZ {
     tuple val(meta), path ("${meta.id}_chainwise_ptm.tsv")                    , emit: summary_chainwise_ptm_raw
     tuple val(meta), path ("${meta.id}_chainwise_iptm.tsv")                   , optional: true, emit: chainwise_iptm_raw
     tuple val(meta), path ("${meta.id}_chainwise_ipsae.tsv")                  , optional: true, emit: chainwise_ipsae_raw
-    path "versions.yml", emit: versions
+    tuple val("${task.process}"), val('boltz'), eval("pip list | grep -i boltz | awk '{print \\\$2}' 2>/dev/null || echo \"unknown\""), emit: versions_boltz, topic: versions
+>>>>>>> origin/dev
 
     when:
     task.ext.when == null || task.ext.when
@@ -77,11 +98,6 @@ process RUN_BOLTZ {
     touch "${meta.id}_iptm.tsv" "${meta.id}_ipsae.tsv" "${meta.id}_chainwise_iptm.tsv" "${meta.id}_chainwise_ipsae.tsv"
 
     mv "${meta.id}_msa.tsv" "${meta.id}_boltz_msa.tsv"
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        boltz: \$(pip list | grep -i boltz | awk '{print \$2}' 2>/dev/null || echo "unknown")
-    END_VERSIONS
     """
 
     stub:
@@ -106,10 +122,5 @@ process RUN_BOLTZ {
     touch "${meta.id}_chainwise_ptm.tsv"
     touch "${meta.id}_chainwise_iptm.tsv"
     touch "${meta.id}_chainwise_ipsae.tsv"
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        boltz: \$(pip list | grep -i boltz | awk '{print \$2}' 2>/dev/null || echo "unknown")
-    END_VERSIONS
     """
 }

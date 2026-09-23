@@ -29,14 +29,12 @@ workflow COLABFOLD {
 
     take:
     ch_samplesheet          // channel: samplesheet read in from --input
-    ch_versions            // channel: [ path(versions.yml) ]
     ch_colabfold_params    // channel: path(colabfold_params)
     ch_colabfold_db        // channel: path(colabfold_db)
     ch_uniref30            // channel: path(uniref30)
     num_recycles           // int: Number of recycles for colabfold
 
     main:
-    ch_multiqc_report = channel.empty()
 
     if (params.use_msa_server) {
         //
@@ -46,14 +44,12 @@ workflow COLABFOLD {
         MULTIFASTA_TO_CSV(
             ch_samplesheet
         )
-        ch_versions = ch_versions.mix(MULTIFASTA_TO_CSV.out.versions)
 
         COLABFOLD_BATCH(
             MULTIFASTA_TO_CSV.out.input_csv
                 .combine(ch_colabfold_params),
             num_recycles
         )
-        ch_versions = ch_versions.mix(COLABFOLD_BATCH.out.versions)
 
     } else {
         //
@@ -62,13 +58,11 @@ workflow COLABFOLD {
         MULTIFASTA_TO_CSV(
             ch_samplesheet
         )
-        ch_versions = ch_versions.mix(MULTIFASTA_TO_CSV.out.versions)
         MMSEQS_COLABFOLDSEARCH (
             MULTIFASTA_TO_CSV.out.input_csv,
             ch_colabfold_db,
             ch_uniref30
         )
-        ch_versions = ch_versions.mix(MMSEQS_COLABFOLDSEARCH.out.versions)
 
         //
         // MODULE: Run colabfold
@@ -78,46 +72,16 @@ workflow COLABFOLD {
                 .combine(ch_colabfold_params),
             num_recycles
         )
-        ch_versions    = ch_versions.mix(COLABFOLD_BATCH.out.versions)
     }
 
-    COLABFOLD_BATCH
-        .out
-        .top_ranked_pdb
-        .map { it ->
-            def meta_clone = it[0].clone();
-            meta_clone.model = "colabfold";
-            [ meta_clone, it[1] ]
-        }
-        .set { ch_top_ranked_pdb }
-
-    COLABFOLD_BATCH
-        .out
-        .pdb
-        .map { it ->
-            def meta = it[0].clone();
-            meta.model = "colabfold";
-            def files = (it[1] instanceof List) ? it[1] : [ it[1] ]
-            [ meta, files ]
-        }
-        .set { ch_pdb_final }
-
+    modeChannel(COLABFOLD_BATCH.out.top_ranked_pdb, "colabfold").set { ch_top_ranked_pdb }
+    modeChannel(COLABFOLD_BATCH.out.pdb, "colabfold", true).set { ch_pdb_final }
     modeChannel(COLABFOLD_BATCH.out.msa, "colabfold").set { ch_msa_final }
     modeChannel(COLABFOLD_BATCH.out.pae, "colabfold").set { ch_pae_final }
     modeChannel(COLABFOLD_BATCH.out.iptms, "colabfold").set { ch_iptm_final }
     modeChannel(COLABFOLD_BATCH.out.ipsaes, "colabfold").set { ch_ipsae_final }
     modeChannel(COLABFOLD_BATCH.out.chainwise_iptms, "colabfold").set { ch_chainwise_iptm_final }
     modeChannel(COLABFOLD_BATCH.out.chainwise_ipsaes, "colabfold").set { ch_chainwise_ipsae_final }
-
-    COLABFOLD_BATCH
-        .out
-        .multiqc
-        .map { it -> it[1] }
-        .toSortedList()
-        .map { it ->
-            [ [ "model":"colabfold"], it.flatten() ]
-        }
-        .set { ch_multiqc_report  }
 
     emit:
     top_ranked_pdb = ch_top_ranked_pdb // channel: [ meta, /path/to/*.pdb ]
@@ -129,7 +93,6 @@ workflow COLABFOLD {
     chainwise_iptm = ch_chainwise_iptm_final // channel: [ id, /path/to/*_chainwise_iptm.tsv ]
     chainwise_ipsae = ch_chainwise_ipsae_final // channel: [ id, /path/to/*_chainwise_ipsae.tsv ]
     multiqc_report = ch_multiqc_report // channel: /path/to/multiqc_report.html
-    versions       = ch_versions       // channel: [ path(versions.yml) ]
 }
 
 /*

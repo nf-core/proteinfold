@@ -13,9 +13,14 @@ process GENERATE_REPORT {
 
     output:
     tuple val(meta), path ("*report.html")     , emit: report
+<<<<<<< HEAD
+    path "versions.yml"                        , emit: versions
+=======
     tuple val(meta), path ("*seq_coverage.png"), optional: true, emit: sequence_coverage
     tuple val(meta), path ("*_LDDT.html")      , emit: plddt
-    path "versions.yml"                        , emit: versions
+    tuple val("${task.process}"), val('python'), eval("python3 --version | sed 's/Python //g'"), emit: versions_python, topic: versions
+    tuple val("${task.process}"), val('generate_report.py'), eval("python3 --version | sed 's/Python //g'"), emit: versions_generate_report, topic: versions
+>>>>>>> origin/dev
 
     when:
     task.ext.when == null || task.ext.when
@@ -25,9 +30,23 @@ process GENERATE_REPORT {
 
     """
     generate_report.py \\
-        --type ${meta.model} \\
+        --report_type standard \\
+        --prog ${meta.model} \\
         --msa ${msa} \\
         --pae ${pae} \\
+<<<<<<< HEAD
+        --structs ${pdb.join(' ')} \\
+        --html_template ${template} \\
+        --output_dir ./ \\
+        --name ${meta.id} \\
+        $args
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        python: \$(python3 --version | sed 's/Python //g')
+        generate_report.py: \$(python3 --version)
+    END_VERSIONS
+=======
         --iptm ${iptm} \\
         --ipsae ${ipsae} \\
         --chainwise_iptm ${chainwise_iptm} \\
@@ -37,19 +56,18 @@ process GENERATE_REPORT {
         --output_dir ./ \\
         --name ${meta.id} \\
         $args \\
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        python: \$(python3 --version | sed 's/Python //g')
-        generate_report.py: \$(python3 --version)
-    END_VERSIONS
+>>>>>>> origin/dev
     """
 
     stub:
     """
+<<<<<<< HEAD
+    touch test_alphafold2_report.html
+=======
     touch ${meta.id}_${meta.model}_report.html
     touch ${meta.id}_${meta.model}_seq_coverage.png
     touch ${meta.id}_coverage_LDDT.html
+>>>>>>> origin/dev
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

@@ -1,0 +1,150 @@
+name: "colabfold_batch"
+description: Run ColabFold batch prediction and collect predicted structures, alignments, and confidence metrics.
+tools: []
+input:
+  - - meta:
+        type: map
+        description: Groovy Map containing sample information.
+    - fasta:
+        type: file
+        description: Protein FASTA input for ColabFold.
+        pattern: "*.{fa,fasta}"
+    - params:
+        type: directory
+        description: ColabFold and AlphaFold parameter files staged under params.
+    - numRec:
+        type: integer
+        description: Number of recycling iterations.
+output:
+  raw:
+    - "raw/**":
+        type: directory
+        description: Raw ColabFold output files.
+  top_ranked_pdb:
+    - - meta:
+          type: map
+          description: Groovy Map containing sample information.
+      - "${meta.id}_colabfold.pdb":
+          type: file
+          description: Top-ranked predicted structure.
+          pattern: "*_colabfold.pdb"
+  pdb:
+    - - meta:
+          type: map
+          description: Groovy Map containing sample information.
+      - "raw/*relaxed_rank_*.pdb":
+          type: file
+          description: Ranked relaxed predicted structures.
+          pattern: "raw/*relaxed_rank_*.pdb"
+  msa:
+    - - meta:
+          type: map
+          description: Groovy Map containing sample information.
+      - "${meta.id}_colabfold_msa.tsv":
+          type: file
+          description: ColabFold multiple sequence alignment metrics.
+          pattern: "*_colabfold_msa.tsv"
+  multiqc:
+    - - meta:
+          type: map
+          description: Groovy Map containing sample information.
+      - "${meta.id}_plddt_mqc.tsv":
+          type: file
+          description: pLDDT metrics formatted for MultiQC.
+          pattern: "*_plddt_mqc.tsv"
+  paes:
+    - - meta:
+          type: map
+          description: Groovy Map containing sample information.
+      - "${meta.id}_*_pae.tsv":
+          type: file
+          description: Predicted aligned error metrics.
+          pattern: "*_pae.tsv"
+  pae:
+    - - meta:
+          type: map
+          description: Groovy Map containing sample information.
+      - "${meta.id}_1_pae.tsv":
+          type: file
+          description: First-model predicted aligned error metrics.
+          pattern: "*_1_pae.tsv"
+  ptms:
+    - - meta:
+          type: map
+          description: Groovy Map containing sample information.
+      - "${meta.id}_ptm.tsv":
+          type: file
+          description: Predicted TM-score metrics.
+          pattern: "*_ptm.tsv"
+  iptms:
+    - - meta:
+          type: map
+          description: Groovy Map containing sample information.
+      - "${meta.id}_iptm.tsv":
+          type: file
+          description: Interface predicted TM-score metrics.
+          pattern: "*_iptm.tsv"
+  ipsaes:
+    - - meta:
+          type: map
+          description: Groovy Map containing sample information.
+      - "${meta.id}_ipsae.tsv":
+          type: file
+          description: Interface predicted aligned error metrics.
+          pattern: "*_ipsae.tsv"
+  chainwise_iptms:
+    - - meta:
+          type: map
+          description: Groovy Map containing sample information.
+      - "${meta.id}_chainwise_iptm.tsv":
+          type: file
+          description: Chainwise interface predicted TM-score metrics.
+          pattern: "*_chainwise_iptm.tsv"
+  chainwise_ipsaes:
+    - - meta:
+          type: map
+          description: Groovy Map containing sample information.
+      - "${meta.id}_chainwise_ipsae.tsv":
+          type: file
+          description: Chainwise interface predicted aligned error metrics.
+          pattern: "*_chainwise_ipsae.tsv"
+  versions_alphafold_colabfold:
+    - - "${task.process}":
+          type: string
+          description: The process the versions were collected from.
+      - alphafold_colabfold:
+          type: string
+          description: The tool name.
+      - 'pip list | grep "^alphafold-colabfold" | awk ''{print $2}'' 2>/dev/null || echo "unknown"':
+          type: eval
+          description: The expression to obtain the tool version.
+  versions_colabfold_batch:
+    - - "${task.process}":
+          type: string
+          description: The process the versions were collected from.
+      - colabfold_batch:
+          type: string
+          description: The tool name.
+      - 'pip list | grep "^colabfold" | awk ''{print $2}'' 2>/dev/null || echo "unknown"':
+          type: eval
+          description: The expression to obtain the tool version.
+topics:
+  versions:
+    - - "${task.process}":
+          type: string
+          description: The process the versions were collected from.
+      - alphafold_colabfold:
+          type: string
+          description: The tool name.
+      - 'pip list | grep "^alphafold-colabfold" | awk ''{print $2}'' 2>/dev/null || echo "unknown"':
+          type: eval
+          description: The expression to obtain the tool version.
+    - - "${task.process}":
+          type: string
+          description: The process the versions were collected from.
+      - colabfold_batch:
+          type: string
+          description: The tool name.
+      - 'pip list | grep "^colabfold" | awk ''{print $2}'' 2>/dev/null || echo "unknown"':
+          type: eval
+          description: The expression to obtain the tool version.

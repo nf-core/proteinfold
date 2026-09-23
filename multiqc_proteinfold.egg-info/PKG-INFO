@@ -1,0 +1,23 @@
+Metadata-Version: 2.4
+Name: multiqc-proteinfold
+Version: 0.1.0
+Summary: MultiQC plugin for proteinfold pipeline metric tsv outputs
+Home-page: https://github.com/nf-core/proteinfold
+Author: Keiran Rowell
+Author-email: k.rowell@unsw.edu.au
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Science/Research
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Requires-Python: >=3.8
+License-File: LICENSE
+Requires-Dist: multiqc>=1.15
+Requires-Dist: pandas
+Dynamic: author
+Dynamic: author-email
+Dynamic: classifier
+Dynamic: home-page
+Dynamic: license-file
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary

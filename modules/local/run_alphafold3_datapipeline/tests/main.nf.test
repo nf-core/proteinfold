@@ -1,0 +1,44 @@
+nextflow_process {
+
+    name "Test Process RUN_ALPHAFOLD3_DATAPIPELINE"
+    script "../main.nf"
+    process "RUN_ALPHAFOLD3_DATAPIPELINE"
+    tag "modules"
+    tag "modules_local"
+    tag "run_alphafold3_datapipeline"
+    profile "test_nostub"
+
+    test("creates populated AlphaFold3 data JSON with micro databases") {
+        when {
+            process {
+                """
+                def db = System.getenv('PROTEINFOLD_TEST_DB') ?: 's3://proteinfold-dataset/test-data/mini_dbs'
+
+                input[0] = [[id: 'T1026'], file(params.pipelines_testdata_base_path + 'testdata/sequences/alphafold3/T1026.json', checkIfExists: true)]
+                input[1] = files(db + '/small_bfd/*', checkIfExists: true)
+                input[2] = files(db + '/mgnify/*', checkIfExists: true)
+                input[3] = file(db + '/pdb_mmcif/mmcif_files', checkIfExists: true)
+                input[4] = files(db + '/uniref90/*', checkIfExists: true)
+                input[5] = files(db + '/pdb_seqres/*', checkIfExists: true)
+                input[6] = files(db + '/uniprot/*', checkIfExists: true)
+                input[7] = files(db + '/nt_rna/*', checkIfExists: true)
+                input[8] = files(db + '/rfam/*', checkIfExists: true)
+                input[9] = files(db + '/rnacentral/*', checkIfExists: true)
+                """
+            }
+        }
+
+        then {
+            def dataJson = file(process.out.data_json[0][1])
+            def parsed = new groovy.json.JsonSlurper().parse(dataJson)
+            assertAll(
+                { assert process.success },
+                { assert dataJson.size() > 0 },
+                { assert parsed.name == 'T1026' },
+                { assert parsed.sequences },
+                { assert snapshot(process.out.data_json).match() },
+                { assert process.out.versions }
+            )
+        }
+    }
+}

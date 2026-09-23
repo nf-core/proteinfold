@@ -1,0 +1,53 @@
+nextflow_process {
+
+    name "Test Process RUN_ALPHAFOLD3_INFERENCE"
+    script "../main.nf"
+    process "RUN_ALPHAFOLD3_INFERENCE"
+    config "./nextflow.config"
+
+    tag "modules"
+    tag "modules_local"
+    tag "run_alphafold3_inference"
+    tag "gpu"
+    profile "test_nostub"
+    profile "gpu"
+
+    test("predicts an AlphaFold3 structure from validated CPU data JSON") {
+        when {
+            process {
+                """
+                def dataJsonPath = System.getenv('PROTEINFOLD_AF3_DATA_JSON') ?:
+                    params.pipelines_testdata_base_path + 'testdata/cpu_outputs/alphafold3/T1026_data.json'
+                def dataJson = file(dataJsonPath, checkIfExists: true)
+                def dataJsonSha256 = java.security.MessageDigest
+                    .getInstance('SHA-256')
+                    .digest(dataJson.bytes)
+                    .encodeHex()
+                    .toString()
+                assert dataJsonSha256 == 'b987a743a617ae18d8ef337efdb15cfda9cc953acbd57d0b6319caaffb5cafe1'
+
+                def paramsPath = System.getenv('PROTEINFOLD_AF3_PARAMS') ?:
+                    's3://proteinfold-dataset/test-data/mini_dbs/params/af3.bin'
+
+                input[0] = [[id: 'T1026'], dataJson]
+                input[1] = file(paramsPath, checkIfExists: true)
+                """
+            }
+        }
+
+        then {
+            def topRanked = path(process.out.top_ranked_cif[0][1])
+            def plddt = path(process.out.multiqc[0][1])
+            def pae = path(process.out.pae[0][1])
+            assertAll(
+                { assert process.success },
+                { assert process.out.top_ranked_cif[0][0].id == 'T1026' },
+                { assert topRanked.size() > 0 },
+                { assert topRanked.text.contains('_atom_site.') },
+                { assert plddt.size() > 0 },
+                { assert pae.size() > 0 },
+                { assert process.out.versions }
+            )
+        }
+    }
+}

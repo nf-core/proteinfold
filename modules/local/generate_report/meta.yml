@@ -1,0 +1,97 @@
+name: "generate_report"
+description: Generate an HTML report and confidence visualisations from protein structure prediction outputs.
+tools: []
+input:
+  - - meta:
+        type: map
+        description: Groovy Map containing sample information and model type.
+    - pdb:
+        type: file
+        description: Predicted structure files.
+    - msa:
+        type: file
+        description: Multiple sequence alignment file.
+    - pae:
+        type: file
+        description: Predicted aligned error file.
+    - iptm:
+        type: file
+        description: Interface predicted TM-score file.
+    - ipsae:
+        type: file
+        description: Interface predicted aligned error file.
+    - chainwise_iptm:
+        type: file
+        description: Chainwise interface predicted TM-score file.
+    - chainwise_ipsae:
+        type: file
+        description: Chainwise interface predicted aligned error file.
+    - template:
+        type: file
+        description: HTML report template.
+        pattern: "*.html"
+output:
+  report:
+    - - meta:
+          type: map
+          description: Groovy Map containing sample information and model type.
+      - "*report.html":
+          type: file
+          description: HTML protein prediction report.
+          pattern: "*report.html"
+  sequence_coverage:
+    - - meta:
+          type: map
+          description: Groovy Map containing sample information and model type.
+      - "*seq_coverage.png":
+          type: file
+          description: Sequence coverage plot.
+          pattern: "*seq_coverage.png"
+  plddt:
+    - - meta:
+          type: map
+          description: Groovy Map containing sample information and model type.
+      - "*_LDDT.html":
+          type: file
+          description: Per-residue LDDT confidence report.
+          pattern: "*_LDDT.html"
+  versions_python:
+    - - "${task.process}":
+          type: string
+          description: The process the versions were collected from.
+      - python:
+          type: string
+          description: The tool name.
+      - "python3 --version | sed 's/Python //g'":
+          type: eval
+          description: The expression to obtain the Python version.
+  versions_generate_report:
+    - - "${task.process}":
+          type: string
+          description: The process the versions were collected from.
+      - generate_report.py:
+          type: string
+          description: The tool name.
+      - "python3 --version | sed 's/Python //g'":
+          type: eval
+          description: The expression to obtain the script runtime version.
+topics:
+  versions:
+    - - "${task.process}":
+          type: string
+          description: The process the versions were collected from.
+      - python:
+          type: string
+          description: The tool name.
+      - "python3 --version | sed 's/Python //g'":
+          type: eval
+          description: The expression to obtain the Python version.
+    - - "${task.process}":
+          type: string
+          description: The process the versions were collected from.
+      - generate_report.py:
+          type: string
+          description: The tool name.
+      - "python3 --version | sed 's/Python //g'":
+          type: eval
+          description: The expression to obtain the script runtime version.
