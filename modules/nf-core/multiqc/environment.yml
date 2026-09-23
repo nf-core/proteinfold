@@ -5,3 +5,7 @@ channels:
   - bioconda
 dependencies:
   - bioconda::multiqc=1.35
+  - conda-forge::pandas=2.3.3
+  - conda-forge::pip=26.0.1
+  - conda-forge::setuptools=84.0.0
+  - conda-forge::wheel=0.48.0

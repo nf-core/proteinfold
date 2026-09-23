@@ -17,7 +17,7 @@ setup(
     },
     install_requires=[
         'multiqc>=1.15',
-        'pandas',
+        'pandas>=2.0',
     ],
     classifiers=[
         'Development Status :: 4 - Beta',
