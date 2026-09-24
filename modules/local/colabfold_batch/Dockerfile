@@ -25,7 +25,7 @@ RUN apt-get update && \
     CONDA_OVERRIDE_CUDA=$(echo $CUDA_VERSION | cut -d'.' -f1,2) mamba install -c conda-forge -c nvidia -c bioconda \
         openmm pdbfixer kalign2=2.04 hhsuite=3.3.0 -y && \
     \
-    pip install --no-cache-dir --no-warn-conflicts "colabfold[alphafold-minus-jax] @ git+https://github.com/sokrypton/ColabFold.git@v1.6.2" && \
+    pip install --no-cache-dir --no-warn-conflicts "colabfold[alphafold-minus-jax] @ git+https://github.com/sokrypton/ColabFold.git@v1.6.3" && \
     pip install --no-cache-dir silence_tensorflow && \
     pip uninstall -y jax jaxlib || true && \
     pip install --no-cache-dir "jax[cuda12]==0.6.2" && \
