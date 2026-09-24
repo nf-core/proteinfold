@@ -37,6 +37,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[PR #644](https://github.com/nf-core/proteinfold/pull/644)] - Update pipeline template to [nf-core/tools 4.0.3](https://github.com/nf-core/tools/releases/tag/4.0.3).
 - [[PR #645](https://github.com/nf-core/proteinfold/pull/645)] - Update image version for alphafold3 modules and `colabfold_batch`.
 - [[PR #647](https://github.com/nf-core/proteinfold/pull/647)] - Fix missing X character in AF3 and Boltz fasta processing.
+- [[PR #648](https://github.com/nf-core/proteinfold/pull/648)] - Update ColabFold to v1.6.3 in the COLABFOLD_BATCH image.
 
 | Old parameter              | New parameter   |
 | -------------------------- | --------------- |

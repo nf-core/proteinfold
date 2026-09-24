@@ -1,5 +1,28 @@
+ARG COLABFOLD_REF=c35de0221f4d297a39edf4cf292ba2832e321edc
+ARG MMSEQS2_REPOSITORY=https://github.com/jscgh/MMseqs2.git
+ARG MMSEQS2_REF=c0434b5a5951987fa025d279af64b298d20f27ff
+
+FROM --platform=linux/amd64 ghcr.io/steineggerlab/build-containers:main-x86_64 AS mmseqs-builder
+
+ARG MMSEQS2_REPOSITORY
+ARG MMSEQS2_REF
+
+WORKDIR /opt/mmseqs2
+
+RUN git init . && \
+    git remote add origin "${MMSEQS2_REPOSITORY}" && \
+    git fetch --depth 1 origin "${MMSEQS2_REF}" && \
+    git checkout --detach FETCH_HEAD && \
+    cmake -S . -B build -GNinja \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DHAVE_TESTS=0 \
+        -DHAVE_SSE4_1=1 \
+        -DFORCE_STATIC_DEPS=1 && \
+    cmake --build build -j"$(nproc)"
+
 FROM ubuntu:24.04
-ARG MMSEQS2_VERSION=18-8cc5c
+
+ARG COLABFOLD_REF
 
 LABEL org.opencontainers.image.title="nf-core/proteinfold_mmseqs_colabfoldsearch" \
     org.opencontainers.image.description="Lightweight Docker image containing all software requirements to run the MMSEQS_COLABFOLDSEARCH module using the nf-core/proteinfold pipeline" \
@@ -13,23 +36,16 @@ RUN apt-get update && \
         python3 \
         python3-dev \
         python3-pip \
-        wget \
         git \
         build-essential \
         cmake && \
     ln -sf /usr/bin/python3 /usr/bin/python && \
     \
     pip install --no-cache-dir --break-system-packages \
-        "colabfold @ git+https://github.com/sokrypton/ColabFold.git@v1.6.1" && \
-    \
-    wget -q https://github.com/soedinglab/MMseqs2/releases/download/${MMSEQS2_VERSION}/mmseqs-linux-sse41.tar.gz && \
-    tar xzf mmseqs-linux-sse41.tar.gz && \
-    cp mmseqs/bin/* /usr/local/bin/ && \
-    rm -rf mmseqs mmseqs-linux-sse41.tar.gz && \
+        "colabfold @ git+https://github.com/sokrypton/ColabFold.git@${COLABFOLD_REF}" && \
     \
     apt-get remove -y \
         python3-dev \
-        wget \
         git \
         build-essential \
         cmake && \
@@ -37,6 +53,10 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
     pip cache purge
+
+COPY --from=mmseqs-builder /opt/mmseqs2/build/src/mmseqs /usr/local/bin/mmseqs
+
+RUN mmseqs version
 
 ENV MPLBACKEND=Agg
 ENV MPLCONFIGDIR=/tmp/mplconfig
