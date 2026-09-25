@@ -79,44 +79,21 @@ class MultiqcModule(BaseMultiqcModule):
         # I want to enable sample grouping: https://docs.seqera.io/multiqc/reports/customisation#sample-grouping
 
         # The nf-core MULTIQC module stages every input file flat into the task
-        # working directory ('stageAs: "?/*"'), so the model-labelled parent
-        # directories that the fallback below relies on are not present at run
-        # time and every sample used to resolve to "UNKNOWN". To recover the
-        # provenance we emit a per-model manifest file from the pipeline
-        # (POST_PROCESSING) whose *filename* carries the model key and whose
-        # rows are "<sample_id>\t<model>". Read it first and use it to map a
-        # sample id back to its model.
-        model_by_sample_id: Dict[str, str] = {}
-        for f in self.find_log_files("proteinfold_model_manifest"):
-            self.add_data_source(f)
-            for line in f["f"].splitlines():
-                if not line.strip():
-                    continue
-                sample_id, _, model_key = line.partition("\t")
-                model_key = model_key.strip()
-                if sample_id.strip() and model_key in mode_dict:
-                    model_by_sample_id.setdefault(sample_id.strip(), model_key)
+        # working directory ('stageAs: "?/*"'), so model-labelled parent
+        # directories are not present at run time and cannot be used to infer
+        # provenance. Instead the pipeline passes the model through as a
+        # MultiQC config value (--cl-config "proteinfold_model: '<key>'", set
+        # per-task in conf/modules.config), which we read once here. One report
+        # is published per model, so a single value is correct for the whole run.
+        model_key = getattr(config, "proteinfold_model", None)
+        mode = mode_dict.get(model_key, "UNKNOWN")
+        log.debug("proteinfold_model=%r -> mode=%r", model_key, mode)
 
         for f in self.find_log_files("proteinfold"):
             self.add_data_source(f)
 
             raw_samplename = f["s_name"].split("rank_")[0]
             filepath = Path(f["root"]) / f["fn"]
-            # Prefer the explicit model recorded in the pipeline manifest; fall
-            # back to traversing the (often flattened) file path when absent.
-            manifest_key = None
-            for sample_id, model_key in model_by_sample_id.items():
-                if raw_samplename.strip().startswith(sample_id):
-                    manifest_key = model_key
-                    break
-            if manifest_key is not None:
-                mode = mode_dict[manifest_key]
-            else:
-                mode = "UNKNOWN"
-                for parent in filepath.parents:
-                    if parent.name in mode_dict:  # traverse up the filepath until you hit a mode labelled dir
-                        mode = mode_dict[parent.name]
-                        break
 
             mode_samplename = f"{raw_samplename}_{mode}"
             samplename = self.clean_s_name(mode_samplename, f)

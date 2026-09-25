@@ -5,5 +5,3 @@ sp:
     - fn: "*_ptm.tsv"
     - fn: "*_iptm.tsv"
     - fn: "*_pae.tsv"
-  proteinfold_model_manifest:
-    - fn: "proteinfold_model_*.tsv"
