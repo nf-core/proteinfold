@@ -210,6 +210,26 @@ def modeChannel(ch, mode) {
     }
 }
 
+//
+// Collect the per-model metric TSVs that the MultiQC plugin should discover.
+// Each input channel is a tuple of raw emit names, of which exactly one field is [meta, path].
+// Callers pass only the metrics that model actually
+// produces, so there is no need for placeholders.
+//
+def collectMultiqcMetrics(model, chs) {
+    return chs
+        .collect { ch ->
+            ch.map { meta, path -> [ meta, path ] }
+        }
+        .toSet()
+        .flatten()
+        .unique { entry -> entry[1] }
+        .groupTuple(by: [0])
+        .map { _meta, paths ->
+            [ [ model: model ], paths.flatten() ]
+        }
+}
+
 def countMolecularEntitiesInFasta(fasta) {
     return fasta.text
         .readLines()

@@ -10,6 +10,7 @@
 include { RUN_ALPHAFOLD2_MSA  } from '../modules/local/run_alphafold2_msa'
 include { RUN_ALPHAFOLD2_PRED } from '../modules/local/run_alphafold2_pred'
 include { resolveModelPresetByFastaEntities } from '../subworkflows/local/utils_nfcore_proteinfold_pipeline'
+include { collectMultiqcMetrics             } from '../subworkflows/local/utils_nfcore_proteinfold_pipeline'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -103,15 +104,14 @@ workflow ALPHAFOLD2 {
         ch_uniprot
     )
 
-    RUN_ALPHAFOLD2_PRED
-        .out
-        .plddt
-        .map { it -> it[1] }
-        .toSortedList()
-        .map { it ->
-            [ [ "model": "alphafold2" ], it.flatten() ]
-        }
-        .set { ch_multiqc_report }
+    // Hand MultiQC every metric this model actually produces, not just pLDDT.
+    ch_multiqc_report = collectMultiqcMetrics("alphafold2", [
+        RUN_ALPHAFOLD2_PRED.out.plddt,
+        RUN_ALPHAFOLD2_PRED.out.msa,
+        RUN_ALPHAFOLD2_PRED.out.ptms,
+        RUN_ALPHAFOLD2_PRED.out.iptms,
+        RUN_ALPHAFOLD2_PRED.out.pae
+    ])
 
     ch_top_ranked_pdb = ch_top_ranked_pdb.mix(RUN_ALPHAFOLD2_PRED.out.top_ranked_pdb)
     ch_pdb            = ch_pdb.mix(RUN_ALPHAFOLD2_PRED.out.pdb)

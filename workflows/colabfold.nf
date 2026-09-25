@@ -12,6 +12,7 @@ include { MMSEQS_COLABFOLDSEARCH } from '../modules/local/mmseqs_colabfoldsearch
 include { MULTIFASTA_TO_CSV      } from '../modules/local/multifasta_to_csv'
 
 include { modeChannel            } from '../subworkflows/local/utils_nfcore_proteinfold_pipeline'
+include { collectMultiqcMetrics  } from '../subworkflows/local/utils_nfcore_proteinfold_pipeline'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -103,15 +104,15 @@ workflow COLABFOLD {
     modeChannel(COLABFOLD_BATCH.out.chainwise_iptms, "colabfold").set { ch_chainwise_iptm_final }
     modeChannel(COLABFOLD_BATCH.out.chainwise_ipsaes, "colabfold").set { ch_chainwise_ipsae_final }
 
-    COLABFOLD_BATCH
-        .out
-        .plddt
-        .map { it -> it[1] }
-        .toSortedList()
-        .map { it ->
-            [ [ "model":"colabfold"], it.flatten() ]
-        }
-        .set { ch_multiqc_report  }
+    // Hand MultiQC every metric this model actually produces, not just pLDDT.
+    // Optional emits (ptm/iptm/pae) simply contribute nothing when absent.
+    ch_multiqc_report = collectMultiqcMetrics("colabfold", [
+        COLABFOLD_BATCH.out.plddt,
+        COLABFOLD_BATCH.out.msa,
+        COLABFOLD_BATCH.out.ptms,
+        COLABFOLD_BATCH.out.iptms,
+        COLABFOLD_BATCH.out.pae
+    ])
 
     emit:
     top_ranked_pdb = ch_top_ranked_pdb // channel: [ meta, /path/to/*.pdb ]

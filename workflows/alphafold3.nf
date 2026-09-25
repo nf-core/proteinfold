@@ -10,6 +10,7 @@
 include { FASTA_TO_ALPHAFOLD3_JSON                } from '../modules/local/fasta_to_alphafold3_json'
 include { RUN_ALPHAFOLD3_DATAPIPELINE             } from '../modules/local/run_alphafold3_datapipeline'
 include { RUN_ALPHAFOLD3_INFERENCE                } from '../modules/local/run_alphafold3_inference'
+include { collectMultiqcMetrics                   } from '../subworkflows/local/utils_nfcore_proteinfold_pipeline'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -117,16 +118,14 @@ workflow ALPHAFOLD3 {
         }
         .set { ch_msa_final }
 
-    // Prepare multiqc input
-    RUN_ALPHAFOLD3_INFERENCE
-        .out
-        .plddt
-        .map { it -> it[1] }
-        .toSortedList()
-        .map { it ->
-            [ [ "model": "alphafold3" ], it.flatten() ]
-        }
-        .set { ch_multiqc_report }
+    // Prepare multiqc input: every metric this model produces, not just pLDDT.
+    ch_multiqc_report = collectMultiqcMetrics("alphafold3", [
+        RUN_ALPHAFOLD3_INFERENCE.out.plddt,
+        RUN_ALPHAFOLD3_INFERENCE.out.msa,
+        RUN_ALPHAFOLD3_INFERENCE.out.ptms,
+        RUN_ALPHAFOLD3_INFERENCE.out.iptms,
+        RUN_ALPHAFOLD3_INFERENCE.out.pae
+    ])
 
     // Prepare pae input
     RUN_ALPHAFOLD3_INFERENCE

@@ -27,6 +27,7 @@ include { MMSEQS_COLABFOLDSEARCH } from '../modules/local/mmseqs_colabfoldsearch
 // MODULE: Boltz
 //
 include { RUN_BOLTZ } from '../modules/local/run_boltz'
+include { collectMultiqcMetrics } from '../subworkflows/local/utils_nfcore_proteinfold_pipeline'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -182,13 +183,14 @@ workflow BOLTZ {
         }
         .set { ch_chainwise_ipsae }
 
-    RUN_BOLTZ
-        .out
-        .plddt
-        .map { it -> it[1] }
-        .collect(sort: true)
-        .map { it ->  [ [ "model": "boltz"], it.flatten() ] }
-        .set { ch_multiqc_report  }
+    // Hand MultiQC every metric this model actually produces, not just pLDDT.
+    ch_multiqc_report = collectMultiqcMetrics("boltz", [
+        RUN_BOLTZ.out.plddt,
+        RUN_BOLTZ.out.msa,
+        RUN_BOLTZ.out.ptm,
+        RUN_BOLTZ.out.iptm,
+        RUN_BOLTZ.out.pae
+    ])
 
     emit:
     msa             = ch_msa

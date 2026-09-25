@@ -10,3 +10,5 @@ null/
 .nf*
 .lineage/
 test_data/
+build/
+multiqc_proteinfold.egg-info/
