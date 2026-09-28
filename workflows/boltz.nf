@@ -185,11 +185,11 @@ workflow BOLTZ {
 
     // Hand MultiQC every metric this model actually produces, not just pLDDT.
     ch_multiqc_report = collectMultiqcMetrics("boltz", [
-        RUN_BOLTZ.out.plddt,
-        RUN_BOLTZ.out.msa,
-        RUN_BOLTZ.out.ptm,
-        RUN_BOLTZ.out.iptm,
-        RUN_BOLTZ.out.pae
+        [ 'plddt', RUN_BOLTZ.out.plddt ],
+        [ 'msa',   RUN_BOLTZ.out.msa ],
+        [ 'ptm',   RUN_BOLTZ.out.ptm ],
+        [ 'iptm',  RUN_BOLTZ.out.iptm ],
+        [ 'pae',   RUN_BOLTZ.out.pae ]
     ])
 
     emit:

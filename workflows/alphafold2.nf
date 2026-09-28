@@ -106,11 +106,11 @@ workflow ALPHAFOLD2 {
 
     // Hand MultiQC every metric this model actually produces, not just pLDDT.
     ch_multiqc_report = collectMultiqcMetrics("alphafold2", [
-        RUN_ALPHAFOLD2_PRED.out.plddt,
-        RUN_ALPHAFOLD2_PRED.out.msa,
-        RUN_ALPHAFOLD2_PRED.out.ptms,
-        RUN_ALPHAFOLD2_PRED.out.iptms,
-        RUN_ALPHAFOLD2_PRED.out.pae
+        [ 'plddt', RUN_ALPHAFOLD2_PRED.out.plddt ],
+        [ 'msa',   RUN_ALPHAFOLD2_PRED.out.msa ],
+        [ 'ptms',  RUN_ALPHAFOLD2_PRED.out.ptms ],
+        [ 'iptms', RUN_ALPHAFOLD2_PRED.out.iptms ],
+        [ 'pae',   RUN_ALPHAFOLD2_PRED.out.pae ]
     ])
 
     ch_top_ranked_pdb = ch_top_ranked_pdb.mix(RUN_ALPHAFOLD2_PRED.out.top_ranked_pdb)
