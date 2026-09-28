@@ -81,10 +81,10 @@ class MultiqcModule(BaseMultiqcModule):
         # The nf-core MULTIQC module stages every input file flat into the task
         # working directory ('stageAs: "?/*"'), so model-labelled parent
         # directories are not present at run time and cannot be used to infer
-        # provenance. The pipeline passes the model through as a MultiQC config
-        # value instead (--cl-config 'proteinfold_model: "<key>"', set per-task
-        # in conf/modules.config), which we read once here. One report is
-        # published per model, so a single value is correct for the whole run.
+        # provenance. The pipeline passes the model through as a per-model MultiQC
+        # config file (proteinfold_model: "<key>") supplied via --config, which we read
+        # once here. One report is published per model, so a single value is correct for
+        # the whole run.
         model_key = getattr(config, "proteinfold_model", None)
         mode = mode_dict.get(model_key, "UNKNOWN")
         log.debug("proteinfold_model=%r -> mode=%r", model_key, mode)

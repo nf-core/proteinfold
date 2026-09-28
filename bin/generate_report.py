@@ -538,54 +538,26 @@ io.save(ref_structure_path)
 aligned_structures[0] = ref_structure_path
 
 proteinfold_template = open(args.html_template, "r").read()
-proteinfold_template = proteinfold_template.replace("*sample_name*", args.name)
+
+model_names = [f"{os.path.splitext(model)[0]}.cif" for model in structures]
+models_data = [open(s, "r").read().replace("\n", "\\n") for s in aligned_structures]
+
+report_config = {
+    "reportType": "standard",
+    "sampleName": args.name,
+    "programName": model_name[args.in_type.lower()],
+    "structFormat": "cif",
+    "models": model_names,
+    "models_data": models_data,
+    "lddt_averages": lddt_averages,
+}
+config_blob = (
+    '<script type="application/json" id="report-config">'
+    f"{json.dumps(report_config)}</script>"
+)
 proteinfold_template = proteinfold_template.replace(
-    "*prog_name*", model_name[args.in_type.lower()]
+    "</head>", f"{config_blob}\n  </head>", 1
 )
-
-model_names = [
-    f"{os.path.splitext(model)[0]}.cif"
-    for model in structures
-]
-args_pdb_array_js = ",\n".join([f'"{model}"' for model in model_names])
-proteinfold_template = re.sub(
-    r"const MODELS = \[.*?\];",  # Match the existing MODELS array in HTML template
-    f"const MODELS = [\n  {args_pdb_array_js}\n];",  # Replace with the new array
-    proteinfold_template,
-    flags=re.DOTALL,
-)
-
-averages_js_array = f"const LDDT_AVERAGES = {lddt_averages};"
-proteinfold_template = proteinfold_template.replace(
-    "const LDDT_AVERAGES = [];", averages_js_array
-)
-
-iptm_js_array = f"const IPTM_SCORES = {iptm_scores};"
-proteinfold_template = proteinfold_template.replace(
-    "const IPTM_SCORES = [];", iptm_js_array
-)
-
-ipsae_js_array = f"const IPSAE_SCORES = {ipsae_scores};"
-proteinfold_template = proteinfold_template.replace(
-    "const IPSAE_SCORES = [];", ipsae_js_array
-)
-
-chainwise_iptm_js_array = f"const CHAINWISE_IPTM_SCORES = {json.dumps(chainwise_iptm_matrices)};"
-proteinfold_template = proteinfold_template.replace(
-    "const CHAINWISE_IPTM_SCORES = [];", chainwise_iptm_js_array
-)
-
-chainwise_ipsae_js_array = f"const CHAINWISE_IPSAE_SCORES = {json.dumps(chainwise_ipsae_matrices)};"
-proteinfold_template = proteinfold_template.replace(
-    "const CHAINWISE_IPSAE_SCORES = [];", chainwise_ipsae_js_array
-)
-
-i = 0
-for structure in aligned_structures:
-    proteinfold_template = proteinfold_template.replace(
-        f"*_data_ranked_{i}.cif*", open(structure, "r").read().replace("\n", "\\n")
-    )
-    i += 1
 
 if not is_missing_input(args.msa):
     image_path = f"{args.output_dir}/{args.name}_{args.in_type}_seq_coverage.png"

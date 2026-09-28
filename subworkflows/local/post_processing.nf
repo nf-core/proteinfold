@@ -115,35 +115,41 @@ workflow POST_PROCESSING {
         ch_multiqc_files       = ch_multiqc_files.mix(ch_workflow_summary.collectFile(name: 'workflow_summary_mqc.yaml'))
         ch_methods_description = channel.value(methodsDescriptionText(ch_multiqc_methods_description))
         ch_multiqc_files       = ch_multiqc_files.mix(ch_methods_description.collectFile(name: 'methods_description_mqc.yaml', sort: true))
-        
-        // One manifest file per model. The nf-core MULTIQC module stages all input
-        // files flat ('?/*'), so the model-bearing parent directory is lost and the
-        // plugin's directory-based mode detection falls back to "UNKNOWN". We encode
-        // the model into the filename itself ('proteinfold_model_<model>.tsv') and let
-        // the MultiQC plugin read the model back from the filename, not the path.
-        ch_proteinfold_model_manifest = ch_top_ranked_model
-            .map { meta, _ ->
-                [ "${meta.model}", "${meta.id}\t${meta.model}" ]
-            }
+
+        // Model provenance for the MultiQC plugin.
+        // The nf-core MULTIQC module stages every input file flat ('stageAs: "?/*"'), so the
+        // model-bearing parent directory that the plugin would otherwise use to infer provenance
+        // is lost at run time. We hand the plugin a tiny per-model MultiQC config file
+        // (proteinfold_model: <key>) via the --config mechanism instead of a manifest round-trip.
+        // One MULTIQC task is created per model; the file is keyed on meta.model so it joins back
+        // onto the same task. The plugin reads it with getattr(config, "proteinfold_model").
+        ch_proteinfold_model_config = ch_multiqc_rep
+            .map { meta, _paths -> [ "${meta.model}", "proteinfold_model: ${meta.model}" ] }
+            .unique { it[0] }
             .groupTuple()
             .map { model, rows ->
-                [ [ model: model ], rows.unique().sort().join('\n') + '\n' ]
+                [ [ model: model ], rows.unique().join('\n') + '\n' ]
             }
-            .collectFile(name: { "proteinfold_model_${it[0].model}.tsv" })
+            .collectFile(name: { "proteinfold_model_${it[0].model}.yml" })
 
-        ch_multiqc_files = ch_multiqc_files.mix(ch_proteinfold_model_manifest)
+        // Join each model's metric tuple with its own proteinfold_model_<model>.yml so the
+        // plugin receives the model via --config. join() matches on the leading [model:...] key,
+        // so it is 1:1 and cannot fan out the way combine() would. ch_multiqc_rep already emits
+        // [ [model:..], paths ] (see collectMultiqcMetrics), so it joins directly.
+        ch_multiqc_rep_with_model_config = ch_multiqc_rep
+            .join(ch_proteinfold_model_config, by: 0)   // -> [ [model:..], paths, config_file ]
 
         MULTIQC (
-            ch_multiqc_rep
+            ch_multiqc_rep_with_model_config
                 // Wrap each collected list so combine() keeps it as one tuple field.
                 .combine(ch_multiqc_files.collect().map { [it] })
                 .combine(ch_multiqc_config.collect().ifEmpty([]).map { [it] })
                 .combine(ch_multiqc_custom_config.collect().ifEmpty([]).map { [it] })
-                .map { meta, report_files, extra_files, config_file, custom_config_file ->
+                .map { meta, report_files, extra_files, config_file, custom_config_file, model_cfg ->
                     [
                         meta,
                         report_files + extra_files,  // All multiqc input files
-                        config_file + custom_config_file,
+                        config_file + custom_config_file + [ model_cfg ],
                         multiqc_logo ? file(multiqc_logo, checkIfExists: true) : [],
                         [],
                         []
