@@ -120,11 +120,11 @@ workflow ALPHAFOLD3 {
 
     // Prepare multiqc input: every metric this model produces, not just pLDDT.
     ch_multiqc_report = collectMultiqcMetrics("alphafold3", [
-        RUN_ALPHAFOLD3_INFERENCE.out.plddt,
-        RUN_ALPHAFOLD3_INFERENCE.out.msa,
-        RUN_ALPHAFOLD3_INFERENCE.out.ptms,
-        RUN_ALPHAFOLD3_INFERENCE.out.iptms,
-        RUN_ALPHAFOLD3_INFERENCE.out.pae
+        [ 'plddt', RUN_ALPHAFOLD3_INFERENCE.out.plddt ],
+        [ 'msa',   RUN_ALPHAFOLD3_INFERENCE.out.msa ],
+        [ 'ptms',  RUN_ALPHAFOLD3_INFERENCE.out.ptms ],
+        [ 'iptms', RUN_ALPHAFOLD3_INFERENCE.out.iptms ],
+        [ 'pae',   RUN_ALPHAFOLD3_INFERENCE.out.pae ]
     ])
 
     // Prepare pae input

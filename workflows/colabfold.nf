@@ -107,11 +107,11 @@ workflow COLABFOLD {
     // Hand MultiQC every metric this model actually produces, not just pLDDT.
     // Optional emits (ptm/iptm/pae) simply contribute nothing when absent.
     ch_multiqc_report = collectMultiqcMetrics("colabfold", [
-        COLABFOLD_BATCH.out.plddt,
-        COLABFOLD_BATCH.out.msa,
-        COLABFOLD_BATCH.out.ptms,
-        COLABFOLD_BATCH.out.iptms,
-        COLABFOLD_BATCH.out.pae
+        [ 'plddt', COLABFOLD_BATCH.out.plddt ],
+        [ 'msa',   COLABFOLD_BATCH.out.msa ],
+        [ 'ptms',  COLABFOLD_BATCH.out.ptms ],
+        [ 'iptms', COLABFOLD_BATCH.out.iptms ],
+        [ 'pae',   COLABFOLD_BATCH.out.pae ]
     ])
 
     emit:

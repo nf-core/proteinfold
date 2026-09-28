@@ -29,7 +29,13 @@ process MULTIQC {
     def samples = sample_names ? "--sample-names ${sample_names}" : ''
     """
     # hermetic install of the pipeline-local plugin; deps come from the conda env (no PyPI at runtime)
-    pip install --no-deps --no-build-isolation --target "\$PWD/.multiqc_plugins" ${workflow.projectDir}
+    # Build from an isolated copy in the task work dir, NOT in workflow.projectDir: concurrent MULTIQC
+    # tasks would otherwise race on the shared projectDir/build/ + *.egg-info tree (Errno 17 'File
+    # exists' when two tasks create the same wheel .dist-info at the same time).
+    mkdir -p .plugin_src
+    cp -r ${workflow.projectDir}/setup.py ${workflow.projectDir}/multiqc_proteinfold .plugin_src/
+    cp ${workflow.projectDir}/LICENSE ${workflow.projectDir}/README.md .plugin_src/ 2>/dev/null || true
+    pip install --no-deps --no-build-isolation --target "\$PWD/.multiqc_plugins" ./.plugin_src
     PYTHONPATH="\$PWD/.multiqc_plugins" multiqc \\
         --force \\
         ${args} \\

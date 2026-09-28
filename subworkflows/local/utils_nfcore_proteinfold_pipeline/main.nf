@@ -212,17 +212,26 @@ def modeChannel(ch, mode) {
 
 //
 // Collect the per-model metric TSVs that the MultiQC plugin should discover.
-// Each input channel is a tuple of raw emit names, of which exactly one field is [meta, path].
-// Callers pass only the metrics that model actually
-// produces, so there is no need for placeholders.
+// `metric_channels` is a List of [name, channel] pairs. Each channel yields a
+// tuple whose [1] and [2] fields are the meta map and the metric file; pinning
+// that position is what makes this safe for emits with extra trailing fields
+// (boltz emits 5, alphafold2 4). The first non-empty channel seeds the fold and
+// the rest are mixed in one at a time, because mix() is a channel operator -- it
+// does not exist on ArrayList.
 //
-def collectMultiqcMetrics(model, chs) {
-    return chs
-        .collect { ch ->
-            ch.map { meta, path -> [ meta, path ] }
-        }
-        .toSet()
-        .flatten()
+def collectMultiqcMetrics(model, metric_channels) {
+    def acc = null
+    metric_channels.each { entry ->
+        // Each metric emit is a tuple whose first two fields are [meta, path].
+        // Destructure explicitly (like HEAD did) rather than positional [1],[2],
+        // which mis-slices 2-element tuples and silently yields an empty channel.
+        def ch = entry[1].map { meta, path -> [ meta, path ] }
+        acc = acc == null ? ch : acc.mix(ch)
+    }
+    if (acc == null) {
+        return channel.empty()
+    }
+    return acc
         .unique { entry -> entry[1] }
         .groupTuple(by: [0])
         .map { _meta, paths ->
