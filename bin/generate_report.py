@@ -562,9 +562,11 @@ proteinfold_template = proteinfold_template.replace(
 if not is_missing_input(args.msa):
     image_path = f"{args.output_dir}/{args.name}_{args.in_type}_seq_coverage.png"
     with open(image_path, "rb") as in_file:
+        data_uri = f"data:image/png;base64,{base64.b64encode(in_file.read()).decode('utf-8')}"
         proteinfold_template = proteinfold_template.replace(
-            "seq_coverage.png",
-            f"data:image/png;base64,{base64.b64encode(in_file.read()).decode('utf-8')}",
+            '<div id="seq_cov_placeholder"></div>',
+            f'<img src="{data_uri}" alt="Sequence coverage (MSA)" '
+            'class="w-full h-auto rounded" />',
         )
 else:
     pattern = r'<div id="seq_coverage_container".*?>.*?(<!--.*?-->.*?)*?</div>\s*</div>\s*</div>\s*</div>'
