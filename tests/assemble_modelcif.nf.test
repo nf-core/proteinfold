@@ -245,4 +245,76 @@ nextflow_process {
         }
     }
 
+    test("pLDDT metric type follows --plddt-scale") {
+        config "./assemble_modelcif_plddt_scale.config"
+
+        when {
+            process {
+                """
+                input[0] = [
+                    [ id: 'test_scale', model: 'alphafold2', msa_tool: 'jackhmmer' ],
+                    [
+                        file("$projectDir/assets/DUMMY_MMCIF_rank_0.mmcif", checkIfExists: true),
+                        file("$projectDir/assets/DUMMY_MMCIF_rank_1.mmcif", checkIfExists: true),
+                        file("$projectDir/assets/DUMMY_MMCIF_rank_2.mmcif", checkIfExists: true),
+                        file("$projectDir/assets/DUMMY_MMCIF_rank_3.mmcif", checkIfExists: true),
+                        file("$projectDir/assets/DUMMY_MMCIF_rank_4.mmcif", checkIfExists: true)
+                    ],
+                    file("$projectDir/assets/DUMMY_MSA.tsv",         checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_PLDDT.tsv",       checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_PAE.tsv",         checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_PTM.tsv",         checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_IPTM.tsv",        checkIfExists: true),
+                    file("$projectDir/assets/NO_FILE",               checkIfExists: true)
+                ]
+                """
+            }
+        }
+
+        then {
+            def mmcif = path(process.out.modelcif[0][1]).text
+            assertAll(
+                { assert mmcif.contains("'pLDDT in [0,1]' local") },
+                { assert !mmcif.contains("'pLDDT-CA'") }
+            )
+            assert process.out.versions.size() == 1
+        }
+    }
+
+    test("--seed tsv attaches container and seed software parameters") {
+        config "./assemble_modelcif_seed.config"
+
+        when {
+            process {
+                """
+                input[0] = [
+                    [ id: 'test_seed', model: 'alphafold2', msa_tool: 'jackhmmer' ],
+                    [
+                        file("$projectDir/assets/DUMMY_MMCIF_rank_0.mmcif", checkIfExists: true),
+                        file("$projectDir/assets/DUMMY_MMCIF_rank_1.mmcif", checkIfExists: true),
+                        file("$projectDir/assets/DUMMY_MMCIF_rank_2.mmcif", checkIfExists: true),
+                        file("$projectDir/assets/DUMMY_MMCIF_rank_3.mmcif", checkIfExists: true),
+                        file("$projectDir/assets/DUMMY_MMCIF_rank_4.mmcif", checkIfExists: true)
+                    ],
+                    file("$projectDir/assets/DUMMY_MSA.tsv",         checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_PLDDT.tsv",       checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_PAE.tsv",         checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_PTM.tsv",         checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_IPTM.tsv",        checkIfExists: true),
+                    file("$projectDir/assets/NO_FILE",               checkIfExists: true)
+                ]
+                """
+            }
+        }
+
+        then {
+            def mmcif = path(process.out.modelcif[0][1]).text
+            assertAll(
+                { assert mmcif.contains("_ma_software_parameter") },
+                { assert mmcif.contains("integer seed 0") }
+            )
+            assert process.out.versions.size() == 1
+        }
+    }
+
 }
