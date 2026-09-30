@@ -1,7 +1,7 @@
 {
     "-profile test_boltz": {
         "content": [
-            12,
+            14,
             [
                 "boltz",
                 "boltz/T1024",
@@ -39,6 +39,12 @@
                 "mmseqs/results/T1024.json",
                 "mmseqs/results/T1026.a3m",
                 "mmseqs/results/T1026.json",
+                "multiqc",
+                "multiqc/multiqc_data",
+                "multiqc/multiqc_data/.stub",
+                "multiqc/multiqc_plots",
+                "multiqc/multiqc_plots/.stub",
+                "multiqc/multiqc_report.html",
                 "pipeline_info",
                 "pipeline_info/nf_core_proteinfold_software_mqc_versions.yml",
                 "reports",
@@ -80,6 +86,8 @@
                 "T1024.json:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1026.a3m:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1026.json:md5,d41d8cd98f00b204e9800998ecf8427e",
+                ".stub:md5,d41d8cd98f00b204e9800998ecf8427e",
+                ".stub:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1024_boltz_report.html:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1026_boltz_report.html:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "A.csv:md5,d41d8cd98f00b204e9800998ecf8427e",
@@ -88,7 +96,7 @@
                 "T1026.yaml:md5,d41d8cd98f00b204e9800998ecf8427e"
             ]
         ],
-        "timestamp": "2026-09-29T11:30:35.461830869",
+        "timestamp": "2026-09-29T16:30:07.049216251",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.04.6"

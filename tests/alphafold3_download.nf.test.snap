@@ -1,8 +1,10 @@
 {
     "-profile test_alphafold3_download": {
         "content": [
-            27,
+            29,
             {
+                "NFCORE_PROTEINFOLD:POST_PROCESSING:GENERATE_MULTIQC_CONTENTS:generate_multiqc_contents.py": "3.14.0",
+                "NFCORE_PROTEINFOLD:POST_PROCESSING:GENERATE_MULTIQC_CONTENTS:python": "3.14.0",
                 "NFCORE_PROTEINFOLD:POST_PROCESSING:GENERATE_REPORT:generate_report.py": "3.12.7",
                 "NFCORE_PROTEINFOLD:POST_PROCESSING:GENERATE_REPORT:python": "3.12.7",
                 "NFCORE_PROTEINFOLD:PREPARE_ALPHAFOLD3_DBS:ARIA2_MGNIFY:ZSTD_DECOMPRESS:zstd": "v1.5.6",
@@ -67,6 +69,12 @@
                 "fasta",
                 "fasta/T1024.json",
                 "fasta/T1026.json",
+                "multiqc",
+                "multiqc/multiqc_data",
+                "multiqc/multiqc_data/.stub",
+                "multiqc/multiqc_plots",
+                "multiqc/multiqc_plots/.stub",
+                "multiqc/multiqc_report.html",
                 "pipeline_info",
                 "pipeline_info/nf_core_proteinfold_software_mqc_versions.yml",
                 "reports",
@@ -108,11 +116,13 @@
                 "stub.cif:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1024.json:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1026.json:md5,d41d8cd98f00b204e9800998ecf8427e",
+                ".stub:md5,d41d8cd98f00b204e9800998ecf8427e",
+                ".stub:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1024_alphafold3_report.html:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1026_alphafold3_report.html:md5,d41d8cd98f00b204e9800998ecf8427e"
             ]
         ],
-        "timestamp": "2026-09-29T11:30:05.433917848",
+        "timestamp": "2026-09-29T16:29:20.110512797",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.04.6"

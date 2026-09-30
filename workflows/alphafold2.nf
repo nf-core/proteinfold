@@ -52,7 +52,7 @@ workflow ALPHAFOLD2 {
     ch_ipsae          = channel.empty()
     ch_chainwise_iptm = channel.empty()
     ch_chainwise_ipsae = channel.empty()
-    ch_multiqc_report = channel.empty()
+    ch_multiqc_metrics = channel.empty()
 
     ch_samplesheet
         .map { meta, fasta ->
@@ -105,12 +105,11 @@ workflow ALPHAFOLD2 {
     )
 
     // Hand MultiQC every metric this model actually produces, not just pLDDT.
-    ch_multiqc_report = collectMultiqcMetrics("alphafold2", [
+    ch_multiqc_metrics = collectMultiqcMetrics("alphafold2", [
         [ 'plddt', RUN_ALPHAFOLD2_PRED.out.plddt ],
         [ 'msa',   RUN_ALPHAFOLD2_PRED.out.msa ],
         [ 'ptms',  RUN_ALPHAFOLD2_PRED.out.ptms ],
-        [ 'iptms', RUN_ALPHAFOLD2_PRED.out.iptms ],
-        [ 'pae',   RUN_ALPHAFOLD2_PRED.out.pae ]
+        [ 'iptms', RUN_ALPHAFOLD2_PRED.out.iptms ]
     ])
 
     ch_top_ranked_pdb = ch_top_ranked_pdb.mix(RUN_ALPHAFOLD2_PRED.out.top_ranked_pdb)
@@ -195,7 +194,7 @@ workflow ALPHAFOLD2 {
     ipsae          = ch_ipsae_final          // channel: [ meta, /path/to/*_ipsae.tsv ]
     chainwise_iptm = ch_chainwise_iptm_final // channel: [ meta, /path/to/*_chainwise_iptm.tsv ]
     chainwise_ipsae = ch_chainwise_ipsae_final // channel: [ meta, /path/to/*_chainwise_ipsae.tsv ]
-    multiqc_report = ch_multiqc_report       // channel: /path/to/multiqc_report.html
+    multiqc_metrics = ch_multiqc_metrics     // channel: [ [id:..., model:...], [metric tsvs] ]
 }
 
 /*
