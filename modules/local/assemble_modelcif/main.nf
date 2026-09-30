@@ -10,9 +10,10 @@ process ASSEMBLE_MODELCIF {
     // TODO: Unsure at this stage best way forward with chain-wise paths. At least modelCIF has the asymmetric unit entity, so we *could* DUMMY_FILE, but I do like the philosophy of don't check things that *can't* exist
     input:
     tuple val(meta), path(structs), path(msa), path(plddt), path(pae), path(ptm), path(iptm), path(versions_yml)
-    // TODO: in populate_modelcif the qa_metric can handle PLDDT vs PLDDT01 vs PLDDTAllAtom. No more averging weirdness inside EXTRACT_METRICS
+    // TODO: --plddt-scale covers PLDDT/PLDDT01/PLDDTAllAtom/PLDDTAllAtom01; still need per-program scale selection
+    // and removal of the averaging in EXTRACT_METRICS
     // TODO: A space will be made for path(ipsae) once 1) it's captured 2) an ipsae custom class extends the modelCIF construction
-    // TODO: structs - a proper rank mapping util - ever the concern
+    // Rank mapping is guaranteed: extract_metrics.py emits rank_0..N; populate_modelcif.py rejects TSVs without them.
     // TODO: meta.seed? (#588)
     // TODONT: database version injection. This can come out of versions.yml, but leave that to a cleaner database handling implementation.
 
@@ -27,7 +28,7 @@ process ASSEMBLE_MODELCIF {
     // Every single structure from a sequence prediction method will be captured in .ModelGroup
     // Every common metric will be captured as a modelCIF qa_metric
     // The advantage is all software metadata and protocol steps are shared between all structures in the .ModelGroup
-    // TODO: add --binary flag to output as binaryCIF or not
+    // BinaryCIF output: pass --write_binary via task.ext.args.
     script:
     def args = task.ext.args ?: ''
     """
@@ -41,7 +42,7 @@ process ASSEMBLE_MODELCIF {
         --name ${meta.id} \\
         --prog ${meta.model} \\
         --versions_yml ${versions_yml} \\
-        --msa_tool ${meta.msa_tool ?: 'None'} \
+        --msa_tool ${meta.msa_tool ?: 'None'} \\
         $args
 
     cat <<-END_VERSIONS > versions.yml

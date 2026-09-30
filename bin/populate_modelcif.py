@@ -43,6 +43,15 @@ _SOFTWARE_INFO = {
     'rosettafold_all_atom': ('RoseTTAFold-All-Atom',  'https://github.com/baker-laboratory/RoseTTAFold-All-Atom', 'protein structure prediction'),
 }
 
+# --plddt-scale values -> modelcif metric types. Values pass through verbatim;
+# the scale only declares the metric_name.
+_PLDDT_METRIC_CLASSES = {
+    'plddt':            modelcif.qa_metric.PLDDT,
+    'plddt01':          modelcif.qa_metric.PLDDT01,
+    'plddt-allatom':    modelcif.qa_metric.PLDDTAllAtom,
+    'plddt-allatom01':  modelcif.qa_metric.PLDDTAllAtom01,
+}
+
 def parse_args(args=None):
     parser = argparse.ArgumentParser(
         description='Generate a valid modelCIF structure file (according to ModelArchive dictionary) from the various metrics .tsv files, and program execution details.'
@@ -63,6 +72,10 @@ def parse_args(args=None):
     parser.add_argument('--output',       default=None)
     parser.add_argument('--all-structs',  action='store_true', help='Include all parseable files passed via --structs as models. This is enabled automatically when more than one structure file is supplied.')
     parser.add_argument('--write_binary', action='store_true', help='Write BinaryCIF (.bcif) output instead of text mmCIF. Requires the msgpack package.')
+    parser.add_argument('--plddt-scale',  choices=sorted(_PLDDT_METRIC_CLASSES), default='plddt',
+                        help="Declared metric type of the values in --plddt (no rescaling is performed): "
+                             "'plddt' = lDDT-CA in [0,100] (default), 'plddt01' = lDDT-CA in [0,1], "
+                             "'plddt-allatom' = all-atom lDDT in [0,100], 'plddt-allatom01' = all-atom lDDT in [0,1].")
     return parser.parse_args(args)
 
 
@@ -212,10 +225,15 @@ def _read_plddt_tsv(plddt_tsv):
         reader = csv.DictReader(fh, delimiter='\t')
         rows = list(reader)
     rank_cols = sorted(
-        # TODO: need to garuantee that 'rank_X' is always in the tsv spec
         (k for k in rows[0].keys() if k.startswith('rank_')),
         key=lambda k: int(k.split('_', 1)[1]),
     )
+    if not rank_cols:
+        raise ValueError(
+            f"No 'rank_X' columns found in {plddt_tsv}. Expected a header like "
+            "'Positions\\trank_0\\trank_1\\t...' as written by extract_metrics.py "
+            "(extract_structs_plddt_to_tsv)."
+        )
     return {col: [float(row[col]) for row in rows] for col in rank_cols}
 
 
@@ -330,6 +348,7 @@ def build_modelcif(
     msa_tool=None,
     software_details=None,
     all_structs=None,
+    plddt_scale='plddt',
 ):
     """
     Build a modelcif.System from ranked structure files and QA metric .tsv files.
@@ -367,6 +386,11 @@ def build_modelcif(
     modelcif.System
     """
     software_details = software_details or {}
+    if plddt_scale not in _PLDDT_METRIC_CLASSES:
+        raise ValueError(
+            f"Unknown plddt_scale '{plddt_scale}'; "
+            f"expected one of {sorted(_PLDDT_METRIC_CLASSES)}"
+        )
     if all_structs is None:
         all_structs = len(struct_files) > 1
 
@@ -478,8 +502,10 @@ def build_modelcif(
         system.software.append(execution_software)
 
     # ---- pLDDT QA metric class ------------------------------------------
-    class LocalPLDDT(modelcif.qa_metric.Local, modelcif.qa_metric.PLDDT):
-        """Predicted lDDT-CA score in [0,100] output by the folding software"""
+    plddt_base = _PLDDT_METRIC_CLASSES[plddt_scale]
+
+    class LocalPLDDT(modelcif.qa_metric.Local, plddt_base):
+        __doc__ = f"Per-residue pLDDT ({plddt_scale}) as emitted by the prediction software."
 
     LocalPLDDT.software = software
 
@@ -571,9 +597,9 @@ def build_modelcif(
 
         models.append(model)
 
-    # So model.ModelGroup is great here since every single inference from a multi-model method (e.g. AlphaFold)
-    # is captured coordinates-wise as a separate structure to inspect, but the protocol and software metadata is shared across them.
-    # TODO: double-check these open as separate #X.Y models in ChineraX
+    # One model per inference in a single ModelGroup: distinct ordinal_id and
+    # pdbx_model_number per model (verified, modelcif 1.7), so ChimeraX opens
+    # them as separate #X.Y models sharing protocol/software metadata.
     model_group = modelcif.model.ModelGroup(models, name='All models')
     system.model_groups.append(model_group)
 
@@ -643,6 +669,7 @@ def main(args=None):
     msa_tool = None if args.msa_tool in (None, 'None') else args.msa_tool
     all_structs = args.all_structs or len(args.structs) > 1
     system = build_modelcif(
+        plddt_scale=args.plddt_scale,
         struct_files=args.structs,
         all_structs=all_structs,
         plddt_file=args.plddt,
