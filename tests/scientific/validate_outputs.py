@@ -3,7 +3,9 @@
 
 import argparse
 import csv
+import json
 import math
+import re
 import tempfile
 import urllib.request
 import warnings
@@ -102,6 +104,71 @@ def validate_pae(path: Path) -> tuple[int, int]:
     return len(rows), len(rows[0])
 
 
+def validate_multiqc_report(outdir: Path, mode: str, identifiers: list[str]) -> None:
+    """Validate the rendered custom-content report and its exported data."""
+    multiqc_dir = outdir / "multiqc"
+    report = multiqc_dir / f"{mode}_multiqc_report.html"
+    data_dir = multiqc_dir / f"{mode}_multiqc_report_data"
+    plots_dir = multiqc_dir / f"{mode}_multiqc_report_plots"
+    assert report.is_file(), f"MultiQC report missing: {report}"
+    assert data_dir.is_dir(), f"MultiQC data directory missing: {data_dir}"
+    assert plots_dir.is_dir(), f"MultiQC plots directory missing: {plots_dir}"
+
+    data_path = data_dir / "multiqc_data.json"
+    assert data_path.is_file(), f"MultiQC data JSON missing: {data_path}"
+    data = json.loads(data_path.read_text())
+    stats = data.get("report_general_stats_data", {}).get("custom_content", {})
+    assert stats, "MultiQC general stats contain no ProteinFold custom content"
+    sample_names = [name for name, row in stats.items() if row]
+    for identifier in identifiers:
+        assert any(name.startswith(f"{identifier}_") for name in sample_names), (
+            f"No ProteinFold general-stats row for {identifier}; found {sample_names}"
+        )
+    assert not any("UNKNOWN" in name for name in sample_names), f"Unlabelled MultiQC rows: {sample_names}"
+
+    rank_rows = [name for name in sample_names if re.search(r"[ _]rank_\d+$", name)]
+    grouped_containers = [name for name, row in stats.items() if not row and "(grouped)" in name]
+    if rank_rows:
+        assert grouped_containers, (
+            "MultiQC general stats contain rank rows but no nested groups; "
+            "the table_sample_merge rank labels in assets/multiqc_config.yml are not taking effect"
+        )
+
+    plots = data.get("report_plot_data", {})
+    lineplot = next((plot for plot in plots.values() if plot.get("id") == "proteinfold_plddt_lineplot"), None)
+    assert lineplot is not None, "MultiQC data contain no ProteinFold pLDDT line plot"
+    datasets = lineplot.get("datasets", [])
+    assert datasets, "ProteinFold pLDDT line plot has no switcher datasets"
+    dataset_labels = [dataset.get("label") for dataset in datasets]
+    assert not any(label and "_rank_" in label for label in dataset_labels), (
+        f"The pLDDT line-plot switcher must be per prediction, not per rank: {dataset_labels}"
+    )
+    for dataset in datasets:
+        series_names = [line.get("name", "") for line in dataset.get("lines", [])]
+        assert series_names, f"Empty pLDDT switcher dataset: {dataset.get('label')}"
+        assert all(re.fullmatch(r"rank_\d+", name) for name in series_names), (
+            f"pLDDT dataset {dataset.get('label')} must nest one rank_N series per ranked model, "
+            f"got {series_names}"
+        )
+    print(f"Validated MultiQC: {report.name} ({len(sample_names)} ProteinFold rows, {len(datasets)} pLDDT datasets)")
+
+
+def validate_detailed_report(outdir: Path, identifier: str) -> None:
+    """Validate the embedded configuration of a per-protein report."""
+    reports = sorted((outdir / "reports").glob(f"{identifier}_*_report.html"))
+    assert reports, f"No detailed report for {identifier} in {outdir / 'reports'}"
+    html = reports[0].read_text()
+    match = re.search(r'<script type="application/json" id="report-config">(.*?)</script>', html, re.DOTALL)
+    assert match, f"report-config JSON blob missing from {reports[0].name}"
+    config = json.loads(match.group(1))
+    assert config.get("sampleName") == identifier
+    for key in ("programName", "models", "models_data", "lddt_averages"):
+        assert config.get(key), f"report config is missing {key}"
+    for key in ("iptm_scores", "ipsae_scores", "chainwise_iptm", "chainwise_ipsae"):
+        assert key in config, f"report config is missing {key}"
+    print(f"Validated detailed report: {reports[0].name}")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--mode", required=True)
@@ -145,6 +212,10 @@ def main() -> None:
     for path in pae_files:
         row_count, column_count = validate_pae(path)
         print(f"Validated PAE: {path.name} ({row_count}x{column_count} matrix)")
+
+    validate_multiqc_report(args.outdir, args.mode, ids)
+    for identifier in ids:
+        validate_detailed_report(args.outdir, identifier)
 
     print(
         f"Validated {args.display_name}: {len(ids)} inputs, {len(structures)} structures, "

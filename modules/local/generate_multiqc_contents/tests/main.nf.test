@@ -1,0 +1,110 @@
+nextflow_process {
+
+    name "Test Process GENERATE_MULTIQC_CONTENTS"
+    script "../main.nf"
+    process "GENERATE_MULTIQC_CONTENTS"
+
+    tag "modules"
+    tag "modules_local"
+    tag "generate_multiqc_contents"
+    tag "multiqc"
+    profile "test_nostub"
+
+    test("generates mode-qualified general stats and rank rows (boltz shape)") {
+
+        when {
+            process {
+                """
+                input[0] = [
+                    [ model: 'boltz' ],
+                    [
+                        file(params.pipelines_testdata_base_path + 'testdata/metrics/S2_plddt.tsv', checkIfExists: true),
+                        file(params.pipelines_testdata_base_path + 'testdata/metrics/S2_boltz_msa.tsv', checkIfExists: true),
+                        file(params.pipelines_testdata_base_path + 'testdata/metrics/S2_ptm.tsv', checkIfExists: true),
+                        file(params.pipelines_testdata_base_path + 'testdata/metrics/S2_iptm.tsv', checkIfExists: true),
+                        file(params.pipelines_testdata_base_path + 'testdata/metrics/S2_0_pae.tsv', checkIfExists: true),
+                        file(params.pipelines_testdata_base_path + 'testdata/metrics/S2_chainwise_iptm.tsv', checkIfExists: true)
+                    ],
+                ]
+                input[1] = file("${projectDir}/modules/local/generate_multiqc_contents/generate_multiqc_contents.py", checkIfExists: true)
+                """
+            }
+        }
+
+        then {
+            def jsonSlurper = new groovy.json.JsonSlurper()
+            def outs = process.out.mqc_json[0][1]
+def files = (outs instanceof List ? outs : [outs]).collect { file(it) }
+            def generalstats = jsonSlurper.parse(files.find { it.toString().contains('generalstats') })
+            def linegraph = jsonSlurper.parse(files.find { it.toString().contains('plddt_lineplot') })
+            def near = { value, expected -> Math.abs(value - expected) < 1e-9 }
+            assertAll(
+                { assert process.success },
+                { assert snapshot(process.out.mqc_json).match() },
+                {
+                    assert generalstats.data.keySet() ==
+                        ['S2_Boltz', 'S2_Boltz_rank_1', 'S2_Boltz_rank_2'] as Set
+                    assert near(generalstats.data['S2_Boltz'].mean_plddt, 88.23333333333333)
+                    assert generalstats.data['S2_Boltz'].msa_depth == 3
+                    assert near(generalstats.data['S2_Boltz'].iptm, 0.83)
+                    assert near(generalstats.data['S2_Boltz_rank_1'].mean_plddt, 80.76666666666667)
+                    assert generalstats.headers.keySet() == ['msa_depth', 'mean_plddt', 'iptm', 'ptm'] as Set
+                },
+                {
+                    assert files.size() == 2
+                    assert linegraph.plot_type == 'linegraph'
+                    assert linegraph.pconfig.ymax == 100
+                    assert linegraph.pconfig.data_labels == [[name: 'S2_Boltz', ylab: 'pLDDT score']]
+                    assert linegraph.data.size() == 1
+                    assert linegraph.data[0].keySet() == ['rank_0', 'rank_1', 'rank_2'] as Set
+                    assert linegraph.data[0]['rank_0'] == [[1, 88.0], [2, 87.5], [3, 89.2]]
+                    assert linegraph.data[0]['rank_2'] == [[1, 71.5], [2, 72.3]]
+                    assert !files.find { it.toString().contains('generalstats') }.text.contains('NaN')
+                    assert !files.find { it.toString().contains('generalstats') }.text.contains('Infinity')
+                },
+                {
+                    def raw = (files.collect { it.text }).join('\n')
+                    assert !raw.contains('pae')
+                    assert !raw.contains('chainwise')
+                    assert !raw.contains('UNKNOWN')
+                }
+            )
+        }
+    }
+
+    test("generates a single-rank row without extra columns (esmfold shape)") {
+
+        when {
+            process {
+                """
+                input[0] = [
+                    [ model: 'esmfold' ],
+                    [ file(params.pipelines_testdata_base_path + 'testdata/metrics/S1_plddt.tsv', checkIfExists: true) ],
+                ]
+                input[1] = file("${projectDir}/modules/local/generate_multiqc_contents/generate_multiqc_contents.py", checkIfExists: true)
+                """
+            }
+        }
+
+        then {
+            def jsonSlurper = new groovy.json.JsonSlurper()
+            def outs = process.out.mqc_json[0][1]
+def files = (outs instanceof List ? outs : [outs]).collect { file(it) }
+            def generalstats = jsonSlurper.parse(files.find { it.toString().contains('generalstats') })
+            def linegraph = jsonSlurper.parse(files.find { it.toString().contains('plddt_lineplot') })
+            assertAll(
+                { assert process.success },
+                {
+                    assert generalstats.data.keySet() == ['S1_ESMFold'] as Set
+                    assert Math.abs(generalstats.data['S1_ESMFold'].mean_plddt - 92.33333333333333) < 1e-9
+                    assert generalstats.headers.keySet() == ['mean_plddt'] as Set
+                    assert !generalstats.data['S1_ESMFold'].containsKey('msa_depth')
+                    assert files.size() == 2
+                    assert linegraph.data.size() == 1
+                    assert linegraph.pconfig.data_labels[0].name == 'S1_ESMFold'
+                    assert linegraph.data[0]['rank_0'] == [[1, 92.2], [2, 91.8], [3, 93.0]]
+                }
+            )
+        }
+    }
+}

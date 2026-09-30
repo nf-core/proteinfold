@@ -1,7 +1,7 @@
 {
     "-profile test_colabfold_download": {
         "content": [
-            8,
+            10,
             [
                 "DBs",
                 "DBs/colabfold",
@@ -41,6 +41,12 @@
                 "colabfold/top_ranked_structures/T1026.pdb",
                 "multifasta",
                 "multifasta/input.csv",
+                "multiqc",
+                "multiqc/multiqc_data",
+                "multiqc/multiqc_data/.stub",
+                "multiqc/multiqc_plots",
+                "multiqc/multiqc_plots/.stub",
+                "multiqc/multiqc_report.html",
                 "pipeline_info",
                 "pipeline_info/nf_core_proteinfold_software_mqc_versions.yml",
                 "reports",
@@ -78,11 +84,13 @@
                 "T1024.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1026.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "input.csv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                ".stub:md5,d41d8cd98f00b204e9800998ecf8427e",
+                ".stub:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1024_colabfold_report.html:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1026_colabfold_report.html:md5,d41d8cd98f00b204e9800998ecf8427e"
             ]
         ],
-        "timestamp": "2026-09-29T11:30:57.44690009",
+        "timestamp": "2026-09-29T16:30:33.926875172",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.04.6"

@@ -184,18 +184,17 @@ workflow BOLTZ {
         .set { ch_chainwise_ipsae }
 
     // Hand MultiQC every metric this model actually produces, not just pLDDT.
-    ch_multiqc_report = collectMultiqcMetrics("boltz", [
+    ch_multiqc_metrics = collectMultiqcMetrics("boltz", [
         [ 'plddt', RUN_BOLTZ.out.plddt ],
         [ 'msa',   RUN_BOLTZ.out.msa ],
         [ 'ptm',   RUN_BOLTZ.out.ptm ],
-        [ 'iptm',  RUN_BOLTZ.out.iptm ],
-        [ 'pae',   RUN_BOLTZ.out.pae ]
+        [ 'iptm',  RUN_BOLTZ.out.iptm ]
     ])
 
     emit:
     msa             = ch_msa
     confidence      = RUN_BOLTZ.out.confidence
-    multiqc_report  = ch_multiqc_report
+    multiqc_metrics = ch_multiqc_metrics
     top_ranked_pdb  = ch_top_ranked_pdb
     pdb             = ch_pdb
     pae             = ch_pae

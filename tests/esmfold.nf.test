@@ -21,6 +21,7 @@ nextflow_pipeline {
             def stable_path = getAllFilesFromDir(params.outdir, ignoreFile: 'tests/.nftignore')
             // Early failure no need to test the rest of snapshots
             assert workflow.success
+            assert file("${params.outdir}/multiqc/multiqc_report.html").exists(): "MultiQC report missing - the reporting channel went empty"
             assertAll(
                 { assert snapshot(
                     // Number of successful tasks
@@ -33,6 +34,19 @@ nextflow_pipeline {
                     stable_path
                 ).match() }
             )
+        }
+    }
+
+    test("-profile test_esmfold --skip_multiqc") {
+        when {
+            params {
+                outdir = "$outputDir"
+                skip_multiqc = true
+            }
+        }
+        then {
+            assert workflow.success
+            assert !file("${params.outdir}/multiqc").exists()
         }
     }
 }

@@ -211,7 +211,7 @@ def modeChannel(ch, mode) {
 }
 
 //
-// Collect the per-model metric TSVs that the MultiQC plugin should discover.
+// Collect the per-model metric TSVs that the MultiQC custom content consumes.
 // `metric_channels` is a List of [name, channel] pairs. Each channel yields a
 // tuple whose [1] and [2] fields are the meta map and the metric file; pinning
 // that position is what makes this safe for emits with extra trailing fields
@@ -222,10 +222,7 @@ def modeChannel(ch, mode) {
 def collectMultiqcMetrics(model, metric_channels) {
     def acc = null
     metric_channels.each { entry ->
-        // Each metric emit is a tuple whose first two fields are [meta, path].
-        // Destructure explicitly (like HEAD did) rather than positional [1],[2],
-        // which mis-slices 2-element tuples and silently yields an empty channel.
-        def ch = entry[1].map { meta, path -> [ meta, path ] }
+        def ch = entry[1].map { it -> [ [id: model, model: model], it[1] ] }
         acc = acc == null ? ch : acc.mix(ch)
     }
     if (acc == null) {
@@ -233,9 +230,9 @@ def collectMultiqcMetrics(model, metric_channels) {
     }
     return acc
         .unique { entry -> entry[1] }
-        .groupTuple(by: [0])
-        .map { _meta, paths ->
-            [ [ model: model ], paths.flatten() ]
+        .groupTuple()
+        .map { _model, paths ->
+            [ [id: model, model: model], paths.flatten() ]
         }
 }
 

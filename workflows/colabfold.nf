@@ -36,7 +36,7 @@ workflow COLABFOLD {
     num_recycles           // int: Number of recycles for colabfold
 
     main:
-    ch_multiqc_report = channel.empty()
+    ch_multiqc_metrics = channel.empty()
 
     if (params.use_msa_server) {
         //
@@ -105,13 +105,11 @@ workflow COLABFOLD {
     modeChannel(COLABFOLD_BATCH.out.chainwise_ipsaes, "colabfold").set { ch_chainwise_ipsae_final }
 
     // Hand MultiQC every metric this model actually produces, not just pLDDT.
-    // Optional emits (ptm/iptm/pae) simply contribute nothing when absent.
-    ch_multiqc_report = collectMultiqcMetrics("colabfold", [
+    ch_multiqc_metrics = collectMultiqcMetrics("colabfold", [
         [ 'plddt', COLABFOLD_BATCH.out.plddt ],
         [ 'msa',   COLABFOLD_BATCH.out.msa ],
         [ 'ptms',  COLABFOLD_BATCH.out.ptms ],
-        [ 'iptms', COLABFOLD_BATCH.out.iptms ],
-        [ 'pae',   COLABFOLD_BATCH.out.pae ]
+        [ 'iptms', COLABFOLD_BATCH.out.iptms ]
     ])
 
     emit:
@@ -123,7 +121,7 @@ workflow COLABFOLD {
     ipsae          = ch_ipsae_final    // channel: [ id, /path/to/*_ipsae.tsv ]
     chainwise_iptm = ch_chainwise_iptm_final // channel: [ id, /path/to/*_chainwise_iptm.tsv ]
     chainwise_ipsae = ch_chainwise_ipsae_final // channel: [ id, /path/to/*_chainwise_ipsae.tsv ]
-    multiqc_report = ch_multiqc_report // channel: /path/to/multiqc_report.html
+    multiqc_metrics = ch_multiqc_metrics // channel: [ [id:..., model:...], [metric tsvs] ]
 }
 
 /*

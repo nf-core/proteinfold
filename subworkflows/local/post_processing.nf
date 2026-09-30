@@ -10,6 +10,7 @@ include { paramsSummaryMultiqc   } from '../nf-core/utils_nfcore_pipeline'
 include { methodsDescriptionText } from './utils_nfcore_proteinfold_pipeline'
 
 include { GENERATE_REPORT     } from '../../modules/local/generate_report'
+include { GENERATE_MULTIQC_CONTENTS } from '../../modules/local/generate_multiqc_contents'
 include { COMPARE_STRUCTURES  } from '../../modules/local/compare_structures'
 include { FOLDSEEK_EASYSEARCH } from '../../modules/nf-core/foldseek/easysearch/main'
 include { MULTIQC             } from '../../modules/nf-core/multiqc/main'
@@ -33,6 +34,7 @@ workflow POST_PROCESSING {
     ch_multiqc_custom_config
     multiqc_logo
     ch_multiqc_methods_description
+    ch_software_versions
     ch_top_ranked_model
 
     main:
@@ -115,48 +117,33 @@ workflow POST_PROCESSING {
         ch_multiqc_files       = ch_multiqc_files.mix(ch_workflow_summary.collectFile(name: 'workflow_summary_mqc.yaml'))
         ch_methods_description = channel.value(methodsDescriptionText(ch_multiqc_methods_description))
         ch_multiqc_files       = ch_multiqc_files.mix(ch_methods_description.collectFile(name: 'methods_description_mqc.yaml', sort: true))
+        ch_multiqc_files       = ch_multiqc_files.mix(ch_software_versions)
 
-        // Model provenance for the MultiQC plugin.
-        // The nf-core MULTIQC module stages every input file flat ('stageAs: "?/*"'), so the
-        // model-bearing parent directory that the plugin would otherwise use to infer provenance
-        // is lost at run time. We hand the plugin a tiny per-model MultiQC config file
-        // (proteinfold_model: <key>) via the --config mechanism instead of a manifest round-trip.
-        // One MULTIQC task is created per model; the file is keyed on meta.model so it joins back
-        // onto the same task. The plugin reads it with getattr(config, "proteinfold_model").
-        ch_proteinfold_model_config = ch_multiqc_rep
-            .map { meta, _paths -> [ "${meta.model}", "proteinfold_model: ${meta.model}" ] }
-            .unique { it[0] }
-            .groupTuple()
-            .map { model, rows ->
-                [ [ model: model ], rows.unique().join('\n') + '\n' ]
-            }
-            .collectFile(name: { "proteinfold_model_${it[0].model}.yml" })
-
-        // Join each model's metric tuple with its own proteinfold_model_<model>.yml so the
-        // plugin receives the model via --config. join() matches on the leading [model:...] key,
-        // so it is 1:1 and cannot fan out the way combine() would. ch_multiqc_rep already emits
-        // [ [model:..], paths ] (see collectMultiqcMetrics), so it joins directly.
-        ch_multiqc_rep_with_model_config = ch_multiqc_rep
-            .join(ch_proteinfold_model_config, by: 0)   // -> [ [model:..], paths, config_file ]
+        def mqc_generator_script = file("${projectDir}/modules/local/generate_multiqc_contents/generate_multiqc_contents.py", checkIfExists: true)
+        GENERATE_MULTIQC_CONTENTS(
+            ch_multiqc_rep,
+            mqc_generator_script
+        )
 
         MULTIQC (
-            ch_multiqc_rep_with_model_config
-                // Wrap each collected list so combine() keeps it as one tuple field.
+            GENERATE_MULTIQC_CONTENTS.out.mqc_json
                 .combine(ch_multiqc_files.collect().map { [it] })
                 .combine(ch_multiqc_config.collect().ifEmpty([]).map { [it] })
                 .combine(ch_multiqc_custom_config.collect().ifEmpty([]).map { [it] })
-                .map { meta, report_files, extra_files, config_file, custom_config_file, model_cfg ->
+                .map { meta, mqc_json, extra_files, config_files, custom_config_files ->
+                    // A single-file glob output arrives as a bare java.nio.file.Path, which is Iterable: `path + list` would splice its name components into the list.
+                    def mqc_json_files = mqc_json instanceof List ? mqc_json : [mqc_json]
                     [
                         meta,
-                        report_files + extra_files,  // All multiqc input files
-                        config_file + custom_config_file + [ model_cfg ],
+                        mqc_json_files + extra_files,
+                        (config_files ?: []) + (custom_config_files ?: []),
                         multiqc_logo ? file(multiqc_logo, checkIfExists: true) : [],
                         [],
                         []
                     ]
                 }
         )
-        ch_multiqc_report = MULTIQC.out.report.toList()
+        ch_multiqc_report = MULTIQC.out.report.map { _meta, report -> report }
     }
 
     emit:
