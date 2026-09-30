@@ -338,9 +338,12 @@ def align_structures(structures):
     return aligned_structures
 
 
+def natural_path_sort_key(path):
+    return [int(part) if part.isdigit() else part.lower() for part in re.split(r"(\d+)", str(path))]
+
+
 def pdb_to_lddt(struct_files, generate_tsv):
-    struct_files_sorted = struct_files
-    struct_files_sorted.sort()
+    struct_files_sorted = sorted(struct_files, key=natural_path_sort_key)
 
     output_lddt = []
     averages = []
@@ -521,8 +524,7 @@ generate_output_images(
 )
 
 print("generating html report...")
-structures = args.pdb
-structures.sort() #TODO: make sure sorting here doesnt break rank order
+structures = sorted(args.pdb, key=natural_path_sort_key)
 iptm_scores = read_ranked_score_tsv(args.iptm, len(structures))
 ipsae_scores = read_ranked_score_tsv(args.ipsae, len(structures))
 chainwise_iptm_scores = read_pair_score_tsv(args.chainwise_iptm, len(structures))
@@ -542,6 +544,18 @@ proteinfold_template = open(args.html_template, "r").read()
 model_names = [f"{os.path.splitext(model)[0]}.cif" for model in structures]
 models_data = [open(s, "r").read() for s in aligned_structures]
 
+
+def script_safe_json_dumps(obj):
+    """json.dumps with <, > and & escaped, so a payload containing "</script>"
+    cannot terminate the enclosing <script type="application/json"> element early."""
+    return (
+        json.dumps(obj)
+        .replace("<", "\\u003c")
+        .replace(">", "\\u003e")
+        .replace("&", "\\u0026")
+    )
+
+
 report_config = {
     "reportType": "standard",
     "sampleName": args.name,
@@ -550,10 +564,14 @@ report_config = {
     "models": model_names,
     "models_data": models_data,
     "lddt_averages": lddt_averages,
+    "iptm_scores": iptm_scores,
+    "ipsae_scores": ipsae_scores,
+    "chainwise_iptm": chainwise_iptm_matrices,
+    "chainwise_ipsae": chainwise_ipsae_matrices,
 }
 config_blob = (
     '<script type="application/json" id="report-config">'
-    f"{json.dumps(report_config)}</script>"
+    f"{script_safe_json_dumps(report_config)}</script>"
 )
 proteinfold_template = proteinfold_template.replace(
     "</head>", f"{config_blob}\n  </head>", 1
