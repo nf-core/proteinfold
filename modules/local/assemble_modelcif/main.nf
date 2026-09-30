@@ -31,6 +31,7 @@ process ASSEMBLE_MODELCIF {
     // BinaryCIF output: pass --write_binary via task.ext.args.
     script:
     def args = task.ext.args ?: ''
+    def container = task.container ?: 'None'
     """
     populate_modelcif.py \\
         --structs ${structs} \\
@@ -42,6 +43,7 @@ process ASSEMBLE_MODELCIF {
         --name ${meta.id} \\
         --prog ${meta.model} \\
         --versions_yml ${versions_yml} \\
+        --container_image ${container} \\
         --msa_tool ${meta.msa_tool ?: 'None'} \\
         $args
 

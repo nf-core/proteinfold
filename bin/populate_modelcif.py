@@ -60,6 +60,9 @@ def parse_args(args=None):
                         help='Input structure files (PDB or mmCIF), one per rank in rank order.')
     parser.add_argument('--msa',     required=True, help='*_msa.tsv from extract_metrics.py.')
     parser.add_argument('--plddt',   required=True, help='*_plddt.tsv from extract_metrics.py.')
+    parser.add_argument('--container_image', default=None,
+                        help='Container image (URI) the prediction ran in; embedded as a '
+                             'container_image software parameter (task.container).')
     parser.add_argument('--pae-embed', action='store_true', help='Embed PAE as local-pairwise QA metrics in the primary modelCIF instead of as an associated file.')
     parser.add_argument('--pae',     required=True, help='*_pae.tsv from extract_metrics.py.')
     parser.add_argument('--ptm',     required=True, help='*_ptm.tsv from extract_metrics.py.')
@@ -171,7 +174,11 @@ def _software_from_spec(spec, fallback_name, fallback_location, fallback_classif
 
 
 def _step_software(main_software, execution_software, step_cfg):
-    """Resolve protocol step software as Software or SoftwareGroup."""
+    """Resolve step software as Software, SoftwareWithParameters or SoftwareGroup.
+
+    SoftwareWithParameters is duck-typed by the dumper (.software/.parameters),
+    so singletons of it must be wrapped in a group for parameters to be written.
+    """
     use_main = step_cfg.get('use_main_software', True)
     use_execution = step_cfg.get('use_execution_software', False)
 
@@ -183,7 +190,7 @@ def _step_software(main_software, execution_software, step_cfg):
 
     if not members:
         return main_software
-    if len(members) == 1:
+    if len(members) == 1 and isinstance(members[0], modelcif.Software):
         return members[0]
     return modelcif.SoftwareGroup(members)
 
@@ -349,6 +356,7 @@ def build_modelcif(
     software_details=None,
     all_structs=None,
     plddt_scale='plddt',
+    container_image=None,
 ):
     """
     Build a modelcif.System from ranked structure files and QA metric .tsv files.
@@ -524,6 +532,16 @@ def build_modelcif(
 
     LocalPairwisePAE.software = software
 
+    # ---- Container image as a software parameter (#590) -----------------
+    if container_image:
+        software = modelcif.SoftwareWithParameters(
+            software,
+            [modelcif.SoftwareParameter(
+                'container_image', container_image,
+                'Container image the prediction was run in')],
+        )
+        system.software.append(software)
+
     # ---- One model per ranked structure ---------------------------------
     # Iterate over every provided structure file; rank_N QA metrics are
     # attached when available, but models are still emitted if extra
@@ -667,9 +685,11 @@ def main(args=None):
     software_details = _read_software_details_yml(args.software_details)
     # Nextflow emits the string 'None' when no msa_tool is known; normalise to Python None.
     msa_tool = None if args.msa_tool in (None, 'None') else args.msa_tool
+    container_image = None if args.container_image in (None, 'None', 'null') else args.container_image
     all_structs = args.all_structs or len(args.structs) > 1
     system = build_modelcif(
         plddt_scale=args.plddt_scale,
+        container_image=container_image,
         struct_files=args.structs,
         all_structs=all_structs,
         plddt_file=args.plddt,
