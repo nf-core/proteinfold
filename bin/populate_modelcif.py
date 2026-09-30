@@ -316,10 +316,15 @@ _KNOWN_PROGRAM_MODELS = {
 }
 
 
+# Accepted --param key aliases, mapped to the canonical key written to modelCIF.
+_PARAM_KEY_ALIASES = {'use_templates': 'uses_templates'}
+
+
 def _program_model_params(prog, extra=None):
     """Static model-architecture facts for *prog*; --param (extra) overrides same keys."""
+    extra = {_PARAM_KEY_ALIASES.get(k, k): v for k, v in (extra or {}).items()}
     merged = dict(_KNOWN_PROGRAM_MODELS.get(prog.lower(), {}))
-    merged.update(extra or {})
+    merged.update(extra)
     return merged
 
 

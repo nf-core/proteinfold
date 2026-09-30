@@ -2,37 +2,37 @@
     "dummy inputs produce modelcif with associated PAE": {
         "content": [
             [
-                "versions.yml:md5,9fac9ff23756b3e08a2e0377f4ca49ae"
+                "versions.yml:md5,1f7c8387ec6a86f22b3f6563f10e5d81"
             ]
         ],
-        "timestamp": "2026-05-25T12:11:37.595172755",
+        "timestamp": "2026-09-30T16:33:46.79696464",
         "meta": {
             "nf-test": "0.9.5",
-            "nextflow": "26.04.2"
+            "nextflow": "26.04.6"
         }
     },
     "dummy inputs produce modelcif with embedded PAE": {
         "content": [
             [
-                "versions.yml:md5,9fac9ff23756b3e08a2e0377f4ca49ae"
+                "versions.yml:md5,1f7c8387ec6a86f22b3f6563f10e5d81"
             ]
         ],
-        "timestamp": "2026-05-25T12:11:43.541901356",
+        "timestamp": "2026-09-30T16:34:45.84020365",
         "meta": {
             "nf-test": "0.9.5",
-            "nextflow": "26.04.2"
+            "nextflow": "26.04.6"
         }
     },
     "dummy inputs produce binaryCIF": {
         "content": [
             [
-                "versions.yml:md5,9fac9ff23756b3e08a2e0377f4ca49ae"
+                "versions.yml:md5,1f7c8387ec6a86f22b3f6563f10e5d81"
             ]
         ],
-        "timestamp": "2026-05-25T12:11:49.546342877",
+        "timestamp": "2026-09-30T16:35:44.31852876",
         "meta": {
             "nf-test": "0.9.5",
-            "nextflow": "26.04.2"
+            "nextflow": "26.04.6"
         }
     }
 }
