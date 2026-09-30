@@ -25,6 +25,15 @@ defaults:
       use_main_software: true
       use_execution_software: false
 
+    # Optional: uncomment to add a TemplateSearchStep upstream of the MSA step
+    # (a template_search version is expected from the run module's topic: channel).
+    # template_search_step:
+    #   name: template search
+    #   details: PDB template identification from the sequence database
+    #   step_details: Structural templates retrieved by sequence similarity
+    #   use_main_software: true
+    #   use_execution_software: false
+
     modeling_step:
       name: Structure prediction
       details: Coordinate generation from sequence and model features
@@ -36,6 +45,13 @@ programs:
     modeling_software:
       name: AlphaFold2
       location: https://github.com/google-deepmind/alphafold
+    protocol:
+      template_search_step:
+        name: template search
+        details: PDB template identification from the sequence database
+        step_details: Structural templates retrieved by sequence similarity
+        use_main_software: true
+        use_execution_software: false
 
   alphafold3:
     modeling_software:

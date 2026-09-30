@@ -67,6 +67,10 @@ def parse_args(args=None):
                         help='*_seed.tsv (rank_N\tseed) or a single integer. Multi-seed programs '
                              '(e.g. alphafold3) get one seed per model; single-seed programs get one '
                              'shared parameter. Falls back to inferring seeds from structure filenames.')
+    parser.add_argument('--param', action='append', default=[], metavar='KEY=VALUE',
+                        help='Extra model parameter(s) embedded as SoftwareParameters on the modeling '
+                             'software (e.g. --param use_templates=true --param model_preset=monomer_ptm). '
+                             'Overrides built-in per-program facts with the same key.')
     parser.add_argument('--pae-embed', action='store_true', help='Embed PAE as local-pairwise QA metrics in the primary modelCIF instead of as an associated file.')
     parser.add_argument('--pae',     required=True, help='*_pae.tsv from extract_metrics.py.')
     parser.add_argument('--ptm',     required=True, help='*_ptm.tsv from extract_metrics.py.')
@@ -295,6 +299,48 @@ def _read_iptm_tsv(iptm_tsv):
     return _read_ranked_score_tsv(iptm_tsv)
 
 
+_KNOWN_PROGRAM_MODELS = {
+    # Verified against upstream docs/repos: AF2 has recycling and (in its
+    # params) template use; AF3 runs template search in its data pipeline
+    # (MUSE not documented - do not claim it); ColabFold adds recycling
+    # (extra_msgs), templates (mmseqs setup) and amber relaxation.
+    'alphafold2':     {'has_recycling': True,  'uses_templates': True},
+    'alphafold3':     {'has_recycling': False, 'uses_templates': True},
+    'helixfold3':     {'has_recycling': False, 'uses_templates': True},
+    'colabfold':      {'has_recycling': True,  'uses_templates': True,
+                      'has_relaxation': True},
+    'esmfold':        {'has_recycling': False, 'uses_templates': False},
+    'boltz':          {'has_recycling': False, 'uses_templates': False},
+    'rosettafold2na': {'has_recycling': False, 'uses_templates': False},
+    'rosettafold_all_atom': {'has_recycling': False, 'uses_templates': False},
+}
+
+
+def _program_model_params(prog, extra=None):
+    """Static model-architecture facts for *prog*; --param (extra) overrides same keys."""
+    merged = dict(_KNOWN_PROGRAM_MODELS.get(prog.lower(), {}))
+    merged.update(extra or {})
+    return merged
+
+
+def _coerce_param(value):
+    """Coerce CLI/YAML strings to the types modelcif.SoftwareParameter accepts."""
+    if not isinstance(value, str):
+        return value
+    low = value.strip().lower()
+    if low in ('true', 'yes'):
+        return True
+    if low in ('false', 'no'):
+        return False
+    try:
+        return int(value)
+    except ValueError:
+        try:
+            return float(value)
+        except ValueError:
+            return value
+
+
 def _read_seed_values(seed_arg, struct_files, num_ranks):
     """Resolve per-rank seed ints from --seed (a rank_N-keyed TSV or an int), else filenames."""
     if seed_arg is not None:
@@ -393,6 +439,7 @@ def build_modelcif(
     plddt_scale='plddt',
     container_image=None,
     seed_values=None,
+    model_params=None,
 ):
     """
     Build a modelcif.System from ranked structure files and QA metric .tsv files.
@@ -568,7 +615,7 @@ def build_modelcif(
 
     LocalPairwisePAE.software = software
 
-    # ---- Software parameters: container image (#590) + single seed ------
+    # ---- Software parameters: container image (#590), seed, model params --
     # modelcif only writes _ma_software_parameter for SoftwareWithParameters
     # discovered inside a SoftwareGroup (System._before_write flattens bare
     # ones; QA metrics still reference the plain Software).
@@ -581,6 +628,9 @@ def build_modelcif(
     if len(uniq_seeds) == 1:
         params.append(modelcif.SoftwareParameter(
             'seed', uniq_seeds[0], 'Random seed for the prediction run'))
+    for key, value in _program_model_params(prog, model_params).items():
+        params.append(modelcif.SoftwareParameter(key, _coerce_param(value),
+                                                 f'{sw_name} model parameter'))
     if params:
         system.software_groups.append(
             modelcif.SoftwareGroup([modelcif.SoftwareWithParameters(software, params)]))
@@ -680,6 +730,25 @@ def build_modelcif(
 
     msa_step_cfg = protocol_cfg.get('msa_step', {})
     modeling_step_cfg = protocol_cfg.get('modeling_step', {})
+    template_search_cfg = protocol_cfg.get('template_search_step')
+
+    # Optional template search step (e.g. AF2/AF3-family programs):
+    # sequence database -> templates, sitting upstream of the coevolution MSA.
+    msa_input_data = modelcif.data.DataGroup(list(seen_seqs.values()))
+    if template_search_cfg:
+        template_data = modelcif.data.Data(
+            'Templates',
+            details=template_search_cfg.get('details', 'Sequence database templates'),
+        )
+        system.data.append(template_data)
+        template_search = modelcif.protocol.TemplateSearchStep(
+            input_data=msa_input_data,
+            output_data=template_data,
+            name=template_search_cfg.get('name', 'template search'),
+            details=template_search_cfg.get('step_details'),
+            software=_step_software(software, execution_software, template_search_cfg),
+        )
+        protocol.steps.append(template_search)
 
     msa_data = modelcif.data.Data(
         'Coevolution MSA',
@@ -687,7 +756,7 @@ def build_modelcif(
     )
     system.data.append(msa_data)
     msa_step = modelcif.protocol.CoevolutionMSAStep(
-        input_data=modelcif.data.DataGroup(list(seen_seqs.values())),
+        input_data=msa_input_data,
         output_data=msa_data,
         name=msa_step_cfg.get('name', msa_tool),
         details=msa_step_cfg.get('details'),
@@ -742,11 +811,19 @@ def main(args=None):
     container_image = None if args.container_image in (None, 'None', 'null') else args.container_image
     seed_arg = None if args.seed in (None, 'None', 'null') else args.seed
     seed_values = _read_seed_values(seed_arg, args.structs, len(args.structs))
+    extra_params = {}
+    for item in args.param:
+        if '=' not in item:
+            raise ValueError(f"--param expects KEY=VALUE, got {item!r}")
+        key, _, value = item.partition('=')
+        extra_params[key.strip()] = _coerce_param(value)
+    prog_params = extra_params  # merged over built-in facts in build_modelcif
     all_structs = args.all_structs or len(args.structs) > 1
     system = build_modelcif(
         plddt_scale=args.plddt_scale,
         container_image=container_image,
         seed_values=seed_values,
+        model_params=prog_params,
         struct_files=args.structs,
         all_structs=all_structs,
         plddt_file=args.plddt,
