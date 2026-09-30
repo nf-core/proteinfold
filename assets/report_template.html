@@ -251,6 +251,27 @@
                 Average pLDDT:
                 <span id="lddt-average" class="font-normal"></span>
               </div>
+              <div id="iptm-score-row">
+                ipTM:
+                <span id="iptm-score" class="font-normal"></span>
+              </div>
+              <div id="ipsae-score-row">
+                Max ipSAE:
+                <span id="ipsae-score" class="font-normal"></span>
+              </div>
+            </div>
+          </div>
+          <div id="interface_scores_container" class="hidden">
+            <div class="text-2xl font-bold tracking-tight text-gray-900">Interface Scores</div>
+            <div class="mt-2 grid gap-6 xl:grid-cols-2">
+              <div class="shadow-md p-6 bg-white rounded border">
+                <div class="font-semibold text-gray-900 mb-3">Chainwise iPTM</div>
+                <div id="chainwise-iptm-table" class="text-sm"></div>
+              </div>
+              <div class="shadow-md p-6 bg-white rounded border">
+                <div class="font-semibold text-gray-900 mb-3">Chainwise ipSAE</div>
+                <div id="chainwise-ipsae-table" class="text-sm"></div>
+              </div>
             </div>
           </div>
           <!-- Directions -->
@@ -360,12 +381,12 @@
                   <button
                     type="button"
                     class="w-28 rounded bg-green-600 py-3 text-sm font-semibold text-white shadow-md hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
-                    onclick="downloadPdb()"
+                    onclick="downloadStructure()"
                   >
                     <span class="text-white mr-0.5">
                       <i class="bi bi-file-earmark-arrow-down-fill"></i>
                     </span>
-                    PDB
+                    <span id="structure-download-label">Structure</span>
                   </button>
                 </div>
               </div>
@@ -509,6 +530,10 @@
       models: [],
       models_data: [],
       lddt_averages: [],
+      iptm_scores: [],
+      ipsae_scores: [],
+      chainwise_iptm: [],
+      chainwise_ipsae: [],
     };
 
     // Load report configuration from embedded JSON
@@ -528,6 +553,14 @@
     const PROGRAM_NAME = config.programName;
     const SAMPLE_NAME = config.sampleName;
     const STRUCT_FORMAT = config.structFormat;
+    const IPTM_SCORES = config.iptm_scores;
+    const IPSAE_SCORES = config.ipsae_scores;
+    const CHAINWISE_IPTM_SCORES = config.chainwise_iptm;
+    const CHAINWISE_IPSAE_SCORES = config.chainwise_ipsae;
+
+    const hasScalarScore = (score) => score !== undefined && score !== null && score !== "" && score !== "n/a";
+
+    const modelLabel = (model) => model.replace(/\.(cif|mmcif|pdb)$/i, "");
 
     let stage;
     let nonceSetModel;
@@ -561,6 +594,11 @@
       window.addEventListener("resize", () => stage.handleResize());
 
       document.getElementById("lddt-average").textContent = LDDT_AVERAGES[0];
+      updateInterfaceSummary(0);
+      updatePairScoreTables(0);
+
+      document.getElementById("structure-download-label").textContent =
+        STRUCT_FORMAT.toUpperCase() === "CIF" ? "CIF" : "Structure";
 
       loadModel();
       generateButtons();
@@ -582,6 +620,8 @@
     const setModel = (ix) => {
       state.model = ix;
       document.getElementById("lddt-average").textContent = LDDT_AVERAGES[ix];
+      updateInterfaceSummary(ix);
+      updatePairScoreTables(ix);
       stage.removeComponent(state.modelObject);
       setLoading(1);
 
@@ -594,6 +634,85 @@
           loadModel().then(updateButtons);
         }
       }, MAX_CLICK_INTERVAL_MS);
+    };
+
+    const updateInterfaceSummary = (ix) => {
+      const iptmScore = IPTM_SCORES[ix];
+      const ipsaeScore = IPSAE_SCORES[ix];
+      const hasIptm = hasScalarScore(iptmScore);
+      const hasIpsae = hasScalarScore(ipsaeScore);
+
+      document.getElementById("iptm-score-row").classList.toggle("hidden", !hasIptm);
+      document.getElementById("ipsae-score-row").classList.toggle("hidden", !hasIpsae);
+      document.getElementById("iptm-score").textContent = hasIptm ? iptmScore : "";
+      document.getElementById("ipsae-score").textContent = hasIpsae ? ipsaeScore : "";
+    };
+
+    const renderScoreMatrix = (containerId, matrix, emptyText) => {
+      const container = document.getElementById(containerId);
+      const chains = matrix?.chains || [];
+      const rows = matrix?.rows || [];
+
+      // Chain labels and score values are externally derived (structure chain
+      // ids), so they are only ever assigned via textContent below - never
+      // interpolated into HTML strings, which would allow injection.
+      if (!chains.length || !rows.length) {
+        const empty = document.createElement("div");
+        empty.className = "text-gray-500";
+        empty.textContent = emptyText;
+        container.replaceChildren(empty);
+        return false;
+      }
+
+      const table = document.createElement("table");
+      table.className = "w-full text-sm";
+
+      const thead = document.createElement("thead");
+      const headRow = document.createElement("tr");
+      headRow.className = "text-gray-500";
+      const corner = document.createElement("th");
+      corner.className = "pb-2 pr-4 text-left font-medium";
+      corner.textContent = "Chain";
+      headRow.appendChild(corner);
+      chains.forEach((chain) => {
+        const th = document.createElement("th");
+        th.className = "pb-2 px-3 text-center font-medium font-mono";
+        th.textContent = chain;
+        headRow.appendChild(th);
+      });
+      thead.appendChild(headRow);
+
+      const tbody = document.createElement("tbody");
+      rows.forEach((row, rowIdx) => {
+        const tr = document.createElement("tr");
+        tr.className = "border-t border-gray-200";
+        const rowHead = document.createElement("th");
+        rowHead.className = "py-2 pr-4 font-medium font-mono text-left";
+        rowHead.textContent = chains[rowIdx];
+        tr.appendChild(rowHead);
+        row.forEach((value, colIdx) => {
+          const td = document.createElement("td");
+          td.className = `py-2 px-3 text-center ${value ? "text-gray-900 font-mono" : "text-gray-400"}`;
+          td.textContent = value || (rowIdx === colIdx ? "\u2014" : "");
+          tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
+      });
+
+      table.appendChild(thead);
+      table.appendChild(tbody);
+
+      const wrapper = document.createElement("div");
+      wrapper.className = "overflow-x-auto";
+      wrapper.appendChild(table);
+      container.replaceChildren(wrapper);
+      return true;
+    };
+
+    const updatePairScoreTables = (ix) => {
+      const hasIptm = renderScoreMatrix("chainwise-iptm-table", CHAINWISE_IPTM_SCORES[ix], "No chainwise iPTM");
+      const hasIpsae = renderScoreMatrix("chainwise-ipsae-table", CHAINWISE_IPSAE_SCORES[ix], "No chainwise ipSAE");
+      document.getElementById("interface_scores_container").classList.toggle("hidden", !(hasIptm || hasIpsae));
     };
 
     const nextModel = () => {
@@ -759,16 +878,18 @@
         antialias: true,
       };
       stage.makeImage(params).then((blob) => {
-        const name = MODELS[state.model].replace(/ /g, "_") + ".png";
+        const name = modelLabel(MODELS[state.model]) + ".png";
         const url = URL.createObjectURL(blob);
         makeDownload(url, name);
       });
     };
 
-    const downloadPdb = () => {
+    const downloadStructure = () => {
       const blob = new Blob([uri(state.model)], { type: "text/plain" });
       const url = URL.createObjectURL(blob);
-      const name = `${SAMPLE_NAME}_${MODELS[state.model].replace(/ /g, "_")}.${STRUCT_FORMAT}`;
+      const name = SAMPLE_NAME
+        ? `${SAMPLE_NAME}_${modelLabel(MODELS[state.model])}.${STRUCT_FORMAT}`
+        : modelLabel(MODELS[state.model]) + `.${STRUCT_FORMAT}`;
       makeDownload(url, name);
     };
 
@@ -799,22 +920,15 @@
           "selected group btn btn-canvas w-24 rounded bg-white text-sm font-semibold text-white hover:text-gray-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-800";
         button.id = safeId;
         button.onclick = () => setModel(index);
-        button.innerHTML = `
-            <img
-              id="image${index}"
-              class="inline-block w-20 h-20 border-2 border-gray-300 group-hover:border-gray-400 rounded-md mb-2"
-            />
-          `;
-        container.appendChild(button);
 
-        const label = model;
+        const image = document.createElement("img");
+        image.id = `image${index}`;
+        image.className = "inline-block w-20 h-20 border-2 border-gray-300 group-hover:border-gray-400 rounded-md mb-2";
+        button.appendChild(image);
+
+        const label = modelLabel(model);
         if (label.length < 18) {
-          button.innerHTML = `
-              <img
-                id="image${index}"
-                class="inline-block w-20 h-20 border-2 border-gray-300 group-hover:border-gray-400 rounded-md mb-2"
-              />
-            ${label}`;
+          button.appendChild(document.createTextNode(label));
         } else {
           const tooltip = document.createElement("div");
           tooltip.id = `tooltip-model-${index}`;
@@ -834,6 +948,7 @@
             });
           });
         }
+        container.appendChild(button);
       });
     };
 
