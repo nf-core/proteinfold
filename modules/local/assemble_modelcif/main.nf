@@ -14,7 +14,8 @@ process ASSEMBLE_MODELCIF {
     // and removal of the averaging in EXTRACT_METRICS
     // TODO: A space will be made for path(ipsae) once 1) it's captured 2) an ipsae custom class extends the modelCIF construction
     // Rank mapping is guaranteed: extract_metrics.py emits rank_0..N; populate_modelcif.py rejects TSVs without them.
-    // TODO: meta.seed? (#588)
+    // Seed: --seed takes a {name}_seed.tsv (see assets/DUMMY_SEED.tsv) or an int; falls back to filename inference
+    // TODO: consume meta.seed once #615 wiring carries it (#588)
     // TODONT: database version injection. This can come out of versions.yml, but leave that to a cleaner database handling implementation.
 
     output:

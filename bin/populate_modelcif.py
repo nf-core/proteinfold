@@ -63,6 +63,10 @@ def parse_args(args=None):
     parser.add_argument('--container_image', default=None,
                         help='Container image (URI) the prediction ran in; embedded as a '
                              'container_image software parameter (task.container).')
+    parser.add_argument('--seed', default=None,
+                        help='*_seed.tsv (rank_N\tseed) or a single integer. Multi-seed programs '
+                             '(e.g. alphafold3) get one seed per model; single-seed programs get one '
+                             'shared parameter. Falls back to inferring seeds from structure filenames.')
     parser.add_argument('--pae-embed', action='store_true', help='Embed PAE as local-pairwise QA metrics in the primary modelCIF instead of as an associated file.')
     parser.add_argument('--pae',     required=True, help='*_pae.tsv from extract_metrics.py.')
     parser.add_argument('--ptm',     required=True, help='*_ptm.tsv from extract_metrics.py.')
@@ -291,6 +295,37 @@ def _read_iptm_tsv(iptm_tsv):
     return _read_ranked_score_tsv(iptm_tsv)
 
 
+def _read_seed_values(seed_arg, struct_files, num_ranks):
+    """Resolve per-rank seed ints from --seed (a rank_N-keyed TSV or an int), else filenames."""
+    if seed_arg is not None:
+        if os.path.exists(seed_arg):
+            seeds = {}
+            with open(seed_arg) as fh:
+                for row in csv.reader(fh, delimiter='\t'):
+                    if len(row) < 2 or row[0].strip().lower() == 'rank':
+                        continue
+                    rank, value = row[0].strip(), row[1].strip()
+                    if not rank.startswith('rank_'):
+                        try:
+                            rank = f'rank_{int(rank)}'
+                        except ValueError:
+                            continue
+                    try:
+                        seeds[rank] = int(value)
+                    except ValueError:
+                        continue
+            return [seeds.get(f'rank_{i}') for i in range(num_ranks)]
+        try:
+            return [int(seed_arg)] * num_ranks
+        except ValueError:
+            raise ValueError(f"--seed must be an integer or a *_seed.tsv path, got {seed_arg!r}")
+    try:
+        from utils import infer_model_seed
+    except ImportError:
+        return [None] * num_ranks
+    return [infer_model_seed(f) for f in struct_files]
+
+
 # ---------------------------------------------------------------------------
 # modelcif Model subclass
 # ---------------------------------------------------------------------------
@@ -357,6 +392,7 @@ def build_modelcif(
     all_structs=None,
     plddt_scale='plddt',
     container_image=None,
+    seed_values=None,
 ):
     """
     Build a modelcif.System from ranked structure files and QA metric .tsv files.
@@ -532,15 +568,22 @@ def build_modelcif(
 
     LocalPairwisePAE.software = software
 
-    # ---- Container image as a software parameter (#590) -----------------
+    # ---- Software parameters: container image (#590) + single seed ------
+    # modelcif only writes _ma_software_parameter for SoftwareWithParameters
+    # discovered inside a SoftwareGroup (System._before_write flattens bare
+    # ones; QA metrics still reference the plain Software).
+    params = []
     if container_image:
-        software = modelcif.SoftwareWithParameters(
-            software,
-            [modelcif.SoftwareParameter(
-                'container_image', container_image,
-                'Container image the prediction was run in')],
-        )
-        system.software.append(software)
+        params.append(modelcif.SoftwareParameter(
+            'container_image', container_image,
+            'Container image the prediction was run in'))
+    uniq_seeds = sorted({s for s in (seed_values or []) if s is not None})
+    if len(uniq_seeds) == 1:
+        params.append(modelcif.SoftwareParameter(
+            'seed', uniq_seeds[0], 'Random seed for the prediction run'))
+    if params:
+        system.software_groups.append(
+            modelcif.SoftwareGroup([modelcif.SoftwareWithParameters(software, params)]))
 
     # ---- One model per ranked structure ---------------------------------
     # Iterate over every provided structure file; rank_N QA metrics are
@@ -615,6 +658,17 @@ def build_modelcif(
 
         models.append(model)
 
+    # ---- Random seed(s) (#588) -------------------------------------------
+    # seed_values[i] is the seed behind rank_i (None entries are skipped).
+    # Multi-seed programs (e.g. alphafold3 seed x sample grids) get one
+    # 'seed' shown per model via the model name (ChimeraX model header;
+    # a per-model category would need a patched dumper). Single-seed runs
+    # are covered by the shared software parameter above.
+    if seed_values and len(struct_files) == len(seed_values):
+        for model, seed in zip(models, seed_values):
+            if seed is not None:
+                model.name = f'{model.name} seed {seed}'
+
     # One model per inference in a single ModelGroup: distinct ordinal_id and
     # pdbx_model_number per model (verified, modelcif 1.7), so ChimeraX opens
     # them as separate #X.Y models sharing protocol/software metadata.
@@ -686,10 +740,13 @@ def main(args=None):
     # Nextflow emits the string 'None' when no msa_tool is known; normalise to Python None.
     msa_tool = None if args.msa_tool in (None, 'None') else args.msa_tool
     container_image = None if args.container_image in (None, 'None', 'null') else args.container_image
+    seed_arg = None if args.seed in (None, 'None', 'null') else args.seed
+    seed_values = _read_seed_values(seed_arg, args.structs, len(args.structs))
     all_structs = args.all_structs or len(args.structs) > 1
     system = build_modelcif(
         plddt_scale=args.plddt_scale,
         container_image=container_image,
+        seed_values=seed_values,
         struct_files=args.structs,
         all_structs=all_structs,
         plddt_file=args.plddt,

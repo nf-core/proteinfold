@@ -1,6 +1,16 @@
 import importlib.util
+import re
 import numpy as np
 bio_is_installed = importlib.util.find_spec("Bio") is not None
+
+
+def infer_model_seed(file_path):
+    """Infer the random seed from a structure filename (AF3 'seed-N', AF2/CF '_seed_NNN')."""
+    for pattern in (r"seed[-_](\d+)", r"_model_(\d+)_seed"):
+        match = re.search(pattern, str(file_path).replace("\\", "/"))
+        if match:
+            return int(match.group(1))
+    return None
 
 def _convert_plddt_to_100(res_plddt):
     if (res_plddt < 1):  # Converting to a [0,100] range
