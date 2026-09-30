@@ -43,6 +43,17 @@ _SOFTWARE_INFO = {
     'rosettafold_all_atom': ('RoseTTAFold-All-Atom',  'https://github.com/baker-laboratory/RoseTTAFold-All-Atom', 'protein structure prediction'),
 }
 
+# Tools that can be attributed to the template search step (#579); version,
+# when known, comes from the run module's topic: channel via --template_version
+# or the template_search_step spec.
+_TEMPLATE_SEARCH_TOOLS = {
+    'hhsearch':    ('HHsearch',    'https://github.com/soedinglab/hh-suite',      'template search'),
+    'hhblits':     ('HHblits',     'https://github.com/soedinglab/hh-suite',      'sequence search'),
+    'jackhmmer':   ('JackHMMER',   'https://www.ebi.ac.uk/Tools/hmmer/search/jackhmmer', 'sequence search'),
+    'mmseqs2':     ('MMseqs2',     'https://github.com/soedinglab/MMseqs2',       'sequence search'),
+    'alphafolddbsearch': ('AlphaFold DB search', 'https://alphafold.ebi.ac.uk', 'template search'),
+}
+
 # --plddt-scale values -> modelcif metric types. Values pass through verbatim;
 # the scale only declares the metric_name.
 _PLDDT_METRIC_CLASSES = {
@@ -71,6 +82,12 @@ def parse_args(args=None):
                         help='Extra model parameter(s) embedded as SoftwareParameters on the modeling '
                              'software (e.g. --param use_templates=true --param model_preset=monomer_ptm). '
                              'Overrides built-in per-program facts with the same key.')
+    parser.add_argument('--template_software', default=None,
+                        help='Tool that performed the template search (e.g. hhsearch, mmseqs2); '
+                             'attributed to the TemplateSearchStep. Matches the topic: '
+                             'versions emission pattern val("template_search"), val(tool).')
+    parser.add_argument('--template_version', default=None,
+                        help='Version of --template_software, from the run module topic: channel.')
     parser.add_argument('--pae-embed', action='store_true', help='Embed PAE as local-pairwise QA metrics in the primary modelCIF instead of as an associated file.')
     parser.add_argument('--pae',     required=True, help='*_pae.tsv from extract_metrics.py.')
     parser.add_argument('--ptm',     required=True, help='*_ptm.tsv from extract_metrics.py.')
@@ -445,6 +462,8 @@ def build_modelcif(
     container_image=None,
     seed_values=None,
     model_params=None,
+    template_software=None,
+    template_version=None,
 ):
     """
     Build a modelcif.System from ranked structure files and QA metric .tsv files.
@@ -746,12 +765,33 @@ def build_modelcif(
             details=template_search_cfg.get('details', 'Sequence database templates'),
         )
         system.data.append(template_data)
+        # Attribute the step to the tool that actually searched templates
+        # (#579): YAML template_search_software.name (or the topic: channel
+        # emission passed via --template_software); fall back to the modeling
+        # software group when the tool is unknown.
+        tpl_sw_cfg = template_search_cfg.get('template_search_software', {})
+        tpl_tool = (tpl_sw_cfg.get('name') or template_software or '').lower()
+        if tpl_tool in _TEMPLATE_SEARCH_TOOLS:
+            name, loc, cls = _TEMPLATE_SEARCH_TOOLS[tpl_tool]
+            tpl_software = modelcif.Software(
+                name=tpl_sw_cfg.get('name_display', name),
+                classification=tpl_sw_cfg.get('classification', cls),
+                description=tpl_sw_cfg.get('description', f'{name} template/sequence search'),
+                location=tpl_sw_cfg.get('location', loc),
+                type=tpl_sw_cfg.get('type', 'program'),
+                version=tpl_sw_cfg.get('version') or template_version,
+            )
+            system.software.append(tpl_software)
+            tpl_step_sw = _step_software(tpl_software, execution_software, dict(
+                template_search_cfg, use_main_software=True))
+        else:
+            tpl_step_sw = _step_software(software, execution_software, template_search_cfg)
         template_search = modelcif.protocol.TemplateSearchStep(
             input_data=msa_input_data,
             output_data=template_data,
             name=template_search_cfg.get('name', 'template search'),
             details=template_search_cfg.get('step_details'),
-            software=_step_software(software, execution_software, template_search_cfg),
+            software=tpl_step_sw,
         )
         protocol.steps.append(template_search)
 
@@ -829,6 +869,8 @@ def main(args=None):
         container_image=container_image,
         seed_values=seed_values,
         model_params=prog_params,
+        template_software=None if args.template_software in (None, 'None') else args.template_software,
+        template_version=None if args.template_version in (None, 'None') else args.template_version,
         struct_files=args.structs,
         all_structs=all_structs,
         plddt_file=args.plddt,
