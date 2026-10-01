@@ -12,7 +12,7 @@ process MULTIFASTA_TO_CSV {
 
     output:
     tuple val(meta), path("input.csv"), emit: input_csv
-    tuple val("${task.process}"), val('sed'), eval('sed --version 2>&1 | sed "s/^.*GNU sed) //; s/ .*$//"'), emit: versions_sed, topic: versions
+    tuple val("${task.process}"), val('sed'), eval('sed --version 2>&1 | sed -n "s/^.*GNU sed) //p"'), emit: versions_sed, topic: versions
 
     when:
     task.ext.when == null || task.ext.when

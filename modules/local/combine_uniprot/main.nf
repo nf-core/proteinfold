@@ -12,7 +12,7 @@ process COMBINE_UNIPROT {
 
     output:
     path ('uniprot.fasta'), emit: ch_db
-    tuple val("${task.process}"), val('sed'), eval('sed --version 2>&1 | sed "s/^.*GNU sed) //; s/ .*$//"'), emit: versions_sed, topic: versions
+    tuple val("${task.process}"), val('sed'), eval('sed --version 2>&1 | sed -n "s/^.*GNU sed) //p"'), emit: versions_sed, topic: versions
 
     when:
     task.ext.when == null || task.ext.when

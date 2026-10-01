@@ -12,7 +12,7 @@ process ZSTD_DECOMPRESS {
 
     output:
     tuple val(meta), path("$prefix"), emit: decompressed
-    tuple val("${task.process}"), val('zstd'), eval('zstd --version 2>&1 | grep -oP "v\\d+\\.\\d+\\.\\d+"'), emit: versions_zstd, topic: versions
+    tuple val("${task.process}"), val('zstd'), eval('zstd --version 2>&1 | grep -oP "v\\d+\\.\\d+\\.\\d+" | head -1'), emit: versions_zstd, topic: versions
 
     when:
     task.ext.when == null || task.ext.when

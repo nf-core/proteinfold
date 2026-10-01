@@ -14,7 +14,7 @@ process MMSEQS_COLABFOLDSEARCH {
     tuple val(meta), path("**.a3m"), emit: a3m
     tuple val(meta), path("**.json"), emit: json
     tuple val("${task.process}"), val('colabfold_search'), eval("pip list | grep \"^colabfold\" | awk '{print \\\$2}' 2>/dev/null || echo \"unknown\""), emit: versions_colabfold_search, topic: versions
-    tuple val("${task.process}"), val('mmseqs'), eval("mmseqs version"), emit: versions_mmseqs, topic: versions
+    tuple val("${task.process}"), val('mmseqs'), eval("mmseqs version 2>/dev/null | head -1"), emit: versions_mmseqs, topic: versions
 
     when:
     task.ext.when == null || task.ext.when
