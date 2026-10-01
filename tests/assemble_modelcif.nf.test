@@ -3,7 +3,6 @@ nextflow_process {
     name "Test metrics are inserted properly by ASSEMBLE_MODELCIF process"
     script "../modules/local/assemble_modelcif/main.nf"
     process "ASSEMBLE_MODELCIF"
-    outdir = "$outputDir"
 
     tag "assemble_modelcif"
     config "./assemble_modelcif_software.config"
@@ -312,6 +311,42 @@ nextflow_process {
             assertAll(
                 { assert mmcif.contains("_ma_software_parameter") },
                 { assert mmcif.contains("integer seed 0") }
+            )
+            assert process.out.versions.size() == 1
+        }
+    }
+
+    test("chainwise metrics are skipped for monomer inputs") {
+        config "./assemble_modelcif_chainwise.config"
+
+        when {
+            process {
+                """
+                input[0] = [
+                    [ id: 'test_cw', model: 'alphafold2', msa_tool: 'jackhmmer' ],
+                    [
+                        file("$projectDir/assets/DUMMY_MMCIF_rank_0.mmcif", checkIfExists: true),
+                        file("$projectDir/assets/DUMMY_MMCIF_rank_1.mmcif", checkIfExists: true),
+                        file("$projectDir/assets/DUMMY_MMCIF_rank_2.mmcif", checkIfExists: true),
+                        file("$projectDir/assets/DUMMY_MMCIF_rank_3.mmcif", checkIfExists: true),
+                        file("$projectDir/assets/DUMMY_MMCIF_rank_4.mmcif", checkIfExists: true)
+                    ],
+                    file("$projectDir/assets/DUMMY_MSA.tsv",         checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_PLDDT.tsv",       checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_PAE.tsv",         checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_PTM.tsv",         checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_IPTM.tsv",        checkIfExists: true),
+                    file("$projectDir/assets/NO_FILE",               checkIfExists: true)
+                ]
+                """
+            }
+        }
+
+        then {
+            def mmcif = path(process.out.modelcif[0][1]).text
+            assertAll(
+                { assert !mmcif.contains("_ma_qa_metric_feature") },
+                { assert mmcif.contains("LocalPLDDT") }
             )
             assert process.out.versions.size() == 1
         }

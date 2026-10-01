@@ -16,6 +16,7 @@ import argparse
 import csv
 import os
 import sys
+import warnings
 import yaml
 
 import modelcif
@@ -78,6 +79,8 @@ def parse_args(args=None):
                         help='*_seed.tsv (rank_N\tseed) or a single integer. Multi-seed programs '
                              '(e.g. alphafold3) get one seed per model; single-seed programs get one '
                              'shared parameter. Falls back to inferring seeds from structure filenames.')
+    parser.add_argument('--chainwise_iptm', default=None, help='*_chainwise_iptm.tsv (multichain only).')
+    parser.add_argument('--chainwise_ipsae', default=None, help='*_chainwise_ipsae.tsv (multichain only).')
     parser.add_argument('--param', action='append', default=[], metavar='KEY=VALUE',
                         help='Extra model parameter(s) embedded as SoftwareParameters on the modeling '
                              'software (e.g. --param use_templates=true --param model_preset=monomer_ptm). '
@@ -308,6 +311,57 @@ def _read_pae_tsv(pae_tsv):
     return matrix
 
 
+def _read_chainwise_tsv(tsv_file):
+    """
+    Parse a *_chainwise_{iptm,ipsae}.tsv written by extract_metrics.py.
+
+    Transposed layout: header row is ['0', '1', '2', ...] (model labels);
+    subsequent rows are ['X:Y', v0, v1, ...] with X:Y chain pair labels.
+    Diagonal X:X = per-chain pTM; off-diagonal X:Y = interface ipTM/ipsae.
+    Empty/nan cells are skipped.
+
+    Returns {rank_key: {(chain_a, chain_b): value}}.
+    """
+    with open(tsv_file) as fh:
+        rows = [r for r in csv.reader(fh, delimiter='\t') if r and any(x.strip() for x in r)]
+    if len(rows) < 2:
+        raise ValueError(f"Empty chainwise file: {tsv_file}")
+    # tolerate an optional blank label cell before the model columns
+    header = rows[0]
+    if len(header) == len(rows[1]):
+        header = header[1:]
+    model_cols = [c.strip() for c in header if c.strip() != '']
+    if not model_cols:
+        raise ValueError(f"No model columns in chainwise file: {tsv_file}")
+    for m in model_cols:
+        try:
+            int(m)
+        except ValueError:
+            raise ValueError(f"Invalid model column label {m!r} in {tsv_file}")
+    out = {}
+    for row in rows[1:]:
+        label = row[0].strip()
+        parts = label.split(':')
+        if len(parts) != 2 or not all(parts):
+            raise ValueError(f"Invalid chain pair label {label!r} in {tsv_file}")
+        ca, cb = parts
+        vals = row[1:]
+        if len(vals) != len(model_cols):
+            raise ValueError(
+                f"Row {label!r} in {tsv_file} has {len(vals)} values for {len(model_cols)} model columns")
+        for mk, v in zip(model_cols, vals):
+            v = v.strip()
+            if not v or v.lower() in ('n/a', 'nan', '.', 'none'):
+                continue
+            try:
+                val = float(v)
+            except ValueError:
+                raise ValueError(f"Bad value {v!r} for pair {label!r} rank {mk} in {tsv_file}")
+            rank_key = 'rank_' + mk
+            out.setdefault(rank_key, {})[(ca, cb)] = val
+    return out
+
+
 def _read_ptm_tsv(ptm_tsv):
     return _read_ranked_score_tsv(ptm_tsv)
 
@@ -454,6 +508,8 @@ def build_modelcif(
     iptm_file,
     name,
     prog,
+    chainwise_iptm_file=None,
+    chainwise_ipsae_file=None,
     sw_version=None,
     msa_tool=None,
     software_details=None,
@@ -486,6 +542,12 @@ def build_modelcif(
         Path to *_ptm.tsv from extract_metrics.py.
     iptm_file : str
         Path to *_iptm.tsv from extract_metrics.py.
+    chainwise_iptm_file : str, optional
+        Path to *_chainwise_iptm.tsv; for multichain models the diagonal
+        (per-chain pTM) is embedded as Feature metrics and off-diagonal
+        (interface ipTM) as FeaturePairwise metrics (per #582).
+    chainwise_ipsae_file : str, optional
+        Path to *_chainwise_ipsae.tsv; same representation as chainwise_iptm.
     name : str
         Sample / sequence identifier used in titles and file naming.
     prog : str
@@ -535,6 +597,20 @@ def build_modelcif(
     plddt_by_rank = _read_plddt_tsv(plddt_file)
     ptm_by_rank = _read_ptm_tsv(ptm_file)
     iptm_by_rank = _read_iptm_tsv(iptm_file)
+
+    def _maybe_chainwise(path, label):
+        if path is None or not os.path.exists(path):
+            return {}
+        try:
+            parsed = _read_chainwise_tsv(path)
+        except ValueError as err:
+            warnings.warn(f"Ignoring {label} file {path}: {err}")
+            return {}
+        # a rank with no usable pairs is as good as absent
+        return {k: v for k, v in parsed.items() if v}
+
+    cw_iptm_by_rank = _maybe_chainwise(chainwise_iptm_file, 'chainwise_iptm')
+    cw_ipsae_by_rank = _maybe_chainwise(chainwise_ipsae_file, 'chainwise_ipsae')
     pae_matrix = _read_pae_tsv(pae_file) if pae_embed else None
     msa_num_seqs, msa_length = _read_msa_tsv(msa_file)
 
@@ -639,6 +715,21 @@ def build_modelcif(
 
     LocalPairwisePAE.software = software
 
+    class ChainPTM(modelcif.qa_metric.Feature, modelcif.qa_metric.PTM):
+        """pTM restricted to a single chain (diagonal of the chain-pair matrix)."""
+
+    ChainPTM.software = software
+
+    class ChainIpTM(modelcif.qa_metric.FeaturePairwise, modelcif.qa_metric.IpTM):
+        """Interface ipTM between two chains (off-diagonal of the chain-pair matrix)."""
+
+    ChainIpTM.software = software
+
+    class ChainIPSAE(modelcif.qa_metric.FeaturePairwise, modelcif.qa_metric.NormalizedScore):
+        """Interface predicted aligned error between two chains."""
+
+    ChainIPSAE.software = software
+
     # ---- Software parameters: container image (#590), seed, model params --
     # modelcif only writes _ma_software_parameter for SoftwareWithParameters
     # discovered inside a SoftwareGroup (System._before_write flattens bare
@@ -729,6 +820,32 @@ def build_modelcif(
             model.qa_metrics.append(GlobalPTM(ptm_by_rank[rank_key]))
         if rank_key in iptm_by_rank:
             model.qa_metrics.append(GlobalIpTM(iptm_by_rank[rank_key]))
+
+        # Chain-wise metrics: only for genuine multichain models (>= 2 asym
+        # units); monomer chainwise files add nothing beyond the global
+        # scores already emitted (#582: embed when representable).
+        if len(asym_map) >= 2:
+            # One EntityInstanceFeature per chain of THIS model; the manual
+            # _all_features tuple works around python-modelcif#21 (the dumper
+            # only discovers features via modelcif.qa_metric.*._all_features).
+            chain_feats = {}
+            for cid, asym in asym_map.items():
+                inst = modelcif.EntityInstanceFeature([asym])
+                inst._all_features = (inst,)
+                chain_feats[cid] = inst
+            for d, feat_cls, pair_cls in (
+                    (cw_iptm_by_rank.get(rank_key, {}), ChainPTM, ChainIpTM),
+                    (cw_ipsae_by_rank.get(rank_key, {}), None, ChainIPSAE)):
+                for (ca, cb), value in d.items():
+                    fa = chain_feats.get(ca)
+                    fb = chain_feats.get(cb)
+                    if fa is None or fb is None:
+                        continue
+                    if ca == cb:
+                        if feat_cls is not None:
+                            model.qa_metrics.append(feat_cls(fa, value))
+                    else:
+                        model.qa_metrics.append(pair_cls(fa, fb, value))
 
         models.append(model)
 
@@ -855,6 +972,8 @@ def main(args=None):
     msa_tool = None if args.msa_tool in (None, 'None') else args.msa_tool
     container_image = None if args.container_image in (None, 'None', 'null') else args.container_image
     seed_arg = None if args.seed in (None, 'None', 'null') else args.seed
+    chainwise_iptm = None if args.chainwise_iptm in (None, 'None', 'null') else args.chainwise_iptm
+    chainwise_ipsae = None if args.chainwise_ipsae in (None, 'None', 'null') else args.chainwise_ipsae
     seed_values = _read_seed_values(seed_arg, args.structs, len(args.structs))
     extra_params = {}
     for item in args.param:
@@ -868,6 +987,8 @@ def main(args=None):
         plddt_scale=args.plddt_scale,
         container_image=container_image,
         seed_values=seed_values,
+        chainwise_iptm_file=chainwise_iptm,
+        chainwise_ipsae_file=chainwise_ipsae,
         model_params=prog_params,
         template_software=None if args.template_software in (None, 'None') else args.template_software,
         template_version=None if args.template_version in (None, 'None') else args.template_version,
