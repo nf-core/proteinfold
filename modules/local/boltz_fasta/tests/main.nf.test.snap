@@ -11,7 +11,11 @@
                     ]
                 ],
                 "1": [
-                    "versions.yml:md5,0d82efa297b86ccb1ae14852c66f16ab"
+                    [
+                        "BOLTZ_FASTA",
+                        "python",
+                        "3.8.3"
+                    ]
                 ],
                 "boltz_yaml": [
                     [
@@ -21,15 +25,19 @@
                         "mixed_sample.yaml:md5,52bdd0470032c2e6c93b886b50906c09"
                     ]
                 ],
-                "versions": [
-                    "versions.yml:md5,0d82efa297b86ccb1ae14852c66f16ab"
+                "versions_python": [
+                    [
+                        "BOLTZ_FASTA",
+                        "python",
+                        "3.8.3"
+                    ]
                 ]
             }
         ],
+        "timestamp": "2026-09-22T15:43:34.47411649",
         "meta": {
-            "nf-test": "0.9.2",
-            "nextflow": "25.10.4"
-        },
-        "timestamp": "2026-05-27T18:09:17.307872399"
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.6"
+        }
     }
 }

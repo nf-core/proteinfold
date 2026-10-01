@@ -33,7 +33,6 @@ process RUN_ALPHAFOLD3_DATAPIPELINE {
 
     def args   = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${meta.id}"
-    def af3_id = meta.id.toLowerCase()
     """
     # Check database files exist and set variables
     pdb_seqres=\$(ls -v ./pdb_seqres/pdb_seqres.txt ./pdb_seqres/pdb_seqres_2022_09_28.fasta 2>/dev/null | tail -n 1 || echo "")
@@ -94,7 +93,12 @@ process RUN_ALPHAFOLD3_DATAPIPELINE {
         --run_inference=false \\
         $args
 
-    cp ${af3_id}/${af3_id}_data.json ${prefix}_data.json
+    data_json=\$(find . -mindepth 2 -maxdepth 2 -type f -name '*_data.json' -print -quit)
+    if [[ -z "\$data_json" ]]; then
+        echo "ERROR: AlphaFold3 data pipeline did not produce a data JSON"
+        exit 1
+    fi
+    cp "\$data_json" ${prefix}_data.json
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

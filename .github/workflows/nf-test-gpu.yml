@@ -6,7 +6,11 @@ on:
       - "conf/test.config"
       - "conf/test_nostub.config"
       - "modules/local/colabfold_batch/**"
+      - "modules/local/run_alphafold2_pred/**"
+      - "modules/local/run_alphafold3_inference/**"
       - "modules/local/run_boltz/**"
+      - "modules/local/run_esmfold/**"
+      - "tests/fixtures/**"
   release:
     types: [published]
   workflow_dispatch:
@@ -59,9 +63,9 @@ jobs:
   nf-test-gpu:
     needs: [get-shards]
     runs-on: "runs-on=${{ github.run_id }}/family=g5.xlarge/image=ubuntu24-gpu-x64"
-    name: "GPU Test | ${{ matrix.profile }} | ${{ matrix.shard }} | ${{ matrix.NXF_VER }} | ${{ matrix.filters }}"
+    name: "GPU Test | ${{ matrix.profile }} | ${{ matrix.shard }} | ${{ matrix.NXF_VER }}"
     env:
-      NXF_VER: ${{ matrix.NXF_VER }}
+      NXF_VERSION: ${{ matrix.NXF_VER }}
 
     # Only run if number of shards is greater than 0
     if: ${{ needs.get-shards.outputs.total_shards > 0 }}
@@ -78,7 +82,6 @@ jobs:
         shard: ${{ fromJson(needs.get-shards.outputs.shard) }}
         NXF_VER:
           - "25.10.4"
-        filters: [pipeline]
 
     steps:
       - name: Check out pipeline code
@@ -96,7 +99,6 @@ jobs:
           profile: test_nostub,${{ matrix.profile }},gpu
           shard: ${{ matrix.shard }}
           total_shards: ${{ needs.get-shards.outputs.total_shards }}
-          filters: ${{ matrix.filters }}
           tags: "gpu"
 
   confirm-pass-gpu:

@@ -7,10 +7,10 @@
 //
 // MODULE: Loaded from modules/local/
 //
-include { RUN_ALPHAFOLD2      } from '../modules/local/run_alphafold2'
 include { RUN_ALPHAFOLD2_MSA  } from '../modules/local/run_alphafold2_msa'
 include { RUN_ALPHAFOLD2_PRED } from '../modules/local/run_alphafold2_pred'
 include { resolveModelPresetByFastaEntities } from '../subworkflows/local/utils_nfcore_proteinfold_pipeline'
+include { collectMultiqcMetrics             } from '../subworkflows/local/utils_nfcore_proteinfold_pipeline'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -28,9 +28,7 @@ workflow ALPHAFOLD2 {
 
     take:
     ch_samplesheet          // channel: samplesheet read in from --input
-    ch_versions             // channel: [ path(versions.yml) ]
     alphafold2_full_dbs     // boolean: Use full databases (otherwise reduced version)
-    alphafold2_mode         //  string: Mode to run Alphafold2 in
     alphafold2_model_preset //  string: Model preset used for single-entry FASTA inputs
     uniref30_prefix         //  string: Prefix for uniref30 database files
     ch_alphafold2_params    // channel: path(alphafold2_params)
@@ -54,7 +52,7 @@ workflow ALPHAFOLD2 {
     ch_ipsae          = channel.empty()
     ch_chainwise_iptm = channel.empty()
     ch_chainwise_ipsae = channel.empty()
-    ch_multiqc_report = channel.empty()
+    ch_multiqc_metrics = channel.empty()
 
     ch_samplesheet
         .map { meta, fasta ->
@@ -63,112 +61,65 @@ workflow ALPHAFOLD2 {
         }
         .set { ch_samplesheet_prepared }
 
-    if (alphafold2_mode == 'standard') {
-        //
-        // SUBWORKFLOW: Run Alphafold2 standard mode
-        //
-        RUN_ALPHAFOLD2 (
-            ch_samplesheet_prepared,
-            alphafold2_full_dbs,
-            uniref30_prefix,
-            ch_alphafold2_params,
-            ch_bfd,
-            ch_small_bfd,
-            ch_mgnify,
-            ch_pdb70,
-            ch_pdb_mmcif,
-            ch_pdb_obsolete,
-            ch_uniref30,
-            ch_uniref90,
-            ch_pdb_seqres,
-            ch_uniprot
-        )
+    //
+    // Run AlphaFold2 with MSA generation split from prediction
+    //
+    RUN_ALPHAFOLD2_MSA (
+        ch_samplesheet_prepared,
+        alphafold2_full_dbs,
+        uniref30_prefix,
+        ch_alphafold2_params,
+        ch_bfd,
+        ch_small_bfd,
+        ch_mgnify,
+        ch_pdb70,
+        ch_pdb_mmcif,
+        ch_pdb_obsolete,
+        ch_uniref30,
+        ch_uniref90,
+        ch_pdb_seqres,
+        ch_uniprot
+    )
 
-        RUN_ALPHAFOLD2
-            .out
-            .multiqc
-            .map { it -> it[1] }
-            .toSortedList()
-            .map { it ->
-                [ [ "model": "alphafold2" ], it.flatten() ]
-            }
-            .set { ch_multiqc_report }
+    // Synchronize FASTA inputs with their generated features
+    ch_samplesheet_prepared
+        .join(RUN_ALPHAFOLD2_MSA.out.features)
+        .map { meta, fasta, resolved_model_preset, features ->
+            [ meta, fasta, features, resolved_model_preset ]
+        }
+        .set { ch_fasta_features }
 
-        ch_pdb            = ch_pdb.mix(RUN_ALPHAFOLD2.out.pdb)
-        ch_top_ranked_pdb = ch_top_ranked_pdb.mix(RUN_ALPHAFOLD2.out.top_ranked_pdb)
-        ch_msa            = ch_msa.mix(RUN_ALPHAFOLD2.out.msa)
-        ch_pae            = ch_pae.mix(RUN_ALPHAFOLD2.out.pae)
-        ch_iptm           = ch_iptm.mix(RUN_ALPHAFOLD2.out.iptms)
-        ch_ipsae          = ch_ipsae.mix(RUN_ALPHAFOLD2.out.ipsaes)
-        ch_chainwise_iptm = ch_chainwise_iptm.mix(RUN_ALPHAFOLD2.out.chainwise_iptms)
-        ch_chainwise_ipsae = ch_chainwise_ipsae.mix(RUN_ALPHAFOLD2.out.chainwise_ipsaes)
-        ch_versions       = ch_versions.mix(RUN_ALPHAFOLD2.out.versions)
+    RUN_ALPHAFOLD2_PRED (
+        ch_fasta_features,
+        ch_alphafold2_params,
+        ch_bfd,
+        ch_small_bfd,
+        ch_mgnify,
+        ch_pdb70,
+        ch_pdb_mmcif,
+        ch_pdb_obsolete,
+        ch_uniref30,
+        ch_uniref90,
+        ch_pdb_seqres,
+        ch_uniprot
+    )
 
-    } else if (alphafold2_mode == 'split_msa_prediction') {
-        //
-        // SUBWORKFLOW: Run Alphafold2 split mode, MSA and predicition
-        //
-        RUN_ALPHAFOLD2_MSA (
-            ch_samplesheet_prepared,
-            alphafold2_full_dbs,
-            uniref30_prefix,
-            ch_alphafold2_params,
-            ch_bfd,
-            ch_small_bfd,
-            ch_mgnify,
-            ch_pdb70,
-            ch_pdb_mmcif,
-            ch_pdb_obsolete,
-            ch_uniref30,
-            ch_uniref90,
-            ch_pdb_seqres,
-            ch_uniprot
-        )
-        ch_versions = ch_versions.mix(RUN_ALPHAFOLD2_MSA.out.versions)
+    // Hand MultiQC every metric this model actually produces, not just pLDDT.
+    ch_multiqc_metrics = collectMultiqcMetrics("alphafold2", [
+        [ 'plddt', RUN_ALPHAFOLD2_PRED.out.plddt ],
+        [ 'msa',   RUN_ALPHAFOLD2_PRED.out.msa ],
+        [ 'ptms',  RUN_ALPHAFOLD2_PRED.out.ptms ],
+        [ 'iptms', RUN_ALPHAFOLD2_PRED.out.iptms ]
+    ])
 
-        //synchronize
-        ch_samplesheet_prepared
-            .join(RUN_ALPHAFOLD2_MSA.out.features)
-            .map { meta, fasta, resolved_model_preset, features ->
-                [ meta, fasta, features, resolved_model_preset ]
-            }
-            .set { ch_fasta_features }
-
-        RUN_ALPHAFOLD2_PRED (
-            ch_fasta_features,
-            ch_alphafold2_params,
-            ch_bfd,
-            ch_small_bfd,
-            ch_mgnify,
-            ch_pdb70,
-            ch_pdb_mmcif,
-            ch_pdb_obsolete,
-            ch_uniref30,
-            ch_uniref90,
-            ch_pdb_seqres,
-            ch_uniprot
-        )
-
-        RUN_ALPHAFOLD2_PRED
-            .out
-            .multiqc
-            .map { it -> it[1] }
-            .toSortedList()
-            .map { it ->
-                [ [ "model": "alphafold2" ], it.flatten() ]
-            }
-            .set { ch_multiqc_report }
-
-        ch_top_ranked_pdb = ch_top_ranked_pdb.mix(RUN_ALPHAFOLD2_PRED.out.top_ranked_pdb)
-        ch_pdb            = ch_pdb.mix(RUN_ALPHAFOLD2_PRED.out.pdb)
-        ch_msa            = ch_msa.mix(RUN_ALPHAFOLD2_PRED.out.msa)
-        ch_pae            = ch_pae.mix(RUN_ALPHAFOLD2_PRED.out.pae)
-        ch_iptm           = ch_iptm.mix(RUN_ALPHAFOLD2_PRED.out.iptms)
-        ch_ipsae          = ch_ipsae.mix(RUN_ALPHAFOLD2_PRED.out.ipsaes)
-        ch_chainwise_iptm = ch_chainwise_iptm.mix(RUN_ALPHAFOLD2_PRED.out.chainwise_iptms)
-        ch_chainwise_ipsae = ch_chainwise_ipsae.mix(RUN_ALPHAFOLD2_PRED.out.chainwise_ipsaes)
-        ch_versions       = ch_versions.mix(RUN_ALPHAFOLD2_PRED.out.versions)
-    }
+    ch_top_ranked_pdb = ch_top_ranked_pdb.mix(RUN_ALPHAFOLD2_PRED.out.top_ranked_pdb)
+    ch_pdb            = ch_pdb.mix(RUN_ALPHAFOLD2_PRED.out.pdb)
+    ch_msa            = ch_msa.mix(RUN_ALPHAFOLD2_PRED.out.msa)
+    ch_pae            = ch_pae.mix(RUN_ALPHAFOLD2_PRED.out.pae)
+    ch_iptm           = ch_iptm.mix(RUN_ALPHAFOLD2_PRED.out.iptms)
+    ch_ipsae          = ch_ipsae.mix(RUN_ALPHAFOLD2_PRED.out.ipsaes)
+    ch_chainwise_iptm = ch_chainwise_iptm.mix(RUN_ALPHAFOLD2_PRED.out.chainwise_iptms)
+    ch_chainwise_ipsae = ch_chainwise_ipsae.mix(RUN_ALPHAFOLD2_PRED.out.chainwise_ipsaes)
 
     ch_pdb
         .map { it ->
@@ -243,8 +194,7 @@ workflow ALPHAFOLD2 {
     ipsae          = ch_ipsae_final          // channel: [ meta, /path/to/*_ipsae.tsv ]
     chainwise_iptm = ch_chainwise_iptm_final // channel: [ meta, /path/to/*_chainwise_iptm.tsv ]
     chainwise_ipsae = ch_chainwise_ipsae_final // channel: [ meta, /path/to/*_chainwise_ipsae.tsv ]
-    multiqc_report = ch_multiqc_report       // channel: /path/to/multiqc_report.html
-    versions       = ch_versions             // channel: [ path(versions.yml) ]
+    multiqc_metrics = ch_multiqc_metrics     // channel: [ [id:..., model:...], [metric tsvs] ]
 }
 
 /*

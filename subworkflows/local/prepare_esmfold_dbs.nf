@@ -16,8 +16,6 @@ workflow PREPARE_ESMFOLD_DBS {
     esm2_t36_3B_UR50D_contact_regression //    string: Specifies the link to download esm2 t36 3B UR50D contact regression
 
     main:
-    ch_versions   = channel.empty()
-
     if (esmfold_db) {
         ch_params     = channel.value(files(esmfold_params_path, checkIfExists: true ))
     }
@@ -54,11 +52,8 @@ workflow PREPARE_ESMFOLD_DBS {
                                 .downloaded_file
                                 .map { it -> it[1] })
                         .collect()
-
-        ch_versions = ch_versions.mix(ARIA2_ESMFOLD_3B_V1.out.versions)
     }
 
     emit:
     params     = ch_params
-    versions   = ch_versions
 }

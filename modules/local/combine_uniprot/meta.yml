@@ -1,0 +1,39 @@
+name: "combine_uniprot"
+description: Combine UniProt Swiss-Prot and TrEMBL FASTA databases.
+tools: []
+input:
+  - uniprot_sprot:
+      type: file
+      description: UniProt Swiss-Prot FASTA database.
+      pattern: "*.{fa,fasta}"
+  - uniprot_trembl:
+      type: file
+      description: UniProt TrEMBL FASTA database.
+      pattern: "*.{fa,fasta}"
+output:
+  ch_db:
+    - uniprot.fasta:
+        type: file
+        description: Combined UniProt FASTA database.
+        pattern: "uniprot.fasta"
+  versions_sed:
+    - - "${task.process}":
+          type: string
+          description: The process the versions were collected from.
+      - sed:
+          type: string
+          description: The tool name.
+      - 'sed --version 2>&1 | sed "s/^.*GNU sed) //; s/ .*$//"':
+          type: eval
+          description: The expression to obtain the version of the tool.
+topics:
+  versions:
+    - - "${task.process}":
+          type: string
+          description: The process the versions were collected from.
+      - sed:
+          type: string
+          description: The tool name.
+      - 'sed --version 2>&1 | sed "s/^.*GNU sed) //; s/ .*$//"':
+          type: eval
+          description: The expression to obtain the version of the tool.

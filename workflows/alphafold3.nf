@@ -10,6 +10,7 @@
 include { FASTA_TO_ALPHAFOLD3_JSON                } from '../modules/local/fasta_to_alphafold3_json'
 include { RUN_ALPHAFOLD3_DATAPIPELINE             } from '../modules/local/run_alphafold3_datapipeline'
 include { RUN_ALPHAFOLD3_INFERENCE                } from '../modules/local/run_alphafold3_inference'
+include { collectMultiqcMetrics                   } from '../subworkflows/local/utils_nfcore_proteinfold_pipeline'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -43,7 +44,7 @@ workflow ALPHAFOLD3 {
     ch_structure_final      = channel.empty()
     ch_top_ranked_structure = channel.empty()
     ch_msa_final            = channel.empty()
-    ch_multiqc_report       = channel.empty()
+    ch_multiqc_metrics      = channel.empty()
 
     ch_samplesheet
         .branch { it ->
@@ -117,16 +118,13 @@ workflow ALPHAFOLD3 {
         }
         .set { ch_msa_final }
 
-    // Prepare multiqc input
-    RUN_ALPHAFOLD3_INFERENCE
-        .out
-        .multiqc
-        .map { it -> it[1] }
-        .toSortedList()
-        .map { it ->
-            [ [ "model": "alphafold3" ], it.flatten() ]
-        }
-        .set { ch_multiqc_report }
+    // Prepare multiqc input: every metric this model produces, not just pLDDT.
+    ch_multiqc_metrics = collectMultiqcMetrics("alphafold3", [
+        [ 'plddt', RUN_ALPHAFOLD3_INFERENCE.out.plddt ],
+        [ 'msa',   RUN_ALPHAFOLD3_INFERENCE.out.msa ],
+        [ 'ptms',  RUN_ALPHAFOLD3_INFERENCE.out.ptms ],
+        [ 'iptms', RUN_ALPHAFOLD3_INFERENCE.out.iptms ]
+    ])
 
     // Prepare pae input
     RUN_ALPHAFOLD3_INFERENCE
@@ -188,7 +186,7 @@ workflow ALPHAFOLD3 {
     ipsae           = ch_ipsae_final           // channel: [ meta, path/to/*_ipsae.tsv ]
     chainwise_iptm  = ch_chainwise_iptm_final  // channel: [ meta, path/to/*_chainwise_iptm.tsv ]
     chainwise_ipsae = ch_chainwise_ipsae_final // channel: [ meta, path/to/*_chainwise_ipsae.tsv ]
-    multiqc_report  = ch_multiqc_report        // channel: /path/to/multiqc_report.html
+    multiqc_metrics = ch_multiqc_metrics       // channel: [ [id:..., model:...], [metric tsvs] ]
     versions        = ch_versions              // channel: [ path(versions.yml) ]
 }
 
