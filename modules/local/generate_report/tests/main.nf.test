@@ -48,7 +48,8 @@ nextflow_process {
             assert html.contains('id="structure-download-label"') && html.contains('structure-download-label").textContent')
             assert (html =~ /image\.id =/).count == 1
             def downloader = (html =~ /(?s)const downloadStructure = .*?const makeDownload/)[0]
-            assert !downloader.contains(".cif.cif") && !downloader.contains("\${MODELS[state.model]}")
+            assert downloader.contains("MODELS[state.model]")
+            assert !downloader.contains(".cif.cif") && !downloader.contains("SAMPLE_NAME")
             assert html.contains("const modelLabel = ")
         }
     }

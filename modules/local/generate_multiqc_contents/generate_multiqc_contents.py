@@ -18,9 +18,6 @@ MODE_LABELS = {
     "alphafold3": "AlphaFold3",
     "colabfold": "ColabFold",
     "esmfold": "ESMFold",
-    "rosettafold2na": "RoseTTAFold2-Nucleic-Acids",
-    "rosettafold_all_atom": "RoseTTAFold-All-Atom",
-    "helixfold3": "HelixFold3",
     "boltz": "Boltz",
 }
 

@@ -63,7 +63,7 @@ def generate_output(plddt_data, name, out_dir, generate_tsv, pdb):
 
     fig = go.Figure()
     for idx, (model_name, value_plddt) in enumerate(plddt_per_model.items()):
-        rank_label = os.path.splitext(pdb[idx])[0]
+        rank_label = os.path.splitext(os.path.basename(pdb[idx]))[0]
         fig.add_trace(
             go.Scatter(
                 x=list(range(len(value_plddt))),

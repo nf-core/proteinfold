@@ -391,9 +391,6 @@ workflow NFCORE_PROTEINFOLD {
         alphafold3:           'jackhmmer',
         colabfold:            'mmseqs2',
         boltz:                'mmseqs2',
-        helixfold3:           'jackhmmer',
-        rosettafold2na:       'hhblits',
-        rosettafold_all_atom: 'hhblits',
         esmfold:              'None',
     ]
     ch_report_input = ch_report_input.map { tupleData ->
