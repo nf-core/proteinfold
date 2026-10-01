@@ -541,7 +541,9 @@ aligned_structures[0] = ref_structure_path
 
 proteinfold_template = open(args.html_template, "r").read()
 
-model_names = [f"{os.path.splitext(model)[0]}.cif" for model in structures]
+model_names = [
+    f"{os.path.splitext(os.path.basename(model))[0]}.cif" for model in structures
+]
 models_data = [open(s, "r").read() for s in aligned_structures]
 
 
