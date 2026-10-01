@@ -12,7 +12,7 @@ process MULTIFASTA_TO_SINGLEFASTA {
 
     output:
     tuple val(meta), path("${meta.id}.fasta"), emit: input_fasta
-    tuple val("${task.process}"), val('sed'), eval('sed --version 2>&1 | sed "s/^.*GNU sed) //; s/ .*$//"'), emit: versions_sed, topic: versions
+    tuple val("${task.process}"), val('sed'), eval('sed --version 2>&1 | sed -n "s/^.*GNU sed) //p"'), emit: versions_sed, topic: versions
 
     when:
     task.ext.when == null || task.ext.when
