@@ -1,8 +1,10 @@
 {
     "-profile test_alphafold3_standard": {
         "content": [
-            9,
+            10,
             {
+                "NFCORE_PROTEINFOLD:POST_PROCESSING:GENERATE_MULTIQC_CONTENTS:generate_multiqc_contents.py": "3.14.0",
+                "NFCORE_PROTEINFOLD:POST_PROCESSING:GENERATE_MULTIQC_CONTENTS:python": "3.14.0",
                 "NFCORE_PROTEINFOLD:POST_PROCESSING:GENERATE_REPORT:generate_report.py": "3.12.7",
                 "NFCORE_PROTEINFOLD:POST_PROCESSING:GENERATE_REPORT:python": "3.12.7"
             },
@@ -77,7 +79,7 @@
                 "T1026_alphafold3_report.html:md5,d41d8cd98f00b204e9800998ecf8427e"
             ]
         ],
-        "timestamp": "2026-09-22T16:37:39.0411434",
+        "timestamp": "2026-09-29T16:28:56.426251898",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.04.6"

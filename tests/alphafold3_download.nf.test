@@ -18,6 +18,7 @@ nextflow_pipeline {
             def stableName = getAllFilesFromDir(params.outdir, relative: true, includeDir: true, ignore: ['pipeline_info/*.{html,json,txt}'])
             def stableContent = getAllFilesFromDir(params.outdir, ignoreFile: 'tests/.nftignore')
             assert workflow.success
+            assert file("${params.outdir}/multiqc/multiqc_report.html").exists(): "MultiQC report missing - the reporting channel went empty"
             assert snapshot(
                 workflow.trace.succeeded().size(),
                 removeNextflowVersion("$outputDir/pipeline_info/nf_core_proteinfold_software_mqc_versions.yml"),

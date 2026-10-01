@@ -27,6 +27,7 @@ include { MMSEQS_COLABFOLDSEARCH } from '../modules/local/mmseqs_colabfoldsearch
 // MODULE: Boltz
 //
 include { RUN_BOLTZ } from '../modules/local/run_boltz'
+include { collectMultiqcMetrics } from '../subworkflows/local/utils_nfcore_proteinfold_pipeline'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -124,7 +125,7 @@ workflow BOLTZ {
 
     RUN_BOLTZ
         .out
-        .msa_raw
+        .msa
         .map { it ->
             def meta = it[0].clone();
             meta.model = "boltz"
@@ -134,7 +135,7 @@ workflow BOLTZ {
 
     RUN_BOLTZ
         .out
-        .pae_raw
+        .pae
         .map { it ->
             def meta = it[0].clone();
             meta.model = "boltz"
@@ -144,7 +145,7 @@ workflow BOLTZ {
 
     RUN_BOLTZ
         .out
-        .iptm_raw
+        .iptm
         .map { it ->
             def meta = it[0].clone();
             meta.model = "boltz"
@@ -154,7 +155,7 @@ workflow BOLTZ {
 
     RUN_BOLTZ
         .out
-        .ipsae_raw
+        .ipsae
         .map { it ->
             def meta = it[0].clone();
             meta.model = "boltz"
@@ -164,7 +165,7 @@ workflow BOLTZ {
 
     RUN_BOLTZ
         .out
-        .chainwise_iptm_raw
+        .chainwise_iptm
         .map { it ->
             def meta = it[0].clone();
             meta.model = "boltz"
@@ -174,7 +175,7 @@ workflow BOLTZ {
 
     RUN_BOLTZ
         .out
-        .chainwise_ipsae_raw
+        .chainwise_ipsae
         .map { it ->
             def meta = it[0].clone();
             meta.model = "boltz"
@@ -182,18 +183,18 @@ workflow BOLTZ {
         }
         .set { ch_chainwise_ipsae }
 
-    RUN_BOLTZ
-        .out
-        .multiqc
-        .map { it -> it[1] }
-        .collect(sort: true)
-        .map { it ->  [ [ "model": "boltz"], it.flatten() ] }
-        .set { ch_multiqc_report  }
+    // Hand MultiQC every metric this model actually produces, not just pLDDT.
+    ch_multiqc_metrics = collectMultiqcMetrics("boltz", [
+        [ 'plddt', RUN_BOLTZ.out.plddt ],
+        [ 'msa',   RUN_BOLTZ.out.msa ],
+        [ 'ptm',   RUN_BOLTZ.out.ptm ],
+        [ 'iptm',  RUN_BOLTZ.out.iptm ]
+    ])
 
     emit:
     msa             = ch_msa
     confidence      = RUN_BOLTZ.out.confidence
-    multiqc_report  = ch_multiqc_report
+    multiqc_metrics = ch_multiqc_metrics
     top_ranked_pdb  = ch_top_ranked_pdb
     pdb             = ch_pdb
     pae             = ch_pae

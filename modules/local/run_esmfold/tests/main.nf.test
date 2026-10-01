@@ -27,14 +27,14 @@ nextflow_process {
 
         then {
             def topRanked = path(process.out.top_ranked_pdb[0][1])
-            def plddt = path(process.out.multiqc[0][1])
+            def plddt = path(process.out.plddt[0][1])
             assertAll(
                 { assert process.success },
                 { assert process.out.top_ranked_pdb[0][0].id == 'T1026' },
                 { assert topRanked.size() > 0 },
                 { assert topRanked.text.contains('ATOM') },
                 { assert plddt.size() > 0 },
-                { assert process.out.versions }
+                { assert process.out.versions_esmfold }
             )
         }
     }

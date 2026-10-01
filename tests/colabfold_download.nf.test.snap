@@ -1,7 +1,7 @@
 {
     "-profile test_colabfold_download": {
         "content": [
-            9,
+            10,
             [
                 "DBs",
                 "DBs/colabfold",
@@ -90,7 +90,7 @@
                 "T1026_colabfold_report.html:md5,d41d8cd98f00b204e9800998ecf8427e"
             ]
         ],
-        "timestamp": "2026-09-22T16:38:47.152902009",
+        "timestamp": "2026-09-29T16:30:33.926875172",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.04.6"

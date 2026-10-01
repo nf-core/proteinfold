@@ -119,7 +119,7 @@ workflow NFCORE_PROTEINFOLD {
             PREPARE_ALPHAFOLD2_DBS.out.pdb_seqres,
             PREPARE_ALPHAFOLD2_DBS.out.uniprot
         )
-        ch_multiqc          = ch_multiqc.mix(ALPHAFOLD2.out.multiqc_report.collect())
+        ch_multiqc          = ch_multiqc.mix(ALPHAFOLD2.out.multiqc_metrics)
         ch_report_input     = ch_report_input
                                 .mix(ALPHAFOLD2
                                 .out
@@ -197,7 +197,7 @@ workflow NFCORE_PROTEINFOLD {
             PREPARE_ALPHAFOLD3_DBS.out.rnacentral
         )
 
-        ch_multiqc      = ch_multiqc.mix(ALPHAFOLD3.out.multiqc_report)
+        ch_multiqc      = ch_multiqc.mix(ALPHAFOLD3.out.multiqc_metrics)
         ch_report_input = ch_report_input
                             .mix(
                                 ALPHAFOLD3
@@ -258,7 +258,7 @@ workflow NFCORE_PROTEINFOLD {
             params.colabfold_num_recycles
         )
 
-        ch_multiqc          = ch_multiqc.mix(COLABFOLD.out.multiqc_report)
+        ch_multiqc          = ch_multiqc.mix(COLABFOLD.out.multiqc_metrics)
         ch_report_input     = ch_report_input
                                 .mix(COLABFOLD.out.pdb.map { it ->
                                     [ it[0],
@@ -309,7 +309,7 @@ workflow NFCORE_PROTEINFOLD {
             params.esmfold_num_recycles
         )
 
-        ch_multiqc      = ch_multiqc.mix(ESMFOLD.out.multiqc_report.collect())
+        ch_multiqc      = ch_multiqc.mix(ESMFOLD.out.multiqc_metrics)
         ch_report_input = ch_report_input.mix(
             ESMFOLD.out.pdb
                 .combine(ch_dummy_file)
@@ -363,7 +363,7 @@ workflow NFCORE_PROTEINFOLD {
             PREPARE_COLABFOLD_DBS_BOLTZ.out.uniref30,
             params.use_msa_server
         )
-        ch_multiqc                  = ch_multiqc.mix(BOLTZ.out.multiqc_report)
+        ch_multiqc                  = ch_multiqc.mix(BOLTZ.out.multiqc_metrics)
         ch_report_input             = ch_report_input.mix(
             BOLTZ.out.pdb
             .join(BOLTZ.out.msa)
@@ -378,31 +378,12 @@ workflow NFCORE_PROTEINFOLD {
     //
     // POST PROCESSING: generate visualisation reports
     //
+    ch_multiqc_config        = channel.fromPath("$projectDir/assets/multiqc_config.yml", checkIfExists: true).first()
+    ch_multiqc_custom_config = params.multiqc_config ? channel.fromPath( params.multiqc_config, checkIfExists: true ).first()  : channel.empty()
+    ch_multiqc_logo          = params.multiqc_logo   ? channel.fromPath( params.multiqc_logo ).first()    : channel.empty()
+    ch_multiqc_methods_description = params.multiqc_methods_description ? file(params.multiqc_methods_description, checkIfExists: true) : file("$projectDir/assets/methods_description_template.yml", checkIfExists: true)
     ch_report_template     = channel.value(file("$projectDir/assets/report_template.html", checkIfExists: true))
     ch_comparison_template = channel.value(file("$projectDir/assets/comparison_template.html", checkIfExists: true))
-
-    // Inject msa_tool into meta based on the program — a fact of the workflow
-    // branch, not of any individual process, so it belongs at the join point.
-    // Single join point to save the headache of carrying it around in meta in _all_ metrics channels - KR
-    def msaToolMap = [
-        alphafold2:           'jackhmmer',
-        alphafold3:           'jackhmmer',
-        colabfold:            'mmseqs2',
-        boltz:                'mmseqs2',
-        helixfold3:           'jackhmmer',
-        rosettafold2na:       'hhblits',
-        rosettafold_all_atom: 'hhblits',
-        esmfold:              'None',
-    ]
-    ch_report_input = ch_report_input.map { meta, structs, msa, pae ->
-        def m = meta.clone()
-        m.msa_tool = msaToolMap.get(meta.model, 'None')
-        [ m, structs, msa, pae ]
-    }
-
-    ch_multiqc_config              = channel.of(file("$projectDir/assets/multiqc_config.yml", checkIfExists: true))
-    ch_multiqc_custom_config       = params.multiqc_config ? channel.of(file(params.multiqc_config, checkIfExists: true)) : channel.empty()
-    ch_multiqc_methods_description = params.multiqc_methods_description ? file(params.multiqc_methods_description, checkIfExists: true) : file("$projectDir/assets/methods_description_template.yml", checkIfExists: true)
 
     // Inject msa_tool into meta based on selected model for report provenance.
     def msaToolMap = [
@@ -410,9 +391,6 @@ workflow NFCORE_PROTEINFOLD {
         alphafold3:           'jackhmmer',
         colabfold:            'mmseqs2',
         boltz:                'mmseqs2',
-        helixfold3:           'jackhmmer',
-        rosettafold2na:       'hhblits',
-        rosettafold_all_atom: 'hhblits',
         esmfold:              'None',
     ]
     ch_report_input = ch_report_input.map { tupleData ->
@@ -421,6 +399,18 @@ workflow NFCORE_PROTEINFOLD {
         m.msa_tool = msaToolMap.get(meta.model, 'None')
         [m] + tupleData.drop(1)
     }
+
+    def ch_software_versions = channel.topic('versions')
+        .unique()
+        .map { process_name, tool_name, version ->
+            "\"${process_name}:${tool_name}\": ${version}"
+        }
+        .collectFile(
+            storeDir: "${params.outdir}/pipeline_info",
+            name: 'nf_core_proteinfold_software_mqc_versions.yml',
+            newLine: true,
+            sort: true
+        )
 
     POST_PROCESSING(
         params.skip_visualisation,
@@ -438,26 +428,12 @@ workflow NFCORE_PROTEINFOLD {
         ch_multiqc_custom_config,
         params.multiqc_logo,
         ch_multiqc_methods_description,
+        ch_software_versions,
         ch_top_ranked_model
     )
 
-    // Collect all version tuples emitted to the topic channel into the
-    // conventional pipeline-info report. This replaces the old explicit
-    // versions-channel plumbing while retaining the MultiQC-compatible file.
-    channel.topic('versions')
-        .unique()
-        .map { process_name, tool_name, version ->
-            "\"${process_name}:${tool_name}\": ${version}"
-        }
-        .collectFile(
-            storeDir: "${params.outdir}/pipeline_info",
-            name: 'nf_core_proteinfold_software_mqc_versions.yml',
-            newLine: true,
-            sort: true
-        )
-
     emit:
-    multiqc_report = ch_multiqc
+    multiqc_report = POST_PROCESSING.out.multiqc_report
 }
 
 /*
