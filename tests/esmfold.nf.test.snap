@@ -1,7 +1,7 @@
 {
     "-profile test_esmfold": {
         "content": [
-            5,
+            6,
             [
                 "esmfold",
                 "esmfold/T1024",
@@ -34,7 +34,7 @@
                 "T1026_esmfold_report.html:md5,d41d8cd98f00b204e9800998ecf8427e"
             ]
         ],
-        "timestamp": "2026-09-22T16:40:19.264747803",
+        "timestamp": "2026-09-29T16:29:44.465261472",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.04.6"

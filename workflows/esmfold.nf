@@ -12,6 +12,7 @@ include { MULTIFASTA_TO_SINGLEFASTA } from '../modules/local/multifasta_to_singl
 include { countMolecularEntitiesInFasta } from '../subworkflows/local/utils_nfcore_proteinfold_pipeline'
 
 include { modeChannel               } from '../subworkflows/local/utils_nfcore_proteinfold_pipeline'
+include { collectMultiqcMetrics     } from '../subworkflows/local/utils_nfcore_proteinfold_pipeline'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -61,21 +62,15 @@ workflow ESMFOLD {
         ch_num_recycles
     )
 
-    RUN_ESMFOLD
-        .out
-        .multiqc
-        .map { it -> it[1] }
-        .toSortedList()
-        .map { it ->
-            [ [ "model": "esmfold"], it.flatten() ]
-        }
-        .set { ch_multiqc_report  }
+    ch_multiqc_metrics = collectMultiqcMetrics("esmfold", [
+        [ 'plddt', RUN_ESMFOLD.out.plddt ]
+    ])
 
     modeChannel(RUN_ESMFOLD.out.pdb, "esmfold").set { ch_pdb_final }
 
     emit:
-    pdb            = ch_pdb_final      // channel: [ id, /path/to/*.pdb ]
-    multiqc_report = ch_multiqc_report // channel: /path/to/multiqc_report.html
+    pdb             = ch_pdb_final      // channel: [ id, /path/to/*.pdb ]
+    multiqc_metrics = ch_multiqc_metrics // channel: [ [id:..., model:...], [metric tsvs] ]
 }
 
 /*

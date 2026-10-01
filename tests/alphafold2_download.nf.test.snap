@@ -1,7 +1,7 @@
 {
     "-profile test_alphafold2_download": {
         "content": [
-            27,
+            28,
             [
                 "DBs",
                 "DBs/alphafold2",
@@ -112,7 +112,7 @@
                 "T1026_alphafold2_report.html:md5,d41d8cd98f00b204e9800998ecf8427e"
             ]
         ],
-        "timestamp": "2026-09-22T16:36:59.767429602",
+        "timestamp": "2026-09-29T16:28:09.771504003",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.04.6"

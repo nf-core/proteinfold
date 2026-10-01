@@ -1,7 +1,7 @@
 {
     "-profile test_split_fasta": {
         "content": [
-            9,
+            10,
             [
                 "colabfold",
                 "colabfold/H1065_H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_1_127_residues",
@@ -83,7 +83,7 @@
                 "H1065_H1065_N4-Cytosine_Methyltransferase_Serratia_marcescens_subunit_2_98_residues_colabfold_report.html:md5,d41d8cd98f00b204e9800998ecf8427e"
             ]
         ],
-        "timestamp": "2026-09-22T16:40:41.466544202",
+        "timestamp": "2026-09-29T16:31:50.313991708",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.04.6"

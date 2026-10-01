@@ -15,7 +15,7 @@ process RUN_ALPHAFOLD3_INFERENCE {
     path ("raw/**")                                         , emit: raw
     tuple val(meta), path ("${meta.id}_alphafold3.cif")     , emit: top_ranked_cif
     tuple val(meta), path ("raw/*ranked_*.cif")             , emit: cif
-    tuple val(meta), path ("${meta.id}_plddt_mqc.tsv")      , emit: multiqc
+    tuple val(meta), path ("${meta.id}_plddt.tsv")      , emit: plddt
     tuple val(meta), path ("${meta.id}_alphafold3_msa.tsv") , emit: msa
     tuple val(meta), path ("${meta.id}_0_pae.tsv")          , emit: pae
     tuple val(meta), path ("${meta.id}_ptm.tsv")            , emit: ptms
@@ -103,7 +103,7 @@ process RUN_ALPHAFOLD3_INFERENCE {
     touch raw/ranked_2_${prefix}.cif
     touch raw/ranked_3_${prefix}.cif
     touch raw/ranked_4_${prefix}.cif
-    touch ${prefix}_plddt_mqc.tsv
+    touch ${prefix}_plddt.tsv
     touch ${prefix}_alphafold3_msa.tsv
     touch ${prefix}_0_pae.tsv
     touch ${prefix}_ptm.tsv

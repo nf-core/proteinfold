@@ -1,7 +1,7 @@
 {
     "-profile test_boltz": {
         "content": [
-            13,
+            14,
             [
                 "boltz",
                 "boltz/T1024",
@@ -96,7 +96,7 @@
                 "T1026.yaml:md5,d41d8cd98f00b204e9800998ecf8427e"
             ]
         ],
-        "timestamp": "2026-09-22T16:38:22.951149423",
+        "timestamp": "2026-09-29T16:30:07.049216251",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.04.6"

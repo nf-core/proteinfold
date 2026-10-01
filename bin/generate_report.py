@@ -338,9 +338,12 @@ def align_structures(structures):
     return aligned_structures
 
 
+def natural_path_sort_key(path):
+    return [int(part) if part.isdigit() else part.lower() for part in re.split(r"(\d+)", str(path))]
+
+
 def pdb_to_lddt(struct_files, generate_tsv):
-    struct_files_sorted = struct_files
-    struct_files_sorted.sort()
+    struct_files_sorted = sorted(struct_files, key=natural_path_sort_key)
 
     output_lddt = []
     averages = []
@@ -521,8 +524,7 @@ generate_output_images(
 )
 
 print("generating html report...")
-structures = args.pdb
-structures.sort() #TODO: make sure sorting here doesnt break rank order
+structures = sorted(args.pdb, key=natural_path_sort_key)
 iptm_scores = read_ranked_score_tsv(args.iptm, len(structures))
 ipsae_scores = read_ranked_score_tsv(args.ipsae, len(structures))
 chainwise_iptm_scores = read_pair_score_tsv(args.chainwise_iptm, len(structures))
@@ -538,61 +540,53 @@ io.save(ref_structure_path)
 aligned_structures[0] = ref_structure_path
 
 proteinfold_template = open(args.html_template, "r").read()
-proteinfold_template = proteinfold_template.replace("*sample_name*", args.name)
-proteinfold_template = proteinfold_template.replace(
-    "*prog_name*", model_name[args.in_type.lower()]
-)
 
 model_names = [
-    f"{os.path.splitext(model)[0]}.cif"
-    for model in structures
+    f"{os.path.splitext(os.path.basename(model))[0]}.cif" for model in structures
 ]
-args_pdb_array_js = ",\n".join([f'"{model}"' for model in model_names])
-proteinfold_template = re.sub(
-    r"const MODELS = \[.*?\];",  # Match the existing MODELS array in HTML template
-    f"const MODELS = [\n  {args_pdb_array_js}\n];",  # Replace with the new array
-    proteinfold_template,
-    flags=re.DOTALL,
-)
+models_data = [open(s, "r").read() for s in aligned_structures]
 
-averages_js_array = f"const LDDT_AVERAGES = {lddt_averages};"
-proteinfold_template = proteinfold_template.replace(
-    "const LDDT_AVERAGES = [];", averages_js_array
-)
 
-iptm_js_array = f"const IPTM_SCORES = {iptm_scores};"
-proteinfold_template = proteinfold_template.replace(
-    "const IPTM_SCORES = [];", iptm_js_array
-)
-
-ipsae_js_array = f"const IPSAE_SCORES = {ipsae_scores};"
-proteinfold_template = proteinfold_template.replace(
-    "const IPSAE_SCORES = [];", ipsae_js_array
-)
-
-chainwise_iptm_js_array = f"const CHAINWISE_IPTM_SCORES = {json.dumps(chainwise_iptm_matrices)};"
-proteinfold_template = proteinfold_template.replace(
-    "const CHAINWISE_IPTM_SCORES = [];", chainwise_iptm_js_array
-)
-
-chainwise_ipsae_js_array = f"const CHAINWISE_IPSAE_SCORES = {json.dumps(chainwise_ipsae_matrices)};"
-proteinfold_template = proteinfold_template.replace(
-    "const CHAINWISE_IPSAE_SCORES = [];", chainwise_ipsae_js_array
-)
-
-i = 0
-for structure in aligned_structures:
-    proteinfold_template = proteinfold_template.replace(
-        f"*_data_ranked_{i}.cif*", open(structure, "r").read().replace("\n", "\\n")
+def script_safe_json_dumps(obj):
+    """json.dumps with <, > and & escaped, so a payload containing "</script>"
+    cannot terminate the enclosing <script type="application/json"> element early."""
+    return (
+        json.dumps(obj)
+        .replace("<", "\\u003c")
+        .replace(">", "\\u003e")
+        .replace("&", "\\u0026")
     )
-    i += 1
+
+
+report_config = {
+    "reportType": "standard",
+    "sampleName": args.name,
+    "programName": model_name[args.in_type.lower()],
+    "structFormat": "cif",
+    "models": model_names,
+    "models_data": models_data,
+    "lddt_averages": lddt_averages,
+    "iptm_scores": iptm_scores,
+    "ipsae_scores": ipsae_scores,
+    "chainwise_iptm": chainwise_iptm_matrices,
+    "chainwise_ipsae": chainwise_ipsae_matrices,
+}
+config_blob = (
+    '<script type="application/json" id="report-config">'
+    f"{script_safe_json_dumps(report_config)}</script>"
+)
+proteinfold_template = proteinfold_template.replace(
+    "</head>", f"{config_blob}\n  </head>", 1
+)
 
 if not is_missing_input(args.msa):
     image_path = f"{args.output_dir}/{args.name}_{args.in_type}_seq_coverage.png"
     with open(image_path, "rb") as in_file:
+        data_uri = f"data:image/png;base64,{base64.b64encode(in_file.read()).decode('utf-8')}"
         proteinfold_template = proteinfold_template.replace(
-            "seq_coverage.png",
-            f"data:image/png;base64,{base64.b64encode(in_file.read()).decode('utf-8')}",
+            '<div id="seq_cov_placeholder"></div>',
+            f'<img src="{data_uri}" alt="Sequence coverage (MSA)" '
+            'class="w-full h-auto rounded" />',
         )
 else:
     pattern = r'<div id="seq_coverage_container".*?>.*?(<!--.*?-->.*?)*?</div>\s*</div>\s*</div>\s*</div>'
