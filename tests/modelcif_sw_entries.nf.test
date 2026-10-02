@@ -32,6 +32,7 @@ nextflow_process {
         then {
             assert process.success
             assert process.out.modelcif.size() == 1
+            assert snapshot(process.out.versions).match()
 
             def modelcifPath = path(process.out.modelcif[0][1])
             def expectedMsaTool = process.out.modelcif[0][0].msa_tool?.toString()

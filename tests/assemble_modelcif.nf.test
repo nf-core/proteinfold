@@ -85,6 +85,9 @@ nextflow_process {
     test("dummy inputs produce modelcif with associated PAE") {
 
         when {
+            params {
+                outdir = "$outputDir"
+            }
             process {
                 """
                 input[0] = [
