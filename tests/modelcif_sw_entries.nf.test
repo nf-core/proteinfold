@@ -10,6 +10,9 @@ nextflow_process {
     test("dummy inputs include model software and software groups") {
 
         when {
+            params {
+                outdir = "$outputDir"
+            }
             process {
                 """
                 input[0] = [
