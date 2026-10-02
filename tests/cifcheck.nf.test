@@ -3,7 +3,6 @@ nextflow_process {
     name "Test Process CIFCHECK"
     script "../modules/local/cifcheck/main.nf"
     process "CIFCHECK"
-    outdir = "$outputDir"
 
     tag "cifcheck"
 

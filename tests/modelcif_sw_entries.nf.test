@@ -3,7 +3,6 @@ nextflow_process {
     name "Test Process MODELCIF_SW_ENTRIES"
     script "../modules/local/assemble_modelcif/main.nf"
     process "ASSEMBLE_MODELCIF"
-    outdir = "$outputDir"
 
     tag "modelcif_sw_entries"
     config "./assemble_modelcif_software.config"

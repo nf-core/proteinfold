@@ -3,7 +3,6 @@ nextflow_process {
     name "Test Process MODELCIF_VALIDATE"
     script "../modules/local/modelcif_validate/main.nf"
     process "MODELCIF_VALIDATE"
-    outdir = "$outputDir"
 
     tag "modelcif_validate"
 
