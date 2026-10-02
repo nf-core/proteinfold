@@ -107,6 +107,7 @@ nextflow_process {
         then {
             def modelcifPath = path(process.out.modelcif[0][1])
             assertModelcifOutput(process, modelcifPath, false, false)
+            // Snapshot the versions.yml output.
             assert snapshot(process.out.versions).match()
         }
     }
