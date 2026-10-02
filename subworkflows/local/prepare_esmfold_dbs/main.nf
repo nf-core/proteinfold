@@ -2,9 +2,9 @@
 // Download all the required Esmfold parameters
 //
 
-include { ARIA2 as ARIA2_ESMFOLD_3B_V1                        } from '../../modules/nf-core/aria2/main'
-include { ARIA2 as ARIA2_ESM2_T36_3B_UR50D                    } from '../../modules/nf-core/aria2/main'
-include { ARIA2 as ARIA2_ESM2_T36_3B_UR50D_CONTACT_REGRESSION } from '../../modules/nf-core/aria2/main'
+include { ARIA2 as ARIA2_ESMFOLD_3B_V1                        } from '../../../modules/nf-core/aria2/main'
+include { ARIA2 as ARIA2_ESM2_T36_3B_UR50D                    } from '../../../modules/nf-core/aria2/main'
+include { ARIA2 as ARIA2_ESM2_T36_3B_UR50D_CONTACT_REGRESSION } from '../../../modules/nf-core/aria2/main'
 
 workflow PREPARE_ESMFOLD_DBS {
 

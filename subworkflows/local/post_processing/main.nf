@@ -6,14 +6,14 @@
 // SUBWORKFLOW: Consisting entirely of nf-core/modules
 //
 include { paramsSummaryMap       } from 'plugin/nf-schema'
-include { paramsSummaryMultiqc   } from '../nf-core/utils_nfcore_pipeline'
-include { methodsDescriptionText } from './utils_nfcore_proteinfold_pipeline'
+include { paramsSummaryMultiqc   } from '../../nf-core/utils_nfcore_pipeline'
+include { methodsDescriptionText } from '../utils_nfcore_proteinfold_pipeline'
 
-include { GENERATE_REPORT     } from '../../modules/local/generate_report'
-include { GENERATE_MULTIQC_CONTENTS } from '../../modules/local/generate_multiqc_contents'
-include { COMPARE_STRUCTURES  } from '../../modules/local/compare_structures'
-include { FOLDSEEK_EASYSEARCH } from '../../modules/nf-core/foldseek/easysearch/main'
-include { MULTIQC             } from '../../modules/nf-core/multiqc/main'
+include { GENERATE_REPORT     } from '../../../modules/local/generate_report'
+include { GENERATE_MULTIQC_CONTENTS } from '../../../modules/local/generate_multiqc_contents'
+include { COMPARE_STRUCTURES  } from '../../../modules/local/compare_structures'
+include { FOLDSEEK_EASYSEARCH } from '../../../modules/nf-core/foldseek/easysearch/main'
+include { MULTIQC             } from '../../../modules/nf-core/multiqc/main'
 
 
 workflow POST_PROCESSING {

@@ -1,12 +1,12 @@
 //
 // Download the files required for Boltz
 //
-include { ARIA2 as ARIA2_BOLTZ_CCD   } from '../../modules/nf-core/aria2/main'
-include { ARIA2 as ARIA2_BOLTZ_MODEL } from '../../modules/nf-core/aria2/main'
-include { ARIA2 as ARIA2_BOLTZ2_AFF  } from '../../modules/nf-core/aria2/main'
-include { ARIA2 as ARIA2_BOLTZ2_CONF } from '../../modules/nf-core/aria2/main'
+include { ARIA2 as ARIA2_BOLTZ_CCD   } from '../../../modules/nf-core/aria2/main'
+include { ARIA2 as ARIA2_BOLTZ_MODEL } from '../../../modules/nf-core/aria2/main'
+include { ARIA2 as ARIA2_BOLTZ2_AFF  } from '../../../modules/nf-core/aria2/main'
+include { ARIA2 as ARIA2_BOLTZ2_CONF } from '../../../modules/nf-core/aria2/main'
 
-include { ARIA2_UNCOMPRESS } from './aria2_uncompress'
+include { ARIA2_UNCOMPRESS } from '../aria2_uncompress/main'
 
 workflow PREPARE_BOLTZ_DBS {
     take:

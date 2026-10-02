@@ -2,20 +2,20 @@
 // Download all the required AlphaFold 2 databases and parameters
 //
 
-include { ARIA2_UNCOMPRESS as ARIA2_ALPHAFOLD2_PARAMS } from './aria2_uncompress'
-include { ARIA2_UNCOMPRESS as ARIA2_BFD               } from './aria2_uncompress'
-include { ARIA2_UNCOMPRESS as ARIA2_SMALL_BFD         } from './aria2_uncompress'
-include { ARIA2_UNCOMPRESS as ARIA2_MGNIFY            } from './aria2_uncompress'
-include { ARIA2_UNCOMPRESS as ARIA2_PDB70             } from './aria2_uncompress'
-include { ARIA2_UNCOMPRESS as ARIA2_OBSOLETE          } from './aria2_uncompress'
-include { ARIA2_UNCOMPRESS as ARIA2_UNIREF30          } from './aria2_uncompress'
-include { ARIA2_UNCOMPRESS as ARIA2_UNIREF90          } from './aria2_uncompress'
-include { ARIA2_UNCOMPRESS as ARIA2_UNIPROT_SPROT     } from './aria2_uncompress'
-include { ARIA2_UNCOMPRESS as ARIA2_UNIPROT_TREMBL    } from './aria2_uncompress'
-include { ARIA2 as ARIA2_PDB_SEQRES                   } from '../../modules/nf-core/aria2/main'
+include { ARIA2_UNCOMPRESS as ARIA2_ALPHAFOLD2_PARAMS } from '../aria2_uncompress/main'
+include { ARIA2_UNCOMPRESS as ARIA2_BFD               } from '../aria2_uncompress/main'
+include { ARIA2_UNCOMPRESS as ARIA2_SMALL_BFD         } from '../aria2_uncompress/main'
+include { ARIA2_UNCOMPRESS as ARIA2_MGNIFY            } from '../aria2_uncompress/main'
+include { ARIA2_UNCOMPRESS as ARIA2_PDB70             } from '../aria2_uncompress/main'
+include { ARIA2_UNCOMPRESS as ARIA2_OBSOLETE          } from '../aria2_uncompress/main'
+include { ARIA2_UNCOMPRESS as ARIA2_UNIREF30          } from '../aria2_uncompress/main'
+include { ARIA2_UNCOMPRESS as ARIA2_UNIREF90          } from '../aria2_uncompress/main'
+include { ARIA2_UNCOMPRESS as ARIA2_UNIPROT_SPROT     } from '../aria2_uncompress/main'
+include { ARIA2_UNCOMPRESS as ARIA2_UNIPROT_TREMBL    } from '../aria2_uncompress/main'
+include { ARIA2 as ARIA2_PDB_SEQRES                   } from '../../../modules/nf-core/aria2/main'
 
-include { COMBINE_UNIPROT   } from '../../modules/local/combine_uniprot'
-include { DOWNLOAD_PDBMMCIF } from '../../modules/local/download_pdbmmcif'
+include { COMBINE_UNIPROT   } from '../../../modules/local/combine_uniprot'
+include { DOWNLOAD_PDBMMCIF } from '../../../modules/local/download_pdbmmcif'
 
 workflow PREPARE_ALPHAFOLD2_DBS {
 
