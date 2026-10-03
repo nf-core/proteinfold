@@ -263,10 +263,60 @@ def derive_interface_scores(pae_matrix, struct_file, source_label):
         print(f"Skipping derived interface scores for {source_label}: {e}")
         return None
 
-def extract_structs_plddt_to_tsv(name, structures):
+def _scores_json_is_structure_only(scores_files):
+    """
+    Detect the upstream NO_CONFIDENCE_HEAD fingerprint (alphafold3-colabfold 3.1.14): every
+    scores json lacks a 'ptm' key and carries a missing or NaN 'ranking_score', so the model
+    emits all-zero B-factors and all-NaN PAE by design. Unreadable jsons disqualify the
+    structure-only path; a run where no json loads at all raises SystemExit.
+    """
+    if not scores_files:
+        return False
+    parsed = []
+    for fn in scores_files:
+        try:
+            with open(fn) as f:
+                parsed.append((fn, json.load(f)))
+        except (OSError, json.JSONDecodeError):
+            parsed.append((fn, None))
+    if all(data is None for _, data in parsed):
+        raise SystemExit(
+            f"None of the {len(scores_files)} paired scores JSON file(s) could be read "
+            f"(first failure: {parsed[0][0]}). The extraction inputs are broken, so the "
+            "run cannot be classified as structure-only or confidence; refusing to "
+            "emit a potentially misleading pLDDT table. Check that the scores JSONs "
+            "exist, are readable and contain valid JSON."
+        )
+    for _, data in parsed:
+        if data is None:
+            return False
+        if "ptm" in data:
+            return False
+        ranking_score = data.get("ranking_score")
+        if ranking_score is not None:
+            try:
+                if not np.isnan(float(ranking_score)):
+                    return False
+            except (TypeError, ValueError):
+                return False
+    return True
+
+
+def _model_type_from_scores_path(scores_path):
+    """
+    Best-effort model type from a ColabFold scores filename, e.g.
+    '<id>_scores_rank_001_esmfold2_lm300m_seed_000_sample_0.json'.
+    """
+    match = re.search(r"_scores_rank_\d+_(.+)_seed_\d+_sample_\d+\.json$", os.path.basename(scores_path))
+    return match.group(1) if match and match.group(1) else "unknown"
+
+
+def extract_structs_plddt_to_tsv(name, structures, scores_files=None):
     """
     Write out a tsv file contain pLDDTs for reading by MultiQC in nf-core/proteinfold
     Uses utils function with BioPython PDB package to extract residue pLDDT values from the b-factor column.
+    When the scores jsons carry the NO_CONFIDENCE_HEAD fingerprint and every pLDDT is
+    zero/nonpositive, publish literal 'n/a' cells instead of a misleading all-zero table.
     """
     sorted_structures = sort_paths_by_rank(structures)
     plddt_cols = [plddt_from_struct_b_factor(structure) for structure in sorted_structures]
@@ -274,6 +324,11 @@ def extract_structs_plddt_to_tsv(name, structures):
 
     if len(set(res_counts)) != 1:
         raise ValueError("Not all structures have the same number of residues!")
+
+    structure_only = all(np.all(plddt_col <= 0) for plddt_col in plddt_cols) and _scores_json_is_structure_only(scores_files)
+    if structure_only:
+        model_types = sorted({_model_type_from_scores_path(fn) for fn in scores_files})
+        print(f"{name}: structure-only model ({', '.join(model_types)}): pLDDT/PAE unavailable (no confidence head)")
 
     rank_names = []
     for idx, structure in enumerate(sorted_structures):
@@ -283,8 +338,11 @@ def extract_structs_plddt_to_tsv(name, structures):
         rank_names.append(f"rank_{rank}" if rank is not None else f"rank_{idx}")
     # Create header as the first row
     plddt_rows =  [["Positions"] + rank_names]
-    res_id_col = list(range(len(plddt_cols[0])))
-    plddt_rows.extend([list(row) for row in zip(res_id_col, *plddt_cols)])  # Combine lists column-wise to make rows
+    if structure_only:
+        plddt_rows.extend([[res_id] + ["n/a"] * len(plddt_cols) for res_id in range(res_counts[0])])
+    else:
+        res_id_col = list(range(len(plddt_cols[0])))
+        plddt_rows.extend([list(row) for row in zip(res_id_col, *plddt_cols)])  # Combine lists column-wise to make rows
     write_tsv(f"{name}_plddt.tsv", plddt_rows)
 
 def read_pkl(name, pkl_files, struct_files=None):
@@ -707,7 +765,7 @@ def main():
     if args.jsons:
         read_json(args.name, args.jsons, args.structs)
     if args.structs:
-        extract_structs_plddt_to_tsv(args.name, args.structs)
+        extract_structs_plddt_to_tsv(args.name, args.structs, args.colabfold_metrics_files)
     if args.colabfold_metrics_files:
         read_colabfold_metrics(args.name, args.colabfold_metrics_files, args.structs)
 

@@ -1,0 +1,33 @@
+nextflow_process {
+
+    name "Test Process ALPHAFOLD3_JSON_TO_COLABFOLD_FASTA"
+    script "../main.nf"
+    process "ALPHAFOLD3_JSON_TO_COLABFOLD_FASTA"
+
+    tag "modules"
+    tag "modules_local"
+    tag "alphafold3_json_to_colabfold_fasta"
+    profile "test_nostub"
+
+    test("extracts repeated protein queries without flattening rich AF3 entities") {
+        def richInput = new File('modules/local/alphafold3_json_to_colabfold_fasta/tests/data/rich_input.json').absolutePath
+
+        when {
+            process {
+                """
+                input[0] = [
+                    [ id: 'rich_sample' ],
+                    file('${richInput}', checkIfExists: true)
+                ]
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                { assert path(process.out.query_fasta[0][1]).text == '>rich_sample\nACDE:ACDE\n' }
+            )
+        }
+    }
+}

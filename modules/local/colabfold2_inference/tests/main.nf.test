@@ -1,0 +1,79 @@
+nextflow_process {
+
+    name "Test Process COLABFOLD2_INFERENCE"
+    script "../main.nf"
+    process "COLABFOLD2_INFERENCE"
+
+    tag "modules"
+    tag "modules_local"
+    tag "colabfold2_inference"
+    tag "gpu"
+    profile "test_nostub"
+
+    test("stubs ColabFold2 with the downstream output contract") {
+        options "-stub-run"
+
+        when {
+            process {
+                """
+                def inputFile = file('test.fasta')
+                inputFile.text = '>test\\nMKTAYIAKQRQISFVKSHFSRQDILD\\n'
+                def cache = file('model_cache')
+                cache.mkdirs()
+                file('model_cache/.keep').text = ''
+
+                input[0] = [[id: 'test'], inputFile]
+                input[1] = 'alphafold3'
+                input[2] = false
+                input[3] = 'colabfold2-alphafold3'
+                input[4] = 3
+                input[5] = cache
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                { assert process.out.top_ranked_structure.size() == 1 },
+                { assert process.out.structures.size() == 1 },
+                { assert process.out.msa.size() == 1 },
+                { assert process.out.pae.size() == 1 },
+                { assert process.out.iptms.size() == 1 },
+                { assert process.out.confidence.size() == 1 },
+                { assert process.out.versions_colabfold.size() == 1 },
+                { assert process.out.versions_colabfold_commit.size() == 1 },
+                { assert process.out.versions_alphafold3_colabfold.size() == 1 },
+                { assert process.out.versions_jax.size() == 1 }
+            )
+        }
+    }
+
+    test("rejects a list-valued input") {
+        when {
+            process {
+                """
+                def jsonFile1 = file('test2_record1.json')
+                jsonFile1.text = '{}'
+                def jsonFile2 = file('test2_record2.json')
+                jsonFile2.text = '{}'
+                def cache = file('model_cache_list')
+                cache.mkdirs()
+                file('model_cache_list/.keep').text = ''
+
+                input[0] = [[id: 'test2'], [jsonFile1, jsonFile2]]
+                input[1] = 'alphafold3'
+                input[2] = false
+                input[3] = 'colabfold2-alphafold3'
+                input[4] = 3
+                input[5] = cache
+                """
+            }
+        }
+
+        then {
+            assert process.failed
+            assert workflow.errorReport.contains('--split_fasta')
+        }
+    }
+}

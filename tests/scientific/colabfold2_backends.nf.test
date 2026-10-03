@@ -1,0 +1,70 @@
+/*
+    Scientific validation: the eight ColabFold2 backends not covered by colabfold2_offline.nf.test
+    or colabfold2_lm.nf.test. Each test predicts the shorter T1026 fixture and validates the real
+    structure, confidence outputs and reports. --colabfold2_kernel_backend cuda_legacy works around
+    GPUs missing from JAX 0.11.1's bundled device table; the A100/H200-validated modes keep 'auto'.
+*/
+
+nextflow_pipeline {
+
+    name "Scientific validation: remaining ColabFold2 backends"
+    script "../../main.nf"
+    tag "scientific"
+    tag "output_validation"
+    tag "structure_validation"
+    tag "colabfold2"
+    profile "test_full_colabfold2,gpu"
+
+    def backends = [
+        [mode: 'colabfold2-boltz2', name: 'Boltz2'],
+        [mode: 'protenix2',         name: 'Protenix2'],
+        [mode: 'chai1',             name: 'Chai1'],
+        [mode: 'intellifold2',      name: 'IntelliFold2'],
+        [mode: 'opendde',           name: 'OpenDDE'],
+        [mode: 'openfold3',         name: 'OpenFold3'],
+        [mode: 'openbind0',         name: 'OpenBind0'],
+        [mode: 'rosettafold3',      name: 'RoseTTAFold3']
+    ]
+
+    backends.each { backend ->
+        test("ColabFold2 ${backend.name}: validate outputs") {
+            tag "colabfold2-${backend.mode}"
+            options "--mode ${backend.mode} --use_gpu"
+            def samplesheet = new File('tests/scientific/fixtures/colabfold2_single.csv').absolutePath
+
+            when {
+                params {
+                    outdir = "$outputDir"
+                    input  = samplesheet
+                    colabfold_db = System.getenv('PROTEINFOLD_TEST_DB')
+                    colabfold2_params_path = System.getenv('PROTEINFOLD_CF2_CACHE')
+                        ?: System.getenv('PROTEINFOLD_TEST_DB') + '/colabfold2_models'
+                    // JAX 0.11.1's Pallas device table misses some supported GPUs
+                    // (L40S, V100); the legacy fused-kernel path bypasses it.
+                    colabfold2_kernel_backend = 'cuda_legacy'
+                }
+            }
+
+            then {
+                assert workflow.success: "ColabFold2 ${backend.name} workflow failed (exit ${workflow.exitStatus})"
+                def validator = new File('tests/scientific/validate_outputs.py').absolutePath
+                def command = [
+                    'python3', validator,
+                    '--mode', backend.mode,
+                    '--display-name', "ColabFold2 ${backend.name}",
+                    '--extension', '.cif',
+                    '--outdir', params.outdir.toString(),
+                    '--samplesheet', params.input.toString(),
+                    '--require-pae'
+                ]
+                def process = command.execute()
+                def stdout = new StringBuffer()
+                def stderr = new StringBuffer()
+                process.consumeProcessOutput(stdout, stderr)
+                assert process.waitFor() == 0: "${stdout}\n${stderr}"
+                println stdout
+                assert file("${params.outdir}/pipeline_info/nf_core_proteinfold_software_mqc_versions.yml").size() > 0
+            }
+        }
+    }
+}

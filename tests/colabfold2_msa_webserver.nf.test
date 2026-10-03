@@ -1,0 +1,45 @@
+/*
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ColabFold2 MSA server stub test
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    Exercises the ColabFold2 MSA-server leg, using stubbed process execution.
+*/
+
+nextflow_pipeline {
+
+    name "Test ColabFold2 MSA server stub"
+    script "../main.nf"
+    tag "pipeline"
+    tag "test_colabfold2_webserver"
+    profile "test_colabfold2"
+
+    test("ColabFold2 MSA server") {
+        when {
+            params {
+                outdir          = "$outputDir"
+                use_msa_server  = true
+                msa_server_url  = 'https://api.colabfold.com'
+            }
+        }
+
+        then {
+            def stable_name = getAllFilesFromDir(params.outdir, relative: true, includeDir: true, ignore: ['pipeline_info/*.{html,json,txt}'])
+            assert workflow.success
+            def versions_path = new File(params.outdir.toString() + "/pipeline_info/nf_core_proteinfold_software_mqc_versions.yml").absolutePath
+            def versions_report = new File(versions_path).readLines()
+            assert versions_report.any { it.contains(":COLABFOLD2:ALPHAFOLD3:") }
+            ['T1024', 'T1026'].each { id ->
+                assert stable_name.contains("colabfold2-alphafold3/top_ranked_structures/${id}.cif".toString())
+                assert stable_name.contains("colabfold2-alphafold3/${id}/paes/${id}_1_pae.tsv".toString())
+                assert stable_name.contains("colabfold2-alphafold3/${id}/${id}_plddt.tsv".toString())
+                assert stable_name.contains("colabfold2-alphafold3/${id}/${id}_colabfold2_msa.tsv".toString())
+                assert stable_name.contains("reports/${id}_colabfold2_report.html".toString())
+            }
+            assert stable_name.contains('multiqc/multiqc_report.html')
+            assert snapshot(
+                workflow.trace.succeeded().size(),
+                removeNextflowVersion("$outputDir/pipeline_info/nf_core_proteinfold_software_mqc_versions.yml")
+            ).match()
+        }
+    }
+}

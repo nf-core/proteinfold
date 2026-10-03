@@ -44,6 +44,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[PR #59](https://github.com/Australian-Structural-Biology-Computing/proteinfold/pull/59)] - Add batching for local ColabFold MMseqs2 searches with `--msa_batch_size`.
 - [[PR #60](https://github.com/Australian-Structural-Biology-Computing/proteinfold/pull/60)] - Add optional samplesheet A3M input for ColabFold, bypassing MSA generation for supplied samples.
 - [[PR #71](https://github.com/Australian-Structural-Biology-Computing/proteinfold/pull/71)] - Update and replace the CBCRG AlphaFold2 fork with upstream (DeepMind) AlphaFold2.
+- [[PR #53](https://github.com/Australian-Structural-Biology-Computing/proteinfold/pull/53)] - Add ColabFold2 prediction modes, including ESMFold2 model selection.
 
 | Old parameter              | New parameter   |
 | -------------------------- | --------------- |

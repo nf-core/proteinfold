@@ -1,0 +1,61 @@
+/*
+    Scientific validation: all three ColabFold2 ESMFold2 model selections.
+
+    The msa selection validates finite confidence outputs; lm300m and lm600m select the ESM-C
+    language-model checkpoints and validate the structure-only output contract (the cache must
+    contain the *.lm.npz checkpoint and unsuffixed esmc_300m/esmc_600m trunk).
+    PROTEINFOLD_TEST_DB / PROTEINFOLD_CF2_CACHE override the database and weights roots.
+*/
+
+nextflow_pipeline {
+
+    name "Scientific validation: ColabFold2 ESMFold2 models"
+    script "../../main.nf"
+    tag "scientific"
+    tag "output_validation"
+    tag "structure_validation"
+    tag "colabfold2"
+    tag "esmfold2"
+    profile "test_full_colabfold2,gpu"
+
+    def models = [
+        [name: 'msa',    structure_only: false],
+        [name: 'lm300m', structure_only: true],
+        [name: 'lm600m', structure_only: true]
+    ]
+
+    models.each { model ->
+        test("ColabFold2 esmfold2_model=${model.name}: validate outputs") {
+            options "--mode esmfold2 --esmfold2_model ${model.name} --use_gpu"
+
+            when {
+                params {
+                    outdir = "$outputDir"
+                    input  = 'https://raw.githubusercontent.com/nf-core/test-datasets/proteinfold/testdata/samplesheet/v2.0/samplesheet.csv'
+                    colabfold_db = System.getenv("PROTEINFOLD_TEST_DB") ?: 's3://proteinfold-dataset/test-data/mini_dbs'
+                    colabfold2_params_path = System.getenv("PROTEINFOLD_CF2_CACHE")
+                        ?: (System.getenv("PROTEINFOLD_TEST_DB") ?: 's3://proteinfold-dataset/test-data/mini_dbs') + '/colabfold2_models'
+                }
+            }
+
+            then {
+                assert workflow.success: "ColabFold2 ${model.name} workflow failed (exit ${workflow.exitStatus})"
+                def validator = new File("tests/scientific/validate_outputs.py").absolutePath
+                def command = ["python3", validator, "--mode", "esmfold2",
+                               "--display-name", "ColabFold2 ESMFold2 ${model.name}",
+                               "--extension", ".cif", "--outdir", params.outdir.toString(),
+                               "--samplesheet", params.input.toString(), "--require-pae"]
+                if (model.structure_only) {
+                    command << "--structure-only"
+                }
+                def process = command.execute()
+                def stdout = new StringBuffer()
+                def stderr = new StringBuffer()
+                process.consumeProcessOutput(stdout, stderr)
+                assert process.waitFor() == 0: "${stdout}\n${stderr}"
+                println stdout
+                assert file("${params.outdir}/pipeline_info/nf_core_proteinfold_software_mqc_versions.yml").size() > 0
+            }
+        }
+    }
+}

@@ -1,0 +1,41 @@
+name: "alphafold3_json_to_colabfold_fasta"
+description: Convert an AlphaFold3 input JSON to a ColabFold-compatible query FASTA file.
+tools: []
+input:
+  - - meta:
+        type: map
+        description: Groovy Map containing sample information.
+    - input_json:
+        type: file
+        description: AlphaFold3-style input JSON containing the query sequences.
+        pattern: "*.json"
+output:
+  query_fasta:
+    - - meta:
+          type: map
+          description: Groovy Map containing sample information.
+      - "${meta.id}.fasta":
+          type: file
+          description: ColabFold-compatible query FASTA file.
+          pattern: "*.fasta"
+  versions:
+    - - "${task.process}":
+          type: string
+          description: The process the versions were collected from.
+      - python:
+          type: string
+          description: The tool name.
+      - "python3 --version | sed 's/Python //g'":
+          type: eval
+          description: The expression to obtain the version of the tool.
+topics:
+  versions:
+    - - "${task.process}":
+          type: string
+          description: The process the versions were collected from.
+      - python:
+          type: string
+          description: The tool name.
+      - "python3 --version | sed 's/Python //g'":
+          type: eval
+          description: The expression to obtain the version of the tool.

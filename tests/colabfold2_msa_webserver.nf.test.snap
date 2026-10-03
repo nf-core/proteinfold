@@ -1,0 +1,22 @@
+{
+    "ColabFold2 MSA server": {
+        "content": [
+            6,
+            {
+                "NFCORE_PROTEINFOLD:COLABFOLD2:ALPHAFOLD3:alphafold3_colabfold": "3.1.14",
+                "NFCORE_PROTEINFOLD:COLABFOLD2:ALPHAFOLD3:colabfold": "1.6.3",
+                "NFCORE_PROTEINFOLD:COLABFOLD2:ALPHAFOLD3:colabfold_commit": "f850f0f22f007355bd264d48e9ed263d59331426",
+                "NFCORE_PROTEINFOLD:COLABFOLD2:ALPHAFOLD3:jax": "0.11.1",
+                "NFCORE_PROTEINFOLD:POST_PROCESSING:GENERATE_MULTIQC_CONTENTS:generate_multiqc_contents.py": "3.14.0",
+                "NFCORE_PROTEINFOLD:POST_PROCESSING:GENERATE_MULTIQC_CONTENTS:python": "3.14.0",
+                "NFCORE_PROTEINFOLD:POST_PROCESSING:GENERATE_REPORT:generate_report.py": "3.12.7",
+                "NFCORE_PROTEINFOLD:POST_PROCESSING:GENERATE_REPORT:python": "3.12.7"
+            }
+        ],
+        "timestamp": "2026-10-03T23:43:42.343288074",
+        "meta": {
+            "nf-test": "0.9.4",
+            "nextflow": "25.10.4"
+        }
+    }
+}
