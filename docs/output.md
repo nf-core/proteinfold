@@ -12,6 +12,7 @@ The pipeline is built using [Nextflow](https://www.nextflow.io/) and predicts pr
 - [AlphaFold3](https://github.com/google-deepmind/alphafold3)
 - [Boltz](https://github.com/jwohlwend/boltz)
 - [ColabFold](https://github.com/sokrypton/ColabFold)
+- [ColabFold2](https://github.com/sokrypton/ColabFold)
 - [ESMFold](https://github.com/facebookresearch/esm)
 
 See main [README.md](https://github.com/nf-core/proteinfold/blob/master/README.md) for a condensed overview of the steps in the pipeline, and the bioinformatics tools used at each step.
@@ -34,6 +35,26 @@ User-facing outputs are largely consistent across modes.
 - `<MODE>/<SEQUENCE NAME>/<SEQUENCE NAME>_{ptm,iptm,ipsae}.tsv` and chainwise summaries (where applicable)
 
 </details>
+
+### ColabFold2
+
+ColabFold2 outputs are published directly under the selected public mode token, for example `colabfold2-alphafold3/<SEQUENCE NAME>/`, `colabfold2-boltz2/<SEQUENCE NAME>/`, or `opendde/<SEQUENCE NAME>/`. All three ESMFold2 model selections publish under `esmfold2/<SEQUENCE NAME>/`.
+
+<details markdown="1">
+<summary>Output files</summary>
+
+- `<MODE>/` (the selected public mode token)
+  - `top_ranked_structures/<SEQUENCE NAME>.cif` (top-ranked structure per input)
+  - `<SEQUENCE NAME>/<SEQUENCE NAME>_plddt.tsv`
+  - `<SEQUENCE NAME>/<SEQUENCE NAME>_{confidence,ptm,iptm,ipsae,chainwise_iptm,chainwise_ipsae}.tsv`
+  - `<SEQUENCE NAME>/<SEQUENCE NAME>_colabfold2_msa.tsv`
+  - `<SEQUENCE NAME>/paes/<SEQUENCE NAME>_1_pae.tsv` (rank-1 only; published when the backend emits a PAE)
+  - `<SEQUENCE NAME>/raw/` (published when `--save_intermediates` is enabled)
+
+</details>
+
+> [!NOTE]
+> `--mode esmfold2 --esmfold2_model lm300m` and `--mode esmfold2 --esmfold2_model lm600m` select structure-only ESM-C models with no confidence head. Their pLDDT tables contain `n/a`, their PAE matrices contain `NaN`, and unavailable summary metrics are empty.
 
 ### pLDDT (`{meta.id}_plddt.tsv`)
 
@@ -220,6 +241,7 @@ Examples include:
 
 - `alphafold2/<MODE>/<SEQUENCE NAME>/raw/`
 - `colabfold/<SEQUENCE NAME>/raw/`
+- `<MODE>/<SEQUENCE NAME>/raw/` for ColabFold2 modes
 - `boltz/<SEQUENCE NAME>/boltz_results_<SEQUENCE NAME>/`
 - `alphafold3/<SEQUENCE NAME>/raw/`
 
@@ -229,4 +251,5 @@ These raw outputs are intended for advanced debugging, reproducibility and metho
 - [AlphaFold3](https://github.com/google-deepmind/alphafold3/blob/main/docs/output.md)
 - [Boltz](https://github.com/jwohlwend/boltz/blob/main/docs/prediction.md#output)
 - [ColabFold](https://www.ebi.ac.uk/training/online/courses/alphafold/advanced-modeling-and-applications-of-predicted-protein-structures/customising-alphafold-structure-predictions/outputs-from-colabfold/)
+- [ColabFold2](./usage/colabfold2.md)
 - [ESMFold](https://github.com/facebookresearch/esm)

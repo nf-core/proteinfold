@@ -44,7 +44,7 @@ nextflow run nf-core/proteinfold \
    -profile <docker/singularity/.../institute> \
    --input samplesheet.csv \
    --outdir <OUTDIR> \
-   --mode <alphafold2/alphafold3/esmfold/colabfold/boltz> \
+   --mode <MODE> \
    --db <DBDIR>
 ```
 
@@ -151,6 +151,7 @@ Alternatively, the required data layout for each of the individual modes is desc
 - [AlphaFold3](./usage/alphafold3.md)
 - [Boltz](./usage/boltz.md)
 - [ColabFold](./usage/colabfold.md)
+- [ColabFold2](./usage/colabfold2.md)
 - [ESMFold](./usage/esmfold.md)
 
 > Omitting the `--db` flag will allow the pipeline to download the reference data required to execute the selected modes.

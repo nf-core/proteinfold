@@ -20,12 +20,15 @@ include { PREPARE_ALPHAFOLD3_DBS           } from './subworkflows/local/prepare_
 include { PREPARE_ESMFOLD_DBS              } from './subworkflows/local/prepare_esmfold_dbs'
 include { PREPARE_BOLTZ_DBS                } from './subworkflows/local/prepare_boltz_dbs'
 
-include { PREPARE_COLABFOLD_DBS  as PREPARE_COLABFOLD_DBS_COLABFOLD } from './subworkflows/local/prepare_colabfold_dbs'
-include { PREPARE_COLABFOLD_DBS  as PREPARE_COLABFOLD_DBS_BOLTZ     } from './subworkflows/local/prepare_colabfold_dbs'
+include { PREPARE_COLABFOLD_DBS  as PREPARE_COLABFOLD_DBS_COLABFOLD  } from './subworkflows/local/prepare_colabfold_dbs'
+include { PREPARE_COLABFOLD_DBS  as PREPARE_COLABFOLD_DBS_BOLTZ      } from './subworkflows/local/prepare_colabfold_dbs'
+include { PREPARE_COLABFOLD_DBS  as PREPARE_COLABFOLD_DBS_COLABFOLD2 } from './subworkflows/local/prepare_colabfold_dbs'
+include { PREPARE_COLABFOLD2_DBS               } from './subworkflows/local/prepare_colabfold2_dbs'
 
 include { ALPHAFOLD2                       } from './workflows/alphafold2'
 include { ALPHAFOLD3                       } from './workflows/alphafold3'
 include { COLABFOLD                        } from './workflows/colabfold'
+include { COLABFOLD2                       } from './workflows/colabfold2'
 include { ESMFOLD                          } from './workflows/esmfold'
 include { BOLTZ                            } from './workflows/boltz'
 
@@ -58,6 +61,67 @@ workflow NFCORE_PROTEINFOLD {
 
     if (requested_modes.contains("colabfold") && params.colabfold_use_templates && !params.use_msa_server) {
         error("`--colabfold_use_templates` requires `--use_msa_server` in ColabFold mode.")
+    }
+
+    // Backends are named after the tool each one runs; alphafold3 and boltz2 need the colabfold2- prefix to avoid clashing with existing modes.
+    colabfold2_prefixed_models = [ 'alphafold3', 'boltz2' ]
+    colabfold2_bare_models     = [
+        'openfold3', 'openbind0', 'protenix2', 'chai1', 'intellifold2', 'opendde',
+        'rosettafold3', 'esmfold2'
+    ]
+    colabfold2_mode_tokens = ( colabfold2_prefixed_models.collect { "colabfold2-${it}".toString() } + colabfold2_bare_models )
+    // Trim every token before matching so that whitespace around commas in
+    // `--mode a,b` cannot leak into backend parsing; clean input is unaffected.
+    colabfold2_submodes = requested_modes
+        .collect { mode -> mode.trim() }
+        .findAll { mode -> colabfold2_mode_tokens.contains(mode) }
+    if (requested_modes.collect { it.trim() }.contains('colabfold2')) {
+        error("The bare `colabfold2` mode selects no backend. Name one, e.g. `--mode colabfold2-alphafold3`, or one of: ${colabfold2_bare_models.join(', ')}.")
+    }
+    // Fail lookalike tokens (retired spellings, mistyped backends) here rather than silently running nothing.
+    colabfold2_lookalikes = requested_modes
+        .collect { mode -> mode.trim() }
+        .findAll { mode -> mode.startsWith('colabfold2') || mode.startsWith('colabfold-') }
+    colabfold2_unknown_submodes = requested_modes
+        .collect { mode -> mode.trim() }
+        .findAll { mode ->
+            mode != 'colabfold2' &&
+            !colabfold2_submodes.contains(mode) &&
+            ( colabfold2_lookalikes.contains(mode) || ( colabfold2_bare_models + colabfold2_prefixed_models ).any { backend -> mode.startsWith(backend) && mode != backend } )
+        }
+    if (colabfold2_unknown_submodes) {
+        error("Unknown ColabFold2 mode(s): ${colabfold2_unknown_submodes.join(', ')}. Supported modes: ${colabfold2_mode_tokens.join(', ')}.")
+    }
+    if (colabfold2_submodes.size() > 1) {
+        error("Running multiple ColabFold2 backends in one invocation is not supported yet; run them separately.")
+    }
+    // The public mode token is also the output namespace; esmfold2 selects its model separately.
+    colabfold2_public_mode = colabfold2_submodes ? colabfold2_submodes[0] : null
+    colabfold2_esmfold2_models = [
+        'msa'    : [ model_type: 'esmfold2',        use_esm: false ],
+        'lm300m' : [ model_type: 'esmfold2_lm300m', use_esm: true  ],
+        'lm600m' : [ model_type: 'esmfold2_lm600m', use_esm: true  ]
+    ]
+    colabfold2_esmfold2_selection = params.esmfold2_model ?: 'msa'
+    if (colabfold2_public_mode == 'colabfold2-alphafold3' && params.colabfold2_weights_precision == 'int8') {
+        error("ColabFold2 official alphafold3 supports fp32 weights only; --colabfold2_weights_precision int8 cannot be used with --mode colabfold2-alphafold3.")
+    }
+    if (colabfold2_public_mode == 'esmfold2') {
+        def esmfold2_model = colabfold2_esmfold2_models[colabfold2_esmfold2_selection]
+        if (esmfold2_model == null) {
+            error("Unsupported --esmfold2_model '${colabfold2_esmfold2_selection}'. Choose one of: ${colabfold2_esmfold2_models.keySet().join(', ')}.")
+        }
+        colabfold2_model_for_submode = esmfold2_model.model_type
+        colabfold2_use_esm = esmfold2_model.use_esm
+    } else {
+        // Prefixed tokens carry the upstream name after the prefix; bare tokens are already upstream names.
+        colabfold2_model_for_submode = colabfold2_public_mode ?
+            colabfold2_public_mode.replaceFirst(/^colabfold2-/, '') : null
+        colabfold2_use_esm = false
+    }
+    // Only assert when a ColabFold2 backend was actually requested; the resolution above yields null otherwise.
+    if (colabfold2_submodes && !(colabfold2_model_for_submode in ( colabfold2_prefixed_models + colabfold2_bare_models + [ 'esmfold2_lm300m', 'esmfold2_lm600m' ] ))) {
+        error("ColabFold2 mode '${colabfold2_submodes[0]}' resolved to backend '${colabfold2_model_for_submode}', which is not a supported AlphaFold3-family backend. Supported modes: ${colabfold2_mode_tokens.join(', ')}.")
     }
 
     ch_dummy_file = channel.fromPath("$projectDir/assets/NO_FILE")
@@ -285,6 +349,68 @@ workflow NFCORE_PROTEINFOLD {
     }
 
     //
+    // WORKFLOW: Run the experimental ColabFold2 multi-model preview
+    //
+    if(!colabfold2_submodes.isEmpty()) {
+        if (!params.colabfold2_params_path || (!params.colabfold_db && !params.use_msa_server)) {
+            error("ColabFold2 needs a weights root: set --db/--colabfold_db (weights are then read from <colabfold_db>/colabfold2_models) or point --colabfold2_params_path at the weights directory directly. Offline runs additionally require --colabfold_db for the MMseqs2 search; the --use_msa_server leg needs only the weights root.")
+        }
+        PREPARE_COLABFOLD2_DBS (
+            params.colabfold2_params_path,
+            colabfold2_model_for_submode,
+            params.colabfold2_weights_precision
+        )
+        ch_colabfold2_params_path = PREPARE_COLABFOLD2_DBS.out.params_path
+
+        // The consented remote-MSA leg never consumes the ColabFold search databases, so skip
+        // database preparation: its download path would fetch AF2 parameters colabfold2 never reads.
+        ch_colabfold2_db       = channel.empty()
+        ch_colabfold2_uniref30 = channel.empty()
+        if (!params.use_msa_server) {
+            //
+            // SUBWORKFLOW: Prepare Colabfold DBs
+            //
+            PREPARE_COLABFOLD_DBS_COLABFOLD2 (
+                params.colabfold_db,
+                params.use_msa_server,
+                params.colabfold_alphafold2_params_path,
+                params.colabfold_envdb_path,
+                params.colabfold_uniref30_path,
+                params.colabfold_alphafold2_params_link,
+                params.colabfold_db_link,
+                params.colabfold_uniref30_link,
+                params.colabfold_create_index
+            )
+            ch_colabfold2_db       = PREPARE_COLABFOLD_DBS_COLABFOLD2.out.colabfold_db
+            ch_colabfold2_uniref30 = PREPARE_COLABFOLD_DBS_COLABFOLD2.out.uniref30
+        }
+
+        // PREPARE_COLABFOLD_DBS_COLABFOLD2.out.params carries AF2 parameters that colabfold2 never reads.
+        COLABFOLD2(
+            ch_samplesheet,
+            ch_colabfold2_params_path,
+            colabfold2_model_for_submode,
+            colabfold2_use_esm,
+            colabfold2_public_mode,
+            params.colabfold_num_recycles,
+            ch_colabfold2_db,
+            ch_colabfold2_uniref30
+        )
+
+        ch_multiqc      = ch_multiqc.mix(COLABFOLD2.out.multiqc_metrics)
+        ch_report_input = ch_report_input.mix(
+            COLABFOLD2.out.pdb
+                .join(COLABFOLD2.out.msa)
+                .join(COLABFOLD2.out.pae)
+                .join(COLABFOLD2.out.iptm)
+                .join(COLABFOLD2.out.ipsae)
+                .join(COLABFOLD2.out.chainwise_iptm)
+                .join(COLABFOLD2.out.chainwise_ipsae)
+        )
+        ch_top_ranked_model = ch_top_ranked_model.mix(COLABFOLD2.out.top_ranked_pdb)
+    }
+
+    //
     // WORKFLOW: Run esmfold
     //
     if(requested_modes.contains("esmfold")) {
@@ -390,6 +516,7 @@ workflow NFCORE_PROTEINFOLD {
         alphafold2:           'jackhmmer',
         alphafold3:           'jackhmmer',
         colabfold:            'mmseqs2',
+        colabfold2:           'mmseqs2',
         boltz:                'mmseqs2',
         esmfold:              'None',
     ]

@@ -1,0 +1,5 @@
+name: merge_alphafold3_msa
+channels:
+  - conda-forge
+dependencies:
+  - conda-forge::python=3.13.7

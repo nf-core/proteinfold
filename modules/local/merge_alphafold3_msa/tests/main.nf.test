@@ -1,0 +1,48 @@
+nextflow_process {
+
+    name "Test Process MERGE_ALPHAFOLD3_MSA"
+    script "../main.nf"
+    process "MERGE_ALPHAFOLD3_MSA"
+
+    tag "modules"
+    tag "modules_local"
+    tag "merge_alphafold3_msa"
+    profile "test_nostub"
+
+    test("adds MMseqs MSAs while preserving rich AlphaFold3 metadata") {
+        def searchedJson = new File('modules/local/merge_alphafold3_msa/tests/data/searched.json').absolutePath
+        def originalJson = new File('modules/local/merge_alphafold3_msa/tests/data/original.json').absolutePath
+
+        when {
+            process {
+                """
+                input[0] = [
+                    [ id: 'rich_sample' ],
+                    file('${searchedJson}', checkIfExists: true),
+                    file('${originalJson}', checkIfExists: true)
+                ]
+                """
+            }
+        }
+
+        then {
+            def merged = new groovy.json.JsonSlurper().parse(path(process.out.json[0][1]))
+            def protein = merged.sequences[0].protein
+            def generatedProtein = merged.sequences[1].protein
+            assertAll(
+                { assert process.success },
+                { assert protein.id == ['A', 'D'] },
+                { assert protein.modifications[0].ptmType == 'CCD_SEP' },
+                { assert protein.templates[0].mmcif == 'example' },
+                { assert protein.unpairedMsa.startsWith('>user') },
+                { assert protein.pairedMsa == '' },
+                { assert generatedProtein.unpairedMsa.contains('>hit') },
+                { assert generatedProtein.pairedMsa.startsWith('>query') },
+                { assert merged.sequences[2].rna.sequence == 'AUCG' },
+                { assert merged.sequences[3].ligand.smiles == 'CCO' },
+                { assert merged.bondedAtomPairs != null },
+                { assert merged.userCCD == 'data_custom\n#' }
+            )
+        }
+    }
+}

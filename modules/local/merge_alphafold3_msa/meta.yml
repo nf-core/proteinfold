@@ -1,0 +1,45 @@
+name: "merge_alphafold3_msa"
+description: Merge an MSA returned by a ColabFold webserver search back into the original AlphaFold3 input JSON.
+tools: []
+input:
+  - - meta:
+        type: map
+        description: Groovy Map containing sample information.
+    - msa_json:
+        type: file
+        description: AlphaFold3-style MSA JSON returned by the webserver search.
+        pattern: "*.json"
+    - original_json:
+        type: file
+        description: Original AlphaFold3 input JSON used to initiate the search.
+        pattern: "*.json"
+output:
+  json:
+    - - meta:
+          type: map
+          description: Groovy Map containing sample information.
+      - "${meta.id}.json":
+          type: file
+          description: Merged AlphaFold3 input JSON containing the searched MSA.
+          pattern: "*.json"
+  versions:
+    - - "${task.process}":
+          type: string
+          description: The process the versions were collected from.
+      - python:
+          type: string
+          description: The tool name.
+      - "python3 --version | sed 's/Python //g'":
+          type: eval
+          description: The expression to obtain the version of the tool.
+topics:
+  versions:
+    - - "${task.process}":
+          type: string
+          description: The process the versions were collected from.
+      - python:
+          type: string
+          description: The tool name.
+      - "python3 --version | sed 's/Python //g'":
+          type: eval
+          description: The expression to obtain the version of the tool.

@@ -33,6 +33,7 @@ On release, automated continuous integration tests run the pipeline on a full-si
 | [AlphaFold2](https://github.com/deepmind/alphafold)         |   ✅    | ❌  |       ❌       | ❌  |     ❌      | ❌  |     ❌     |    ✅     |
 | [ESMFold](https://github.com/facebookresearch/esm)          |   ✅    | ❌  |       ❌       | ❌  |     ❌      | ✅  |     ❌     |    ❌     |
 | [ColabFold](https://github.com/sokrypton/ColabFold)         |   ✅    | ❌  |       ❌       | ❌  |     ❌      | ❌  |     ✅     |    ✅     |
+| [ColabFold2](https://github.com/sokrypton/ColabFold)        |   ✅    | ✅  |       ✅       | ✅  |     ❌      | ✅  |     ✅     |    ❌     |
 | [AlphaFold3](https://github.com/google-deepmind/alphafold3) |   ✅    | ✅  |       ✅       | ✅  |     ❌      | ❌  |     ❌     |    ✅     |
 | [Boltz](https://github.com/jwohlwend/boltz/)                |   ✅    | ✅  |       ✅       | ✅  |     ✅      | ❌  |     ✅     |    ✅     |
 
@@ -78,7 +79,7 @@ nextflow run nf-core/proteinfold \
    -profile <docker/singularity/.../institute> \
    --input samplesheet.csv \
    --outdir <OUTDIR> \
-   --mode <alphafold2/alphafold3/esmfold/colabfold/boltz>
+   --mode <MODE>
 ```
 
 The pipeline takes care of downloading the databases and parameters required by each of the modes. In case you have already downloaded the required files, you can skip this step by providing the path to the databases using the `--db` parameter.
@@ -95,7 +96,7 @@ nextflow run nf-core/proteinfold \
 > [!WARNING]
 > The reference data for most methods is extremely large and may exceed individual user disk allocations on shared HPC systems.
 
-In order to run multiple methods simultaneously where reference data is stored at different locations, the `--db` flag can be overwritten for each specific mode (e.g. `--alphafold2_db`, `--alphafold3_db`, `--colabfold_db`, and `--esmfold_db`). Please refer to the [usage documentation](https://nf-co.re/proteinfold/usage) to check the directory structure you must provide for each database.
+In order to run multiple methods simultaneously where reference data is stored at different locations, the `--db` flag can be overwritten for each specific mode (e.g. `--alphafold2_db`, `--alphafold3_db`, `--colabfold_db` (shared with the ColabFold2 modes), and `--esmfold_db`). Please refer to the [usage documentation](https://nf-co.re/proteinfold/usage) to check the directory structure you must provide for each database.
 
 > [!WARNING]
 > Please provide pipeline parameters via the CLI or Nextflow `-params-file` option. Custom config files including those provided by the `-c` Nextflow option can be used to provide any configuration _**except for parameters**_; see [docs](https://nf-co.re/docs/running/run-pipelines#using-parameter-files).

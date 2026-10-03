@@ -1,0 +1,20 @@
+{
+  "dialect": "alphafold3",
+  "version": 2,
+  "name": "rich_sample",
+  "sequences": [
+    {
+      "protein": {
+        "id": ["A", "D"],
+        "sequence": "ACDE",
+        "modifications": [{"ptmType": "CCD_SEP", "ptmPosition": 2}],
+        "templates": []
+      }
+    },
+    {"rna": {"id": "B", "sequence": "AUCG", "modifications": []}},
+    {"ligand": {"id": "C", "smiles": "CCO"}}
+  ],
+  "modelSeeds": [1],
+  "bondedAtomPairs": [[[["A", 1, "CA"], ["C", 1, "C1"]]]],
+  "userCCD": "data_custom\n#"
+}

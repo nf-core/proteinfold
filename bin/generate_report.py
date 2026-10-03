@@ -493,6 +493,7 @@ model_name = {
     "alphafold2": "AlphaFold2",
     "alphafold3": "Alphafold3",
     "colabfold": "ColabFold",
+    "colabfold2": "ColabFold2",
     "boltz": "Boltz"
 }
 

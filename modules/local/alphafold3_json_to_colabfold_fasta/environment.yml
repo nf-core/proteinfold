@@ -1,0 +1,5 @@
+name: alphafold3_json_to_colabfold_fasta
+channels:
+  - conda-forge
+dependencies:
+  - conda-forge::python=3.13.7

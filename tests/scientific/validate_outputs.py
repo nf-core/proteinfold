@@ -1,5 +1,23 @@
 #!/usr/bin/env python3
-"""Validate ProteinFold scientific-test structures and confidence metrics."""
+"""Validate ProteinFold scientific-test structures and confidence metrics.
+
+ColabFold2-specific behaviour (shared with the upstream per-mode checks):
+
+* ColabFold2 backends publish directly under their public mode token. Most are
+  requested by their own name (``--mode opendde`` -> ``opendde``); only
+  ``alphafold3`` and ``boltz2`` need the ``colabfold2-`` prefix, because those two
+  names already select the standalone AlphaFold3 and Boltz modes. The retired
+  ``-af3`` short form no longer resolves.
+* ``--structure-only`` relaxes the confidence gates for the ESMFold2
+  language-model backends, which ship no confidence head by upstream design
+  (NO_CONFIDENCE_HEAD): pLDDT cells are literal ``n/a`` (or all-zero in older
+  extractions) and the PAE matrix is all-NaN, so the validator requires those
+  exact identity markers in addition to file shape and squareness.
+* Interface metrics (``*_iptm.tsv``, ``*_chainwise_iptm.tsv``, ``*_ipsae.tsv``,
+  ``*_chainwise_ipsae.tsv``) are validated wherever they carry content and
+  tolerated as empty placeholders, which is what monomer and structure-only
+  runs emit so downstream joins keep every sample.
+"""
 
 import argparse
 import csv
@@ -18,6 +36,38 @@ warnings.filterwarnings("ignore", category=PDBConstructionWarning, message=".*Ig
 warnings.filterwarnings("error", category=PDBConstructionWarning, message=".*discontinuous.*")
 warnings.filterwarnings("error", category=PDBConstructionWarning, message=".*duplicate.*")
 warnings.filterwarnings("error", category=PDBConstructionWarning, message=".*could not assign element.*")
+
+# Interface metrics published alongside the per-sample TSVs. Monomers and
+# structure-only models emit them as empty placeholders.
+INTERFACE_SUFFIXES = ("_iptm.tsv", "_chainwise_iptm.tsv", "_ipsae.tsv", "_chainwise_ipsae.tsv")
+
+# ColabFold2 backends publish their metrics under the shared 'colabfold2' model namespace (meta.model, pinned in workflows/colabfold2.nf).
+COLABFOLD2_MODES = frozenset({
+    "colabfold2-alphafold3", "colabfold2-boltz2", "esmfold2", "protenix2",
+    "chai1", "intellifold2", "opendde", "openfold3", "openbind0", "rosettafold3",
+})
+
+
+# Backends reachable only behind the colabfold2- prefix, because the bare name selects an
+# existing standalone mode. Kept in step with colabfold2_prefixed_models in main.nf.
+COLABFOLD2_PREFIXED = ("alphafold3", "boltz2")
+
+# Backends requested by their own name; the bare `esmfold2` here is upstream's JAX
+# ESMFold2, distinct from the `esmfold` mode's esm-fold 1.0.3 PyTorch package.
+COLABFOLD2_BARE = (
+    "protenix2", "chai1", "intellifold2", "opendde", "openfold3", "openbind0",
+    "rosettafold3", "esmfold2",
+)
+ESMFOLD2_RETIRED = {"esmfold2_lm300m", "esmfold2_lm600m"}
+
+
+def resolve_mode_dir(outdir: Path, mode: str) -> Path:
+    """Map a public mode token to its published output directory."""
+    if mode in ESMFOLD2_RETIRED:
+        raise ValueError(f"Retired ESMFold2 mode token: {mode}; use --mode esmfold2 with --esmfold2_model")
+    if mode in {f"colabfold2-{backend}" for backend in COLABFOLD2_PREFIXED} or mode in COLABFOLD2_BARE:
+        return outdir / mode
+    return outdir / mode
 
 
 def input_ids(samplesheet: str) -> list[str]:
@@ -76,27 +126,59 @@ def validate_structure(path: Path) -> int:
     return len(residues)
 
 
-def validate_plddt(path: Path) -> tuple[int, int, float]:
+def validate_plddt(path: Path, structure_only: bool = False) -> tuple[int, int, float | None]:
     rows = [line.split("\t") for line in path.read_text().splitlines()]
     assert len(rows) > 1, f"pLDDT file has no data rows: {path}"
     assert rows[0][0] == "Positions", f"Unexpected pLDDT header in {path}: {rows[0][0]}"
     values = []
+    unavailable = 0
     for row in rows[1:]:
         assert len(row) == len(rows[0]), f"Inconsistent pLDDT column count in {path}"
-        values.extend(float(value) for value in row[1:])
-    assert values, f"pLDDT file contains no scores: {path}"
-    assert all(math.isfinite(value) and 0 <= value <= 100 for value in values), (
-        f"pLDDT values outside 0-100 or non-finite: {path}"
-    )
+        for cell in row[1:]:
+            if cell == "n/a":
+                # Structure-only models report no per-residue confidence; the pipeline publishes
+                # literal n/a cells so the joins keep every sample.
+                assert structure_only, f"pLDDT cell is 'n/a' without --structure-only: {path}"
+                unavailable += 1
+                continue
+            try:
+                value = float(cell)
+            except ValueError:
+                raise AssertionError(f"pLDDT value {cell!r} is not a number or 'n/a': {path}") from None
+            assert math.isfinite(value) and 0 <= value <= 100, f"pLDDT values outside 0-100 or non-finite: {path}"
+            values.append(value)
+    assert values or unavailable, f"pLDDT file contains no scores: {path}"
+    if structure_only:
+        total_cells = len(values) + unavailable
+        all_na = unavailable == total_cells
+        all_zero_legacy = unavailable == 0 and bool(values) and all(value == 0 for value in values)
+        assert all_na or all_zero_legacy, (
+            f"Structure-only pLDDT must be entirely 'n/a' or all-zero legacy values: {path}"
+        )
+        return len(rows) - 1, total_cells, None
     mean_plddt = sum(values) / len(values)
     assert mean_plddt >= 5.0, f"Suspiciously low mean pLDDT: {path}"
     return len(rows) - 1, len(values), mean_plddt
 
 
-def validate_pae(path: Path) -> tuple[int, int]:
+def validate_pae(path: Path, structure_only: bool = False) -> tuple[int, int]:
     rows = [line.split("\t") for line in path.read_text().splitlines() if line]
     assert rows, f"Empty PAE matrix: {path}"
     assert all(len(row) == len(rows) for row in rows), f"PAE matrix is not square: {path}"
+    if structure_only:
+        # Structure-only models ship an all-NaN PAE by upstream design. Reject
+        # finite values rather than accepting a merely square matrix.
+        values = []
+        for row in rows:
+            for cell in row:
+                try:
+                    values.append(float(cell))
+                except ValueError:
+                    raise AssertionError(f"PAE value {cell!r} is not a number: {path}") from None
+        assert values and all(math.isnan(value) for value in values), (
+            f"Structure-only PAE must be all-NaN: {path}"
+        )
+        return len(rows), len(rows[0])
     values = [float(value) for row in rows for value in row]
     assert all(math.isfinite(value) and 0 <= value <= 31.75 for value in values), (
         f"PAE values outside 0-31.75 or non-finite: {path}"
@@ -169,6 +251,36 @@ def validate_detailed_report(outdir: Path, identifier: str) -> None:
     print(f"Validated detailed report: {reports[0].name}")
 
 
+def validate_interface_metrics(path: Path) -> int:
+    """Validate one interface-metric TSV (ipTM/ipSAE, flat or chain-wise).
+
+    Flat files (``<id>_iptm.tsv`` / ``<id>_ipsae.tsv``) carry one
+    ``<rank>\\t<score>`` row per model; chain-wise files add a rank-label
+    header row (first cell empty) and one row per chain pair with the pair
+    label in the first column. Scores are probabilities in [0, 1]; 'n/a'
+    cells mark pairs a model did not score.
+    """
+    rows = [line.split("\t") for line in path.read_text().splitlines() if line]
+    assert rows, f"Interface metric file has no rows: {path}"
+    widths = {len(row) for row in rows}
+    assert len(widths) == 1, f"Inconsistent interface metric column count in {path}: {sorted(widths)}"
+    data_rows = [row for row in rows if row and row[0].strip()]
+    assert data_rows, f"Interface metric file contains only a header row: {path}"
+    checked = 0
+    for row in data_rows:
+        for cell in row[1:]:
+            if cell == "n/a":
+                continue
+            try:
+                value = float(cell)
+            except ValueError:
+                raise AssertionError(f"Interface score {cell!r} is not a number or 'n/a': {path}") from None
+            assert math.isfinite(value) and 0 <= value <= 1, f"Interface score outside 0-1 or non-finite: {path}"
+            checked += 1
+    assert checked, f"Interface metric file contains no scores: {path}"
+    return checked
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--mode", required=True)
@@ -176,11 +288,22 @@ def main() -> None:
     parser.add_argument("--extension", required=True, choices=[".pdb", ".cif", ".mmcif"])
     parser.add_argument("--outdir", required=True, type=Path)
     parser.add_argument("--samplesheet", required=True)
+    parser.add_argument(
+        "--structure-only",
+        action="store_true",
+        help="Model ships no confidence head (NO_CONFIDENCE_HEAD): accept n/a pLDDT "
+        "cells without a mean-pLDDT gate and all-NaN PAE matrices.",
+    )
+    parser.add_argument(
+        "--require-pae",
+        action="store_true",
+        help="Require one PAE matrix per input. Some prediction modes do not emit PAE.",
+    )
     args = parser.parse_args()
 
     parser_canary()
     ids = input_ids(args.samplesheet)
-    mode_dir = args.outdir / args.mode
+    mode_dir = resolve_mode_dir(args.outdir, args.mode)
     assert mode_dir.is_dir(), f"{args.display_name} output directory does not exist: {mode_dir}"
 
     structure_dirs = [path for path in mode_dir.rglob("top_ranked_structures") if path.is_dir()]
@@ -202,24 +325,48 @@ def main() -> None:
             f"No {args.display_name} pLDDT metrics for input {identifier}"
         )
     for path in plddt_files:
-        position_count, score_count, mean_plddt = validate_plddt(path)
-        print(
-            f"Validated pLDDT: {path.name} "
-            f"({position_count} positions, {score_count} scores, mean={mean_plddt:.1f})"
-        )
+        position_count, score_count, mean_plddt = validate_plddt(path, structure_only=args.structure_only)
+        if args.structure_only:
+            print(
+                f"Validated pLDDT: {path.name} "
+                f"({position_count} positions, {score_count} cells; no confidence head identity verified)"
+            )
+        else:
+            print(
+                f"Validated pLDDT: {path.name} "
+                f"({position_count} positions, {score_count} scores, mean={mean_plddt:.1f})"
+            )
 
     pae_files = sorted(path for path in mode_dir.rglob("*.tsv") if path.parent.name == "paes")
+    if args.require_pae:
+        assert pae_files, f"{args.display_name} produced no PAE matrices"
+        for identifier in ids:
+            assert any(identifier in path.name for path in pae_files), (
+                f"No {args.display_name} PAE matrix for input {identifier}"
+            )
     for path in pae_files:
-        row_count, column_count = validate_pae(path)
+        row_count, column_count = validate_pae(path, structure_only=args.structure_only)
         print(f"Validated PAE: {path.name} ({row_count}x{column_count} matrix)")
 
-    validate_multiqc_report(args.outdir, args.mode, ids)
+    multiqc_model = "colabfold2" if args.mode in COLABFOLD2_MODES else args.mode
+    validate_multiqc_report(args.outdir, multiqc_model, ids)
     for identifier in ids:
         validate_detailed_report(args.outdir, identifier)
 
+    interface_files = sorted(
+        path for path in mode_dir.rglob("*.tsv") if path.name.endswith(INTERFACE_SUFFIXES)
+    )
+    for path in interface_files:
+        if path.stat().st_size == 0:
+            print(f"Interface metrics empty (expected for monomer/structure-only runs): {path.name}")
+            continue
+        checked = validate_interface_metrics(path)
+        print(f"Validated interface metrics: {path.name} ({checked} scores)")
+
     print(
         f"Validated {args.display_name}: {len(ids)} inputs, {len(structures)} structures, "
-        f"{len(plddt_files)} pLDDT files, {len(pae_files)} PAE matrices"
+        f"{len(plddt_files)} pLDDT files, {len(pae_files)} PAE matrices, "
+        f"{len(interface_files)} interface metric files"
     )
 
 

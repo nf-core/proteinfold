@@ -39,6 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[PR #647](https://github.com/nf-core/proteinfold/pull/647)] - Fix missing X character in AF3 and Boltz fasta processing.
 - [[PR #51](https://github.com/Australian-Structural-Biology-Computing/proteinfold/pull/51)] - Remove the deprecated AlphaFold2 standard mode; AlphaFold2 now always runs separate MSA generation and prediction steps.
 - [[PR #52](https://github.com/Australian-Structural-Biology-Computing/proteinfold/pull/52)] - Add modular CPU, GPU, and per-mode scientific nf-tests with deterministic fixtures and independently runnable stages.
+- [[PR #53](https://github.com/Australian-Structural-Biology-Computing/proteinfold/pull/53)] - Add ColabFold2 prediction modes, including ESMFold2 model selection.
 
 | Old parameter              | New parameter   |
 | -------------------------- | --------------- |

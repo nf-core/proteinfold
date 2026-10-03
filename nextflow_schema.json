@@ -34,10 +34,10 @@
                 "mode": {
                     "type": "string",
                     "default": "alphafold2",
-                    "description": "Specifies the mode in which the pipeline will be run. mode can be any combination of [\"alphafold2\", \"alphafold3\", \"colabfold\", \"esmfold\", \"boltz\"] separated by a comma with no spaces.",
+                    "description": "Specifies the mode in which the pipeline will be run. mode can be any combination of [\"alphafold2\", \"alphafold3\", \"colabfold\", \"colabfold2-alphafold3\", \"colabfold2-boltz2\", \"esmfold2\", \"protenix2\", \"chai1\", \"intellifold2\", \"opendde\", \"openfold3\", \"openbind0\", \"rosettafold3\", \"esmfold\", \"boltz\"] separated by a comma with no spaces. ColabFold2 backends are named after the tool they run; alphafold3 and boltz2 carry a colabfold2- prefix because those names are already taken by the standalone AlphaFold3 and Boltz modes. Use --esmfold2_model to select the ESMFold2 variant.",
                     "fa_icon": "fas fa-cogs",
-                    "pattern": "^(alphafold2|alphafold3|colabfold|esmfold|boltz)(,(alphafold2|alphafold3|colabfold|esmfold|boltz))*$",
-                    "errorMessage": "Mode must be a comma-separated list containing alphafold2, alphafold3, colabfold, esmfold, or boltz with no spaces."
+                    "pattern": "^(alphafold2|alphafold3|colabfold|colabfold2-alphafold3|colabfold2-boltz2|esmfold2|protenix2|chai1|intellifold2|opendde|openfold3|openbind0|rosettafold3|esmfold|boltz)(,(alphafold2|alphafold3|colabfold|colabfold2-alphafold3|colabfold2-boltz2|esmfold2|protenix2|chai1|intellifold2|opendde|openfold3|openbind0|rosettafold3|esmfold|boltz))*$",
+                    "errorMessage": "Mode must be a comma-separated list containing alphafold2, alphafold3, colabfold, colabfold2-alphafold3, colabfold2-boltz2, esmfold2, protenix2, chai1, intellifold2, opendde, openfold3, openbind0, rosettafold3, esmfold, or boltz with no spaces."
                 },
                 "use_gpu": {
                     "type": "boolean",
@@ -200,6 +200,41 @@
                         "alphafold_params_2021-07-14"
                     ],
                     "fa_icon": "fas fa-database"
+                }
+            }
+        },
+        "colabfold2_options": {
+            "title": "ColabFold2 preview options",
+            "type": "object",
+            "fa_icon": "fas fa-flask",
+            "description": "Experimental multi-model predictors provided by the ColabFold AlphaFold3 preview. MSA generation is split from inference: it either runs offline via the MMseqs2 ColabFold search or uses the consented MSA server.",
+            "properties": {
+                "colabfold2_params_path": {
+                    "type": "string",
+                    "format": "directory-path",
+                    "description": "Path to the ColabFold2 model weights data dir. Defaults to a colabfold2_models directory inside the ColabFold search database root (--colabfold_db, itself derived from --db in colabfold2 modes)",
+                    "fa_icon": "fas fa-folder-open"
+                },
+                "colabfold2_weights_precision": {
+                    "type": "string",
+                    "enum": ["fp32", "int8"],
+                    "default": "fp32",
+                    "description": "Weights precision for the selected ColabFold2 backend. int8 selects the '-int8' weight variant upstream stages for backends that provide one.",
+                    "fa_icon": "fas fa-sliders-h"
+                },
+                "colabfold2_kernel_backend": {
+                    "type": "string",
+                    "enum": ["auto", "pallas", "cuda_legacy"],
+                    "default": "auto",
+                    "description": "Fused-kernel implementation used by colabfold_batch. 'auto' is the upstream default (tokamax/Pallas on sm_80+); on GPUs missing from JAX 0.11.1's Pallas device table (e.g. L40S, V100) 'auto' fails with 'No supported GPU devices found' and 'cuda_legacy' enables the colabfold-kernels shim with legacy float16 kernels instead.",
+                    "fa_icon": "fas fa-microchip"
+                },
+                "esmfold2_model": {
+                    "type": "string",
+                    "enum": ["msa", "lm300m", "lm600m"],
+                    "default": "msa",
+                    "description": "ESMFold2 model used by --mode esmfold2. msa uses the normal MSA model; lm300m and lm600m use the ESM-C language-model variants and produce structure-only outputs.",
+                    "fa_icon": "fas fa-dna"
                 }
             }
         },
@@ -947,6 +982,9 @@
         },
         {
             "$ref": "#/$defs/colabfold_options"
+        },
+        {
+            "$ref": "#/$defs/colabfold2_options"
         },
         {
             "$ref": "#/$defs/esmfold_options"

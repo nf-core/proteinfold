@@ -1,0 +1,105 @@
+/*
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ColabFold2 mode token contract
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    Which --mode tokens start a ColabFold2 run and which retired or ambiguous spellings are
+    rejected, using stubbed process execution. Accepted tokens must also drive the database
+    and weights derivations in nextflow.config, not merely pass the schema.
+*/
+
+nextflow_pipeline {
+
+    name "Test ColabFold2 mode tokens"
+    script "../main.nf"
+    tag "pipeline"
+    tag "test_colabfold2_modes"
+    profile "test_colabfold2"
+
+    // alphafold3 and boltz2 are reachable only behind the prefix, because the bare names select
+    // the standalone AlphaFold3 and Boltz modes; the esmfold2 selections share one public token.
+    def backends = [
+        [token: 'colabfold2-alphafold3', backend: 'alphafold3'],
+        [token: 'colabfold2-boltz2',     backend: 'boltz2'],
+        [token: 'protenix2',             backend: 'protenix2'],
+        [token: 'chai1',                 backend: 'chai1'],
+        [token: 'intellifold2',          backend: 'intellifold2'],
+        [token: 'opendde',               backend: 'opendde'],
+        [token: 'openfold3',             backend: 'openfold3'],
+        [token: 'openbind0',             backend: 'openbind0'],
+        [token: 'rosettafold3',          backend: 'rosettafold3'],
+        [token: 'esmfold2',               backend: 'esmfold2', esmfold2_model: 'msa'],
+        [token: 'esmfold2',               backend: 'esmfold2_lm300m', esmfold2_model: 'lm300m'],
+        [token: 'esmfold2',               backend: 'esmfold2_lm600m', esmfold2_model: 'lm600m']
+    ]
+
+    backends.each { entry ->
+        test("accepts ${entry.token}${entry.esmfold2_model ? ' (' + entry.esmfold2_model + ')' : ''}") {
+            tag "colabfold2-mode-accepted"
+
+            when {
+                params {
+                    outdir = "$outputDir"
+                    mode   = entry.token
+                    esmfold2_model = entry.esmfold2_model ?: 'msa'
+                }
+            }
+
+            then {
+                // A successful run proves the token drove the database and weights derivations;
+                // tests/colabfold2_stub.nf.test pins which aliased process ran per backend.
+                assert workflow.success
+                def stable_name = getAllFilesFromDir(params.outdir, relative: true, includeDir: true, ignore: ['pipeline_info/*.{html,json,txt}'])
+                assert stable_name.contains("${entry.token}/top_ranked_structures/T1024.cif".toString())
+                // Snapshot the task count and versions report: pins the recorded versions per
+                // accepted mode and keeps the versions.yml snapshot convention.
+                assert snapshot(
+                    workflow.trace.succeeded().size(),
+                    removeNextflowVersion("$outputDir/pipeline_info/nf_core_proteinfold_software_mqc_versions.yml")
+                ).match()
+            }
+        }
+    }
+
+    test("rejects int8 weights for official alphafold3") {
+        tag "colabfold2-mode-rejected"
+
+        when {
+            params {
+                outdir = "$outputDir"
+                mode = 'colabfold2-alphafold3'
+                colabfold2_weights_precision = 'int8'
+            }
+        }
+
+        then {
+            assert workflow.failed
+        }
+    }
+
+    // 'opendde,chai1' is rejected by the one-backend-per-invocation guard in main.nf;
+    // 'esmfold, opendde' is rejected by nextflow_schema.json's --mode pattern (whitespace case).
+    [
+        'colabfold2-af3',
+        'colabfold2-esmfold2',
+        'colabfold2',
+        'esmfold2-af3',
+        'colabfold2-nonexistent',
+        'opendde,chai1',
+        'esmfold, opendde'
+    ].each { token ->
+        test("rejects ${token}") {
+            tag "colabfold2-mode-rejected"
+
+            when {
+                params {
+                    outdir = "$outputDir"
+                    mode   = token
+                }
+            }
+
+            then {
+                assert workflow.failed
+            }
+        }
+    }
+}
