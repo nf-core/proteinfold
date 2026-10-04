@@ -1,0 +1,54 @@
+/*
+    Scientific validation: ColabFold2 MSA-server round trip.
+
+    Runs the colabfold2-alphafold3 mode end to end against the public ColabFold MSA server
+    (query-JSON to FASTA conversion, live server search, merged-MSA prediction) and validates
+    the published structures and confidence metrics with tests/scientific/validate_outputs.py.
+    Requires outbound HTTPS to the MSA server from the compute node.
+    PROTEINFOLD_TEST_DB / PROTEINFOLD_CF2_CACHE override the database and weights roots.
+*/
+
+nextflow_pipeline {
+
+    name "Scientific validation: ColabFold2 MSA server"
+    script "../../main.nf"
+    tag "scientific"
+    tag "output_validation"
+    tag "structure_validation"
+    tag "colabfold2"
+    tag "colabfold2-alphafold3"
+    tag "colabfold2-webserver"
+    profile "test_full_colabfold2,gpu"
+
+    test("ColabFold2 webserver: validate structures and metrics") {
+        options "--mode colabfold2-alphafold3 --use_gpu"
+        def samplesheet = new File('tests/scientific/fixtures/colabfold2_single.csv').absolutePath
+
+        when {
+            params {
+                outdir = "$outputDir"
+                input  = samplesheet
+                use_msa_server  = true
+                msa_server_url  = 'https://api.colabfold.com'
+                colabfold_db = System.getenv("PROTEINFOLD_TEST_DB") ?: 's3://proteinfold-dataset/test-data/mini_dbs'
+                colabfold2_params_path = System.getenv("PROTEINFOLD_CF2_CACHE")
+                    ?: (System.getenv("PROTEINFOLD_TEST_DB") ?: 's3://proteinfold-dataset/test-data/mini_dbs') + '/colabfold2_models'
+            }
+        }
+
+        then {
+            assert workflow.success: "ColabFold2 webserver workflow failed (exit ${workflow.exitStatus})"
+            def validator = new File("tests/scientific/validate_outputs.py").absolutePath
+            def command = ["python3", validator, "--mode", "colabfold2-alphafold3", "--display-name", "ColabFold2 MSA server",
+                           "--extension", ".cif", "--outdir", params.outdir.toString(),
+                           "--samplesheet", params.input.toString(), "--require-pae"]
+            def process = command.execute()
+            def stdout = new StringBuffer()
+            def stderr = new StringBuffer()
+            process.consumeProcessOutput(stdout, stderr)
+            assert process.waitFor() == 0: "${stdout}\n${stderr}"
+            println stdout
+            assert file("${params.outdir}/pipeline_info/nf_core_proteinfold_software_mqc_versions.yml").size() > 0
+        }
+    }
+}

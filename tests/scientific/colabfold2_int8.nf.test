@@ -1,0 +1,53 @@
+/*
+    Scientific validation: ColabFold2 int8 weights precision.
+
+    Runs one representative backend (protenix2) with --colabfold2_weights_precision int8 and
+    validates the published structures and confidence metrics with
+    tests/scientific/validate_outputs.py. Official colabfold2-alphafold3 is fp32-only and
+    rejects int8 (contract-tested in tests/colabfold2_modes.nf.test); the int8 weight variant
+    downloads on first use into the PROTEINFOLD_CF2_CACHE weights root.
+*/
+
+nextflow_pipeline {
+
+    name "Scientific validation: ColabFold2 int8 weights"
+    script "../../main.nf"
+    tag "scientific"
+    tag "output_validation"
+    tag "structure_validation"
+    tag "colabfold2"
+    tag "colabfold2-protenix2"
+    tag "colabfold2-int8"
+    profile "test_full_colabfold2,gpu"
+
+    test("ColabFold2 protenix2 int8: validate structures and metrics") {
+        options "--mode protenix2 --use_gpu"
+        def samplesheet = new File('tests/scientific/fixtures/colabfold2_single.csv').absolutePath
+
+        when {
+            params {
+                outdir = "$outputDir"
+                input  = samplesheet
+                colabfold2_weights_precision = 'int8'
+                colabfold_db = System.getenv("PROTEINFOLD_TEST_DB") ?: 's3://proteinfold-dataset/test-data/mini_dbs'
+                colabfold2_params_path = System.getenv("PROTEINFOLD_CF2_CACHE")
+                    ?: (System.getenv("PROTEINFOLD_TEST_DB") ?: 's3://proteinfold-dataset/test-data/mini_dbs') + '/colabfold2_models'
+            }
+        }
+
+        then {
+            assert workflow.success: "ColabFold2 protenix2 int8 workflow failed (exit ${workflow.exitStatus})"
+            def validator = new File("tests/scientific/validate_outputs.py").absolutePath
+            def command = ["python3", validator, "--mode", "protenix2", "--display-name", "ColabFold2 Protenix2 (int8)",
+                           "--extension", ".cif", "--outdir", params.outdir.toString(),
+                           "--samplesheet", params.input.toString(), "--require-pae"]
+            def process = command.execute()
+            def stdout = new StringBuffer()
+            def stderr = new StringBuffer()
+            process.consumeProcessOutput(stdout, stderr)
+            assert process.waitFor() == 0: "${stdout}\n${stderr}"
+            println stdout
+            assert file("${params.outdir}/pipeline_info/nf_core_proteinfold_software_mqc_versions.yml").size() > 0
+        }
+    }
+}
