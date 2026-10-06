@@ -9,3 +9,10 @@ testing*
 null/
 .nf*
 .lineage/
+
+# Large local modelCIF test datasets kept out of branch PRs
+assets/ma-atiya1-gk-01.cif
+assets/ma-atiya1-gk-01-AUGMENTED.cif
+bin/dicts/mmcif_ddl.sdb
+bin/dicts/mmcif_ma.sdb
+bin/dicts/mmcif_pdbx_v50.sdb
