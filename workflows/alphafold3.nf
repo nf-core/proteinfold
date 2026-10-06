@@ -188,6 +188,8 @@ workflow ALPHAFOLD3 {
     chainwise_ipsae = ch_chainwise_ipsae_final // channel: [ meta, path/to/*_chainwise_ipsae.tsv ]
     multiqc_metrics = ch_multiqc_metrics       // channel: [ [id:..., model:...], [metric tsvs] ]
     versions        = ch_versions              // channel: [ path(versions.yml) ]
+    plddt           = RUN_ALPHAFOLD3_INFERENCE.out.multiqc
+    ptm             = RUN_ALPHAFOLD3_INFERENCE.out.ptms
 }
 
 /*

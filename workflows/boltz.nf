@@ -202,4 +202,6 @@ workflow BOLTZ {
     ipsae           = ch_ipsae
     chainwise_iptm  = ch_chainwise_iptm
     chainwise_ipsae = ch_chainwise_ipsae
+    plddt           = RUN_BOLTZ.out.plddt_raw
+    ptm             = RUN_BOLTZ.out.ptm_raw
 }

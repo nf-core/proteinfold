@@ -9,11 +9,20 @@ include { paramsSummaryMap       } from 'plugin/nf-schema'
 include { paramsSummaryMultiqc   } from '../../nf-core/utils_nfcore_pipeline'
 include { methodsDescriptionText } from '../utils_nfcore_proteinfold_pipeline'
 
+<<<<<<< Updated upstream:subworkflows/local/post_processing/main.nf
 include { GENERATE_REPORT     } from '../../../modules/local/generate_report'
 include { GENERATE_MULTIQC_CONTENTS } from '../../../modules/local/generate_multiqc_contents'
 include { COMPARE_STRUCTURES  } from '../../../modules/local/compare_structures'
 include { FOLDSEEK_EASYSEARCH } from '../../../modules/nf-core/foldseek/easysearch/main'
 include { MULTIQC             } from '../../../modules/nf-core/multiqc/main'
+=======
+include { GENERATE_REPORT     } from '../../modules/local/generate_report'
+include { COMPARE_STRUCTURES  } from '../../modules/local/compare_structures'
+include { FOLDSEEK_EASYSEARCH } from '../../modules/nf-core/foldseek/easysearch/main'
+include { MULTIQC             } from '../../modules/nf-core/multiqc/main'
+include { ASSEMBLE_MODELCIF   } from '../../modules/local/assemble_modelcif/main'
+include { CIFCHECK            } from '../../modules/local/cifcheck/main'
+>>>>>>> Stashed changes:subworkflows/local/post_processing.nf
 
 
 workflow POST_PROCESSING {
@@ -36,10 +45,39 @@ workflow POST_PROCESSING {
     ch_multiqc_methods_description
     ch_software_versions
     ch_top_ranked_model
+    ch_modelcif
+    write_modelcif
+    modelcif_binary
+    modelcif_pae_embed
+    modelcif_software_details
 
     main:
     def ch_comparison_report_files = channel.empty()
     def ch_multiqc_files = channel.empty()
+    ch_modelcif_published = channel.empty()
+
+    if (write_modelcif) {
+        ASSEMBLE_MODELCIF(ch_modelcif)
+        CIFCHECK( ASSEMBLE_MODELCIF.out.modelcif )
+        CIFCHECK.out.modelcif
+            .set { ch_modelcif_valid }
+        ch_multiqc_files = ch_multiqc_files.mix(
+            ch_modelcif_valid
+                .map { meta, f ->
+                    def lines = ["## modelCIF ${meta.id} (${meta.model})",
+                                 "file: ${f}",
+                                 "```yaml",
+                                 "id: ${meta.id}",
+                                 "model: ${meta.model}",
+                                 "```"]
+                    file("${meta.id}_${meta.model}_modelcif_mqc.yaml").text = lines.join('\n') + '\n'
+                }
+                .collectFile(name: 'modelcif_index_mqc.yaml', sort: true)
+        )
+        ch_modelcif_valid
+            .map { meta, f -> [ meta, f ] }
+            .set { ch_modelcif_published }
+    }
 
     if (!skip_visualisation){
         GENERATE_REPORT(
@@ -147,5 +185,6 @@ workflow POST_PROCESSING {
     }
 
     emit:
-    multiqc_report = ch_multiqc_report
+    multiqc_report  = ch_multiqc_report
+    modelcif        = ch_modelcif_published
 }

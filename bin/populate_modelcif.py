@@ -14,6 +14,7 @@ Can also create .bcif for space reasons
 
 import argparse
 import csv
+import json
 import os
 import sys
 import warnings
@@ -98,7 +99,7 @@ def parse_args(args=None):
     parser.add_argument('--name',    required=True)
     parser.add_argument('--prog',         required=True)
     parser.add_argument('--msa_tool',     default=None, help='MSA search tool used (e.g. jackhmmer, hhblits, mmseqs2). Embedded in the CoevolutionMSA protocol step.')
-    parser.add_argument('--versions_yml', default=None, help='versions.yml emitted by the upstream run_* module.')
+    parser.add_argument('--versions', default=None, help="Versions mapping as a JSON dict (from the Nextflow versions topic channel) or a legacy versions.yml path emitted by the upstream run_* module.")
     parser.add_argument('--software_details', default=None, help='Optional path to DUMMY YAML file for software + protocol step metadata -- pre-wiring into upstream logic.')
     parser.add_argument('--output',       default=None)
     parser.add_argument('--all-structs',  action='store_true', help='Include all parseable files passed via --structs as models. This is enabled automatically when more than one structure file is supplied.')
@@ -139,22 +140,45 @@ def _chain_sequence(chain):
     return ''.join(seq)
 
 
-def _read_sw_version(versions_yml, prog):
+def _read_sw_version(versions, prog):
     """
-    Extract the version string for *prog* from a Nextflow versions.yml.
+    Extract the version string for *prog*.
 
-    TODO: this currently assumes a simple structure of versions.yml and I'm not sure if that's settled.
-
+    *versions* is either a dict from the Nextflow versions topic channel
+    ({tool_key: version} — the #625 replacement for versions.yml) or a path
+    to a legacy versions.yml file whose single top-level key is the process
+    name. Robust to flat mappings, nested one-level mappings, and non-dict
+    junk (returns None instead of crashing).
     """
-    if versions_yml is None or not os.path.exists(versions_yml):
+    if versions is None:
         return None
-    with open(versions_yml) as fh:
-        data = yaml.safe_load(fh)
+    data = versions
+    if isinstance(data, str):
+        s = data.strip()
+        if s.startswith('{'):  # JSON mapping from the topic channel
+            try:
+                data = json.loads(s)
+            except ValueError:
+                return None
+        elif os.path.exists(s):
+            with open(s) as fh:
+                data = yaml.safe_load(fh)
+        else:
+            return None
     if not isinstance(data, dict):
         return None
-    # The single top-level key is the process name; we don't care what it is.
-    process_versions = next(iter(data.values()), {})
-    return process_versions.get(prog.lower())
+    # legacy shape: one top-level process key wrapping {tool: version}
+    if len(data) == 1:
+        inner = next(iter(data.values()))
+        if isinstance(inner, dict):
+            data = inner
+    key = prog.lower()
+    value = data.get(key)
+    if value is None:
+        return None
+    if isinstance(value, dict):  # {version: x} wrappers
+        value = value.get('version')
+    return str(value) if value is not None else None
 
 
 def _read_software_details_yml(software_details):
@@ -966,7 +990,7 @@ def main(args=None):
         output_file = args.output or f'{args.name}_{args.prog}.mmcif'
         open_mode, fmt = 'w', 'mmCIF'
 
-    sw_version = _read_sw_version(args.versions_yml, args.prog)
+    sw_version = _read_sw_version(None if args.versions in (None, 'None') else args.versions, args.prog)
     software_details = _read_software_details_yml(args.software_details)
     # Nextflow emits the string 'None' when no msa_tool is known; normalise to Python None.
     msa_tool = None if args.msa_tool in (None, 'None') else args.msa_tool
