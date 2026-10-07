@@ -1,0 +1,41 @@
+name: "multifasta_to_csv"
+description: Convert a multi-FASTA file to the CSV format required by Boltz.
+tools: []
+input:
+  - - meta:
+        type: map
+        description: Groovy Map containing sample information.
+    - fasta:
+        type: file
+        description: Multi-FASTA input.
+        pattern: "*.{fa,fasta}"
+output:
+  input_csv:
+    - - meta:
+          type: map
+          description: Groovy Map containing sample information.
+      - input.csv:
+          type: file
+          description: CSV representation of the input sequences.
+          pattern: "input.csv"
+  versions_sed:
+    - - "${task.process}":
+          type: string
+          description: The process the versions were collected from.
+      - sed:
+          type: string
+          description: The tool name.
+      - 'sed --version 2>&1 | sed "s/^.*GNU sed) //; s/ .*$//"':
+          type: eval
+          description: The expression to obtain the version of the tool.
+topics:
+  versions:
+    - - "${task.process}":
+          type: string
+          description: The process the versions were collected from.
+      - sed:
+          type: string
+          description: The tool name.
+      - 'sed --version 2>&1 | sed "s/^.*GNU sed) //; s/ .*$//"':
+          type: eval
+          description: The expression to obtain the version of the tool.

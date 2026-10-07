@@ -9,6 +9,9 @@ nextflow_process {
     test("dummy modelcif") {
 
         when {
+            params {
+                outdir = "$outputDir"
+            }
             process {
                 """
                 input[0] = [ [ id: 'test' ], file("$projectDir/assets/DUMMY_MODELCIF.mmcif", checkIfExists: true) ]
@@ -17,6 +20,7 @@ nextflow_process {
         }
 
         then {
+            // Snapshot the versions.yml output.
             assertAll(
                 { assert process.success },
                 { assert snapshot(process.out.versions).match() }
@@ -29,7 +33,7 @@ nextflow_process {
         when {
             process {
                 """
-                input[0] = [ [ id: 'real' ], file("$projectDir/assets/ma-atiya1-gk-01-AUGMENTED.cif", checkIfExists: true) ]
+                input[0] = [ [ id: 'real' ], file("$projectDir/tests/test_data/modelcif/ma-atiya1-gk-01-AUGMENTED.cif", checkIfExists: true) ]
                 """
             }
         }

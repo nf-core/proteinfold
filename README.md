@@ -10,7 +10,7 @@
 [![GitHub Actions Linting Status](https://github.com/nf-core/proteinfold/actions/workflows/linting.yml/badge.svg)](https://github.com/nf-core/proteinfold/actions/workflows/linting.yml)[![AWS CI](https://img.shields.io/badge/CI%20tests-full%20size-FF9900?labelColor=000000&logo=Amazon%20AWS)](https://nf-co.re/proteinfold/results)[![Cite with Zenodo](http://img.shields.io/badge/DOI-10.5281/zenodo.13135393-1073c8?labelColor=000000)](https://doi.org/10.5281/zenodo.13135393)
 
 [![Nextflow](https://img.shields.io/badge/version-%E2%89%A525.10.4-green?style=flat&logo=nextflow&logoColor=white&color=%230DC09D&link=https%3A%2F%2Fnextflow.io)](https://www.nextflow.io/)
-[![nf-core template version](https://img.shields.io/badge/nf--core_template-4.0.2-green?style=flat&logo=nfcore&logoColor=white&color=%2324B064&link=https%3A%2F%2Fnf-co.re)](https://github.com/nf-core/tools/releases/tag/4.0.2)
+[![nf-core template version](https://img.shields.io/badge/nf--core_template-4.0.3-green?style=flat&logo=nfcore&logoColor=white&color=%2324B064&link=https%3A%2F%2Fnf-co.re)](https://github.com/nf-core/tools/releases/tag/4.0.3)
 [![run with conda](http://img.shields.io/badge/run%20with-conda-3EB049?labelColor=000000&logo=anaconda)](https://docs.conda.io/en/latest/)
 [![run with docker](https://img.shields.io/badge/run%20with-docker-0db7ed?labelColor=000000&logo=docker)](https://www.docker.com/)
 [![run with singularity](https://img.shields.io/badge/run%20with-singularity-1d355c.svg?labelColor=000000)](https://sylabs.io/docs/)
@@ -28,18 +28,13 @@ On release, automated continuous integration tests run the pipeline on a full-si
 
 ## Pipeline summary
 
-![Alt text](docs/images/nf-core-proteinfold_metro_map_2.0.0.png?raw=true "nf-core-proteinfold 2.0.0 metro map")
-
-| Mode                                                                                               | Protein | RNA | Small-molecule | PTM | Constraints | pLM | MSA server | Split MSA |
-| :------------------------------------------------------------------------------------------------- | :-----: | :-: | :------------: | :-: | :---------: | :-: | :--------: | :-------: |
-| [AlphaFold2](https://github.com/deepmind/alphafold)                                                |   ✅    | ❌  |       ❌       | ❌  |     ❌      | ❌  |     ❌     |    ✅     |
-| [ESMFold](https://github.com/facebookresearch/esm)                                                 |   ✅    | ❌  |       ❌       | ❌  |     ❌      | ✅  |     ❌     |    ❌     |
-| [ColabFold](https://github.com/sokrypton/ColabFold)                                                |   ✅    | ❌  |       ❌       | ❌  |     ❌      | ❌  |     ✅     |    ✅     |
-| [RoseTTAFold2NA](https://github.com/uw-ipd/RoseTTAFold2NA)                                         |   ✅    | ✅  |       ❌       | ❌  |     ❌      | ❌  |     ❌     |    ❌     |
-| [RoseTTAFold-All-Atom](https://github.com/baker-laboratory/RoseTTAFold-All-Atom/)                  |   ✅    | ✅  |       ✅       | ✅  |     ❌      | ❌  |     ❌     |    ❌     |
-| [AlphaFold3](https://github.com/google-deepmind/alphafold3)                                        |   ✅    | ✅  |       ✅       | ✅  |     ❌      | ❌  |     ❌     |    ❌     |
-| [HelixFold3](https://github.com/PaddlePaddle/PaddleHelix/tree/dev/apps/protein_folding/helixfold3) |   ✅    | ✅  |       ✅       | ✅  |     ❌      | ❌  |     ❌     |    ❌     |
-| [Boltz](https://github.com/jwohlwend/boltz/)                                                       |   ✅    | ✅  |       ✅       | ✅  |     ✅      | ❌  |     ✅     |    ✅     |
+| Mode                                                        | Protein | RNA | Small-molecule | PTM | Constraints | pLM | MSA server | Split MSA |
+| :---------------------------------------------------------- | :-----: | :-: | :------------: | :-: | :---------: | :-: | :--------: | :-------: |
+| [AlphaFold2](https://github.com/deepmind/alphafold)         |   ✅    | ❌  |       ❌       | ❌  |     ❌      | ❌  |     ❌     |    ✅     |
+| [ESMFold](https://github.com/facebookresearch/esm)          |   ✅    | ❌  |       ❌       | ❌  |     ❌      | ✅  |     ❌     |    ❌     |
+| [ColabFold](https://github.com/sokrypton/ColabFold)         |   ✅    | ❌  |       ❌       | ❌  |     ❌      | ❌  |     ✅     |    ✅     |
+| [AlphaFold3](https://github.com/google-deepmind/alphafold3) |   ✅    | ✅  |       ✅       | ✅  |     ❌      | ❌  |     ❌     |    ✅     |
+| [Boltz](https://github.com/jwohlwend/boltz/)                |   ✅    | ✅  |       ✅       | ✅  |     ✅      | ❌  |     ✅     |    ✅     |
 
 **nf-core/proteinfold** supports multiple tools for general molecular structure prediction. Each of the methods have overlapping functionality which can be utilized within the pipeline. All tools support predicting protein structure from an input amino acid sequence. The pipeline is composed of the following steps:
 
@@ -83,7 +78,7 @@ nextflow run nf-core/proteinfold \
    -profile <docker/singularity/.../institute> \
    --input samplesheet.csv \
    --outdir <OUTDIR> \
-   --mode <alphafold2/esmfold/colabfold/rosettafold2na/rosettafold-all-atom/alphafold3/boltz/helixfold3>
+   --mode <alphafold2/alphafold3/esmfold/colabfold/boltz>
 ```
 
 The pipeline takes care of downloading the databases and parameters required by each of the modes. In case you have already downloaded the required files, you can skip this step by providing the path to the databases using the `--db` parameter.
@@ -100,7 +95,7 @@ nextflow run nf-core/proteinfold \
 > [!WARNING]
 > The reference data for most methods is extremely large and may exceed individual user disk allocations on shared HPC systems.
 
-In order to run multiple methods simultaneously where reference data is stored at different locations, the `--db` flag can be overwritten for each specific mode (e.g. `--alphafold2_db`, `--colabfold_db`, `--esmfold_db` and `--rosettafold_all_atom_db`). Please refer to the [usage documentation](https://nf-co.re/proteinfold/usage) to check the directory structure you must provide for each database.
+In order to run multiple methods simultaneously where reference data is stored at different locations, the `--db` flag can be overwritten for each specific mode (e.g. `--alphafold2_db`, `--alphafold3_db`, `--colabfold_db`, and `--esmfold_db`). Please refer to the [usage documentation](https://nf-co.re/proteinfold/usage) to check the directory structure you must provide for each database.
 
 > [!WARNING]
 > Please provide pipeline parameters via the CLI or Nextflow `-params-file` option. Custom config files including those provided by the `-c` Nextflow option can be used to provide any configuration _**except for parameters**_; see [docs](https://nf-co.re/docs/running/run-pipelines#using-parameter-files).

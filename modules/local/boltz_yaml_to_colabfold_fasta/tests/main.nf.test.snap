@@ -1,0 +1,43 @@
+{
+    "converts boltz yaml to colabfold fasta": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "mixed_sample"
+                        },
+                        "mixed_sample.fasta:md5,475da65322d4589b4bfe1c6374a5b1a2"
+                    ]
+                ],
+                "1": [
+                    [
+                        "BOLTZ_YAML_TO_COLABFOLD_FASTA",
+                        "python",
+                        "3.14.0"
+                    ]
+                ],
+                "query_fasta": [
+                    [
+                        {
+                            "id": "mixed_sample"
+                        },
+                        "mixed_sample.fasta:md5,475da65322d4589b4bfe1c6374a5b1a2"
+                    ]
+                ],
+                "versions_python": [
+                    [
+                        "BOLTZ_YAML_TO_COLABFOLD_FASTA",
+                        "python",
+                        "3.14.0"
+                    ]
+                ]
+            }
+        ],
+        "timestamp": "2026-09-22T15:43:42.121047307",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.6"
+        }
+    }
+}

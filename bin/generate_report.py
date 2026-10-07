@@ -276,47 +276,61 @@ def generate_plots(msa_path, plddt_paths, name, out_dir):
 
 
 
+def get_structure_parser(struct_file):
+    suffix = os.path.splitext(struct_file)[1].lower()
+    if suffix == ".pdb":
+        return PDB.PDBParser(QUIET=True)
+    if suffix in [".cif", ".mmcif"]:
+        return PDB.MMCIFParser(QUIET=True)
+    raise NotImplementedError("Reporting only supported for .pdb, .cif and .mmcif filetypes")
+
+
+def parse_structure(struct_file, structure_id):
+    parser = get_structure_parser(struct_file)
+    return parser.get_structure(structure_id, struct_file)
+
+
+def get_atom_id(atom):
+    residue = atom.get_parent()
+    chain = residue.get_parent()
+    return (chain.get_id(), residue.get_id(), atom.name)
+
+
+def get_non_hydrogen_atoms_by_id(structure):
+    return {
+        get_atom_id(atom): atom
+        for atom in structure.get_atoms()
+        if atom.element != "H"
+    }
+
+
 def align_structures(structures):
-    parser = PDB.PDBParser(QUIET=True)
-    structures = [
-        parser.get_structure(f"Structure_{i}", pdb) for i, pdb in enumerate(structures)
+    parsed_structures = [
+        parse_structure(structure, f"Structure_{i}")
+        for i, structure in enumerate(structures)
     ]
-    ref_structure = structures[0]
+    ref_structure = parsed_structures[0]
+    atom_maps = [get_non_hydrogen_atoms_by_id(structure) for structure in parsed_structures]
+    common_atom_ids = set(atom_maps[0])
 
-    common_atoms = set(
-        f"{atom.get_parent().get_parent().get_id()}-{atom.get_parent().get_id()[1]}-{atom.name}"
-        for atom in ref_structure.get_atoms() if not atom.element == 'H'
-    )
-    #print(common_atoms)
-    for i, structure in enumerate(structures[1:], start=1):
-        common_atoms = common_atoms.intersection(
-            set(
-                f"{atom.get_parent().get_parent().get_id()}-{atom.get_parent().get_id()[1]}-{atom.name}"
-                for atom in structure.get_atoms()
-            )
-        )
+    for atom_map in atom_maps[1:]:
+        common_atom_ids.intersection_update(atom_map)
 
-    ref_atoms = [
-        atom
-        for atom in ref_structure.get_atoms()
-        if f"{atom.get_parent().get_parent().get_id()}-{atom.get_parent().get_id()[1]}-{atom.name}" in common_atoms
-    ]
-    # print(ref_atoms)
+    if not common_atom_ids:
+        raise ValueError("No common non-hydrogen atoms found between structures.")
+
+    ref_atom_ids = [atom_id for atom_id in atom_maps[0] if atom_id in common_atom_ids]
+    ref_atoms = [atom_maps[0][atom_id] for atom_id in ref_atom_ids]
     super_imposer = PDB.Superimposer()
-    aligned_structures = [structures[0]]  # Include the reference structure in the list
+    aligned_structures = [ref_structure]
 
-    for i, structure in enumerate(structures[1:], start=1):
-        target_atoms = [
-            atom
-            for atom in structure.get_atoms()
-            if f"{atom.get_parent().get_parent().get_id()}-{atom.get_parent().get_id()[1]}-{atom.name}" in common_atoms
-        ]
-
+    for i, structure in enumerate(parsed_structures[1:], start=1):
+        target_atoms = [atom_maps[i][atom_id] for atom_id in ref_atom_ids]
         super_imposer.set_atoms(ref_atoms, target_atoms)
         super_imposer.apply(structure.get_atoms())
 
-        aligned_structure = f"aligned_structure_{i}.pdb"
-        io = PDB.PDBIO()
+        aligned_structure = f"aligned_structure_{i}.cif"
+        io = PDB.MMCIFIO()
         io.set_structure(structure)
         io.save(aligned_structure)
         aligned_structures.append(aligned_structure)
@@ -324,9 +338,12 @@ def align_structures(structures):
     return aligned_structures
 
 
+def natural_path_sort_key(path):
+    return [int(part) if part.isdigit() else part.lower() for part in re.split(r"(\d+)", str(path))]
+
+
 def pdb_to_lddt(struct_files, generate_tsv):
-    struct_files_sorted = struct_files
-    struct_files_sorted.sort()
+    struct_files_sorted = sorted(struct_files, key=natural_path_sort_key)
 
     output_lddt = []
     averages = []
@@ -334,15 +351,7 @@ def pdb_to_lddt(struct_files, generate_tsv):
     for struct_file in struct_files_sorted:
         plddt_values = []
 
-        if struct_file.endswith('.pdb'):
-            parser = PDB.PDBParser(QUIET=True)
-            suffix = ".pdb"
-        elif struct_file.endswith('.cif'):
-            parser = PDB.MMCIFParser(QUIET=True)
-            suffix = ".cif"
-        else:
-            raise NotImplementedError("Reporting only supported for .pdb and .cif filetypes")
-        structure = parser.get_structure("", struct_file)
+        structure = parse_structure(struct_file, "")
 
         for residue in structure.get_residues():
             res_pLDDT_tot = 0
@@ -367,7 +376,7 @@ def pdb_to_lddt(struct_files, generate_tsv):
             averages.append(0.0)
 
         if generate_tsv == "y":
-            output_file = f"{struct_file.replace(suffix, '')}_plddt.tsv"
+            output_file = f"{os.path.splitext(struct_file)[0]}_plddt.tsv"
             with open(output_file, "w") as outfile:
                 outfile.write(" ".join(map(str, plddt_values)) + "\n")
             output_lddt.append(output_file)
@@ -484,9 +493,6 @@ model_name = {
     "alphafold2": "AlphaFold2",
     "alphafold3": "Alphafold3",
     "colabfold": "ColabFold",
-    "rosettafold_all_atom": "RosettaFold All-Atom",
-    "helixfold3": "HelixFold3",
-    "rosettafold2na": "RoseTTAFold2NA",
     "boltz": "Boltz"
 }
 
@@ -518,8 +524,7 @@ generate_output_images(
 )
 
 print("generating html report...")
-structures = args.pdb
-structures.sort()
+structures = sorted(args.pdb, key=natural_path_sort_key)
 iptm_scores = read_ranked_score_tsv(args.iptm, len(structures))
 ipsae_scores = read_ranked_score_tsv(args.ipsae, len(structures))
 chainwise_iptm_scores = read_pair_score_tsv(args.chainwise_iptm, len(structures))
@@ -528,64 +533,60 @@ chainwise_iptm_matrices = build_pair_score_matrices(chainwise_iptm_scores)
 chainwise_ipsae_matrices = build_pair_score_matrices(chainwise_ipsae_scores)
 aligned_structures = align_structures(structures)
 
-io = PDB.PDBIO()
-ref_structure_path = "aligned_structure_0.pdb"
+io = PDB.MMCIFIO()
+ref_structure_path = "aligned_structure_0.cif"
 io.set_structure(aligned_structures[0])
 io.save(ref_structure_path)
 aligned_structures[0] = ref_structure_path
 
 proteinfold_template = open(args.html_template, "r").read()
-proteinfold_template = proteinfold_template.replace("*sample_name*", args.name)
-proteinfold_template = proteinfold_template.replace(
-    "*prog_name*", model_name[args.in_type.lower()]
-)
 
-args_pdb_array_js = ",\n".join([f'"{model}"' for model in structures])
-proteinfold_template = re.sub(
-    r"const MODELS = \[.*?\];",  # Match the existing MODELS array in HTML template
-    f"const MODELS = [\n  {args_pdb_array_js}\n];",  # Replace with the new array
-    proteinfold_template,
-    flags=re.DOTALL,
-)
+model_names = [
+    f"{os.path.splitext(os.path.basename(model))[0]}.cif" for model in structures
+]
+models_data = [open(s, "r").read() for s in aligned_structures]
 
-averages_js_array = f"const LDDT_AVERAGES = {lddt_averages};"
-proteinfold_template = proteinfold_template.replace(
-    "const LDDT_AVERAGES = [];", averages_js_array
-)
 
-iptm_js_array = f"const IPTM_SCORES = {iptm_scores};"
-proteinfold_template = proteinfold_template.replace(
-    "const IPTM_SCORES = [];", iptm_js_array
-)
-
-ipsae_js_array = f"const IPSAE_SCORES = {ipsae_scores};"
-proteinfold_template = proteinfold_template.replace(
-    "const IPSAE_SCORES = [];", ipsae_js_array
-)
-
-chainwise_iptm_js_array = f"const CHAINWISE_IPTM_SCORES = {json.dumps(chainwise_iptm_matrices)};"
-proteinfold_template = proteinfold_template.replace(
-    "const CHAINWISE_IPTM_SCORES = [];", chainwise_iptm_js_array
-)
-
-chainwise_ipsae_js_array = f"const CHAINWISE_IPSAE_SCORES = {json.dumps(chainwise_ipsae_matrices)};"
-proteinfold_template = proteinfold_template.replace(
-    "const CHAINWISE_IPSAE_SCORES = [];", chainwise_ipsae_js_array
-)
-
-i = 0
-for structure in aligned_structures:
-    proteinfold_template = proteinfold_template.replace(
-        f"*_data_ranked_{i}.pdb*", open(structure, "r").read().replace("\n", "\\n")
+def script_safe_json_dumps(obj):
+    """json.dumps with <, > and & escaped, so a payload containing "</script>"
+    cannot terminate the enclosing <script type="application/json"> element early."""
+    return (
+        json.dumps(obj)
+        .replace("<", "\\u003c")
+        .replace(">", "\\u003e")
+        .replace("&", "\\u0026")
     )
-    i += 1
+
+
+report_config = {
+    "reportType": "standard",
+    "sampleName": args.name,
+    "programName": model_name[args.in_type.lower()],
+    "structFormat": "cif",
+    "models": model_names,
+    "models_data": models_data,
+    "lddt_averages": lddt_averages,
+    "iptm_scores": iptm_scores,
+    "ipsae_scores": ipsae_scores,
+    "chainwise_iptm": chainwise_iptm_matrices,
+    "chainwise_ipsae": chainwise_ipsae_matrices,
+}
+config_blob = (
+    '<script type="application/json" id="report-config">'
+    f"{script_safe_json_dumps(report_config)}</script>"
+)
+proteinfold_template = proteinfold_template.replace(
+    "</head>", f"{config_blob}\n  </head>", 1
+)
 
 if not is_missing_input(args.msa):
     image_path = f"{args.output_dir}/{args.name}_{args.in_type}_seq_coverage.png"
     with open(image_path, "rb") as in_file:
+        data_uri = f"data:image/png;base64,{base64.b64encode(in_file.read()).decode('utf-8')}"
         proteinfold_template = proteinfold_template.replace(
-            "seq_coverage.png",
-            f"data:image/png;base64,{base64.b64encode(in_file.read()).decode('utf-8')}",
+            '<div id="seq_cov_placeholder"></div>',
+            f'<img src="{data_uri}" alt="Sequence coverage (MSA)" '
+            'class="w-full h-auto rounded" />',
         )
 else:
     pattern = r'<div id="seq_coverage_container".*?>.*?(<!--.*?-->.*?)*?</div>\s*</div>\s*</div>\s*</div>'

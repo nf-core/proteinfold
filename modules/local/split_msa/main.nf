@@ -4,26 +4,21 @@ process SPLIT_MSA {
 
     conda "${moduleDir}/environment.yml"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/python:3.8.3' :
-        'quay.io/biocontainers/python:3.8.3' }"
+        'https://community-cr-prod.seqera.io/docker/registry/v2/blobs/sha256/de/deb97ccf27bd258b3f42fccf4fbc19e5cefe8582359699e12a808bdedb2cc5a8/data' :
+        'community.wave.seqera.io/library/pip_pyyaml:c2bd49f8575c1263' }"
 
     input:
-    tuple val(meta), path(msa)
+    tuple val(meta), path(msa), path(template_yaml, stageAs: 'original.yaml')
     output:
-    tuple val(meta), path ("output_msa/*.csv"), emit: msa_csv
-    path "versions.yml"        , emit: versions
+    tuple val(meta), path ("output_msa/*.yaml"), path ("output_msa/*.csv"), emit: boltz_data
+    tuple val("${task.process}"), val('python'), eval("python3 --version | sed 's/Python //g'"), emit: versions_python, topic: versions
 
     when:
     task.ext.when == null || task.ext.when
 
     script:
     """
-    msa_manager.py ${msa} -o output_msa --meta_id ${meta.id}
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        python: \$(python3 --version | sed 's/Python //g')
-    END_VERSIONS
+    msa_manager.py ${msa} -o output_msa --meta_id ${meta.id} --template_yaml ${template_yaml}
     """
 
     stub:
@@ -31,10 +26,6 @@ process SPLIT_MSA {
     mkdir output_msa
     touch "output_msa/A.csv"
     touch "output_msa/B.csv"
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        python: \$(python3 --version | sed 's/Python //g')
-    END_VERSIONS
+    touch "output_msa/${meta.id}.yaml"
     """
 }

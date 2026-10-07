@@ -5,10 +5,10 @@
                 "versions.yml:md5,9fac9ff23756b3e08a2e0377f4ca49ae"
             ]
         ],
-        "timestamp": "2026-05-25T12:11:37.595172755",
+        "timestamp": "2026-10-01T15:47:48.088725759",
         "meta": {
             "nf-test": "0.9.5",
-            "nextflow": "26.04.2"
+            "nextflow": "25.10.4"
         }
     },
     "dummy inputs produce modelcif with embedded PAE": {
@@ -17,10 +17,10 @@
                 "versions.yml:md5,9fac9ff23756b3e08a2e0377f4ca49ae"
             ]
         ],
-        "timestamp": "2026-05-25T12:11:43.541901356",
+        "timestamp": "2026-10-01T15:47:54.487927417",
         "meta": {
             "nf-test": "0.9.5",
-            "nextflow": "26.04.2"
+            "nextflow": "25.10.4"
         }
     },
     "dummy inputs produce binaryCIF": {
@@ -29,10 +29,10 @@
                 "versions.yml:md5,9fac9ff23756b3e08a2e0377f4ca49ae"
             ]
         ],
-        "timestamp": "2026-05-25T12:11:49.546342877",
+        "timestamp": "2026-10-01T15:48:02.039801929",
         "meta": {
             "nf-test": "0.9.5",
-            "nextflow": "26.04.2"
+            "nextflow": "25.10.4"
         }
     }
 }

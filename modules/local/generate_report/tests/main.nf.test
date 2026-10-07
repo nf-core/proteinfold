@@ -1,0 +1,56 @@
+nextflow_process {
+    name "Test Process GENERATE_REPORT"
+    script "../main.nf"
+    process "GENERATE_REPORT"
+    tag "modules"
+    tag "modules_local"
+    tag "generate_report"
+    tag "security"
+
+    profile "test_nostub"
+
+    test("report generation carries full config, injection-safe blob, and clean download naming") {
+        when {
+            process {
+                """
+                input[0] = tuple(
+                    [id: 'S1', model: 'boltz'],
+                    [file(params.pipelines_testdata_base_path + 'testdata/models/rank_0.pdb', checkIfExists: true), file(params.pipelines_testdata_base_path + 'testdata/models/rank_1.pdb', checkIfExists: true)],
+                    [file("${projectDir}/assets/NO_FILE")],
+                    [file("${projectDir}/assets/NO_FILE")],
+                    [file(params.pipelines_testdata_base_path + 'testdata/metrics/S1_scalar.tsv', checkIfExists: true)],
+                    [file(params.pipelines_testdata_base_path + 'testdata/metrics/S1_scalar.tsv', checkIfExists: true)],
+                    [file(params.pipelines_testdata_base_path + 'testdata/metrics/S1_chainwise.tsv', checkIfExists: true)],
+                    [file(params.pipelines_testdata_base_path + 'testdata/metrics/S1_chainwise.tsv', checkIfExists: true)]
+                )
+                input[1] = file("${projectDir}/assets/report_template.html", checkIfExists: true)
+                """
+            }
+        }
+        then {
+            assert process.success
+            def html = path(process.out.report[0][1]).text
+            def matcher = html =~ /(?s)<script type="application\/json" id="report-config">(.*?)<\/script>/
+            assert matcher.count == 1
+            def config = new groovy.json.JsonSlurper().parseText(matcher[0][1])
+            assert config.programName == "Boltz"
+            assert config.sampleName == "S1"
+            assert config.structFormat == "cif"
+            assert config.models == ["rank_0.cif", "rank_1.cif"]
+            assert config.models_data.size() == 2 && config.models_data.every { it.contains("_atom_site.group_PDB") }
+            assert config.lddt_averages.size() == 2
+            assert config.iptm_scores == ["0.725", "n/a"] && config.ipsae_scores == ["0.725", "n/a"]
+            def payload = "</script><img src=x onerror=alert(1)>"
+            assert config.chainwise_iptm[0].chains.contains(payload) && config.chainwise_ipsae[0].chains.contains(payload)
+            assert !html.contains("<img src=x onerror=alert(1)>")
+            assert !((html =~ /(?s)const renderScoreMatrix = .*?const updatePairScoreTables/)[0]).contains("innerHTML")
+            assert html.contains('onclick="downloadStructure()"') && !html.contains("downloadPdb")
+            assert html.contains('id="structure-download-label"') && html.contains('structure-download-label").textContent')
+            assert (html =~ /image\.id =/).count == 1
+            def downloader = (html =~ /(?s)const downloadStructure = .*?const makeDownload/)[0]
+            assert downloader.contains("MODELS[state.model]")
+            assert !downloader.contains(".cif.cif") && !downloader.contains("SAMPLE_NAME")
+            assert html.contains("const modelLabel = ")
+        }
+    }
+}

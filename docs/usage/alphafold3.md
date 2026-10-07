@@ -7,7 +7,9 @@ weight: 20
 
 | Mode                                                        | Protein | RNA | Small-molecule | PTM | Constraints | pLM | MSA server | Split MSA |
 | :---------------------------------------------------------- | :-----: | :-: | :------------: | :-: | :---------: | :-: | :--------: | :-------: |
-| [AlphaFold3](https://github.com/google-deepmind/alphafold3) |   ✅    | ✅  |       ✅       | ✅  |     ❌      | ❌  |     ❌     |    ❌     |
+| [AlphaFold3](https://github.com/google-deepmind/alphafold3) |   ✅    | ✅  |       ✅       | ✅  |     ❌      | ❌  |     ❌     |    ✅     |
+
+AlphaFold3 is executed as two sequential steps: the **data pipeline** (MSA and template search, CPU-only) followed by **inference** (structure prediction, GPU-only). The intermediate `_data.json` file produced by the data pipeline is published to the output directory and can be reused in subsequent runs.
 
 > [!WARNING]
 > The AlphaFold3 weights are not provided by this pipeline. Users must obtain the weights directly from DeepMind according to their [terms of use](https://github.com/google-deepmind/alphafold3/blob/main/WEIGHTS_TERMS_OF_USE.md) and [prohibited use policy](https://github.com/google-deepmind/alphafold3/blob/main/WEIGHTS_PROHIBITED_USE_POLICY.md). Please ensure you comply with all terms and conditions before using AlphaFold3. For more information about AlphaFold3 usage and requirements, please refer to the [official AlphaFold3 repository](https://github.com/google-deepmind/alphafold3).

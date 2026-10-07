@@ -1,0 +1,1 @@
+../run_alphafold3_inference/Dockerfile

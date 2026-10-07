@@ -1,13 +1,21 @@
 #!/usr/bin/env python3
+from __future__ import annotations
 
-import sys
 import argparse
 import json
 import string
-import re
+import sys
+from collections.abc import Sequence
+
 from Bio import SeqIO
 
-def parse_args(args=None):
+try:
+    from bin.fasta_to_boltz import infer_entity_type
+except ModuleNotFoundError:
+    from fasta_to_boltz import infer_entity_type
+
+
+def parse_args(args: Sequence[str] | None = None) -> argparse.Namespace:
     """
     Parse command line arguments for the script.
 
@@ -46,41 +54,6 @@ def parse_args(args=None):
 
     return parser.parse_args(args)
 
-def infer_entity_type(header, sequence):
-    """
-    Infer the entity type from the header and sequence.
-
-    Args:
-        header (str): Sequence header
-        sequence (str): Sequence
-
-    Returns:
-        str: Entity type (one of "protein", "ccd", "smiles", "dna", "rna", or "unknown")
-    """
-    ENTITY_TYPES = ["protein", "ccd", "smiles", "dna", "rna"]
-
-    header_lower = header.lower()
-
-    for entity in ENTITY_TYPES:
-        if entity in header_lower:
-            return entity
-    seq = sequence.strip()
-    seq_set = set(seq)
-    # RNA: only A,C,U,G,N
-    if len(seq_set - set("ACUGN")) == 0:
-        return "rna"
-    # DNA: only A,C,T,G,N
-    if len(seq_set - set("ACTGN")) == 0:
-        return "dna"
-    # Protein: only 20 AA, not just A,C,T,G,U,N
-    protein_letters = set("ACDEFGHIKLMNPQRSTVWY")
-    if len(seq_set - protein_letters) == 0 and not (seq_set <= set("ACUGTN")):
-        return "protein"
-    # SMILES: fallback
-    if re.fullmatch(r"[A-Za-z0-9@+\\-\\[\\]\\(\\)=#\\\$%]+", seq):
-        return "smiles"
-    return "unknown"
-
 def sanitised_name(id):
     """
     Sanitize the input ID to create a valid filename.
@@ -116,7 +89,7 @@ def fasta_to_alphafold3_json(file_in):
     for i, record in enumerate(SeqIO.parse(file_in, "fasta")):
         sequence = record.seq._data.decode()
         header = record.description
-        entity_type = infer_entity_type(header, sequence)
+        entity_type = infer_entity_type(">" + header, sequence)
         entities.append((entity_type, VALID_CHAIN_IDS[i], sequence))
 
     return entities

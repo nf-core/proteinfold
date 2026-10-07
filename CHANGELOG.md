@@ -15,7 +15,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[#600](https://github.com/nf-core/proteinfold/issues/600)] - Fix multiqc reports publication and centralize the config in `modules.config`.
 - [[#602](https://github.com/nf-core/proteinfold/issues/602)] - Fix file name collision when staging ColabFold databases to the same directory in `MMSEQS_COLABFOLDSEARCH`.
 - [[#603](https://github.com/nf-core/proteinfold/issues/603)] - Allow AlphaFold3 JSON files as direct samplesheet input, bypassing `FASTA_TO_ALPHAFOLD3_JSON`.
-- [[#607](https://github.com/nf-core/proteinfold/pull/607)] - Fix Nextflow 26.04.1 warnings when using glob patterns in `file()` and other small fixes.
+- [[#607](https://github.com/nf-core/proteinfold/pull/607)] - Fix Nextflow 26.04.1 warnings when using glob patterns in `file()`, update nf-schema to `2.7.2` to fix type casting and other small fixes.
+- [[#577](https://github.com/nf-core/proteinfold/issues/577)] - Separate in two independent processes alphafold3 data pipeline and inference steps.
+- [[#620](https://github.com/nf-core/proteinfold/pull/620)] - Update `fix_obsolete.py` to avoid infinite loop.
+- [[#586](https://github.com/nf-core/proteinfold/pull/586)] - Allow local msa for Boltz with non-protein entities.
+- [[#618](https://github.com/nf-core/proteinfold/pull/618)] - Resolve boltz `ext.args` in closure.
+- [[PR #626](https://github.com/nf-core/proteinfold/pull/618)] - Move scientific validation tests and BioPython setup to manual workflow.
+- [[#619](https://github.com/nf-core/proteinfold/issues/619)] - Fix `extract_metrics.py` shebang to use `python3` for compatibility with minimal containers.
+- [[#209](https://github.com/nf-core/proteinfold/issues/209)] - Prevent ColabFold template runs unless `--use_msa_server` is enabled.
+- [[#456](https://github.com/nf-core/proteinfold/issues/456)] - Derive ranked metric ordering from structure filenames when generating TSV outputs.
+- [[#489](https://github.com/nf-core/proteinfold/issues/489)] - Specified Boltz output paths on `boltz_results_<sample_id>/`.
+- [[#576](https://github.com/nf-core/proteinfold/issues/576)] - Preserve native metric rank numbering and sort rank-derived outputs numerically.
+- [[PR #633](https://github.com/nf-core/proteinfold/pull/633)] - Fix comparison reports with esmfold for multirow samplesheets.
+- [[PR #634](https://github.com/nf-core/proteinfold/pull/634)] - Add support for outputs in cif format.
+- [[#580](https://github.com/nf-core/proteinfold/issues/580)], [[#579](https://github.com/nf-core/proteinfold/issues/579)], [[#584](https://github.com/nf-core/proteinfold/issues/584)], [[#588](https://github.com/nf-core/proteinfold/issues/588)], [[#590](https://github.com/nf-core/proteinfold/issues/590)] - `ASSEMBLE_MODELCIF` (not yet wired into workflows): `populate_modelcif.py` gained `--plddt-scale` (PLDDT/PLDDT01/PLDDTAllAtom/PLDDTAllAtom01), strict `rank_X` validation in pLDDT TSVs, per-model and shared random-seed reporting (`--seed` TSV/int, filename inference), `--container_image` (`task.container`) and per-program model parameters (`uses_templates`, `has_recycling`) plus `--param KEY=VALUE` overrides as modelCIF `SoftwareParameter`s, and an optional `TemplateSearchStep` ahead of the coevolution MSA.
+- [[PR #636](https://github.com/nf-core/proteinfold/pull/636)] - Resolve alphafold2 `ext.args` in closure.
+- [[#365](https://github.com/nf-core/proteinfold/issues/365)] - Run nf-tests with module containers so captured versions match.
+- [[PR #640](https://github.com/nf-core/proteinfold/pull/640)] - Fix ro-crate with correct path to the metro map file.
+- [[PR #631](https://github.com/nf-core/proteinfold/pull/631)] - Add module tests for Boltz input conversion, MSA splitting, and ColabFold MMseqs search.
+- [[PR #632](https://github.com/nf-core/proteinfold/pull/632)] - Add GPU actions workflow and RUN_BOLTZ module test.
+- [[PR #641](https://github.com/nf-core/proteinfold/pull/641)] - Stabilise GPU nf-test snapshots and set a deterministic test random seed.
+- [[PR #644](https://github.com/nf-core/proteinfold/pull/644)] - Update pipeline template to [nf-core/tools 4.0.3](https://github.com/nf-core/tools/releases/tag/4.0.3).
+- [[PR #645](https://github.com/nf-core/proteinfold/pull/645)] - Update image version for alphafold3 modules and `colabfold_batch`.
+- [[PR #647](https://github.com/nf-core/proteinfold/pull/647)] - Fix missing X character in AF3 and Boltz fasta processing.
+- [[PR #51](https://github.com/Australian-Structural-Biology-Computing/proteinfold/pull/51)] - Remove the deprecated AlphaFold2 standard mode; AlphaFold2 now always runs separate MSA generation and prediction steps.
+- [[PR #52](https://github.com/Australian-Structural-Biology-Computing/proteinfold/pull/52)] - Add modular CPU, GPU, and per-mode scientific nf-tests with deterministic fixtures and independently runnable stages.
 
 | Old parameter              | New parameter   |
 | -------------------------- | --------------- |

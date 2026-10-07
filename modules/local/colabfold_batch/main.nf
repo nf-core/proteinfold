@@ -3,7 +3,7 @@ process COLABFOLD_BATCH {
     label 'process_medium'
     label 'process_gpu'
 
-    container "nf-core/proteinfold_colabfold:2.0.0"
+    container "nf-core/proteinfold_colabfold:2.1.0"
 
     input:
     tuple val(meta), path(fasta), path('params/*')
@@ -14,15 +14,16 @@ process COLABFOLD_BATCH {
     tuple val(meta), path ("${meta.id}_colabfold.pdb")      , emit: top_ranked_pdb
     tuple val(meta), path ("raw/*relaxed_rank_*.pdb")       , emit: pdb
     tuple val(meta), path ("${meta.id}_colabfold_msa.tsv")  , emit: msa
-    tuple val(meta), path ("${meta.id}_plddt_mqc.tsv")      , emit: multiqc
+    tuple val(meta), path ("${meta.id}_plddt.tsv")            , emit: plddt
     tuple val(meta), path ("${meta.id}_*_pae.tsv")          , optional: true, emit: paes
-    tuple val(meta), path ("${meta.id}_0_pae.tsv")          , optional: true, emit: pae
+    tuple val(meta), path ("${meta.id}_1_pae.tsv")          , optional: true, emit: pae
     tuple val(meta), path ("${meta.id}_ptm.tsv")            , optional: true, emit: ptms
     tuple val(meta), path ("${meta.id}_iptm.tsv")           , optional: true, emit: iptms
     tuple val(meta), path ("${meta.id}_ipsae.tsv")          , optional: true, emit: ipsaes
     tuple val(meta), path ("${meta.id}_chainwise_iptm.tsv") , optional: true, emit: chainwise_iptms
     tuple val(meta), path ("${meta.id}_chainwise_ipsae.tsv"), optional: true, emit: chainwise_ipsaes
-    path "versions.yml"                                     , emit: versions
+    tuple val("${task.process}"), val('alphafold_colabfold'), eval("pip list | grep \"^alphafold-colabfold\" | awk '{print \\\$2}' 2>/dev/null || echo \"unknown\""), emit: versions_alphafold_colabfold, topic: versions
+    tuple val("${task.process}"), val('colabfold_batch'), eval("pip list | grep \"^colabfold\" | awk '{print \\\$2}' 2>/dev/null || echo \"unknown\""), emit: versions_colabfold_batch, topic: versions
 
     when:
     task.ext.when == null || task.ext.when
@@ -60,7 +61,7 @@ process COLABFOLD_BATCH {
     fi
 
     extract_metrics.py --name ${meta.id} \\
-        --colabfold_metrics_fns raw/*scores_rank*.json \\
+        --colabfold_metrics_files raw/*scores_rank*.json \\
         --structs raw/*_\${prefix}_rank*.pdb \\
         --paired_a3m raw/${meta.id}.a3m
 
@@ -68,12 +69,6 @@ process COLABFOLD_BATCH {
 
     cp raw/*_coverage.png ${meta.id}_seq_coverage.png
     mv "${meta.id}_msa.tsv" "${meta.id}_colabfold_msa.tsv"
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        alphafold_colabfold: \$(pip list | grep "^alphafold-colabfold" | awk '{print \$2}' 2>/dev/null || echo "unknown")
-        colabfold_batch: \$(pip list | grep "^colabfold" | awk '{print \$2}' 2>/dev/null || echo "unknown")
-    END_VERSIONS
     """
 
     stub:
@@ -83,21 +78,25 @@ process COLABFOLD_BATCH {
     touch ./raw/${meta.id}_relaxed_rank_001_model_1_seed_000.pdb
     touch ./raw/${meta.id}_relaxed_rank_002_model_2_seed_000.pdb
     touch ./raw/${meta.id}_relaxed_rank_003_model_3_seed_000.pdb
+    touch ./raw/${meta.id}_relaxed_rank_004_model_4_seed_000.pdb
+    touch ./raw/${meta.id}_relaxed_rank_005_model_5_seed_000.pdb
     touch ./${meta.id}_seq_coverage.png
-    touch ./raw/${meta.id}_scores_rank.json
-    touch ./${meta.id}_0_pae.tsv
+    touch ./raw/${meta.id}_scores_rank_001_model_1_seed_000.json
+    touch ./raw/${meta.id}_scores_rank_002_model_2_seed_000.json
+    touch ./raw/${meta.id}_scores_rank_003_model_3_seed_000.json
+    touch ./raw/${meta.id}_scores_rank_004_model_4_seed_000.json
+    touch ./raw/${meta.id}_scores_rank_005_model_5_seed_000.json
+    touch ./${meta.id}_1_pae.tsv
+    touch ./${meta.id}_2_pae.tsv
+    touch ./${meta.id}_3_pae.tsv
+    touch ./${meta.id}_4_pae.tsv
+    touch ./${meta.id}_5_pae.tsv
     touch ./${meta.id}_ptm.tsv
     touch ./${meta.id}_iptm.tsv
     touch ./${meta.id}_ipsae.tsv
     touch ./${meta.id}_chainwise_iptm.tsv
     touch ./${meta.id}_chainwise_ipsae.tsv
-    touch ./${meta.id}_plddt_mqc.tsv
+    touch ./${meta.id}_plddt.tsv
     touch ./${meta.id}_colabfold_msa.tsv
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        alphafold_colabfold: \$(pip list | grep "^alphafold-colabfold" | awk '{print \$2}' 2>/dev/null || echo "unknown")
-        colabfold_batch: \$(pip list | grep "^colabfold" | awk '{print \$2}' 2>/dev/null || echo "unknown")
-    END_VERSIONS
     """
 }

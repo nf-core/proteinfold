@@ -85,6 +85,9 @@ nextflow_process {
     test("dummy inputs produce modelcif with associated PAE") {
 
         when {
+            params {
+                outdir = "$outputDir"
+            }
             process {
                 """
                 input[0] = [
@@ -104,6 +107,7 @@ nextflow_process {
         then {
             def modelcifPath = path(process.out.modelcif[0][1])
             assertModelcifOutput(process, modelcifPath, false, false)
+            // Snapshot the versions.yml output.
             assert snapshot(process.out.versions).match()
         }
     }
@@ -162,6 +166,46 @@ nextflow_process {
         }
     }
 
+    test("dummy inputs include all ranked models by default") {
+        when {
+            process {
+                """
+                input[0] = [
+                    [ id: 'test_multi_default', model: 'alphafold2', msa_tool: 'jackhmmer' ],
+                    [
+                        file("$projectDir/assets/DUMMY_MMCIF_rank_0.mmcif", checkIfExists: true),
+                        file("$projectDir/assets/DUMMY_MMCIF_rank_1.mmcif", checkIfExists: true),
+                        file("$projectDir/assets/DUMMY_MMCIF_rank_2.mmcif", checkIfExists: true),
+                        file("$projectDir/assets/DUMMY_MMCIF_rank_3.mmcif", checkIfExists: true),
+                        file("$projectDir/assets/DUMMY_MMCIF_rank_4.mmcif", checkIfExists: true)
+                    ],
+                    file("$projectDir/assets/DUMMY_MSA.tsv",         checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_PLDDT.tsv",       checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_PAE.tsv",         checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_PTM.tsv",         checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_IPTM.tsv",        checkIfExists: true),
+                    file("$projectDir/assets/NO_FILE",               checkIfExists: true)
+                ]
+                """
+            }
+        }
+
+        then {
+            def modelcifPath = path(process.out.modelcif[0][1])
+            assertModelcifOutput(process, modelcifPath, false, false)
+
+            def mmcif = modelcifPath.text
+            assertAll(
+                { assert mmcif.contains("test_multi_default rank_0") },
+                { assert mmcif.contains("test_multi_default rank_1") },
+                { assert mmcif.contains("test_multi_default rank_2") },
+                { assert mmcif.contains("test_multi_default rank_3") },
+                { assert mmcif.contains("test_multi_default rank_4") }
+            )
+            assert process.out.versions.size() == 1
+        }
+    }
+
     test("dummy inputs produce modelcif from five mmcif structures") {
         config "./assemble_modelcif_all_structs.config"
 
@@ -199,6 +243,150 @@ nextflow_process {
                 { assert mmcif.contains("test_multi rank_2") },
                 { assert mmcif.contains("test_multi rank_3") },
                 { assert mmcif.contains("test_multi rank_4") }
+            )
+            assert process.out.versions.size() == 1
+        }
+    }
+
+    test("pLDDT metric type follows --plddt-scale") {
+        config "./assemble_modelcif_plddt_scale.config"
+
+        when {
+            process {
+                """
+                input[0] = [
+                    [ id: 'test_scale', model: 'alphafold2', msa_tool: 'jackhmmer' ],
+                    [
+                        file("$projectDir/assets/DUMMY_MMCIF_rank_0.mmcif", checkIfExists: true),
+                        file("$projectDir/assets/DUMMY_MMCIF_rank_1.mmcif", checkIfExists: true),
+                        file("$projectDir/assets/DUMMY_MMCIF_rank_2.mmcif", checkIfExists: true),
+                        file("$projectDir/assets/DUMMY_MMCIF_rank_3.mmcif", checkIfExists: true),
+                        file("$projectDir/assets/DUMMY_MMCIF_rank_4.mmcif", checkIfExists: true)
+                    ],
+                    file("$projectDir/assets/DUMMY_MSA.tsv",         checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_PLDDT.tsv",       checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_PAE.tsv",         checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_PTM.tsv",         checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_IPTM.tsv",        checkIfExists: true),
+                    file("$projectDir/assets/NO_FILE",               checkIfExists: true)
+                ]
+                """
+            }
+        }
+
+        then {
+            def mmcif = path(process.out.modelcif[0][1]).text
+            assertAll(
+                { assert mmcif.contains("'pLDDT in [0,1]' local") },
+                { assert !mmcif.contains("'pLDDT-CA'") }
+            )
+            assert process.out.versions.size() == 1
+        }
+    }
+
+    test("--seed tsv attaches container and seed software parameters") {
+        config "./assemble_modelcif_seed.config"
+
+        when {
+            process {
+                """
+                input[0] = [
+                    [ id: 'test_seed', model: 'alphafold2', msa_tool: 'jackhmmer' ],
+                    [
+                        file("$projectDir/assets/DUMMY_MMCIF_rank_0.mmcif", checkIfExists: true),
+                        file("$projectDir/assets/DUMMY_MMCIF_rank_1.mmcif", checkIfExists: true),
+                        file("$projectDir/assets/DUMMY_MMCIF_rank_2.mmcif", checkIfExists: true),
+                        file("$projectDir/assets/DUMMY_MMCIF_rank_3.mmcif", checkIfExists: true),
+                        file("$projectDir/assets/DUMMY_MMCIF_rank_4.mmcif", checkIfExists: true)
+                    ],
+                    file("$projectDir/assets/DUMMY_MSA.tsv",         checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_PLDDT.tsv",       checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_PAE.tsv",         checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_PTM.tsv",         checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_IPTM.tsv",        checkIfExists: true),
+                    file("$projectDir/assets/NO_FILE",               checkIfExists: true)
+                ]
+                """
+            }
+        }
+
+        then {
+            def mmcif = path(process.out.modelcif[0][1]).text
+            assertAll(
+                { assert mmcif.contains("_ma_software_parameter") },
+                { assert mmcif.contains("integer seed 0") }
+            )
+            assert process.out.versions.size() == 1
+        }
+    }
+
+    test("chainwise metrics are skipped for monomer inputs") {
+        config "./assemble_modelcif_chainwise.config"
+
+        when {
+            process {
+                """
+                input[0] = [
+                    [ id: 'test_cw', model: 'alphafold2', msa_tool: 'jackhmmer' ],
+                    [
+                        file("$projectDir/assets/DUMMY_MMCIF_rank_0.mmcif", checkIfExists: true),
+                        file("$projectDir/assets/DUMMY_MMCIF_rank_1.mmcif", checkIfExists: true),
+                        file("$projectDir/assets/DUMMY_MMCIF_rank_2.mmcif", checkIfExists: true),
+                        file("$projectDir/assets/DUMMY_MMCIF_rank_3.mmcif", checkIfExists: true),
+                        file("$projectDir/assets/DUMMY_MMCIF_rank_4.mmcif", checkIfExists: true)
+                    ],
+                    file("$projectDir/assets/DUMMY_MSA.tsv",         checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_PLDDT.tsv",       checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_PAE.tsv",         checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_PTM.tsv",         checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_IPTM.tsv",        checkIfExists: true),
+                    file("$projectDir/assets/NO_FILE",               checkIfExists: true)
+                ]
+                """
+            }
+        }
+
+        then {
+            def mmcif = path(process.out.modelcif[0][1]).text
+            assertAll(
+                { assert !mmcif.contains("_ma_qa_metric_feature") },
+                { assert mmcif.contains("LocalPLDDT") }
+            )
+            assert process.out.versions.size() == 1
+        }
+    }
+
+    test("template search step is attributed to its own tool") {
+        when {
+            process {
+                """
+                input[0] = [
+                    [ id: 'test_tpl', model: 'alphafold2', msa_tool: 'jackhmmer' ],
+                    [
+                        file("$projectDir/assets/DUMMY_MMCIF_rank_0.mmcif", checkIfExists: true),
+                        file("$projectDir/assets/DUMMY_MMCIF_rank_1.mmcif", checkIfExists: true),
+                        file("$projectDir/assets/DUMMY_MMCIF_rank_2.mmcif", checkIfExists: true),
+                        file("$projectDir/assets/DUMMY_MMCIF_rank_3.mmcif", checkIfExists: true),
+                        file("$projectDir/assets/DUMMY_MMCIF_rank_4.mmcif", checkIfExists: true)
+                    ],
+                    file("$projectDir/assets/DUMMY_MSA.tsv",         checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_PLDDT.tsv",       checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_PAE.tsv",         checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_PTM.tsv",         checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_IPTM.tsv",        checkIfExists: true),
+                    file("$projectDir/assets/NO_FILE",               checkIfExists: true)
+                ]
+                """
+            }
+        }
+
+        then {
+            def mmcif = path(process.out.modelcif[0][1]).text
+            assertAll(
+                { assert mmcif.contains("'template search'") },
+                { assert mmcif.contains("HHsearch") },
+                // the template step must not be lumped in with the modeling software
+                { assert mmcif.contains("'coevolution MSA'") }
             )
             assert process.out.versions.size() == 1
         }

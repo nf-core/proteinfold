@@ -1,0 +1,33 @@
+nextflow_process {
+
+    name "Test Process BOLTZ_YAML_TO_COLABFOLD_FASTA"
+    script "../main.nf"
+    process "BOLTZ_YAML_TO_COLABFOLD_FASTA"
+
+    tag "modules"
+    tag "modules_local"
+    tag "boltz_yaml_to_colabfold_fasta"
+    profile "test_nostub"
+
+    test("converts boltz yaml to colabfold fasta") {
+
+        when {
+            process {
+                """
+                input[0] = [
+                    [ id: 'mixed_sample' ],
+                    file(params.pipelines_testdata_base_path + 'testdata/sequences/boltz/mixed.yaml', checkIfExists: true)
+                ]
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                { assert snapshot(process.out).match() }
+            )
+        }
+    }
+
+}

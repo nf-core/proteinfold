@@ -1,0 +1,123 @@
+/*
+ * Run AlphaFold3 data pipeline (MSA + template search only, no inference)
+ */
+process RUN_ALPHAFOLD3_DATAPIPELINE {
+    tag "$meta.id"
+    label 'process_medium'
+    container "nf-core/proteinfold_alphafold3_standard:2.1.0"
+
+    input:
+    tuple val(meta), path(json)
+    path "small_bfd/*"
+    path "mgnify/*"
+    path "mmcif_files"
+    path "uniref90/*"
+    path "pdb_seqres/*"
+    path "uniprot/*"
+    path "nt_rna/*"
+    path "rfam/*"
+    path "rnacentral/*"
+
+    output:
+    tuple val(meta), path ("${meta.id}_data.json"), emit: data_json
+    path "versions.yml"                           , emit: versions
+
+    when:
+    task.ext.when == null || task.ext.when
+
+    script:
+    // Exit if running this module with -profile conda / -profile mamba
+    if (workflow.profile.tokenize(',').intersect(['conda', 'mamba']).size() >= 1) {
+        error("Local RUN_ALPHAFOLD3_DATAPIPELINE module does not support Conda. Please use Docker / Singularity / Podman instead.")
+    }
+
+    def args   = task.ext.args ?: ''
+    def prefix = task.ext.prefix ?: "${meta.id}"
+    """
+    # Check database files exist and set variables
+    pdb_seqres=\$(ls -v ./pdb_seqres/pdb_seqres.txt ./pdb_seqres/pdb_seqres_2022_09_28.fasta 2>/dev/null | tail -n 1 || echo "")
+    if [[ -z "\$pdb_seqres" ]]; then
+        echo "ERROR: No pdb_seqres file found"
+        exit 1
+    fi
+
+    uniref90=\$(ls -v ./uniref90/uniref90*.fa ./uniref90/uniref90*.fasta 2>/dev/null | tail -n 1 || echo "")
+    if [[ -z "\$uniref90" ]]; then
+        echo "ERROR: No uniref90 file found"
+        exit 1
+    fi
+
+    mgnify=\$(ls -v ./mgnify/mgy_clusters*.fa ./mgnify/mgnify_clusters*.fasta 2>/dev/null | tail -n 1 || echo "")
+    if [[ -z "\$mgnify" ]]; then
+        echo "ERROR: No mgnify file found"
+        exit 1
+    fi
+
+    uniprot=\$(ls -v ./uniprot/uniprot.fasta ./uniprot/uniprot*.fa 2>/dev/null | tail -n 1 || echo "")
+    if [[ -z "\$uniprot" ]]; then
+        echo "ERROR: No uniprot file found"
+        exit 1
+    fi
+
+    nt_rna=\$(ls -v ./nt_rna/nt_rna*.fasta 2>/dev/null | tail -n 1 || echo "")
+    if [[ -z "\$nt_rna" ]]; then
+        echo "ERROR: No NT-RNA database found"
+        exit 1
+    fi
+
+    rfam=\$(ls -v ./rfam/Rfam-*.fasta 2>/dev/null | tail -n 1 || echo "")
+    if [[ -z "\$rfam" ]]; then
+        echo "ERROR: No Rfam database found"
+        exit 1
+    fi
+
+    rna_central=\$(ls -v ./rnacentral/rnacentral*.fasta 2>/dev/null | tail -n 1 || echo "")
+    if [[ -z "\$rna_central" ]]; then
+        echo "ERROR: No RNAcentral database found"
+        exit 1
+    fi
+
+    python3 /app/alphafold/run_alphafold.py \\
+        --json_path=${json} \\
+        --uniref90_database_path=\$uniref90 \\
+        --mgnify_database_path=\$mgnify \\
+        --pdb_database_path=./mmcif_files \\
+        --small_bfd_database_path=./small_bfd/bfd-first_non_consensus_sequences.fasta \\
+        --uniprot_cluster_annot_database_path=\$uniprot \\
+        --seqres_database_path=\$pdb_seqres \\
+        --ntrna_database_path=\$nt_rna \\
+        --rfam_database_path=\$rfam \\
+        --rna_central_database_path=\$rna_central \\
+        --output_dir=\$PWD \\
+        --run_data_pipeline=true \\
+        --run_inference=false \\
+        $args
+
+    data_json=\$(find . -mindepth 2 -maxdepth 2 -type f -name '*_data.json' -print -quit)
+    if [[ -z "\$data_json" ]]; then
+        echo "ERROR: AlphaFold3 data pipeline did not produce a data JSON"
+        exit 1
+    fi
+    cp "\$data_json" ${prefix}_data.json
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        python: \$(python3 --version | sed 's/Python //g')
+        alphafold3: \$(cat /app/alphafold/COMMIT 2>/dev/null || echo "unknown")
+        hmmer: \$(hmmsearch -h | grep -o '^# HMMER [0-9.]*' | sed 's/^# HMMER //' || echo "unknown")
+    END_VERSIONS
+    """
+
+    stub:
+    def prefix = task.ext.prefix ?: "${meta.id}"
+    """
+    touch ${prefix}_data.json
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        python: \$(python3 --version 2>/dev/null | sed 's/Python //g' || echo "unknown")
+        alphafold3: \$(cat /app/alphafold/COMMIT 2>/dev/null || echo "unknown")
+        hmmer: \$(hmmsearch -h | grep -o '^# HMMER [0-9.]*' | sed 's/^# HMMER //' || echo "unknown")
+    END_VERSIONS
+    """
+}

@@ -1,0 +1,18 @@
+{
+    "versions": {
+        "content": [
+            [
+                [
+                    "RUN_BOLTZ",
+                    "boltz",
+                    "2.2.1"
+                ]
+            ]
+        ],
+        "timestamp": "2026-09-22T17:11:36.166796137",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.6"
+        }
+    }
+}

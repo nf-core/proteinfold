@@ -20,7 +20,7 @@ RUN apt-get update && \
     ln -sf /usr/bin/python3 /usr/bin/python && \
     \
     pip install --no-cache-dir --break-system-packages \
-        "colabfold @ git+https://github.com/sokrypton/ColabFold.git@e8ebd9a" && \
+        "colabfold @ git+https://github.com/sokrypton/ColabFold.git@v1.6.1" && \
     \
     wget -q https://github.com/soedinglab/MMseqs2/releases/download/${MMSEQS2_VERSION}/mmseqs-linux-sse41.tar.gz && \
     tar xzf mmseqs-linux-sse41.tar.gz && \

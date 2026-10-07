@@ -1,0 +1,41 @@
+name: "boltz_yaml_to_colabfold_fasta"
+description: Convert a Boltz input YAML file to a ColabFold FASTA file.
+tools: []
+input:
+  - - meta:
+        type: map
+        description: Groovy Map containing sample information.
+    - boltz_yaml:
+        type: file
+        description: Boltz input YAML file.
+        pattern: "*.yaml"
+output:
+  query_fasta:
+    - - meta:
+          type: map
+          description: Groovy Map containing sample information.
+      - "${meta.id}.fasta":
+          type: file
+          description: FASTA file for ColabFold.
+          pattern: "*.fasta"
+  versions_python:
+    - - "${task.process}":
+          type: string
+          description: The process the versions were collected from.
+      - python:
+          type: string
+          description: The tool name.
+      - "python3 --version | sed 's/Python //g'":
+          type: eval
+          description: The expression to obtain the version of the tool.
+topics:
+  versions:
+    - - "${task.process}":
+          type: string
+          description: The process the versions were collected from.
+      - python:
+          type: string
+          description: The tool name.
+      - "python3 --version | sed 's/Python //g'":
+          type: eval
+          description: The expression to obtain the version of the tool.

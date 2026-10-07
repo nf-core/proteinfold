@@ -1,0 +1,33 @@
+nextflow_process {
+
+    name "Test Process BOLTZ_FASTA"
+    script "../main.nf"
+    process "BOLTZ_FASTA"
+
+    tag "modules"
+    tag "modules_local"
+    tag "boltz_fasta"
+    profile "test_nostub"
+
+    test("converts mixed fasta to boltz yaml") {
+
+        when {
+            process {
+                """
+                input[0] = [
+                    [ id: 'mixed_sample' ],
+                    file(params.pipelines_testdata_base_path + 'testdata/sequences/untagged_complex.fasta', checkIfExists: true)
+                ]
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                { assert snapshot(process.out).match() }
+            )
+        }
+    }
+
+}
