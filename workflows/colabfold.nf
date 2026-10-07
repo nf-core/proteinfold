@@ -121,13 +121,9 @@ workflow COLABFOLD {
     ipsae          = ch_ipsae_final    // channel: [ id, /path/to/*_ipsae.tsv ]
     chainwise_iptm = ch_chainwise_iptm_final // channel: [ id, /path/to/*_chainwise_iptm.tsv ]
     chainwise_ipsae = ch_chainwise_ipsae_final // channel: [ id, /path/to/*_chainwise_ipsae.tsv ]
-<<<<<<< Updated upstream
     multiqc_metrics = ch_multiqc_metrics // channel: [ [id:..., model:...], [metric tsvs] ]
-=======
-    multiqc_report = ch_multiqc_report // channel: /path/to/multiqc_report.html
-    plddt           = COLABFOLD_BATCH.out.multiqc
-    ptm             = COLABFOLD_BATCH.out.ptms
->>>>>>> Stashed changes
+    plddt           = modeChannel(COLABFOLD_BATCH.out.plddt, "colabfold")
+    ptm             = modeChannel(COLABFOLD_BATCH.out.ptms, "colabfold")
 }
 
 /*

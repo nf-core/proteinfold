@@ -236,6 +236,29 @@ def collectMultiqcMetrics(model, metric_channels) {
         }
 }
 
+// Join the common predictor outputs into the tuple consumed by ASSEMBLE_MODELCIF.
+// All metric channels are keyed by the same mode-annotated metadata map; the
+// software versions file is shared by every prediction in the run.
+def modelcifInput(structs, msa, plddt, pae, ptm, iptm, versions, msaTool) {
+    structs
+        .join(msa)
+        .join(plddt)
+        .join(pae)
+        .join(ptm)
+        .join(iptm)
+        .combine(versions)
+        .map { meta, structureFiles, msaFile, plddtFile, paeFile, ptmFile, iptmFile, versionsFile ->
+            def modelcifMeta = meta.clone()
+            modelcifMeta.msa_tool = msaTool
+            [modelcifMeta, structureFiles, msaFile, plddtFile, paeFile, ptmFile, iptmFile, versionsFile]
+        }
+}
+
+// Make a keyed placeholder metric for predictors that do not produce it.
+def modelcifDummyMetric(structs, dummyFile) {
+    structs.map { meta, _files -> [meta.clone(), dummyFile] }
+}
+
 def countMolecularEntitiesInFasta(fasta) {
     return fasta.text
         .readLines()

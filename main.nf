@@ -31,6 +31,8 @@ include { BOLTZ                            } from './workflows/boltz'
 
 include { PIPELINE_INITIALISATION          } from './subworkflows/local/utils_nfcore_proteinfold_pipeline'
 include { PIPELINE_COMPLETION              } from './subworkflows/local/utils_nfcore_proteinfold_pipeline'
+include { modelcifInput                    } from './subworkflows/local/utils_nfcore_proteinfold_pipeline'
+include { modelcifDummyMetric              } from './subworkflows/local/utils_nfcore_proteinfold_pipeline'
 include { POST_PROCESSING                  } from './subworkflows/local/post_processing'
 
 /*
@@ -53,6 +55,24 @@ workflow NFCORE_PROTEINFOLD {
     ch_multiqc           = channel.empty()
     ch_report_input      = channel.empty()
     ch_top_ranked_model  = channel.empty()
+    ch_modelcif          = channel.empty()
+
+    modelcif_dummy_msa  = file("$projectDir/assets/DUMMY_MSA.tsv", checkIfExists: true)
+    modelcif_dummy_pae  = file("$projectDir/assets/DUMMY_PAE.tsv", checkIfExists: true)
+    modelcif_dummy_ptm  = file("$projectDir/assets/DUMMY_PTM.tsv", checkIfExists: true)
+    modelcif_dummy_iptm = file("$projectDir/assets/DUMMY_IPTM.tsv", checkIfExists: true)
+
+    def ch_software_versions = channel.topic('versions')
+        .unique()
+        .map { process_name, tool_name, version ->
+            "\"${process_name}:${tool_name}\": ${version}"
+        }
+        .collectFile(
+            storeDir: "${params.outdir}/pipeline_info",
+            name: 'nf_core_proteinfold_software_mqc_versions.yml',
+            newLine: true,
+            sort: true
+        )
     requested_modes      = params.mode.toLowerCase().split(",")
     requested_modes_size = requested_modes.size()
 
@@ -146,6 +166,16 @@ workflow NFCORE_PROTEINFOLD {
                             )
 
         ch_top_ranked_model = ch_top_ranked_model.mix(ALPHAFOLD2.out.top_ranked_pdb)
+        ch_modelcif = ch_modelcif.mix(modelcifInput(
+            ALPHAFOLD2.out.pdb,
+            ALPHAFOLD2.out.msa,
+            ALPHAFOLD2.out.plddt,
+            ALPHAFOLD2.out.pae,
+            ALPHAFOLD2.out.ptm,
+            ALPHAFOLD2.out.iptm,
+            ch_software_versions,
+            'jackhmmer'
+        ))
     }
 
     //
@@ -225,6 +255,16 @@ workflow NFCORE_PROTEINFOLD {
                                 .join(ALPHAFOLD3.out.chainwise_ipsae)
                             )
         ch_top_ranked_model = ch_top_ranked_model.mix(ALPHAFOLD3.out.top_ranked_pdb)
+        ch_modelcif = ch_modelcif.mix(modelcifInput(
+            ALPHAFOLD3.out.pdb,
+            ALPHAFOLD3.out.msa,
+            ALPHAFOLD3.out.plddt,
+            ALPHAFOLD3.out.pae,
+            ALPHAFOLD3.out.ptm,
+            ALPHAFOLD3.out.iptm,
+            ch_software_versions,
+            'jackhmmer'
+        ))
     }
 
     //
@@ -282,6 +322,16 @@ workflow NFCORE_PROTEINFOLD {
                             )
 
         ch_top_ranked_model = ch_top_ranked_model.mix(COLABFOLD.out.top_ranked_pdb)
+        ch_modelcif = ch_modelcif.mix(modelcifInput(
+            COLABFOLD.out.pdb,
+            COLABFOLD.out.msa,
+            COLABFOLD.out.plddt,
+            COLABFOLD.out.pae,
+            COLABFOLD.out.ptm,
+            COLABFOLD.out.iptm,
+            ch_software_versions,
+            'mmseqs2'
+        ))
     }
 
     //
@@ -320,6 +370,16 @@ workflow NFCORE_PROTEINFOLD {
                 .combine(ch_dummy_file)
         )
         ch_top_ranked_model = ch_top_ranked_model.mix(ESMFOLD.out.pdb)
+        ch_modelcif = ch_modelcif.mix(modelcifInput(
+            ESMFOLD.out.pdb,
+            modelcifDummyMetric(ESMFOLD.out.pdb, modelcif_dummy_msa),
+            ESMFOLD.out.plddt,
+            modelcifDummyMetric(ESMFOLD.out.pdb, modelcif_dummy_pae),
+            modelcifDummyMetric(ESMFOLD.out.pdb, modelcif_dummy_ptm),
+            modelcifDummyMetric(ESMFOLD.out.pdb, modelcif_dummy_iptm),
+            ch_software_versions,
+            'None'
+        ))
     }
 
     // WORKFLOW: Run Boltz
@@ -374,6 +434,16 @@ workflow NFCORE_PROTEINFOLD {
             .join(BOLTZ.out.chainwise_ipsae)
         )
         ch_top_ranked_model         = ch_top_ranked_model.mix(BOLTZ.out.top_ranked_pdb)
+        ch_modelcif = ch_modelcif.mix(modelcifInput(
+            BOLTZ.out.pdb,
+            BOLTZ.out.msa,
+            BOLTZ.out.plddt,
+            BOLTZ.out.pae,
+            BOLTZ.out.ptm,
+            BOLTZ.out.iptm,
+            ch_software_versions,
+            'mmseqs2'
+        ))
     }
     //
     // POST PROCESSING: generate visualisation reports
@@ -400,18 +470,6 @@ workflow NFCORE_PROTEINFOLD {
         [m] + tupleData.drop(1)
     }
 
-    def ch_software_versions = channel.topic('versions')
-        .unique()
-        .map { process_name, tool_name, version ->
-            "\"${process_name}:${tool_name}\": ${version}"
-        }
-        .collectFile(
-            storeDir: "${params.outdir}/pipeline_info",
-            name: 'nf_core_proteinfold_software_mqc_versions.yml',
-            newLine: true,
-            sort: true
-        )
-
     POST_PROCESSING(
         params.skip_visualisation,
         requested_modes_size,
@@ -429,7 +487,12 @@ workflow NFCORE_PROTEINFOLD {
         params.multiqc_logo,
         ch_multiqc_methods_description,
         ch_software_versions,
-        ch_top_ranked_model
+        ch_top_ranked_model,
+        ch_modelcif,
+        params.write_modelcif,
+        params.modelcif_binary,
+        params.modelcif_pae_embed,
+        params.modelcif_software_details
     )
 
     emit:

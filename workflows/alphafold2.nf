@@ -11,6 +11,7 @@ include { RUN_ALPHAFOLD2_MSA  } from '../modules/local/run_alphafold2_msa'
 include { RUN_ALPHAFOLD2_PRED } from '../modules/local/run_alphafold2_pred'
 include { resolveModelPresetByFastaEntities } from '../subworkflows/local/utils_nfcore_proteinfold_pipeline'
 include { collectMultiqcMetrics             } from '../subworkflows/local/utils_nfcore_proteinfold_pipeline'
+include { modeChannel                       } from '../subworkflows/local/utils_nfcore_proteinfold_pipeline'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -194,13 +195,9 @@ workflow ALPHAFOLD2 {
     ipsae          = ch_ipsae_final          // channel: [ meta, /path/to/*_ipsae.tsv ]
     chainwise_iptm = ch_chainwise_iptm_final // channel: [ meta, /path/to/*_chainwise_iptm.tsv ]
     chainwise_ipsae = ch_chainwise_ipsae_final // channel: [ meta, /path/to/*_chainwise_ipsae.tsv ]
-<<<<<<< Updated upstream
     multiqc_metrics = ch_multiqc_metrics     // channel: [ [id:..., model:...], [metric tsvs] ]
-=======
-    multiqc_report = ch_multiqc_report       // channel: /path/to/multiqc_report.html
-    plddt           = RUN_ALPHAFOLD2_PRED.out.multiqc.map { m, f -> [ m.clone(), f ] }
-    ptm             = RUN_ALPHAFOLD2_PRED.out.ptms
->>>>>>> Stashed changes
+    plddt           = modeChannel(RUN_ALPHAFOLD2_PRED.out.plddt, "alphafold2")
+    ptm             = modeChannel(RUN_ALPHAFOLD2_PRED.out.ptms, "alphafold2")
 }
 
 /*

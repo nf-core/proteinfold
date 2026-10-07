@@ -183,6 +183,22 @@ workflow BOLTZ {
         }
         .set { ch_chainwise_ipsae }
 
+    RUN_BOLTZ.out.plddt
+        .map { meta, metric ->
+            def modeMeta = meta.clone()
+            modeMeta.model = "boltz"
+            [modeMeta, metric]
+        }
+        .set { ch_plddt }
+
+    RUN_BOLTZ.out.ptm
+        .map { meta, metric ->
+            def modeMeta = meta.clone()
+            modeMeta.model = "boltz"
+            [modeMeta, metric]
+        }
+        .set { ch_ptm }
+
     // Hand MultiQC every metric this model actually produces, not just pLDDT.
     ch_multiqc_metrics = collectMultiqcMetrics("boltz", [
         [ 'plddt', RUN_BOLTZ.out.plddt ],
@@ -202,6 +218,6 @@ workflow BOLTZ {
     ipsae           = ch_ipsae
     chainwise_iptm  = ch_chainwise_iptm
     chainwise_ipsae = ch_chainwise_ipsae
-    plddt           = RUN_BOLTZ.out.plddt_raw
-    ptm             = RUN_BOLTZ.out.ptm_raw
+    plddt           = ch_plddt
+    ptm             = ch_ptm
 }

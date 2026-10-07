@@ -159,9 +159,17 @@ def _read_sw_version(versions_yml, prog):
         data = yaml.safe_load(fh)
     if not isinstance(data, dict):
         return None
-    # The single top-level key is the process name; we don't care what it is.
-    process_versions = next(iter(data.values()), {})
-    return process_versions.get(prog.lower())
+    # Traditional nf-core versions files nest tools below a process name.
+    # The pipeline-wide MultiQC file instead flattens them as
+    # "PROCESS:tool": version, so accept both representations.
+    wanted = prog.lower()
+    for process_versions in data.values():
+        if isinstance(process_versions, dict) and wanted in process_versions:
+            return process_versions[wanted]
+    for tool_key, version in data.items():
+        if str(tool_key).lower().rsplit(':', 1)[-1] == wanted:
+            return version
+    return None
 
 
 def _read_software_details_yml(software_details):

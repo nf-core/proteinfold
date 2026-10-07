@@ -9,20 +9,13 @@ include { paramsSummaryMap       } from 'plugin/nf-schema'
 include { paramsSummaryMultiqc   } from '../../nf-core/utils_nfcore_pipeline'
 include { methodsDescriptionText } from '../utils_nfcore_proteinfold_pipeline'
 
-<<<<<<< Updated upstream:subworkflows/local/post_processing/main.nf
-include { GENERATE_REPORT     } from '../../../modules/local/generate_report'
+include { GENERATE_REPORT          } from '../../../modules/local/generate_report'
 include { GENERATE_MULTIQC_CONTENTS } from '../../../modules/local/generate_multiqc_contents'
-include { COMPARE_STRUCTURES  } from '../../../modules/local/compare_structures'
-include { FOLDSEEK_EASYSEARCH } from '../../../modules/nf-core/foldseek/easysearch/main'
-include { MULTIQC             } from '../../../modules/nf-core/multiqc/main'
-=======
-include { GENERATE_REPORT     } from '../../modules/local/generate_report'
-include { COMPARE_STRUCTURES  } from '../../modules/local/compare_structures'
-include { FOLDSEEK_EASYSEARCH } from '../../modules/nf-core/foldseek/easysearch/main'
-include { MULTIQC             } from '../../modules/nf-core/multiqc/main'
-include { ASSEMBLE_MODELCIF   } from '../../modules/local/assemble_modelcif/main'
-include { CIFCHECK            } from '../../modules/local/cifcheck/main'
->>>>>>> Stashed changes:subworkflows/local/post_processing.nf
+include { COMPARE_STRUCTURES       } from '../../../modules/local/compare_structures'
+include { FOLDSEEK_EASYSEARCH      } from '../../../modules/nf-core/foldseek/easysearch/main'
+include { MULTIQC                  } from '../../../modules/nf-core/multiqc/main'
+include { ASSEMBLE_MODELCIF        } from '../../../modules/local/assemble_modelcif/main'
+include { CIFCHECK                 } from '../../../modules/local/cifcheck/main'
 
 
 workflow POST_PROCESSING {

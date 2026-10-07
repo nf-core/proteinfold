@@ -69,14 +69,9 @@ workflow ESMFOLD {
     modeChannel(RUN_ESMFOLD.out.pdb, "esmfold").set { ch_pdb_final }
 
     emit:
-<<<<<<< Updated upstream
     pdb             = ch_pdb_final      // channel: [ id, /path/to/*.pdb ]
     multiqc_metrics = ch_multiqc_metrics // channel: [ [id:..., model:...], [metric tsvs] ]
-=======
-    pdb            = ch_pdb_final      // channel: [ id, /path/to/*.pdb ]
-    multiqc_report = ch_multiqc_report // channel: /path/to/multiqc_report.html
-    plddt          = RUN_ESMFOLD.out.multiqc
->>>>>>> Stashed changes
+    plddt           = modeChannel(RUN_ESMFOLD.out.plddt, "esmfold")
 }
 
 /*
