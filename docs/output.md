@@ -14,6 +14,30 @@ The pipeline is built using [Nextflow](https://www.nextflow.io/) and predicts pr
 - [ColabFold](https://github.com/sokrypton/ColabFold)
 - [ESMFold](https://github.com/facebookresearch/esm)
 
+### ModelCIF supplementary-information table
+
+The scientific metadata in a generated ModelCIF can be summarized as a
+reviewer-facing supplementary-information (SI) table:
+
+```bash
+modelcif_metadata_to_table.py result.mmcif --output result_metadata.tsv
+```
+
+The table focuses on provenance and usage terms, target composition,
+prediction methods and settings, protocol inputs and outputs, model inventory,
+confidence, templates and alignments, and supporting files. Large
+residue-level and pairwise metric collections are reported as median, mean,
+and range rather than copied from the ModelCIF. Where the ModelCIF identifies
+the relevant chains, confidence is reported per chain or chain pair for every
+model in each model group. TSV is the default for
+spreadsheet import; a manuscript-ready Markdown table is also available:
+
+```bash
+modelcif_metadata_to_table.py result.mmcif --format markdown --output result_metadata.md
+```
+
+With no `--output` argument, the table is printed to standard output.
+
 See main [README.md](https://github.com/nf-core/proteinfold/blob/master/README.md) for a condensed overview of the steps in the pipeline, and the bioinformatics tools used at each step.
 
 The directories listed below will be created in the output directory after the pipeline has finished. All paths are relative to the top-level results directory.
