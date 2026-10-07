@@ -25,7 +25,6 @@ include { PREPARE_COLABFOLD_DBS  as PREPARE_COLABFOLD_DBS_BOLTZ     } from './su
 
 include { ALPHAFOLD2                       } from './workflows/alphafold2'
 include { ALPHAFOLD3                       } from './workflows/alphafold3'
-include { MODELcif_INPUTS                   } from './subworkflows/local/modelcif_inputs'
 include { COLABFOLD                        } from './workflows/colabfold'
 include { ESMFOLD                          } from './workflows/esmfold'
 include { BOLTZ                            } from './workflows/boltz'
@@ -54,24 +53,6 @@ workflow NFCORE_PROTEINFOLD {
     ch_multiqc           = channel.empty()
     ch_report_input      = channel.empty()
     ch_top_ranked_model  = channel.empty()
-    ch_modelcif          = channel.empty()
-
-    channel.value(file("$projectDir/assets/NO_FILE", checkIfExists: true))
-        .set { ch_modelcif_dummy }
-    ch_modelcif_dummy_tuples = ch_modelcif_dummy.map { f -> [ 'NOFILE', 'NOFILE', [f] ] }
-
-    channel.topic('versions')
-        .unique()
-        .groupTuple()
-        .map { k, vs -> [ k, vs.toMap() ] }
-        .toSortedList()
-        .map { list ->
-            def vm = [:]
-            list.each { p, v -> vm.putAll(v) }
-            [ id: '*', model: '*', versions: vm ]
-        }
-        .ifEmpty([ [ id: '*', model: '*', versions: [:] ] ])
-        .set { ch_versions_map }
     requested_modes      = params.mode.toLowerCase().split(",")
     requested_modes_size = requested_modes.size()
 
@@ -165,17 +146,6 @@ workflow NFCORE_PROTEINFOLD {
                             )
 
         ch_top_ranked_model = ch_top_ranked_model.mix(ALPHAFOLD2.out.top_ranked_pdb)
-        MODELcif_INPUTS(
-            ALPHAFOLD2.out.pdb,
-            ALPHAFOLD2.out.msa,
-            ALPHAFOLD2.out.plddt,
-            ALPHAFOLD2.out.pae,
-            ALPHAFOLD2.out.ptm,
-            ALPHAFOLD2.out.iptm,
-            ch_modelcif_dummy,
-            ch_versions_map
-            )
-        ch_modelcif = ch_modelcif.mix(MODELcif_INPUTS.out.modelcif.map { m, s, a, b, c, d, e, v -> [ m.clone(), s, a, b, c, d, e, v ] })
     }
 
     //
@@ -255,17 +225,6 @@ workflow NFCORE_PROTEINFOLD {
                                 .join(ALPHAFOLD3.out.chainwise_ipsae)
                             )
         ch_top_ranked_model = ch_top_ranked_model.mix(ALPHAFOLD3.out.top_ranked_pdb)
-        MODELcif_INPUTS(
-            ALPHAFOLD3.out.pdb,
-            ALPHAFOLD3.out.msa,
-            ALPHAFOLD3.out.plddt,
-            ALPHAFOLD3.out.pae,
-            ALPHAFOLD3.out.ptm,
-            ALPHAFOLD3.out.iptm,
-            ch_modelcif_dummy,
-            ch_versions_map
-            )
-        ch_modelcif = ch_modelcif.mix(MODELcif_INPUTS.out.modelcif.map { m, s, a, b, c, d, e, v -> [ m.clone(), s, a, b, c, d, e, v ] })
     }
 
     //
@@ -323,17 +282,6 @@ workflow NFCORE_PROTEINFOLD {
                             )
 
         ch_top_ranked_model = ch_top_ranked_model.mix(COLABFOLD.out.top_ranked_pdb)
-        MODELcif_INPUTS(
-            COLABFOLD.out.pdb,
-            COLABFOLD.out.msa,
-            COLABFOLD.out.plddt,
-            COLABFOLD.out.pae,
-            COLABFOLD.out.ptm,
-            COLABFOLD.out.iptm,
-            ch_modelcif_dummy,
-            ch_versions_map
-            )
-        ch_modelcif = ch_modelcif.mix(MODELcif_INPUTS.out.modelcif.map { m, s, a, b, c, d, e, v -> [ m.clone(), s, a, b, c, d, e, v ] })
     }
 
     //
@@ -372,17 +320,6 @@ workflow NFCORE_PROTEINFOLD {
                 .combine(ch_dummy_file)
         )
         ch_top_ranked_model = ch_top_ranked_model.mix(ESMFOLD.out.pdb)
-        MODELcif_INPUTS(
-            ESMFOLD.out.pdb,
-            ch_modelcif_dummy_tuples,
-            ESMFOLD.out.plddt,
-            ch_modelcif_dummy_tuples,
-            ch_modelcif_dummy_tuples,
-            ch_modelcif_dummy_tuples,
-            ch_modelcif_dummy,
-            ch_versions_map
-            )
-        ch_modelcif = ch_modelcif.mix(MODELcif_INPUTS.out.modelcif.map { m, s, a, b, c, d, e, v -> [ m.clone(), s, a, b, c, d, e, v ] })
     }
 
     // WORKFLOW: Run Boltz
@@ -437,17 +374,6 @@ workflow NFCORE_PROTEINFOLD {
             .join(BOLTZ.out.chainwise_ipsae)
         )
         ch_top_ranked_model         = ch_top_ranked_model.mix(BOLTZ.out.top_ranked_pdb)
-        MODELcif_INPUTS(
-            BOLTZ.out.pdb,
-            BOLTZ.out.msa,
-            BOLTZ.out.plddt,
-            BOLTZ.out.pae,
-            BOLTZ.out.ptm,
-            BOLTZ.out.iptm,
-            ch_modelcif_dummy,
-            ch_versions_map
-            )
-        ch_modelcif = ch_modelcif.mix(MODELcif_INPUTS.out.modelcif.map { m, s, a, b, c, d, e, v -> [ m.clone(), s, a, b, c, d, e, v ] })
     }
     //
     // POST PROCESSING: generate visualisation reports
@@ -459,13 +385,6 @@ workflow NFCORE_PROTEINFOLD {
     ch_report_template     = channel.value(file("$projectDir/assets/report_template.html", checkIfExists: true))
     ch_comparison_template = channel.value(file("$projectDir/assets/comparison_template.html", checkIfExists: true))
 
-<<<<<<< Updated upstream
-=======
-    ch_multiqc_config              = channel.of(file("$projectDir/assets/multiqc_config.yml", checkIfExists: true))
-    ch_multiqc_custom_config       = params.multiqc_config ? channel.of(file(params.multiqc_config, checkIfExists: true)) : channel.empty()
-    ch_multiqc_methods_description = params.multiqc_methods_description ? file(params.multiqc_methods_description, checkIfExists: true) : file("$projectDir/assets/methods_description_template.yml", checkIfExists: true)
-
->>>>>>> Stashed changes
     // Inject msa_tool into meta based on selected model for report provenance.
     def msaToolMap = [
         alphafold2:           'jackhmmer',
@@ -509,17 +428,8 @@ workflow NFCORE_PROTEINFOLD {
         ch_multiqc_custom_config,
         params.multiqc_logo,
         ch_multiqc_methods_description,
-<<<<<<< Updated upstream
         ch_software_versions,
         ch_top_ranked_model
-=======
-        ch_top_ranked_model,
-        ch_modelcif,
-        params.write_modelcif,
-        params.modelcif_binary,
-        params.modelcif_pae_embed,
-        params.modelcif_software_details
->>>>>>> Stashed changes
     )
 
     emit:
