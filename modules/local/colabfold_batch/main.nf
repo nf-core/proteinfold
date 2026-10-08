@@ -6,7 +6,7 @@ process COLABFOLD_BATCH {
     container "nf-core/proteinfold_colabfold:2.1.0"
 
     input:
-    tuple val(meta), path(fasta), path('params/*')
+    tuple val(meta), path(input), path('params/*')
     val   numRec
 
     output:
@@ -34,6 +34,9 @@ process COLABFOLD_BATCH {
         error("Local COLABFOLD_BATCH module does not support Conda. Please use Docker / Singularity / Podman instead.")
     }
     def args = task.ext.args ?: ''
+    def input_file = input instanceof List ? input[0] : input
+    def input_is_a3m = input_file.name.toString().toLowerCase().endsWith('.a3m')
+    def colabfold_input = input_is_a3m ? "${meta.id}.a3m" : input_file
 
     """
     if compgen -G "params/alphafold_params_*" >/dev/null; then
@@ -45,11 +48,15 @@ process COLABFOLD_BATCH {
     touch params/download_complexes_multimer_v2_finished.txt
     touch params/download_complexes_multimer_v1_finished.txt
 
+    if [ "${input_is_a3m}" = "true" ] && [ "${input_file}" != "${colabfold_input}" ]; then
+        cp ${input_file} ${colabfold_input}
+    fi
+
     colabfold_batch \\
         $args \\
         --num-recycle ${numRec} \\
         --data \$PWD \\
-        ${fasta} \\
+        ${colabfold_input} \\
         raw/
 
     if [ ! -e `find raw/*_relaxed_rank_001_*.pdb` ]; then

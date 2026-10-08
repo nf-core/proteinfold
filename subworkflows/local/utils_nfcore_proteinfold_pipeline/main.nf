@@ -105,12 +105,25 @@ ${colors.purple}  nf-core/proteinfold ${workflow.manifest.version}${colors.reset
     //
     ch_samplesheet = channel.fromList(samplesheetToList(input, "assets/schema_input.json"))
 
-    ch_samplesheet
-        .map { meta, fasta ->
+    ch_samplesheet = ch_samplesheet
+        .map { item ->
+            def meta = item[0]
+            def fasta = item[1]
+            def msa = item.size() > 2 ? item[2] : null
             // This mapping supports legacy samplesheets that use 'sequence' as metadata.
             // If meta.id is missing or empty, meta.sequence is used as the identifier.
             def identifier = meta.id ? meta.id : meta.sequence
-            return [[id: identifier], fasta]
+            def normalized_meta = [id: identifier]
+            if (msa) {
+                if (params.mode.toLowerCase() != 'colabfold') {
+                    error("The 'msa' samplesheet column is currently supported only with --mode colabfold.")
+                }
+                if (params.split_fasta) {
+                    error("The 'msa' samplesheet column cannot be used with --split_fasta.")
+                }
+                normalized_meta.msa = msa
+            }
+            return [normalized_meta, fasta]
         }
 
     if (params.split_fasta) {

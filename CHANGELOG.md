@@ -37,6 +37,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[PR #644](https://github.com/nf-core/proteinfold/pull/644)] - Update pipeline template to [nf-core/tools 4.0.3](https://github.com/nf-core/tools/releases/tag/4.0.3).
 - [[PR #645](https://github.com/nf-core/proteinfold/pull/645)] - Update image version for alphafold3 modules and `colabfold_batch`.
 - [[PR #647](https://github.com/nf-core/proteinfold/pull/647)] - Fix missing X character in AF3 and Boltz fasta processing.
+- Add optional samplesheet A3M input for ColabFold, bypassing MSA generation for supplied samples.
 - [[PR #51](https://github.com/Australian-Structural-Biology-Computing/proteinfold/pull/51)] - Remove the deprecated AlphaFold2 standard mode; AlphaFold2 now always runs separate MSA generation and prediction steps.
 - [[PR #52](https://github.com/Australian-Structural-Biology-Computing/proteinfold/pull/52)] - Add modular CPU, GPU, and per-mode scientific nf-tests with deterministic fixtures and independently runnable stages.
 - [[PR #59](https://github.com/Australian-Structural-Biology-Computing/proteinfold/pull/59)] - Add batching for local ColabFold MMseqs2 searches with `--msa_batch_size`.

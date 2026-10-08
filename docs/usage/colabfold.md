@@ -30,6 +30,15 @@ By default, `--mode colabfold` will generate MSA files required for structure pr
 
 For local searches, inputs can be processed in batches with `--msa_batch_size`. The default is `-1`, which processes all inputs in one search task; use `--msa_batch_size 1` to retain one search task per sample.
 
+### Bring your own MSA
+
+Add an optional `msa` column to the samplesheet with one `.a3m` file per sample. ColabFold uses the supplied A3M directly and skips both local MMseqs2 search and the MSA server for that sample. Samples without an `msa` entry follow the selected default MSA path. BYO A3M input is currently supported only with `--mode colabfold` and cannot be combined with `--split_fasta`.
+
+```csv title="samplesheet.csv"
+id,fasta,msa
+T1024,/path/to/T1024.fasta,/path/to/T1024.a3m
+```
+
 ## File Structure
 
 The file structure of `--colabfold_db` must be as follows:
