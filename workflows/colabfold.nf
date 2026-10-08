@@ -9,6 +9,7 @@
 //
 include { COLABFOLD_BATCH        } from '../modules/local/colabfold_batch'
 include { MMSEQS_COLABFOLDSEARCH } from '../modules/local/mmseqs_colabfoldsearch'
+include { MMSEQS_COLABFOLDSEARCH_BATCH } from '../modules/local/mmseqs_colabfoldsearch'
 include { MULTIFASTA_TO_CSV      } from '../modules/local/multifasta_to_csv'
 
 include { modeChannel            } from '../subworkflows/local/utils_nfcore_proteinfold_pipeline'
@@ -34,6 +35,7 @@ workflow COLABFOLD {
     ch_colabfold_db        // channel: path(colabfold_db)
     ch_uniref30            // channel: path(uniref30)
     num_recycles           // int: Number of recycles for colabfold
+    msa_batch_size        // int: number of samples processed together during MSA search
 
     main:
     ch_multiqc_metrics = channel.empty()
@@ -60,17 +62,43 @@ workflow COLABFOLD {
         MULTIFASTA_TO_CSV(
             ch_samplesheet
         )
-        MMSEQS_COLABFOLDSEARCH (
-            MULTIFASTA_TO_CSV.out.input_csv,
-            ch_colabfold_db,
-            ch_uniref30
-        )
+        if (msa_batch_size == 1) {
+            MMSEQS_COLABFOLDSEARCH (
+                MULTIFASTA_TO_CSV.out.input_csv,
+                ch_colabfold_db,
+                ch_uniref30
+            )
+            ch_a3m = MMSEQS_COLABFOLDSEARCH.out.a3m
+        } else {
+            ch_batches = MULTIFASTA_TO_CSV.out.input_csv
+                .map { meta, csv -> [meta.id, meta, csv] }
+                .collect(flat: false)
+                .flatMap { rows ->
+                    def sorted = rows.sort { a, b -> a[0] <=> b[0] }
+                    def ids = sorted.collect { row -> row[0] }
+                    if (ids.toSet().size() != ids.size()) error("Duplicate sample IDs are not allowed")
+                    sorted.collate(msa_batch_size).collect { batch ->
+                        [batch.collect { it[1] }, batch.collect { it[2] }]
+                    }
+                }
+            MMSEQS_COLABFOLDSEARCH_BATCH(ch_batches, ch_colabfold_db, ch_uniref30)
+            ch_a3m = MMSEQS_COLABFOLDSEARCH_BATCH.out.a3m
+                .flatMap { batch_meta, files ->
+                    def batch_files = files instanceof List ? files : [files]
+                    batch_files.collect { file ->
+                        def sample_id = file.name.endsWith('.a3m') ? file.name[0..-5] : file.name
+                        def sample = batch_meta.find { meta -> meta.get('id') == sample_id }
+                        if (sample == null) error("MMseqs batch output ${file.name} does not match input samples ${batch_meta*.id}")
+                        [sample, file]
+                    }
+                }
+        }
 
         //
         // MODULE: Run colabfold
         //
         COLABFOLD_BATCH(
-            MMSEQS_COLABFOLDSEARCH.out.a3m
+            ch_a3m
                 .combine(ch_colabfold_params),
             num_recycles
         )

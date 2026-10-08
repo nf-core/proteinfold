@@ -1,0 +1,105 @@
+{
+    "batches ColabFold search inputs and preserves sample IDs": {
+        "content": [
+            {
+                "0": [
+                    [
+                        [
+                            {
+                                "id": "T1024"
+                            },
+                            {
+                                "id": "T1026"
+                            }
+                        ],
+                        [
+                            "T1024.a3m:md5,2d5bea1d28ffa33dc01f46541bedc592",
+                            "T1026.a3m:md5,2d5bea1d28ffa33dc01f46541bedc592"
+                        ]
+                    ]
+                ],
+                "1": [
+                    [
+                        [
+                            {
+                                "id": "T1024"
+                            },
+                            {
+                                "id": "T1026"
+                            }
+                        ],
+                        [
+                            "T1024.json:md5,80a667ed5ec1a1fbea22347c2e582780",
+                            "T1026.json:md5,80a667ed5ec1a1fbea22347c2e582780"
+                        ]
+                    ]
+                ],
+                "2": [
+                    [
+                        "MMSEQS_COLABFOLDSEARCH_BATCH",
+                        "colabfold_search",
+                        ""
+                    ]
+                ],
+                "3": [
+                    [
+                        "MMSEQS_COLABFOLDSEARCH_BATCH",
+                        "mmseqs",
+                        ""
+                    ]
+                ],
+                "a3m": [
+                    [
+                        [
+                            {
+                                "id": "T1024"
+                            },
+                            {
+                                "id": "T1026"
+                            }
+                        ],
+                        [
+                            "T1024.a3m:md5,2d5bea1d28ffa33dc01f46541bedc592",
+                            "T1026.a3m:md5,2d5bea1d28ffa33dc01f46541bedc592"
+                        ]
+                    ]
+                ],
+                "json": [
+                    [
+                        [
+                            {
+                                "id": "T1024"
+                            },
+                            {
+                                "id": "T1026"
+                            }
+                        ],
+                        [
+                            "T1024.json:md5,80a667ed5ec1a1fbea22347c2e582780",
+                            "T1026.json:md5,80a667ed5ec1a1fbea22347c2e582780"
+                        ]
+                    ]
+                ],
+                "versions_colabfold_search": [
+                    [
+                        "MMSEQS_COLABFOLDSEARCH_BATCH",
+                        "colabfold_search",
+                        ""
+                    ]
+                ],
+                "versions_mmseqs": [
+                    [
+                        "MMSEQS_COLABFOLDSEARCH_BATCH",
+                        "mmseqs",
+                        ""
+                    ]
+                ]
+            }
+        ],
+        "timestamp": "2026-10-09T11:37:32.133510735",
+        "meta": {
+            "nf-test": "0.9.4",
+            "nextflow": "26.04.6"
+        }
+    }
+}

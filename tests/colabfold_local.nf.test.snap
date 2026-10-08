@@ -1,7 +1,7 @@
 {
     "-profile test_colabfold_local": {
         "content": [
-            10,
+            9,
             [
                 "colabfold",
                 "colabfold/T1024",
@@ -36,7 +36,8 @@
                 "colabfold/top_ranked_structures/T1024.pdb",
                 "colabfold/top_ranked_structures/T1026.pdb",
                 "multifasta",
-                "multifasta/input.csv",
+                "multifasta/T1024.csv",
+                "multifasta/T1026.csv",
                 "multiqc",
                 "multiqc/multiqc_data",
                 "multiqc/multiqc_data/.stub",
@@ -76,16 +77,17 @@
                 "T1026_5_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1024.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1026.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "input.csv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1024.csv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1026.csv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 ".stub:md5,d41d8cd98f00b204e9800998ecf8427e",
                 ".stub:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1024_colabfold_report.html:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1026_colabfold_report.html:md5,d41d8cd98f00b204e9800998ecf8427e"
             ]
         ],
-        "timestamp": "2026-09-29T16:31:01.406598299",
+        "timestamp": "2026-10-08T16:47:07.010036096",
         "meta": {
-            "nf-test": "0.9.5",
+            "nf-test": "0.9.4",
             "nextflow": "26.04.6"
         }
     }

@@ -28,6 +28,8 @@ By default, `--mode colabfold` will generate MSA files required for structure pr
 > [!NOTE]
 > Local ColabFold search occurs in a separate module to model inference and the resulting MSA will be cached if downstream modules need to be re-run.
 
+For local searches, inputs can be processed in batches with `--msa_batch_size`. The default is 20; use `--msa_batch_size 1` to retain one search task per sample.
+
 ## File Structure
 
 The file structure of `--colabfold_db` must be as follows:
@@ -110,5 +112,6 @@ See the [ColabFold](https://github.com/sokrypton/ColabFold) documentation for a 
 | `--colabfold_alphafold2_params_prefix` | `alphafold_params_2022-12-06` | Specify the alphafold2 params used for prediction.                                                                                                                                                                                                                                                                              |
 | `--colabfold_use_templates`            | `false`                       | Use PDB templates to support predictions. This option is only supported when `--use_msa_server` is enabled.                                                                                                                                                                                                                     |
 | `--colabfold_create_index`             | `false`                       | Create index for ColabFold databases during setup. On network filesystems it can be more performant to re-compute the index on the fly                                                                                                                                                                                          |
+| `--msa_batch_size`                     | `20`                          | Number of samples processed together during local ColabFold MSA search.                                                                                                                                                                                                                                                         |
 
 > You can override any of these parameters via the command line or a params file.

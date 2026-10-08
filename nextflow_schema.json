@@ -160,6 +160,12 @@
                     "maximum": 20,
                     "errorMessage": "Number of recycles must be a whole number between 1 and 20"
                 },
+                "msa_batch_size": {
+                    "type": "integer",
+                    "default": 20,
+                    "minimum": 1,
+                    "description": "Number of inputs processed together during MSA search"
+                },
                 "colabfold_use_amber": {
                     "type": "boolean",
                     "default": true,

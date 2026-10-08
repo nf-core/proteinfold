@@ -255,7 +255,8 @@ workflow NFCORE_PROTEINFOLD {
             PREPARE_COLABFOLD_DBS_COLABFOLD.out.params,
             PREPARE_COLABFOLD_DBS_COLABFOLD.out.colabfold_db,
             PREPARE_COLABFOLD_DBS_COLABFOLD.out.uniref30,
-            params.colabfold_num_recycles
+            params.colabfold_num_recycles,
+            params.msa_batch_size
         )
 
         ch_multiqc          = ch_multiqc.mix(COLABFOLD.out.multiqc_metrics)

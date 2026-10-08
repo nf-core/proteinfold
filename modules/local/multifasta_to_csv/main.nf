@@ -11,7 +11,7 @@ process MULTIFASTA_TO_CSV {
     tuple val(meta), path(fasta)
 
     output:
-    tuple val(meta), path("input.csv"), emit: input_csv
+    tuple val(meta), path("${meta.id}.csv"), emit: input_csv
     tuple val("${task.process}"), val('sed'), eval('sed --version 2>&1 | sed -n "s/^.*GNU sed) //p"'), emit: versions_sed, topic: versions
 
     when:
@@ -20,11 +20,11 @@ process MULTIFASTA_TO_CSV {
     script:
     """
     awk '/^>/ {printf("\\n%s\\n",\$0);next; } { printf("%s",\$0);}  END {printf("\\n");}' ${fasta} > single_line.fasta
-    echo -e id,sequence'\\n'${meta.id},`awk '!/^>/ {print \$0}' single_line.fasta | tr '\\n' ':' | sed 's/:\$//' | sed 's/^://'` > input.csv
+    echo -e id,sequence'\\n'${meta.id},`awk '!/^>/ {print \$0}' single_line.fasta | tr '\\n' ':' | sed 's/:\$//' | sed 's/^://'` > ${meta.id}.csv
     """
 
     stub:
     """
-    touch input.csv
+    touch ${meta.id}.csv
     """
 }

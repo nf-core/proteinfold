@@ -1,0 +1,33 @@
+nextflow_pipeline {
+
+    name "Test ColabFold MSA batching"
+    script "../main.nf"
+    tag "pipeline"
+    tag "test_colabfold_batching"
+    profile "test_colabfold_local"
+
+    test("runs multiple ColabFold MSA batches") {
+
+        when {
+            params {
+                outdir = "$outputDir"
+                mode = 'colabfold'
+                colabfold_db = "${projectDir}/assets/dummy_db_dir"
+                msa_batch_size = 2
+            }
+        }
+
+        then {
+            assert workflow.success
+            assert file("${params.outdir}/multiqc/multiqc_report.html").exists()
+            assert file("${params.outdir}/pipeline_info/nf_core_proteinfold_software_mqc_versions.yml").size() > 0
+            def stable_name = getAllFilesFromDir(params.outdir, relative: true, includeDir: true, ignore: ['pipeline_info/*.{html,json,txt}'])
+            def stable_path = getAllFilesFromDir(params.outdir, ignoreFile: 'tests/.nftignore')
+            assert snapshot(
+                workflow.trace.succeeded().size(),
+                stable_name,
+                stable_path
+            ).match()
+        }
+    }
+}
