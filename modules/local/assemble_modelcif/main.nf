@@ -3,6 +3,7 @@ process ASSEMBLE_MODELCIF {
     label 'process_single'
 
     conda "${moduleDir}/environment.yml"
+    container 'ghcr.io/keiran-rowell-unsw/proteinfold-modelcif:1.7'
 
     // Unpack the tuple assuming every value used is at the path. Pass along a DUMMY_FILE so that the path is always occupied.
     // The populate_modelcif.py can explicitly trigger if the arg.metric is a DUMMY_FILE, and if so, appropriately account for the non-existence of that in the model metadata
