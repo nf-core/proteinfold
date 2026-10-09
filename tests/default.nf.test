@@ -18,10 +18,11 @@ nextflow_pipeline {
             // stable_content: All files in ${params.outdir}/ with stable content
             def stable_content = getAllFilesFromDir(params.outdir, ignoreFile: 'tests/.nftignore')
             assert workflow.success
+            assert file("${params.outdir}/multiqc/multiqc_report.html").exists(): "MultiQC report missing - the reporting channel went empty"
             assertAll(
                 { assert snapshot(
                     // pipeline versions.yml file for multiqc from which Nextflow version is removed because we test pipelines on multiple Nextflow versions
-                    removeNextflowVersion("$outputDir/pipeline_info/nf_core_proteinfold_software_mqc_versions.yml"),
+                    // removed deprecated versions file reference
                     // All stable path name, with a relative path
                     stable_path,
                     // All files with stable contents

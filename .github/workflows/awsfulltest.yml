@@ -22,7 +22,6 @@ jobs:
         compute_env: ["gpu"]
         mode:
           [
-            "alphafold2_standard",
             "alphafold2_split",
             "alphafold2_multimer",
             "colabfold_local",
@@ -31,9 +30,6 @@ jobs:
             "esmfold",
             "esmfold_multimer",
             "boltz",
-            "helixfold3",
-            "rosettafold_all_atom",
-            "rosettafold2na",
           ]
     steps:
       - name: Set revision variable

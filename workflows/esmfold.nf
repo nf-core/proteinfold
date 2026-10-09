@@ -12,6 +12,7 @@ include { MULTIFASTA_TO_SINGLEFASTA } from '../modules/local/multifasta_to_singl
 include { countMolecularEntitiesInFasta } from '../subworkflows/local/utils_nfcore_proteinfold_pipeline'
 
 include { modeChannel               } from '../subworkflows/local/utils_nfcore_proteinfold_pipeline'
+include { collectMultiqcMetrics     } from '../subworkflows/local/utils_nfcore_proteinfold_pipeline'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -29,7 +30,6 @@ workflow ESMFOLD {
 
     take:
     ch_samplesheet    // channel: samplesheet read in from --input
-    ch_versions       // channel: [ path(versions.yml) ]
     ch_esmfold_params // directory: /path/to/esmfold/params/
     ch_num_recycles   // int: Number of recycles for esmfold
 
@@ -52,7 +52,6 @@ workflow ESMFOLD {
             [ meta, fasta ]
         }
     )
-    ch_versions = ch_versions.mix(MULTIFASTA_TO_SINGLEFASTA.out.versions)
     RUN_ESMFOLD(
         ch_input_by_entity_count.monomer
             .map { meta, fasta, _entity_count ->
@@ -62,24 +61,17 @@ workflow ESMFOLD {
         ch_esmfold_params,
         ch_num_recycles
     )
-    ch_versions = ch_versions.mix(RUN_ESMFOLD.out.versions)
 
-    RUN_ESMFOLD
-        .out
-        .multiqc
-        .map { it -> it[1] }
-        .toSortedList()
-        .map { it ->
-            [ [ "model": "esmfold"], it.flatten() ]
-        }
-        .set { ch_multiqc_report  }
+    ch_multiqc_metrics = collectMultiqcMetrics("esmfold", [
+        [ 'plddt', RUN_ESMFOLD.out.plddt ]
+    ])
 
     modeChannel(RUN_ESMFOLD.out.pdb, "esmfold").set { ch_pdb_final }
 
     emit:
-    pdb            = ch_pdb_final      // channel: [ id, /path/to/*.pdb ]
-    multiqc_report = ch_multiqc_report // channel: /path/to/multiqc_report.html
-    versions       = ch_versions       // channel: [ path(versions.yml) ]
+    pdb             = ch_pdb_final      // channel: [ id, /path/to/*.pdb ]
+    multiqc_metrics = ch_multiqc_metrics // channel: [ [id:..., model:...], [metric tsvs] ]
+    plddt           = modeChannel(RUN_ESMFOLD.out.plddt, "esmfold")
 }
 
 /*
