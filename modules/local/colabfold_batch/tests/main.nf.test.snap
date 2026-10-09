@@ -5,20 +5,20 @@
                 [
                     "COLABFOLD_BATCH",
                     "alphafold_colabfold",
-                    "2.3.18"
+                    "2.3.10"
                 ]
             ],
             [
                 [
                     "COLABFOLD_BATCH",
                     "colabfold_batch",
-                    "1.6.2"
+                    "1.5.5"
                 ]
             ]
         ],
-        "timestamp": "2026-09-22T16:24:06.880311974",
+        "timestamp": "2026-10-09T14:19:58.477208177",
         "meta": {
-            "nf-test": "0.9.5",
+            "nf-test": "0.9.4",
             "nextflow": "26.04.6"
         }
     }
