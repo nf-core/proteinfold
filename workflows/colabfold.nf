@@ -62,7 +62,11 @@ workflow COLABFOLD {
         MULTIFASTA_TO_CSV(
             ch_samplesheet
         )
-        if (msa_batch_size == 1) {
+        def batch_size = msa_batch_size as Integer
+        if (batch_size == 0 || batch_size < -1) {
+            error("MSA batch size must be -1 or a positive integer, got ${batch_size}")
+        }
+        if (batch_size == 1) {
             MMSEQS_COLABFOLDSEARCH (
                 MULTIFASTA_TO_CSV.out.input_csv,
                 ch_colabfold_db,
@@ -77,7 +81,8 @@ workflow COLABFOLD {
                     def sorted = rows.sort { a, b -> a[0] <=> b[0] }
                     def ids = sorted.collect { row -> row[0] }
                     if (ids.toSet().size() != ids.size()) error("Duplicate sample IDs are not allowed")
-                    sorted.collate(msa_batch_size).collect { batch ->
+                    def effective_batch_size = batch_size == -1 ? Math.max(1, sorted.size()) : batch_size
+                    sorted.collate(effective_batch_size).collect { batch ->
                         [batch.collect { it[1] }, batch.collect { it[2] }]
                     }
                 }

@@ -12,6 +12,7 @@ nextflow_pipeline {
             params {
                 outdir = "$outputDir"
                 mode = 'colabfold'
+                input = 'https://raw.githubusercontent.com/Australian-Structural-Biology-Computing/test-datasets/proteinfold/testdata/samplesheet/v2.0/colabfold_batching_samplesheet.csv'
                 colabfold_db = "${projectDir}/assets/dummy_db_dir"
                 msa_batch_size = 2
             }

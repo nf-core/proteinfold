@@ -162,9 +162,17 @@
                 },
                 "msa_batch_size": {
                     "type": "integer",
-                    "default": 20,
-                    "minimum": 1,
-                    "description": "Number of inputs processed together during MSA search"
+                    "default": -1,
+                    "anyOf": [
+                        {
+                            "const": -1
+                        },
+                        {
+                            "minimum": 1
+                        }
+                    ],
+                    "description": "Number of inputs processed together during MSA search; -1 runs all inputs in one batch",
+                    "errorMessage": "MSA batch size must be -1 or a positive integer"
                 },
                 "colabfold_use_amber": {
                     "type": "boolean",
