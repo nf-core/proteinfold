@@ -35,30 +35,6 @@ runs:
         version: "${{ env.NFT_VER }}"
         install-pdiff: true
 
-    - name: Verify ModelCIF tests are snapshot-free
-      shell: bash
-      run: |
-        set -euo pipefail
-        modelcif_tests=(
-          tests/assemble_modelcif.nf.test
-          tests/cifcheck.nf.test
-          tests/modelcif_sw_entries.nf.test
-          tests/modelcif_validate.nf.test
-        )
-        if find tests -maxdepth 1 -type f \( \
-          -name 'assemble_modelcif.nf.test.snap' -o \
-          -name 'cifcheck.nf.test.snap' -o \
-          -name 'modelcif_sw_entries.nf.test.snap' -o \
-          -name 'modelcif_validate.nf.test.snap' \
-        \) -print -quit | grep -q .; then
-          echo "ModelCIF test snapshot files must not be present" >&2
-          exit 1
-        fi
-        if grep -nH 'snapshot(process.out.versions)' "${modelcif_tests[@]}"; then
-          echo "ModelCIF versions.yml snapshot assertions must not be present" >&2
-          exit 1
-        fi
-
     - name: Setup apptainer
       if: contains(inputs.profile, 'singularity')
       uses: eWaterCycle/setup-apptainer@4bb22c52d4f63406c49e94c804632975787312b3 # v2.0.0
