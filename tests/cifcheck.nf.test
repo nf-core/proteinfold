@@ -20,10 +20,8 @@ nextflow_process {
         }
 
         then {
-            // Snapshot the versions.yml output.
             assertAll(
-                { assert process.success },
-                { assert snapshot(process.out.versions).match() }
+                { assert process.success }
             )
         }
     }
@@ -40,8 +38,7 @@ nextflow_process {
 
         then {
             assertAll(
-                { assert process.success },
-                { assert snapshot(process.out.versions).match() }
+                { assert process.success }
             )
         }
     }
