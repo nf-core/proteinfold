@@ -2,25 +2,25 @@
     "dummy modelcif": {
         "content": [
             [
-                "versions.yml:md5,4e5169e99c592eaed7ddcab27accc182"
+                "versions.yml:md5,e4a9793ae1b56ee6bb56390b984c12c8"
             ]
         ],
-        "timestamp": "2026-05-20T11:51:36.671791296",
+        "timestamp": "2026-10-09T13:05:41.036418757",
         "meta": {
             "nf-test": "0.9.5",
-            "nextflow": "26.04.1"
+            "nextflow": "26.04.6"
         }
     },
     "real modelarchive file (augmented)": {
         "content": [
             [
-                "versions.yml:md5,4e5169e99c592eaed7ddcab27accc182"
+                "versions.yml:md5,e4a9793ae1b56ee6bb56390b984c12c8"
             ]
         ],
-        "timestamp": "2026-05-20T11:51:42.24970581",
+        "timestamp": "2026-10-09T13:06:16.638428029",
         "meta": {
             "nf-test": "0.9.5",
-            "nextflow": "26.04.1"
+            "nextflow": "26.04.6"
         }
     }
 }

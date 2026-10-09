@@ -34,6 +34,7 @@ process ASSEMBLE_MODELCIF {
     script:
     def args = task.ext.args ?: ''
     def container = task.container ?: 'None'
+    def no_template_search = meta.no_template_search ? '--no-template-search' : ''
     """
     populate_modelcif.py \\
         --structs ${structs} \\
@@ -47,6 +48,7 @@ process ASSEMBLE_MODELCIF {
         --versions_yml ${versions_yml} \\
         --container_image ${container} \\
         --msa_tool ${meta.msa_tool ?: 'None'} \\
+        ${no_template_search} \\
         $args
 
     cat <<-END_VERSIONS > versions.yml

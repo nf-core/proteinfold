@@ -16,7 +16,7 @@ nextflow_process {
             process {
                 """
                 input[0] = [
-                    [ id: 'sw_entries', model: 'alphafold2', msa_tool: 'jackhmmer' ],
+                    [ id: 'sw_entries', model: 'alphafold2', msa_tool: 'jackhmmer', no_template_search: true ],
                     file("$projectDir/assets/DUMMY_MODELCIF.mmcif", checkIfExists: true),
                     file("$projectDir/assets/DUMMY_MSA.tsv",         checkIfExists: true),
                     file("$projectDir/assets/DUMMY_PLDDT.tsv",       checkIfExists: true),

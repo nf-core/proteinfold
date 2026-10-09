@@ -94,6 +94,8 @@ def parse_args(args=None):
                              'versions emission pattern val("template_search"), val(tool).')
     parser.add_argument('--template_version', default=None,
                         help='Version of --template_software, from the run module topic: channel.')
+    parser.add_argument('--no-template-search', action='store_true',
+                        help='Suppress the configured TemplateSearchStep (for fixtures or workflows without template search).')
     parser.add_argument('--pae-embed', action='store_true', help='Embed PAE as local-pairwise QA metrics in the primary modelCIF instead of as an associated file.')
     parser.add_argument('--pae',     required=True, help='*_pae.tsv from extract_metrics.py.')
     parser.add_argument('--ptm',     required=True, help='*_ptm.tsv from extract_metrics.py.')
@@ -535,6 +537,7 @@ def build_modelcif(
     model_params=None,
     template_software=None,
     template_version=None,
+    no_template_search=False,
 ):
     """
     Build a modelcif.System from ranked structure files and QA metric .tsv files.
@@ -886,7 +889,7 @@ def build_modelcif(
 
     msa_step_cfg = protocol_cfg.get('msa_step', {})
     modeling_step_cfg = protocol_cfg.get('modeling_step', {})
-    template_search_cfg = protocol_cfg.get('template_search_step')
+    template_search_cfg = None if no_template_search else protocol_cfg.get('template_search_step')
 
     # Optional template search step (e.g. AF2/AF3-family programs):
     # sequence database -> templates, sitting upstream of the coevolution MSA.
@@ -1007,6 +1010,7 @@ def main(args=None):
         model_params=prog_params,
         template_software=None if args.template_software in (None, 'None') else args.template_software,
         template_version=None if args.template_version in (None, 'None') else args.template_version,
+        no_template_search=args.no_template_search,
         struct_files=args.structs,
         all_structs=all_structs,
         plddt_file=args.plddt,
