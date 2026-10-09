@@ -3,6 +3,7 @@ process MODELCIF_VALIDATE {
     label 'process_single'
 
     conda "${moduleDir}/environment.yml"
+    container 'ghcr.io/keiran-rowell-unsw/proteinfold-modelcif:1.7'
 
     input:
     tuple val(meta), path(mmcif)
@@ -36,7 +37,7 @@ process MODELCIF_VALIDATE {
                 raise ValueError(f"ModelCIF system in {f} has no modeling protocol (missing _ma_protocol_step)")
             if not system.model_groups:
                 raise ValueError(f"ModelCIF system in {f} has no model groups (missing _ma_model_group / _ma_model_list)")
-        print(f'py-modelcif validation passed: {f}', file=sys.stderr)
+         print(f'py-modelcif validation passed: {f}', file=sys.stderr)
 
     with open('versions.yml', 'w') as fh:
         import modelcif
