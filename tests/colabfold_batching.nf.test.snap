@@ -1,7 +1,7 @@
 {
     "runs multiple ColabFold MSA batches": {
         "content": [
-            13,
+            9,
             [
                 "colabfold",
                 "colabfold/T1024",
@@ -32,28 +32,12 @@
                 "colabfold/T1026/paes/T1026_3_pae.tsv",
                 "colabfold/T1026/paes/T1026_4_pae.tsv",
                 "colabfold/T1026/paes/T1026_5_pae.tsv",
-                "colabfold/T1027",
-                "colabfold/T1027/T1027_chainwise_ipsae.tsv",
-                "colabfold/T1027/T1027_chainwise_iptm.tsv",
-                "colabfold/T1027/T1027_colabfold_msa.tsv",
-                "colabfold/T1027/T1027_ipsae.tsv",
-                "colabfold/T1027/T1027_iptm.tsv",
-                "colabfold/T1027/T1027_plddt.tsv",
-                "colabfold/T1027/T1027_ptm.tsv",
-                "colabfold/T1027/paes",
-                "colabfold/T1027/paes/T1027_1_pae.tsv",
-                "colabfold/T1027/paes/T1027_2_pae.tsv",
-                "colabfold/T1027/paes/T1027_3_pae.tsv",
-                "colabfold/T1027/paes/T1027_4_pae.tsv",
-                "colabfold/T1027/paes/T1027_5_pae.tsv",
                 "colabfold/top_ranked_structures",
                 "colabfold/top_ranked_structures/T1024.pdb",
                 "colabfold/top_ranked_structures/T1026.pdb",
-                "colabfold/top_ranked_structures/T1027.pdb",
                 "multifasta",
                 "multifasta/T1024.csv",
                 "multifasta/T1026.csv",
-                "multifasta/T1027.csv",
                 "multiqc",
                 "multiqc/multiqc_data",
                 "multiqc/multiqc_data/.stub",
@@ -64,8 +48,7 @@
                 "pipeline_info/nf_core_proteinfold_software_mqc_versions.yml",
                 "reports",
                 "reports/T1024_colabfold_report.html",
-                "reports/T1026_colabfold_report.html",
-                "reports/T1027_colabfold_report.html"
+                "reports/T1026_colabfold_report.html"
             ],
             [
                 "T1024_chainwise_ipsae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
@@ -92,34 +75,19 @@
                 "T1026_3_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1026_4_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1026_5_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "T1027_chainwise_ipsae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "T1027_chainwise_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "T1027_colabfold_msa.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "T1027_ipsae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "T1027_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "T1027_plddt.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "T1027_ptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "T1027_1_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "T1027_2_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "T1027_3_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "T1027_4_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "T1027_5_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1024.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1026.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "T1027.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1024.csv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1026.csv:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "T1027.csv:md5,d41d8cd98f00b204e9800998ecf8427e",
                 ".stub:md5,d41d8cd98f00b204e9800998ecf8427e",
                 ".stub:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "T1024_colabfold_report.html:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "T1026_colabfold_report.html:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "T1027_colabfold_report.html:md5,d41d8cd98f00b204e9800998ecf8427e"
+                "T1026_colabfold_report.html:md5,d41d8cd98f00b204e9800998ecf8427e"
             ]
         ],
-        "timestamp": "2026-10-09T12:11:04.666375037",
+        "timestamp": "2026-10-09T14:11:56.606247674",
         "meta": {
-            "nf-test": "0.9.4",
+            "nf-test": "0.9.5",
             "nextflow": "25.10.4"
         }
     }
