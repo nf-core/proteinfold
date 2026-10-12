@@ -1,0 +1,30 @@
+nextflow_pipeline {
+
+    name "Test ColabFold BYO A3M input"
+    script "../main.nf"
+    tag "pipeline"
+    tag "test_colabfold_byo_msa"
+    profile "test_colabfold_local"
+
+    test("uses a supplied paired A3M without running MSA search") {
+
+        when {
+            params {
+                outdir = "$outputDir"
+                input = "https://raw.githubusercontent.com/Australian-Structural-Biology-Computing/test-datasets/proteinfold/testdata/samplesheet/v2.0/colabfold_byo_msa.csv"
+                mode = 'colabfold'
+                colabfold_db = "$projectDir/assets/dummy_db_dir"
+            }
+        }
+
+        then {
+            assert workflow.success
+            assert !file("${params.outdir}/multifasta").exists()
+            assert file("${params.outdir}/multiqc/multiqc_report.html").exists()
+            assert file("${params.outdir}/colabfold/top_ranked_structures/H1065.pdb").exists()
+            def stableName = getAllFilesFromDir(params.outdir, relative: true, includeDir: true, ignore: ['pipeline_info/*.{html,json,txt}'])
+            def stablePath = getAllFilesFromDir(params.outdir, ignoreFile: 'tests/.nftignore')
+            assert snapshot(workflow.trace.succeeded().size(), stableName, stablePath).match()
+        }
+    }
+}

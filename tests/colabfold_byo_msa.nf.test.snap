@@ -1,0 +1,59 @@
+{
+    "uses a supplied paired A3M without running MSA search": {
+        "content": [
+            4,
+            [
+                "colabfold",
+                "colabfold/H1065",
+                "colabfold/H1065/H1065_chainwise_ipsae.tsv",
+                "colabfold/H1065/H1065_chainwise_iptm.tsv",
+                "colabfold/H1065/H1065_colabfold_msa.tsv",
+                "colabfold/H1065/H1065_ipsae.tsv",
+                "colabfold/H1065/H1065_iptm.tsv",
+                "colabfold/H1065/H1065_plddt.tsv",
+                "colabfold/H1065/H1065_ptm.tsv",
+                "colabfold/H1065/paes",
+                "colabfold/H1065/paes/H1065_1_pae.tsv",
+                "colabfold/H1065/paes/H1065_2_pae.tsv",
+                "colabfold/H1065/paes/H1065_3_pae.tsv",
+                "colabfold/H1065/paes/H1065_4_pae.tsv",
+                "colabfold/H1065/paes/H1065_5_pae.tsv",
+                "colabfold/top_ranked_structures",
+                "colabfold/top_ranked_structures/H1065.pdb",
+                "multiqc",
+                "multiqc/multiqc_data",
+                "multiqc/multiqc_data/.stub",
+                "multiqc/multiqc_plots",
+                "multiqc/multiqc_plots/.stub",
+                "multiqc/multiqc_report.html",
+                "pipeline_info",
+                "pipeline_info/nf_core_proteinfold_software_mqc_versions.yml",
+                "reports",
+                "reports/H1065_colabfold_report.html"
+            ],
+            [
+                "H1065_chainwise_ipsae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "H1065_chainwise_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "H1065_colabfold_msa.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "H1065_ipsae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "H1065_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "H1065_plddt.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "H1065_ptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "H1065_1_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "H1065_2_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "H1065_3_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "H1065_4_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "H1065_5_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "H1065.pdb:md5,d41d8cd98f00b204e9800998ecf8427e",
+                ".stub:md5,d41d8cd98f00b204e9800998ecf8427e",
+                ".stub:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "H1065_colabfold_report.html:md5,d41d8cd98f00b204e9800998ecf8427e"
+            ]
+        ],
+        "timestamp": "2026-10-12T12:07:59.997768699",
+        "meta": {
+            "nf-test": "0.9.4",
+            "nextflow": "26.04.6"
+        }
+    }
+}
