@@ -1,0 +1,58 @@
+nextflow_process {
+
+    name "Test Process COLABFOLD_BATCH"
+    script "../main.nf"
+    process "COLABFOLD_BATCH"
+    config "./nextflow.config"
+
+    tag "modules"
+    tag "modules_local"
+    tag "colabfold_batch"
+    tag "gpu"
+    profile "test_nostub"
+    profile "gpu"
+
+    test("runs colabfold_batch with minimal inputs") {
+
+        when {
+            process {
+                """
+                def fasta = file('test.fasta')
+                fasta.text = '>test\\nMKTAYIAKQRQISFVKSHFSRQDILD\\n'
+
+                def paramsDir = file('params')
+                paramsDir.mkdirs()
+                def paramsAf = file('params/alphafold_params_2022-12-06')
+                paramsAf.mkdirs()
+
+                def src = file('s3://proteinfold-dataset/test-data/mini_dbs/params/alphafold_params_2022-12-06/params_model_3_ptm.npz', checkIfExists: true)
+                def dst = file('params/alphafold_params_2022-12-06/params_model_3_ptm.npz')
+                dst.bytes = src.bytes
+                ['1', '2', '4', '5'].each { n ->
+                    def link = file('params/alphafold_params_2022-12-06/params_model_' + n + '_ptm.npz')
+                    java.nio.file.Files.createSymbolicLink(
+                        java.nio.file.Paths.get(link.toString()),
+                        java.nio.file.Paths.get(dst.getName())
+                    )
+                }
+                def paramsFiles = files('params/alphafold_params_2022-12-06/*', checkIfExists: true)
+
+                input[0] = [
+                    [ id: 'test' ],
+                    fasta,
+                    paramsFiles
+                ]
+                input[1] = 1
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                { assert snapshot(process.out.versions).match('versions') }
+            )
+        }
+    }
+
+}

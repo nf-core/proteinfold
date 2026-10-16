@@ -1,9 +1,4 @@
----
-title: Contributing
-markdownPlugin: checklist
----
-
-# `nf-core/proteinfold`: Contributing guidelines
+# `nf-core/proteinfold`: Contributing Guidelines
 
 Hi there!
 Thanks for taking an interest in improving nf-core/proteinfold.
@@ -11,16 +6,14 @@ Thanks for taking an interest in improving nf-core/proteinfold.
 This page describes the recommended nf-core way to contribute to both nf-core/proteinfold and nf-core pipelines in general, including:
 
 - [General contribution guidelines](#general-contribution-guidelines): common procedures or guides across all nf-core pipelines.
-- [Pipeline-specific contribution guidelines](#pipeline-specific-contribution-guidelines): procedures or guides specific to the development conventions of nf-core/proteinfold.
+- [Pipeline-specific contribution guidelines](#pipeline-specific-contribution-guidelines): procedures or guides specific to the development conventions of
 
 > [!NOTE]
 > If you need help using or modifying nf-core/proteinfold, ask on the nf-core Slack [#proteinfold](https://nfcore.slack.com/channels/proteinfold) channel ([join our Slack here](https://nf-co.re/join/slack)).
 
-## General contribution guidelines
+## Contribution workflow
 
-### Contribution quick start
-
-To contribute code to any nf-core pipeline:
+If you'd like to write some code for nf-core/proteinfold, the standard workflow is as follows:
 
 - [ ] Ensure you have Nextflow, nf-core tools, and nf-test installed. See the [nf-core/tools repository](https://github.com/nf-core/tools) for instructions.
 - [ ] Check whether a GitHub [issue](https://github.com/nf-core/proteinfold/issues) about your idea already exists. If an issue does not exist, create one so that others are aware you are working on it.
@@ -61,7 +54,7 @@ The environment includes pre-installed nf-core tools, Nextflow, and a few other 
 
 To get started, open the repository in [Codespaces](https://github.com/nf-core/proteinfold/codespaces).
 
-### Testing
+## Testing
 
 Once you have made your changes, run the pipeline with nf-test to test them locally.
 For additional information, use the `--verbose` flag to view the Nextflow console log output.
@@ -82,7 +75,7 @@ Pull requests are typically reviewed when these tests are passing.
 
 Two types of tests are typically run:
 
-#### Lint tests
+### Lint tests
 
 nf-core has a [set of guidelines](https://nf-co.re/docs/specifications/overview) which all pipelines must follow.
 To enforce these, run linting with nf-core/tools:
@@ -94,14 +87,14 @@ nf-core pipelines lint <pipeline_directory>
 If you encounter failures or warnings, follow the linked documentation printed to screen.
 For more information about linting tests, see [nf-core/tools API documentation](https://nf-co.re/docs/nf-core-tools/api_reference/latest/pipeline_lint_tests/actions_awsfulltest).
 
-#### Pipeline tests
+### Pipeline tests
 
 Each nf-core pipeline should be set up with a minimal set of test data.
 GitHub Actions runs the pipeline on this data to ensure it runs through and exits successfully.
 If there are any failures then the automated tests fail.
 These tests are run with the latest available version of Nextflow and the minimum required version specified in the pipeline code.
 
-### Patch release
+## Patch release
 
 > [!WARNING]
 > Only in the unlikely event of a release that contains a critical bug.
@@ -110,11 +103,11 @@ These tests are run with the latest available version of Nextflow and the minimu
 - [ ] Fix the bug and use nf-core/tools to bump the version to the next semantic version, for example, `1.2.3` → `1.2.4`.
 - [ ] Open a Pull Request from `patch` directly to `main`/`master` with the changes.
 
-### Pipeline contribution conventions
+## Pipeline contribution conventions
 
 nf-core semi-standardises how you write code and other contributions to make the nf-core/proteinfold code and processing logic more understandable for new contributors and to ensure quality.
 
-#### Add a new pipeline step
+### Add a new pipeline step
 
 To contribute a new step to the pipeline, follow the general nf-core coding procedure.
 Please also refer to the [pipeline-specific contribution guidelines](#pipeline-specific-contribution-guidelines):
@@ -136,7 +129,7 @@ Please also refer to the [pipeline-specific contribution guidelines](#pipeline-s
 
 To update the minimum required Nextflow version, see the [Nextflow version bumping](#nextflow-version-bumping) section below. For more information about pipeline contributions, see [pipeline-specific contribution guidelines](#pipeline-specific-contribution-guidelines).
 
-#### Channel naming schemes
+### Channel naming schemes
 
 Use the following naming schemes for channels to make the channel flow easier to understand:
 
@@ -156,7 +149,7 @@ nf-core pipelines schema build
 
 The schema builder interface that loads in your browser should automatically update the defaults in the parameter documentation.
 
-#### Default processes resource requirements
+### Default processes resource requirements
 
 If you write a local module, specify a default set of resource requirements for the process.
 
@@ -176,10 +169,6 @@ If you use a new feature from core Nextflow, bump the minimum required Nextflow 
 nf-core pipelines bump-version --nextflow . <min_nf_version>
 ```
 
-#### Images and figures guidelines
+### Images and figures guidelines
 
 If you update images or graphics, follow the nf-core [style guidelines](https://nf-co.re/docs/community/brand/workflow-schematics).
-
-## Pipeline specific contribution guidelines
-
-<!-- TODO nf-core: Add any pipeline specific contribution guidelines here, such as coding styles, procedures, checklists etc. -->

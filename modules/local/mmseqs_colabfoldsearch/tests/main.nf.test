@@ -1,0 +1,42 @@
+nextflow_process {
+
+    name "Test Process MMSEQS_COLABFOLDSEARCH"
+    script "../main.nf"
+    process "MMSEQS_COLABFOLDSEARCH"
+    config "./nextflow.config"
+
+    tag "modules"
+    tag "modules_local"
+    tag "mmseqs_colabfoldsearch"
+    profile "test_nostub"
+
+    test("runs mmseqs colabfoldsearch") {
+
+        when {
+            process {
+                """
+                def dbDir = file('db')
+                dbDir.mkdirs()
+                file('db/dummy.db').text = 'x'
+
+                def uniref30Dir = file('s3://proteinfold-dataset/test-data/mini_dbs/colabfold_uniref30/*', checkIfExists: true)
+
+                input[0] = [
+                    [ id: 'mixed' ],
+                    file(params.pipelines_testdata_base_path + 'testdata/sequences/mmseqs/ubq.fasta', checkIfExists: true)
+                ]
+                input[1] = file('db/*')
+                input[2] = uniref30Dir
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                { assert snapshot(process.out).match() }
+            )
+        }
+    }
+
+}

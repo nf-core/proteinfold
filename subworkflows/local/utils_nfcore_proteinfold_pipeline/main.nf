@@ -16,6 +16,7 @@ include { completionEmail           } from '../../nf-core/utils_nfcore_pipeline'
 include { completionSummary         } from '../../nf-core/utils_nfcore_pipeline'
 include { UTILS_NFCORE_PIPELINE     } from '../../nf-core/utils_nfcore_pipeline'
 include { UTILS_NEXTFLOW_PIPELINE   } from '../../nf-core/utils_nextflow_pipeline'
+include { logColours                } from '../../nf-core/utils_nfcore_pipeline'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -53,18 +54,19 @@ workflow PIPELINE_INITIALISATION {
     //
     // Validate parameters and generate parameter summary to stdout
     //
+    def colors = logColours(monochrome_logs)
 
     def before_text = ""
     def after_text = ""
     before_text = """
--\033[2m----------------------------------------------------\033[0m-
-                                        \033[0;32m,--.\033[0;30m/\033[0;32m,-.\033[0m
-\033[0;34m        ___     __   __   __   ___     \033[0;32m/,-._.--~\'\033[0m
-\033[0;34m  |\\ | |__  __ /  ` /  \\ |__) |__         \033[0;33m}  {\033[0m
-\033[0;34m  | \\| |       \\__, \\__/ |  \\ |___     \033[0;32m\\`-._,-`-,\033[0m
-                                        \033[0;32m`._,._,\'\033[0m
-\033[0;35m  nf-core/proteinfold ${workflow.manifest.version}\033[0m
--\033[2m----------------------------------------------------\033[0m-
+-${colors.dim}----------------------------------------------------${colors.reset}-
+                                        ${colors.green},--.${colors.black}/${colors.green},-.${colors.reset}
+${colors.blue}        ___     __   __   __   ___     ${colors.green}/,-._.--~\'${colors.reset}
+${colors.blue}  |\\ | |__  __ /  ` /  \\ |__) |__         ${colors.yellow}}  {${colors.reset}
+${colors.blue}  | \\| |       \\__, \\__/ |  \\ |___     ${colors.green}\\`-._,-`-,${colors.reset}
+                                        ${colors.green}`._,._,\'${colors.reset}
+${colors.purple}  nf-core/proteinfold ${workflow.manifest.version}${colors.reset}
+-${colors.dim}----------------------------------------------------${colors.reset}-
 """
     after_text = """${workflow.manifest.doi ? "\n* The pipeline\n" : ""}${workflow.manifest.doi.tokenize(",").collect { doi -> "    https://doi.org/${doi.trim().replace('https://doi.org/','')}"}.join("\n")}${workflow.manifest.doi ? "\n" : ""}
 * The nf-core framework
@@ -99,33 +101,43 @@ workflow PIPELINE_INITIALISATION {
         nextflow_cli_args
     )
 
-    //
-    // Create channel from input file provided through params.input
-    //
+    validateInputParameters()
 
-    channel
-        .fromList(samplesheetToList(input, "${projectDir}/assets/schema_input.json"))
-        .map {
-            meta, fastq_1, fastq_2 ->
-                if (!fastq_2) {
-                    return [ meta.id, meta + [ single_end:true ], [ fastq_1 ] ]
-                } else {
-                    return [ meta.id, meta + [ single_end:false ], [ fastq_1, fastq_2 ] ]
-                }
+    //
+    // Create channel from input file provided through input
+    //
+    ch_samplesheet = channel.fromList(samplesheetToList(input, "assets/schema_input.json"))
+
+    ch_samplesheet
+        .map { meta, fasta ->
+            // This mapping supports legacy samplesheets that use 'sequence' as metadata.
+            // If meta.id is missing or empty, meta.sequence is used as the identifier.
+            def identifier = meta.id ? meta.id : meta.sequence
+            return [[id: identifier], fasta]
         }
-        .groupTuple()
-        .map { samplesheet ->
-            validateInputSamplesheet(samplesheet)
+
+    if (params.split_fasta) {
+        ch_samplesheet = ch_samplesheet.map { meta, fasta ->
+            validateFasta(fasta)
+            [meta, fasta]
         }
-        .map {
-            meta, fastqs ->
-                return [ meta, fastqs.flatten() ]
-        }
-        .set { ch_samplesheet }
+
+        // Split the fasta file into individual files for each sequence
+        ch_samplesheet
+            .map { meta, fasta -> [meta.id, fasta] }
+            .splitFasta( record: [header: true, sequence: true], elem: 1 )
+            .collectFile { sample_id, item ->
+                [ "${cleanHeader(sample_id.toString())}_${cleanHeader(item["header"])}.fa", ">" + cleanHeader(item["header"]) + '\n' +item["sequence"] ]
+            }
+            .map {
+                file -> [[id: file.baseName], file]
+            }
+            .set { ch_samplesheet }
+    }
 
     emit:
-    samplesheet = ch_samplesheet
-    versions    = ch_versions
+    samplesheet  = ch_samplesheet
+    versions     = ch_versions
 }
 
 /*
@@ -180,19 +192,38 @@ workflow PIPELINE_COMPLETION {
 */
 
 //
-// Validate channels from input samplesheet
+// Check and validate pipeline parameters
 //
-def validateInputSamplesheet(input) {
-    def (metas, fastqs) = input[1..2]
+def validateInputParameters() {
+    def requestedModes = params.mode.toLowerCase().split(",")*.trim()
 
-    // Check that multiple runs of the same sample are of the same datatype i.e. single-end / paired-end
-    def endedness_ok = metas.collect{ meta -> meta.single_end }.unique().size == 1
-    if (!endedness_ok) {
-        error("Please check input samplesheet -> Multiple runs of a sample must be of the same datatype i.e. single-end or paired-end: ${metas[0].id}")
+    if (requestedModes.contains("alphafold3")) {
+        alphafold3Warn(log)
     }
 
-    return [ metas[0], fastqs ]
+    if (params.random_seed != null) {
+        randomSeedModeWarn(log, requestedModes)
+    }
 }
+
+def modeChannel(ch, mode) {
+    return ch.map { meta, value ->
+        def meta_clone = meta.clone()
+        meta_clone.model = mode
+        [ meta_clone, value ]
+    }
+}
+
+def countMolecularEntitiesInFasta(fasta) {
+    return fasta.text
+        .readLines()
+        .count { line -> line.trim().startsWith('>') }
+}
+
+def resolveModelPresetByFastaEntities(fasta, monomerPreset, multimerPreset = 'multimer') {
+    return countMolecularEntitiesInFasta(fasta) > 1 ? multimerPreset : monomerPreset
+}
+
 //
 // Generate methods description for MultiQC
 //
@@ -247,12 +278,59 @@ def methodsDescriptionText(mqc_methods_yaml) {
     // TODO nf-core: Only uncomment below if logic in toolCitationText/toolBibliographyText has been filled!
     // meta["tool_citations"] = toolCitationText().replaceAll(", \\.", ".").replaceAll("\\. \\.", ".").replaceAll(", \\.", ".")
     // meta["tool_bibliography"] = toolBibliographyText()
-
-
     def methods_text = mqc_methods_yaml.text
 
     def engine =  new groovy.text.SimpleTemplateEngine()
     def description_html = engine.createTemplate(methods_text).make(meta)
 
     return description_html.toString()
+}
+
+def cleanHeader(header) {
+    return header
+        .replaceAll(" ", "_")
+        .replaceAll("/","_")
+        .replaceAll(",", "")
+        .replaceAll(";","")
+        .replaceAll("\\|","_")
+}
+
+def validateFasta(fasta) {
+    def lines = fasta.text.readLines()
+    // extract headers
+    def headers = lines.findAll { it -> it.startsWith('>') }
+    // if headers are not unique, throw an error
+    if (headers.size() != headers.unique().size()) {
+        throw new Exception("Invalid FASTA file. The headers are not unique.")
+    }
+    // check headers that are malformed
+    headers.each { header ->
+        if (header =~ /[ \t;,\/]/) {
+            // warn user that the header contains special characters
+            log.warn "The header ${header} contains special characters. They have been automatically removed."
+        }
+    }
+}
+
+//
+// Print a warning when using Alphafold3
+//
+def alphafold3Warn(log) {
+    log.warn "=============================================================================\n" +
+        "  You are using AlphaFold3 mode.\n" +
+        "  Be aware that the predicted structures can not be used for commercial purposes.\n" +
+        "  More information here: \"https://github.com/google-deepmind/alphafold3/blob/main/README.md#alphafold-3-source-code-and-model-parameters.\"\n" +
+        "==================================================================================="
+}
+
+def randomSeedModeWarn(log, requestedModes) {
+    def supportedModes = ['alphafold2', 'boltz', 'colabfold'] as Set
+    def unsupportedModes = requestedModes.findAll { !supportedModes.contains(it) }.unique().sort()
+
+    if (!unsupportedModes.isEmpty()) {
+        log.warn "=============================================================================\n" +
+            "  The global --random_seed parameter only applies to alphafold2, boltz, and colabfold.\n" +
+            "  It will be ignored for the following selected mode(s): ${unsupportedModes.join(', ')}.\n" +
+            "==================================================================================="
+    }
 }
