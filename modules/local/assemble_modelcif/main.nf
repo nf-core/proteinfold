@@ -5,24 +5,65 @@ process ASSEMBLE_MODELCIF {
     conda "${moduleDir}/environment.yml"
     container 'ghcr.io/keiran-rowell-unsw/proteinfold-modelcif:1.7'
 
+    // Unpack the tuple assuming every value used is at the path. Pass along a DUMMY_FILE so that the path is always occupied.
+    // The populate_modelcif.py can explicitly trigger if the arg.metric is a DUMMY_FILE, and if so, appropriately account for the non-existence of that in the model metadata
+    // This is also means no hand-crafted exceptions for particular programs that doesn't make use of some input (MSA - EMSFold), they all obey the same take: pipleline logic
+    // TODO: Unsure at this stage best way forward with chain-wise paths. At least modelCIF has the asymmetric unit entity, so we *could* DUMMY_FILE, but I do like the philosophy of don't check things that *can't* exist
     input:
     tuple val(meta), path(structs), path(msa), path(plddt), path(pae), path(ptm), path(iptm), path(versions_yml, stageAs: 'versions_input/versions.yml'), path(software_details)
 
     output:
-    tuple val(meta), path("*.mmcif"), emit: modelcif
+    tuple val(meta), path("*.{mmcif,bcif}"), emit: modelcif
     path "pae/*.tsv", emit: pae
     path "versions.yml", emit: versions
 
+    when:
+    task.ext.when == null || task.ext.when
+
+    // This will take a maximalist approach to populating the modelCIF
+    // Every single structure from a sequence prediction method will be captured in .ModelGroup
+    // Every common metric will be captured as a modelCIF qa_metric
+    // The advantage is all software metadata and protocol steps are shared between all structures in the .ModelGroup
+    // BinaryCIF output: pass --write_binary via task.ext.args.
     script:
     def args = task.ext.args ?: ''
+    def container = task.container ?: 'None'
+    def no_template_search = meta.no_template_search ? '--no-template-search' : ''
     """
     mkdir pae
     cp ${pae} pae/
-    populate_modelcif.py --structs ${structs} --msa ${msa} --plddt ${plddt} --pae pae/*.tsv --ptm ${ptm} --iptm ${iptm} --name ${meta.id} --prog ${meta.model} --versions_yml ${versions_yml} --msa_tool ${meta.msa_tool ?: 'None'} --software_details ${software_details} $args
+    populate_modelcif.py \\
+        --structs ${structs} \\
+        --msa ${msa} \\
+        --plddt ${plddt} \\
+        --pae pae/*.tsv \\
+        --ptm ${ptm} \\
+        --iptm ${iptm} \\
+        --name ${meta.id} \\
+        --prog ${meta.model} \\
+        --versions_yml ${versions_yml} \\
+        --container_image ${container} \\
+        --msa_tool ${meta.msa_tool ?: 'None'} \\
+        --software_details ${software_details} \\
+        ${no_template_search} \\
+        $args
+
+    python3 - <<'PY'
+    import glob
+    import modelcif.reader
+
+    for output in glob.glob('*.mmcif') + glob.glob('*.bcif'):
+        binary = output.endswith('.bcif')
+        with open(output, 'rb' if binary else 'r') as fh:
+            assert modelcif.reader.read(fh, format='BCIF' if binary else 'mmCIF')
+    PY
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        modelcif: \$(python3 -c "import modelcif; print(modelcif.__version__)")
+        python: \$(python3 --version | sed 's/Python //g')
+        modelcif: \$(python3 -c "import modelcif; print(modelcif.__version__)" 2>/dev/null || echo "unknown")
+        biopython: \$(python3 -c "import Bio; print(Bio.__version__)")
     END_VERSIONS
     """
+
 }

@@ -6,7 +6,11 @@ import csv
 import os
 import re
 import sys
-import yaml
+import warnings
+try:
+  import yaml
+except ImportError:
+  yaml = None
 
 import modelcif
 import modelcif.model
@@ -33,6 +37,26 @@ _SOFTWARE_INFO = {
     'rosettafold_all_atom': ('RoseTTAFold-All-Atom',  'https://github.com/baker-laboratory/RoseTTAFold-All-Atom', 'protein structure prediction'),
 }
 
+# Tools that can be attributed to the template search step (#579); version,
+# when known, comes from the run module's topic: channel via --template_version
+# or the template_search_step spec.
+_TEMPLATE_SEARCH_TOOLS = {
+    'hhsearch':    ('HHsearch',    'https://github.com/soedinglab/hh-suite',      'template search'),
+    'hhblits':     ('HHblits',     'https://github.com/soedinglab/hh-suite',      'sequence search'),
+    'jackhmmer':   ('JackHMMER',   'https://www.ebi.ac.uk/Tools/hmmer/search/jackhmmer', 'sequence search'),
+    'mmseqs2':     ('MMseqs2',     'https://github.com/soedinglab/MMseqs2',       'sequence search'),
+    'alphafolddbsearch': ('AlphaFold DB search', 'https://alphafold.ebi.ac.uk', 'template search'),
+}
+
+# --plddt-scale values -> modelcif metric types. Values pass through verbatim;
+# the scale only declares the metric_name.
+_PLDDT_METRIC_CLASSES = {
+    'plddt':            modelcif.qa_metric.PLDDT,
+    'plddt01':          modelcif.qa_metric.PLDDT01,
+    'plddt-allatom':    modelcif.qa_metric.PLDDTAllAtom,
+    'plddt-allatom01':  modelcif.qa_metric.PLDDTAllAtom01,
+}
+
 def parse_args(args=None):
     parser = argparse.ArgumentParser(
         description='Convert prediction structures and available quality metrics to ModelCIF.'
@@ -41,16 +65,44 @@ def parse_args(args=None):
                         help='Input structure files (PDB or mmCIF), one per rank in rank order.')
     parser.add_argument('--msa',     required=True, help='*_msa.tsv from extract_metrics.py.')
     parser.add_argument('--plddt',   required=True, help='*_plddt.tsv from extract_metrics.py.')
-    parser.add_argument('--pae',     required=True, nargs='+', help='Per-rank *_<rank>_pae.tsv files from extract_metrics.py, one per rank.')
+    parser.add_argument('--container_image', default=None,
+                        help='Container image (URI) the prediction ran in; embedded as a '
+                             'container_image software parameter (task.container).')
+    parser.add_argument('--seed', default=None,
+                        help='*_seed.tsv (rank_N\tseed) or a single integer. Multi-seed programs '
+                             '(e.g. alphafold3) get one seed per model; single-seed programs get one '
+                             'shared parameter. Falls back to inferring seeds from structure filenames.')
+    parser.add_argument('--chainwise_iptm', default=None, help='*_chainwise_iptm.tsv (multichain only).')
+    parser.add_argument('--chainwise_ipsae', default=None, help='*_chainwise_ipsae.tsv (multichain only).')
+    parser.add_argument('--param', action='append', default=[], metavar='KEY=VALUE',
+                        help='Extra model parameter(s) embedded as SoftwareParameters on the modeling '
+                             'software (e.g. --param use_templates=true --param model_preset=monomer_ptm). '
+                             'Overrides built-in per-program facts with the same key.')
+    parser.add_argument('--template_software', default=None,
+                        help='Tool that performed the template search (e.g. hhsearch, mmseqs2); '
+                             'attributed to the TemplateSearchStep. Matches the topic: '
+                             'versions emission pattern val("template_search"), val(tool).')
+    parser.add_argument('--template_version', default=None,
+                        help='Version of --template_software, from the run module topic: channel.')
+    parser.add_argument('--no-template-search', action='store_true',
+                        help='Suppress the configured TemplateSearchStep (for fixtures or workflows without template search).')
     parser.add_argument('--pae-embed', action='store_true', help='Embed PAE as local-pairwise QA metrics in the primary modelCIF instead of as an associated file.')
+    parser.add_argument('--pae', required=True, nargs='+',
+                        help='Per-rank *_<rank>_pae.tsv files from extract_metrics.py, one per rank.')
     parser.add_argument('--ptm',     required=True, help='*_ptm.tsv from extract_metrics.py.')
     parser.add_argument('--iptm',    required=True, help='*_iptm.tsv from extract_metrics.py.')
     parser.add_argument('--name',    required=True)
     parser.add_argument('--prog',         required=True)
     parser.add_argument('--msa_tool',     default=None, help='MSA search tool used (e.g. jackhmmer, hhblits, mmseqs2). Embedded in the CoevolutionMSA protocol step.')
     parser.add_argument('--versions_yml', default=None, help='versions.yml emitted by the upstream run_* module.')
-    parser.add_argument('--software_details', required=True, help='YAML file describing software and protocol step metadata.')
+    parser.add_argument('--software_details', default=None, help='YAML file describing software and protocol step metadata.')
     parser.add_argument('--output',       default=None)
+    parser.add_argument('--all-structs',  action='store_true', help='Include all parseable files passed via --structs as models. This is enabled automatically when more than one structure file is supplied.')
+    parser.add_argument('--write_binary', action='store_true', help='Write BinaryCIF (.bcif) output instead of text mmCIF. Requires the msgpack package.')
+    parser.add_argument('--plddt-scale',  choices=sorted(_PLDDT_METRIC_CLASSES), default='plddt',
+                        help="Declared metric type of the values in --plddt (no rescaling is performed): "
+                             "'plddt' = lDDT-CA in [0,100] (default), 'plddt01' = lDDT-CA in [0,1], "
+                             "'plddt-allatom' = all-atom lDDT in [0,100], 'plddt-allatom01' = all-atom lDDT in [0,1].")
     return parser.parse_args(args)
 
 
@@ -90,17 +142,31 @@ def _read_sw_version(versions_yml, prog):
     """
     if versions_yml is None or not os.path.exists(versions_yml):
         return None
+
+    if yaml is None:
+        return None
+
     with open(versions_yml) as fh:
         data = yaml.safe_load(fh)
     if not isinstance(data, dict):
         return None
-    # The single top-level key is the process name; we don't care what it is.
-    process_versions = next(iter(data.values()), {})
-    return process_versions.get(prog.lower())
+    # Traditional nf-core versions files nest tools below a process name.
+    # The pipeline-wide MultiQC file instead flattens them as
+    # "PROCESS:tool": version, so accept both representations.
+    wanted = prog.lower()
+    for process_versions in data.values():
+        if isinstance(process_versions, dict) and wanted in process_versions:
+            return process_versions[wanted]
+    for tool_key, version in data.items():
+        if str(tool_key).lower().rsplit(':', 1)[-1] == wanted:
+            return version
+    return None
 
 
 def _read_software_details_yml(software_details):
     """Load software/protocol metadata from an explicit YAML path."""
+    if software_details in (None, 'None'):
+        return {}
     if not os.path.exists(software_details):
         raise ValueError(f"software_details file not found: {software_details}")
     with open(software_details) as fh:
@@ -142,7 +208,11 @@ def _software_from_spec(spec, fallback_name, fallback_location, fallback_classif
 
 
 def _step_software(main_software, execution_software, step_cfg):
-    """Resolve protocol step software as Software or SoftwareGroup."""
+    """Resolve step software as Software, SoftwareWithParameters or SoftwareGroup.
+
+    SoftwareWithParameters is duck-typed by the dumper (.software/.parameters),
+    so singletons of it must be wrapped in a group for parameters to be written.
+    """
     use_main = step_cfg.get('use_main_software', True)
     use_execution = step_cfg.get('use_execution_software', False)
 
@@ -154,7 +224,7 @@ def _step_software(main_software, execution_software, step_cfg):
 
     if not members:
         return main_software
-    if len(members) == 1:
+    if len(members) == 1 and isinstance(members[0], modelcif.Software):
         return members[0]
     return modelcif.SoftwareGroup(members)
 
@@ -199,6 +269,12 @@ def _read_plddt_tsv(plddt_tsv):
         (k for k in rows[0].keys() if k.startswith('rank_')),
         key=lambda k: int(k.split('_', 1)[1]),
     )
+    if not rank_cols:
+        raise ValueError(
+            f"No 'rank_X' columns found in {plddt_tsv}. Expected a header like "
+            "'Positions\\trank_0\\trank_1\\t...' as written by extract_metrics.py "
+            "(extract_structs_plddt_to_tsv)."
+        )
     return {col: [float(row[col]) for row in rows] for col in rank_cols}
 
 
@@ -300,12 +376,141 @@ def _read_pae_tsv(pae_tsv):
     return matrix
 
 
+def _read_chainwise_tsv(tsv_file):
+    """
+    Parse a *_chainwise_{iptm,ipsae}.tsv written by extract_metrics.py.
+
+    Transposed layout: header row is ['0', '1', '2', ...] (model labels);
+    subsequent rows are ['X:Y', v0, v1, ...] with X:Y chain pair labels.
+    Diagonal X:X = per-chain pTM; off-diagonal X:Y = interface ipTM/ipsae.
+    Empty/nan cells are skipped.
+
+    Returns {rank_key: {(chain_a, chain_b): value}}.
+    """
+    with open(tsv_file) as fh:
+        rows = [r for r in csv.reader(fh, delimiter='\t') if r and any(x.strip() for x in r)]
+    if len(rows) < 2:
+        raise ValueError(f"Empty chainwise file: {tsv_file}")
+    # tolerate an optional blank label cell before the model columns
+    header = rows[0]
+    if len(header) == len(rows[1]):
+        header = header[1:]
+    model_cols = [c.strip() for c in header if c.strip() != '']
+    if not model_cols:
+        raise ValueError(f"No model columns in chainwise file: {tsv_file}")
+    for m in model_cols:
+        try:
+            int(m)
+        except ValueError:
+            raise ValueError(f"Invalid model column label {m!r} in {tsv_file}")
+    out = {}
+    for row in rows[1:]:
+        label = row[0].strip()
+        parts = label.split(':')
+        if len(parts) != 2 or not all(parts):
+            raise ValueError(f"Invalid chain pair label {label!r} in {tsv_file}")
+        ca, cb = parts
+        vals = row[1:]
+        if len(vals) != len(model_cols):
+            raise ValueError(
+                f"Row {label!r} in {tsv_file} has {len(vals)} values for {len(model_cols)} model columns")
+        for mk, v in zip(model_cols, vals):
+            v = v.strip()
+            if not v or v.lower() in ('n/a', 'nan', '.', 'none'):
+                continue
+            try:
+                val = float(v)
+            except ValueError:
+                raise ValueError(f"Bad value {v!r} for pair {label!r} rank {mk} in {tsv_file}")
+            rank_key = 'rank_' + mk
+            out.setdefault(rank_key, {})[(ca, cb)] = val
+    return out
+
+
 def _read_ptm_tsv(ptm_tsv):
     return _read_ranked_score_tsv(ptm_tsv)
 
 
 def _read_iptm_tsv(iptm_tsv):
     return _read_ranked_score_tsv(iptm_tsv)
+
+
+_KNOWN_PROGRAM_MODELS = {
+    # Verified against upstream docs/repos: AF2 has recycling and (in its
+    # params) template use; AF3 runs template search in its data pipeline
+    # (MUSE not documented - do not claim it); ColabFold adds recycling
+    # (extra_msgs), templates (mmseqs setup) and amber relaxation.
+    'alphafold2':     {'has_recycling': True,  'uses_templates': True},
+    'alphafold3':     {'has_recycling': False, 'uses_templates': True},
+    'helixfold3':     {'has_recycling': False, 'uses_templates': True},
+    'colabfold':      {'has_recycling': True,  'uses_templates': True,
+                      'has_relaxation': True},
+    'esmfold':        {'has_recycling': False, 'uses_templates': False},
+    'boltz':          {'has_recycling': False, 'uses_templates': False},
+    'rosettafold2na': {'has_recycling': False, 'uses_templates': False},
+    'rosettafold_all_atom': {'has_recycling': False, 'uses_templates': False},
+}
+
+
+# Accepted --param key aliases, mapped to the canonical key written to modelCIF.
+_PARAM_KEY_ALIASES = {'use_templates': 'uses_templates'}
+
+
+def _program_model_params(prog, extra=None):
+    """Static model-architecture facts for *prog*; --param (extra) overrides same keys."""
+    extra = {_PARAM_KEY_ALIASES.get(k, k): v for k, v in (extra or {}).items()}
+    merged = dict(_KNOWN_PROGRAM_MODELS.get(prog.lower(), {}))
+    merged.update(extra)
+    return merged
+
+
+def _coerce_param(value):
+    """Coerce CLI/YAML strings to the types modelcif.SoftwareParameter accepts."""
+    if not isinstance(value, str):
+        return value
+    low = value.strip().lower()
+    if low in ('true', 'yes'):
+        return True
+    if low in ('false', 'no'):
+        return False
+    try:
+        return int(value)
+    except ValueError:
+        try:
+            return float(value)
+        except ValueError:
+            return value
+
+
+def _read_seed_values(seed_arg, struct_files, num_ranks):
+    """Resolve per-rank seed ints from --seed (a rank_N-keyed TSV or an int), else filenames."""
+    if seed_arg is not None:
+        if os.path.exists(seed_arg):
+            seeds = {}
+            with open(seed_arg) as fh:
+                for row in csv.reader(fh, delimiter='\t'):
+                    if len(row) < 2 or row[0].strip().lower() == 'rank':
+                        continue
+                    rank, value = row[0].strip(), row[1].strip()
+                    if not rank.startswith('rank_'):
+                        try:
+                            rank = f'rank_{int(rank)}'
+                        except ValueError:
+                            continue
+                    try:
+                        seeds[rank] = int(value)
+                    except ValueError:
+                        continue
+            return [seeds.get(f'rank_{i}') for i in range(num_ranks)]
+        try:
+            return [int(seed_arg)] * num_ranks
+        except ValueError:
+            raise ValueError(f"--seed must be an integer or a *_seed.tsv path, got {seed_arg!r}")
+    try:
+        from utils import infer_model_seed
+    except ImportError:
+        return [None] * num_ranks
+    return [infer_model_seed(f) for f in struct_files]
 
 
 # ---------------------------------------------------------------------------
@@ -363,14 +568,24 @@ def build_modelcif(
     plddt_file,
     msa_file,
     pae_files,
+    pae_embed,
     ptm_file,
     iptm_file,
     name,
     prog,
+    chainwise_iptm_file=None,
+    chainwise_ipsae_file=None,
     sw_version=None,
     msa_tool=None,
-    pae_embed=False,
     software_details=None,
+    all_structs=None,
+    plddt_scale='plddt',
+    container_image=None,
+    seed_values=None,
+    model_params=None,
+    template_software=None,
+    template_version=None,
+    no_template_search=False,
 ):
     """
     Build a modelcif.System from ranked structure files and QA metric .tsv files.
@@ -386,10 +601,19 @@ def build_modelcif(
         Path to *_msa.tsv from extract_metrics.py.
     pae_files : list[str]
         Paths to per-rank *_<rank>_pae.tsv files from extract_metrics.py.
+    pae_embed : bool
+        If True, embed PAE values as local-pairwise QA metrics in the main
+        modelCIF. If False, keep PAE as an associated QA metrics file.
     ptm_file : str
         Path to *_ptm.tsv from extract_metrics.py.
     iptm_file : str
         Path to *_iptm.tsv from extract_metrics.py.
+    chainwise_iptm_file : str, optional
+        Path to *_chainwise_iptm.tsv; for multichain models the diagonal
+        (per-chain pTM) is embedded as Feature metrics and off-diagonal
+        (interface ipTM) as FeaturePairwise metrics (per #582).
+    chainwise_ipsae_file : str, optional
+        Path to *_chainwise_ipsae.tsv; same representation as chainwise_iptm.
     name : str
         Sample / sequence identifier used in titles and file naming.
     prog : str
@@ -399,16 +623,43 @@ def build_modelcif(
     msa_tool : str, optional
         MSA search tool name (e.g. ``'jackhmmer'``, ``'hhblits'``, ``'mmseqs2'``).
         Embedded in the CoevolutionMSA protocol step name.
-    pae_embed : bool, optional
-        If True, embed PAE values as local-pairwise QA metrics.
 
     Returns
     -------
     modelcif.System
     """
     software_details = software_details or {}
+    if plddt_scale not in _PLDDT_METRIC_CLASSES:
+        raise ValueError(
+            f"Unknown plddt_scale '{plddt_scale}'; "
+            f"expected one of {sorted(_PLDDT_METRIC_CLASSES)}"
+        )
+    if all_structs is None:
+        all_structs = len(struct_files) > 1
 
-    biopy_structs = [_parse_structure(f) for f in struct_files]
+    selected_struct_files = []
+    biopy_structs = []
+
+    if all_structs:
+        for struct_file in struct_files:
+            try:
+                biopy_struct = _parse_structure(struct_file)
+            except Exception as err:
+                print(
+                    f"Skipping unparseable structure file {struct_file}: {err}",
+                    file=sys.stderr,
+                )
+                continue
+            selected_struct_files.append(struct_file)
+            biopy_structs.append(biopy_struct)
+
+        if not biopy_structs:
+            raise ValueError(
+                'No parseable structures found in --structs input while using --all-structs'
+            )
+    else:
+        selected_struct_files = [struct_files[0]]
+        biopy_structs = [_parse_structure(struct_files[0])]
     plddt_by_rank = _read_plddt_tsv(plddt_file)
     if len(biopy_structs) != len(plddt_by_rank):
         raise ValueError(
@@ -425,6 +676,20 @@ def build_modelcif(
     iptm_by_rank = _read_iptm_tsv(iptm_file)
     has_ptm = _check_ranked_scores(ptm_by_rank, struct_ranks, 'pTM', ptm_file)
     has_iptm = _check_ranked_scores(iptm_by_rank, struct_ranks, 'ipTM', iptm_file)
+
+    def _maybe_chainwise(path, label):
+        if path is None or not os.path.exists(path):
+            return {}
+        try:
+            parsed = _read_chainwise_tsv(path)
+        except ValueError as err:
+            warnings.warn(f"Ignoring {label} file {path}: {err}")
+            return {}
+        # a rank with no usable pairs is as good as absent
+        return {k: v for k, v in parsed.items() if v}
+
+    cw_iptm_by_rank = _maybe_chainwise(chainwise_iptm_file, 'chainwise_iptm')
+    cw_ipsae_by_rank = _maybe_chainwise(chainwise_ipsae_file, 'chainwise_ipsae')
     msa_num_seqs, msa_length = _read_msa_tsv(msa_file)
 
     system = modelcif.System(title=f'{name} predicted by {prog}')
@@ -451,7 +716,7 @@ def build_modelcif(
 
     if not asym_map:
         raise ValueError(
-            f'No standard polymer residues found in {struct_files[0]}. '
+            f'No standard polymer residues found in {selected_struct_files[0]}. '
             'Cannot build modelCIF system.'
         )
 
@@ -506,8 +771,10 @@ def build_modelcif(
         system.software.append(execution_software)
 
     # ---- pLDDT QA metric class ------------------------------------------
-    class LocalPLDDT(modelcif.qa_metric.Local, modelcif.qa_metric.PLDDT):
-        """Predicted lDDT-CA score in [0,100] output by the folding software"""
+    plddt_base = _PLDDT_METRIC_CLASSES[plddt_scale]
+
+    class LocalPLDDT(modelcif.qa_metric.Local, plddt_base):
+        __doc__ = f"Per-residue pLDDT ({plddt_scale}) as emitted by the prediction software."
 
     LocalPLDDT.software = software
 
@@ -526,12 +793,47 @@ def build_modelcif(
 
     LocalPairwisePAE.software = software
 
+    class ChainPTM(modelcif.qa_metric.Feature, modelcif.qa_metric.PTM):
+        """pTM restricted to a single chain (diagonal of the chain-pair matrix)."""
+
+    ChainPTM.software = software
+
+    class ChainIpTM(modelcif.qa_metric.FeaturePairwise, modelcif.qa_metric.IpTM):
+        """Interface ipTM between two chains (off-diagonal of the chain-pair matrix)."""
+
+    ChainIpTM.software = software
+
+    class ChainIPSAE(modelcif.qa_metric.FeaturePairwise, modelcif.qa_metric.NormalizedScore):
+        """Interface predicted aligned error between two chains."""
+
+    ChainIPSAE.software = software
+
+    # ---- Software parameters: container image (#590), seed, model params --
+    # modelcif only writes _ma_software_parameter for SoftwareWithParameters
+    # discovered inside a SoftwareGroup (System._before_write flattens bare
+    # ones; QA metrics still reference the plain Software).
+    params = []
+    if container_image:
+        params.append(modelcif.SoftwareParameter(
+            'container_image', container_image,
+            'Container image the prediction was run in'))
+    uniq_seeds = sorted({s for s in (seed_values or []) if s is not None})
+    if len(uniq_seeds) == 1:
+        params.append(modelcif.SoftwareParameter(
+            'seed', uniq_seeds[0], 'Random seed for the prediction run'))
+    for key, value in _program_model_params(prog, model_params).items():
+        params.append(modelcif.SoftwareParameter(key, _coerce_param(value),
+                                                 f'{sw_name} model parameter'))
+    if params:
+        system.software_groups.append(
+            modelcif.SoftwareGroup([modelcif.SoftwareWithParameters(software, params)]))
+
     # ---- One model per ranked structure ---------------------------------
     # Pair each struct file with the matching rank_N column from the TSV.
     models = []
-    for biopy_struct, (rank_key, plddt_values) in zip(
-        biopy_structs, plddt_by_rank.items()
-    ):
+    for idx, biopy_struct in enumerate(biopy_structs):
+        rank_key = f'rank_{idx}'
+        plddt_values = plddt_by_rank.get(rank_key)
         bp_model_i = next(biopy_struct.get_models())
         residue_count = sum(
             1 for chain in bp_model_i for res in chain if res.id[0] == ' '
@@ -548,19 +850,26 @@ def build_modelcif(
         # Assign per-residue pLDDT for this rank in residue order across all
         # chains, matching the column order written by
         # extract_metrics.extract_structs_plddt_to_tsv.
-        plddt_iter = iter(plddt_values)
-        for chain in bp_model_i:
-            asym = asym_map.get(chain.id)
-            if asym is None:
-                continue
-            seq_id = 1
-            for res in chain.get_residues():
-                if res.id[0] != ' ':
+        if plddt_values is not None:
+            plddt_iter = iter(plddt_values)
+            for chain in bp_model_i:
+                asym = asym_map.get(chain.id)
+                if asym is None:
                     continue
-                model.qa_metrics.append(
-                    LocalPLDDT(asym.residue(seq_id), next(plddt_iter))
-                )
-                seq_id += 1
+                seq_id = 1
+                for res in chain.get_residues():
+                    if res.id[0] != ' ':
+                        continue
+                    try:
+                        plddt_value = next(plddt_iter)
+                    except StopIteration as err:
+                        raise ValueError(
+                            f'Insufficient pLDDT values for {rank_key} in {plddt_file}'
+                        ) from err
+                    model.qa_metrics.append(
+                        LocalPLDDT(asym.residue(seq_id), plddt_value)
+                    )
+                    seq_id += 1
 
         if pae_embed:
             model_residues = []
@@ -594,10 +903,48 @@ def build_modelcif(
         if has_iptm:
             model.qa_metrics.append(GlobalIpTM(iptm_by_rank[rank_key]))
 
+        # Chain-wise metrics: only for genuine multichain models (>= 2 asym
+        # units); monomer chainwise files add nothing beyond the global
+        # scores already emitted (#582: embed when representable).
+        if len(asym_map) >= 2:
+            # One EntityInstanceFeature per chain of THIS model; the manual
+            # _all_features tuple works around python-modelcif#21 (the dumper
+            # only discovers features via modelcif.qa_metric.*._all_features).
+            chain_feats = {}
+            for cid, asym in asym_map.items():
+                inst = modelcif.EntityInstanceFeature([asym])
+                inst._all_features = (inst,)
+                chain_feats[cid] = inst
+            for d, feat_cls, pair_cls in (
+                    (cw_iptm_by_rank.get(rank_key, {}), ChainPTM, ChainIpTM),
+                    (cw_ipsae_by_rank.get(rank_key, {}), None, ChainIPSAE)):
+                for (ca, cb), value in d.items():
+                    fa = chain_feats.get(ca)
+                    fb = chain_feats.get(cb)
+                    if fa is None or fb is None:
+                        continue
+                    if ca == cb:
+                        if feat_cls is not None:
+                            model.qa_metrics.append(feat_cls(fa, value))
+                    else:
+                        model.qa_metrics.append(pair_cls(fa, fb, value))
+
         models.append(model)
 
-    # So model.ModelGroup is great here since every single inference from a multi-model method (e.g. AlphaFold)
-    # is captured coordinates-wise as a separate structure to inspect, but the protocol and software metadata is shared across them.
+    # ---- Random seed(s) (#588) -------------------------------------------
+    # seed_values[i] is the seed behind rank_i (None entries are skipped).
+    # Multi-seed programs (e.g. alphafold3 seed x sample grids) get one
+    # 'seed' shown per model via the model name (ChimeraX model header;
+    # a per-model category would need a patched dumper). Single-seed runs
+    # are covered by the shared software parameter above.
+    if seed_values and len(struct_files) == len(seed_values):
+        for model, seed in zip(models, seed_values):
+            if seed is not None:
+                model.name = f'{model.name} seed {seed}'
+
+    # One model per inference in a single ModelGroup: distinct ordinal_id and
+    # pdbx_model_number per model (verified, modelcif 1.7), so ChimeraX opens
+    # them as separate #X.Y models sharing protocol/software metadata.
     model_group = modelcif.model.ModelGroup(models, name='All models')
     system.model_groups.append(model_group)
 
@@ -606,6 +953,46 @@ def build_modelcif(
 
     msa_step_cfg = protocol_cfg.get('msa_step', {})
     modeling_step_cfg = protocol_cfg.get('modeling_step', {})
+    template_search_cfg = None if no_template_search else protocol_cfg.get('template_search_step')
+
+    # Optional template search step (e.g. AF2/AF3-family programs):
+    # sequence database -> templates, sitting upstream of the coevolution MSA.
+    msa_input_data = modelcif.data.DataGroup(list(seen_seqs.values()))
+    if template_search_cfg:
+        template_data = modelcif.data.Data(
+            'Templates',
+            details=template_search_cfg.get('details', 'Sequence database templates'),
+        )
+        system.data.append(template_data)
+        # Attribute the step to the tool that actually searched templates
+        # (#579): YAML template_search_software.name (or the topic: channel
+        # emission passed via --template_software); fall back to the modeling
+        # software group when the tool is unknown.
+        tpl_sw_cfg = template_search_cfg.get('template_search_software', {})
+        tpl_tool = (tpl_sw_cfg.get('name') or template_software or '').lower()
+        if tpl_tool in _TEMPLATE_SEARCH_TOOLS:
+            name, loc, cls = _TEMPLATE_SEARCH_TOOLS[tpl_tool]
+            tpl_software = modelcif.Software(
+                name=tpl_sw_cfg.get('name_display', name),
+                classification=tpl_sw_cfg.get('classification', cls),
+                description=tpl_sw_cfg.get('description', f'{name} template/sequence search'),
+                location=tpl_sw_cfg.get('location', loc),
+                type=tpl_sw_cfg.get('type', 'program'),
+                version=tpl_sw_cfg.get('version') or template_version,
+            )
+            system.software.append(tpl_software)
+            tpl_step_sw = _step_software(tpl_software, execution_software, dict(
+                template_search_cfg, use_main_software=True))
+        else:
+            tpl_step_sw = _step_software(software, execution_software, template_search_cfg)
+        template_search = modelcif.protocol.TemplateSearchStep(
+            input_data=msa_input_data,
+            output_data=template_data,
+            name=template_search_cfg.get('name', 'template search'),
+            details=template_search_cfg.get('step_details'),
+            software=tpl_step_sw,
+        )
+        protocol.steps.append(template_search)
 
     msa_data = modelcif.data.Data(
         'Coevolution MSA',
@@ -613,7 +1000,7 @@ def build_modelcif(
     )
     system.data.append(msa_data)
     msa_step = modelcif.protocol.CoevolutionMSAStep(
-        input_data=modelcif.data.DataGroup(list(seen_seqs.values())),
+        input_data=msa_input_data,
         output_data=msa_data,
         name=msa_step_cfg.get('name', msa_tool),
         details=msa_step_cfg.get('details'),
@@ -657,29 +1044,58 @@ def build_modelcif(
 def main(args=None):
     args = parse_args(args)
 
-    output_file = args.output or f'{args.name}_{args.prog}.mmcif'
+    if args.write_binary:
+        import msgpack  # Only required when writing BinaryCIF; not a hard dependency otherwise. Should be environment.yml but being defensive
+        output_file = args.output or f'{args.name}_{args.prog}.bcif'
+        open_mode, fmt = 'wb', 'BCIF'
+    else:
+        output_file = args.output or f'{args.name}_{args.prog}.mmcif'
+        open_mode, fmt = 'w', 'mmCIF'
 
     sw_version = _read_sw_version(args.versions_yml, args.prog)
     software_details = _read_software_details_yml(args.software_details)
     # Nextflow emits the string 'None' when no msa_tool is known; normalise to Python None.
     msa_tool = None if args.msa_tool in (None, 'None') else args.msa_tool
+    container_image = None if args.container_image in (None, 'None', 'null') else args.container_image
+    seed_arg = None if args.seed in (None, 'None', 'null') else args.seed
+    chainwise_iptm = None if args.chainwise_iptm in (None, 'None', 'null') else args.chainwise_iptm
+    chainwise_ipsae = None if args.chainwise_ipsae in (None, 'None', 'null') else args.chainwise_ipsae
+    seed_values = _read_seed_values(seed_arg, args.structs, len(args.structs))
+    extra_params = {}
+    for item in args.param:
+        if '=' not in item:
+            raise ValueError(f"--param expects KEY=VALUE, got {item!r}")
+        key, _, value = item.partition('=')
+        extra_params[key.strip()] = _coerce_param(value)
+    prog_params = extra_params  # merged over built-in facts in build_modelcif
+    all_structs = args.all_structs or len(args.structs) > 1
     system = build_modelcif(
-        args.structs,
-        args.plddt,
-        args.msa,
-        args.pae,
-        args.ptm,
-        args.iptm,
-        args.name,
-        args.prog,
-        sw_version,
-        msa_tool,
-        args.pae_embed,
-        software_details,
+        plddt_scale=args.plddt_scale,
+        container_image=container_image,
+        seed_values=seed_values,
+        chainwise_iptm_file=chainwise_iptm,
+        chainwise_ipsae_file=chainwise_ipsae,
+        model_params=prog_params,
+        template_software=None if args.template_software in (None, 'None') else args.template_software,
+        template_version=None if args.template_version in (None, 'None') else args.template_version,
+        no_template_search=args.no_template_search,
+        struct_files=args.structs,
+        all_structs=all_structs,
+        plddt_file=args.plddt,
+        msa_file=args.msa,
+        pae_file=args.pae,
+        pae_embed=args.pae_embed,
+        ptm_file=args.ptm,
+        iptm_file=args.iptm,
+        name=args.name,
+        prog=args.prog,
+        sw_version=sw_version,
+        msa_tool=msa_tool,
+        software_details=software_details,
     )
 
-    with open(output_file, 'w') as fh:
-        modelcif.dumper.write(fh, [system])
+    with open(output_file, open_mode) as fh:
+        modelcif.dumper.write(fh, [system], format=fmt)
 
     print(f'Written: {output_file}', file=sys.stderr)
 
