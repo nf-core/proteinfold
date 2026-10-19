@@ -13,6 +13,7 @@ import modelcif.dumper
 import modelcif.qa_metric
 import modelcif.protocol
 import modelcif.data
+import modelcif.associated
 
 from Bio import PDB
 from Bio.PDB.Polypeptide import protein_letters_3to1 as _aa3to1
@@ -37,9 +38,15 @@ def parse_args(args=None):
     )
     parser.add_argument('--structs', required=True, nargs='+',
                         help='Input structure files (PDB or mmCIF), one per rank in rank order.')
+    parser.add_argument('--msa',     required=True, help='*_msa.tsv from extract_metrics.py.')
     parser.add_argument('--plddt',   required=True, help='*_plddt.tsv from extract_metrics.py.')
+    parser.add_argument('--pae',     required=True, help='*_pae.tsv from extract_metrics.py.')
+    parser.add_argument('--pae-embed', action='store_true', help='Embed PAE as local-pairwise QA metrics in the primary modelCIF instead of as an associated file.')
+    parser.add_argument('--ptm',     required=True, help='*_ptm.tsv from extract_metrics.py.')
+    parser.add_argument('--iptm',    required=True, help='*_iptm.tsv from extract_metrics.py.')
     parser.add_argument('--name',    required=True)
     parser.add_argument('--prog',         required=True)
+    parser.add_argument('--msa_tool',     default=None, help='MSA search tool used (e.g. jackhmmer, hhblits, mmseqs2). Embedded in the CoevolutionMSA protocol step.')
     parser.add_argument('--versions_yml', default=None, help='versions.yml emitted by the upstream run_* module.')
     parser.add_argument('--output',       default=None)
     return parser.parse_args(args)
@@ -49,6 +56,7 @@ def parse_args(args=None):
 # Structure helpers
 # ---------------------------------------------------------------------------
 
+# So proteinfold can handle the structure files from any ${meta.mode} structure prediction module
 def _parse_structure(struct_file):
     """Parse a PDB or mmCIF file with BioPython and return the structure."""
     ext = os.path.splitext(struct_file)[1].lower()
@@ -57,7 +65,9 @@ def _parse_structure(struct_file):
     elif ext == '.pdb':
         parser = PDB.PDBParser(QUIET=True)
     else:
-        raise ValueError(f'Unsupported structure format: {ext!r}')
+        raise ValueError(
+            f"Unsupported structure format: {ext} for file {struct_file}"
+            "Expected .pdb, .cif, or .mmcif")
     return parser.get_structure('model', struct_file)
 
 
@@ -75,13 +85,6 @@ def _read_sw_version(versions_yml, prog):
     """
     Extract the version string for *prog* from a Nextflow versions.yml.
 
-    The file has the format::
-
-        "PROCESS:NAME":
-            alphafold2: abc123
-            python: 3.11.0
-
-    Returns None if the file is absent or the key is not found.
     """
     if versions_yml is None or not os.path.exists(versions_yml):
         return None
@@ -92,6 +95,29 @@ def _read_sw_version(versions_yml, prog):
     # The single top-level key is the process name; we don't care what it is.
     process_versions = next(iter(data.values()), {})
     return process_versions.get(prog.lower())
+
+
+def _read_msa_tsv(msa_tsv):
+    """
+    Parse the *_msa.tsv written by extract_metrics.py.
+
+    The file has no header; each row is one homologous sequence encoded as
+    tab-separated integers (0-21 per residue position).
+
+    Returns ``(num_seqs, alignment_length)`` where *num_seqs* is the MSA
+    depth and *alignment_length* is the number of residue columns.
+    """
+    num_seqs = 0
+    alignment_length = 0
+    with open(msa_tsv) as fh:
+        for line in fh:
+            line = line.rstrip('\n')
+            if not line:
+                continue
+            num_seqs += 1
+            if alignment_length == 0:
+                alignment_length = len(line.split('\t'))
+    return num_seqs, alignment_length
 
 
 def _read_plddt_tsv(plddt_tsv):
@@ -113,6 +139,53 @@ def _read_plddt_tsv(plddt_tsv):
     return {col: [float(row[col]) for row in rows] for col in rank_cols}
 
 
+def _read_ranked_score_tsv(tsv_file):
+    scores = {}
+    with open(tsv_file) as fh:
+        for row in csv.reader(fh, delimiter='\t'):
+            if len(row) < 2:
+                raise ValueError(f"Malformed row in {tsv_file}: {row!r}")
+            rank, value = row[0].strip(), row[1].strip()
+            if not rank or not value:
+                raise ValueError(f"Empty rank or value in {tsv_file}: {row!r}")
+            if not rank.startswith('rank_'):
+                try:
+                    rank = f"rank_{int(rank)}"
+                except ValueError:
+                    continue
+            try:
+                scores[rank] = float(value)
+            except ValueError:
+                continue
+    return scores
+
+
+def _read_pae_tsv(pae_tsv):
+    matrix = []
+    with open(pae_tsv) as fh:
+        for row in csv.reader(fh, delimiter='\t'):
+            if not row:
+                continue
+            matrix.append([float(v) for v in row])
+
+    if not matrix:
+        raise ValueError(f"Empty PAE file: {pae_tsv}")
+
+    ncols = len(matrix[0])
+    if ncols == 0 or any(len(r) != ncols for r in matrix):
+        raise ValueError(f"Non-rectangular PAE matrix in {pae_tsv}")
+
+    return matrix
+
+
+def _read_ptm_tsv(ptm_tsv):
+    return _read_ranked_score_tsv(ptm_tsv)
+
+
+def _read_iptm_tsv(iptm_tsv):
+    return _read_ranked_score_tsv(iptm_tsv)
+
+
 # ---------------------------------------------------------------------------
 # modelcif Model subclass
 # ---------------------------------------------------------------------------
@@ -120,11 +193,17 @@ def _read_plddt_tsv(plddt_tsv):
 class _StructureModel(modelcif.model.AbInitioModel):
     """Wrap a BioPython structure as a modelCIF AbInitioModel."""
 
+    # While AlphaFold does use templates and MSAs for homology, the deep learning methods are a different approach and *can* be run template and MSA-free
+    # I think "ab initio" is still the best fit for the modelCIF class features, and wider support for various EvoFormer base models
+    # I was planning to capture MSA, DB, and template in the protocol steps --helped by nextflow-- rather than as an inseparable model attribute.
+    # See (to be implemented later) .protoctol.TemplateSearch() and .protocol.CoevolutionMSA() in the modelCIF spec
+
     def __init__(self, assembly, asym_map, biopython_structure, **kwargs):
         super().__init__(assembly=assembly, **kwargs)
         self._biopy_struct = biopython_structure
         self._asym_map = asym_map  # chain_id -> modelcif.AsymUnit
 
+    # By defining the get_atoms() generator the modelcif library will populate model.atoms cleanly from BioPython structure data
     def get_atoms(self):
         bp_model = next(self._biopy_struct.get_models())
         for chain in bp_model:
@@ -137,6 +216,7 @@ class _StructureModel(modelcif.model.AbInitioModel):
                     continue
                 for atom in res.get_atoms():
                     elem = (atom.element or atom.name[0]).strip().capitalize()
+                    # Remember this is basically BioPython PDB .atom() data -> modelcif.model.Atom, so we have to convert types and rename some fields.
                     yield modelcif.model.Atom(
                         asym_unit=asym,
                         seq_id=seq_id,
@@ -156,9 +236,21 @@ class _StructureModel(modelcif.model.AbInitioModel):
 # Piece together the modelCIF system from the structure and pLDDT data
 # ---------------------------------------------------------------------------
 
-def build_modelcif(struct_files, plddt_file, name, prog, sw_version=None):
+def build_modelcif(
+    struct_files,
+    plddt_file,
+    msa_file,
+    pae_file,
+    ptm_file,
+    iptm_file,
+    name,
+    prog,
+    sw_version=None,
+    msa_tool=None,
+    pae_embed=False,
+):
     """
-    Build a modelcif.System from ranked structure files and a pLDDT TSV.
+    Build a modelcif.System from ranked structure files and QA metric .tsv files.
 
     Parameters
     ----------
@@ -167,12 +259,25 @@ def build_modelcif(struct_files, plddt_file, name, prog, sw_version=None):
         Each file becomes a separate model in the output ModelGroup.
     plddt_file : str
         Path to *_plddt.tsv from extract_metrics.py.
+    msa_file : str
+        Path to *_msa.tsv from extract_metrics.py.
+    pae_file : str
+        Path to *_pae.tsv from extract_metrics.py.
+    ptm_file : str
+        Path to *_ptm.tsv from extract_metrics.py.
+    iptm_file : str
+        Path to *_iptm.tsv from extract_metrics.py.
     name : str
         Sample / sequence identifier used in titles and file naming.
     prog : str
         Prediction program key (see _SOFTWARE_INFO).
     sw_version : str, optional
         Version string parsed from the upstream versions.yml.
+    msa_tool : str, optional
+        MSA search tool name (e.g. ``'jackhmmer'``, ``'hhblits'``, ``'mmseqs2'``).
+        Embedded in the CoevolutionMSA protocol step name.
+    pae_embed : bool, optional
+        If True, embed PAE values as local-pairwise QA metrics.
 
     Returns
     -------
@@ -185,6 +290,10 @@ def build_modelcif(struct_files, plddt_file, name, prog, sw_version=None):
             f'Expected one pLDDT rank per structure: got {len(biopy_structs)} '
             f'structures and {len(plddt_by_rank)} ranks'
         )
+    ptm_by_rank = _read_ptm_tsv(ptm_file)
+    iptm_by_rank = _read_iptm_tsv(iptm_file)
+    pae_matrix = _read_pae_tsv(pae_file) if pae_embed else None
+    msa_num_seqs, msa_length = _read_msa_tsv(msa_file)
 
     system = modelcif.System(title=f'{name} predicted by {prog}')
 
@@ -210,7 +319,7 @@ def build_modelcif(struct_files, plddt_file, name, prog, sw_version=None):
 
     if not asym_map:
         raise ValueError(
-            f'No standard polymer residues found in {struct_files[0]!r}. '
+            f'No standard polymer residues found in {struct_files[0]}. '
             'Cannot build modelCIF system.'
         )
 
@@ -239,6 +348,21 @@ def build_modelcif(struct_files, plddt_file, name, prog, sw_version=None):
         """Predicted lDDT-CA score in [0,100] output by the folding software"""
 
     LocalPLDDT.software = software
+
+    class GlobalPTM(modelcif.qa_metric.Global, modelcif.qa_metric.PTM):
+        """Predicted TM-score for the full model in [0,1]."""
+
+    GlobalPTM.software = software
+
+    class GlobalIpTM(modelcif.qa_metric.Global, modelcif.qa_metric.IpTM):
+        """Predicted interface TM-score for multichain complexes in [0,1]."""
+
+    GlobalIpTM.software = software
+
+    class LocalPairwisePAE(modelcif.qa_metric.LocalPairwise, modelcif.qa_metric.PAE):
+        """Predicted aligned error between residue pairs."""
+
+    LocalPairwisePAE.software = software
 
     # ---- One model per ranked structure ---------------------------------
     # Pair each struct file with the matching rank_N column from the TSV.
@@ -276,21 +400,84 @@ def build_modelcif(struct_files, plddt_file, name, prog, sw_version=None):
                 )
                 seq_id += 1
 
+        if pae_embed:
+            model_residues = []
+            for chain in bp_model_i:
+                asym = asym_map.get(chain.id)
+                if asym is None:
+                    continue
+                seq_id = 1
+                for res in chain.get_residues():
+                    if res.id[0] != ' ':
+                        continue
+                    model_residues.append(asym.residue(seq_id))
+                    seq_id += 1
+
+            num_res = len(model_residues)
+            if len(pae_matrix) != num_res or len(pae_matrix[0]) != num_res:
+                raise ValueError(
+                    f"PAE matrix shape {len(pae_matrix)}x{len(pae_matrix[0])} does not match "
+                    f"the model residue count ({num_res}) for {rank_key}"
+                )
+
+            for i, residue_i in enumerate(model_residues):
+                for j, residue_j in enumerate(model_residues):
+                    model.qa_metrics.append(
+                        LocalPairwisePAE(residue_i, residue_j, pae_matrix[i][j])
+                    )
+
+        if rank_key in ptm_by_rank:
+            model.qa_metrics.append(GlobalPTM(ptm_by_rank[rank_key]))
+        if rank_key in iptm_by_rank:
+            model.qa_metrics.append(GlobalIpTM(iptm_by_rank[rank_key]))
+
         models.append(model)
 
+    # So model.ModelGroup is great here since every single inference from a multi-model method (e.g. AlphaFold)
+    # is captured coordinates-wise as a separate structure to inspect, but the protocol and software metadata is shared across them.
     model_group = modelcif.model.ModelGroup(models, name='All models')
     system.model_groups.append(model_group)
 
     # ---- Protocol -------------------------------------------------------
     protocol = modelcif.protocol.Protocol()
+
+    msa_data = modelcif.data.Data(
+        'Coevolution MSA',
+        details=f'{msa_num_seqs} sequences, {msa_length} columns',
+    )
+    system.data.append(msa_data)
+    msa_step = modelcif.protocol.CoevolutionMSAStep(
+        input_data=modelcif.data.DataGroup(list(seen_seqs.values())),
+        output_data=msa_data,
+        name=msa_tool,
+        software=software,
+    )
+    protocol.steps.append(msa_step)
+
+    # Modeling step: MSA is the input; ranked models are the output.
     step = modelcif.protocol.ModelingStep(
-        input_data=modelcif.data.DataGroup([]),
+        input_data=msa_data,
         output_data=modelcif.data.DataGroup(models),
         name='Structure prediction',
         software=software,
     )
     protocol.steps.append(step)
     system.protocols.append(protocol)
+
+    if not pae_embed:
+        pae_data = modelcif.data.Data(
+            'Predicted aligned error matrix',
+            details='Per-rank PAE matrices exported as TSV from extract_metrics.py',
+        )
+        system.data.append(pae_data)
+        pae_associated = modelcif.associated.QAMetricsFile(
+            path=os.path.basename(pae_file),
+            details='Predicted aligned error (PAE) values for this entry',
+            data=pae_data,
+        )
+        system.repositories.append(
+            modelcif.associated.Repository(url_root=None, files=[pae_associated])
+        )
 
     return system
 
@@ -301,7 +488,21 @@ def main(args=None):
     output_file = args.output or f'{args.name}_{args.prog}.mmcif'
 
     sw_version = _read_sw_version(args.versions_yml, args.prog)
-    system = build_modelcif(args.structs, args.plddt, args.name, args.prog, sw_version)
+    # Nextflow emits the string 'None' when no msa_tool is known; normalise to Python None.
+    msa_tool = None if args.msa_tool in (None, 'None') else args.msa_tool
+    system = build_modelcif(
+        args.structs,
+        args.plddt,
+        args.msa,
+        args.pae,
+        args.ptm,
+        args.iptm,
+        args.name,
+        args.prog,
+        sw_version,
+        msa_tool,
+        args.pae_embed,
+    )
 
     with open(output_file, 'w') as fh:
         modelcif.dumper.write(fh, [system])

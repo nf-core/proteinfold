@@ -1,9 +1,9 @@
 nextflow_process {
-    name "Test minimal ModelCIF assembly"
+    name "Test metrics are inserted properly by ASSEMBLE_MODELCIF process"
     script "../modules/local/assemble_modelcif/main.nf"
     process "ASSEMBLE_MODELCIF"
 
-    test("one structure and pLDDT produce a parseable ModelCIF") {
+    test("dummy inputs produce modelcif with associated PAE") {
         when {
             params {
                 outdir = "$outputDir"
@@ -14,9 +14,14 @@ nextflow_process {
                     .collect { it.split('\t')[0..1].join('\t') }.join('\n') + '\n'
                 """
                 input[0] = [
-                    [id: 'test', model: 'alphafold2'],
+                    [id: 'test', model: 'alphafold2', msa_tool: 'jackhmmer'],
                     file("$projectDir/assets/DUMMY_MODELCIF.mmcif", checkIfExists: true),
-                    file("$outputDir/one_rank_plddt.tsv", checkIfExists: true)
+                    file("$projectDir/assets/DUMMY_MSA.tsv", checkIfExists: true),
+                    file("$outputDir/one_rank_plddt.tsv", checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_PAE.tsv", checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_PTM.tsv", checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_IPTM.tsv", checkIfExists: true),
+                    file("$projectDir/assets/NO_FILE", checkIfExists: true)
                 ]
                 """
             }
@@ -24,8 +29,39 @@ nextflow_process {
         then {
             assert process.success
             def outputFile = path(process.out.modelcif[0][1])
-            assert outputFile.text.contains('_ma_model_list')
+            assert outputFile.text.contains('_ma_qa_metric')
             assert outputFile.text.contains('_ma_protocol_step')
+            assert path(process.out.versions[0]).getFileName().toString() == 'versions.yml'
+        }
+    }
+
+    test("dummy inputs produce modelcif with embedded PAE") {
+        config "./assemble_modelcif_embed.config"
+
+        when {
+            process {
+                def plddt = new File(outputDir, 'one_rank_plddt.tsv')
+                plddt.text = new File(projectDir, 'assets/DUMMY_PLDDT.tsv').readLines()
+                    .collect { it.split('\t')[0..1].join('\t') }.join('\n') + '\n'
+                """
+                input[0] = [
+                    [id: 'test_embed', model: 'alphafold2', msa_tool: 'jackhmmer'],
+                    file("$projectDir/assets/DUMMY_MODELCIF.mmcif", checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_MSA.tsv", checkIfExists: true),
+                    file("$outputDir/one_rank_plddt.tsv", checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_PAE.tsv", checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_PTM.tsv", checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_IPTM.tsv", checkIfExists: true),
+                    file("$projectDir/assets/NO_FILE", checkIfExists: true)
+                ]
+                """
+            }
+        }
+        then {
+            assert process.success
+            def outputFile = path(process.out.modelcif[0][1])
+            assert outputFile.text.contains('_ma_qa_metric_local_pairwise')
+            assert !outputFile.text.contains('_ma_entry_associated_files')
             assert path(process.out.versions[0]).getFileName().toString() == 'versions.yml'
         }
     }
@@ -35,9 +71,14 @@ nextflow_process {
             process {
                 """
                 input[0] = [
-                    [id: 'test', model: 'alphafold2'],
+                    [id: 'test', model: 'alphafold2', msa_tool: 'jackhmmer'],
                     file("$projectDir/assets/DUMMY_MODELCIF.mmcif", checkIfExists: true),
-                    file("$projectDir/assets/DUMMY_PLDDT.tsv", checkIfExists: true)
+                    file("$projectDir/assets/DUMMY_MSA.tsv", checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_PLDDT.tsv", checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_PAE.tsv", checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_PTM.tsv", checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_IPTM.tsv", checkIfExists: true),
+                    file("$projectDir/assets/NO_FILE", checkIfExists: true)
                 ]
                 """
             }
