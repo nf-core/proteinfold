@@ -1,0 +1,29 @@
+nextflow_process {
+    name "Test minimal ModelCIF assembly"
+    script "../modules/local/assemble_modelcif/main.nf"
+    process "ASSEMBLE_MODELCIF"
+
+    test("one structure and pLDDT produce a parseable ModelCIF") {
+        when {
+            params {
+                outdir = "$outputDir"
+            }
+            process {
+                """
+                input[0] = [
+                    [id: 'test', model: 'alphafold2'],
+                    file("$projectDir/assets/DUMMY_MODELCIF.mmcif", checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_PLDDT.tsv", checkIfExists: true)
+                ]
+                """
+            }
+        }
+        then {
+            assert process.success
+            def outputFile = path(process.out.modelcif[0][1])
+            assert outputFile.text.contains('_ma_model_list')
+            assert outputFile.text.contains('_ma_protocol_step')
+            assert path(process.out.versions[0]).getFileName().toString() == 'versions.yml'
+        }
+    }
+}
