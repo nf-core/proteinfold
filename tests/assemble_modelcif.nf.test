@@ -28,7 +28,8 @@ nextflow_process {
                     [file("$outputDir/rank_0_pae.tsv"), file("$outputDir/rank_1_pae.tsv")],
                     file("$outputDir/ptm.tsv", checkIfExists: true),
                     file("$outputDir/iptm.tsv", checkIfExists: true),
-                    file("$projectDir/assets/NO_FILE", checkIfExists: true)
+                    file("$projectDir/assets/DUMMY_SOFTWARE_VERSIONS.yml", checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_SOFTWARE_DETAILS.yml", checkIfExists: true)
                 ]
                 """
             }
@@ -45,6 +46,7 @@ nextflow_process {
             }
             assert process.out.pae[0].size() == 2
             assert path(process.out.versions[0]).getFileName().toString() == 'versions.yml'
+            assert outputFile.text.contains('nf-core/proteinfold')
         }
     }
 
@@ -73,7 +75,8 @@ nextflow_process {
                     [file("$outputDir/rank_0_pae.tsv"), file("$outputDir/rank_1_pae.tsv")],
                     file("$outputDir/ptm.tsv", checkIfExists: true),
                     file("$outputDir/iptm.tsv", checkIfExists: true),
-                    file("$projectDir/assets/NO_FILE", checkIfExists: true)
+                    file("$projectDir/assets/DUMMY_SOFTWARE_VERSIONS.yml", checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_SOFTWARE_DETAILS.yml", checkIfExists: true)
                 ]
                 """
             }
@@ -100,7 +103,8 @@ nextflow_process {
                     file("$projectDir/assets/DUMMY_PAE.tsv", checkIfExists: true),
                     file("$projectDir/assets/DUMMY_PTM.tsv", checkIfExists: true),
                     file("$projectDir/assets/DUMMY_IPTM.tsv", checkIfExists: true),
-                    file("$projectDir/assets/NO_FILE", checkIfExists: true)
+                    file("$projectDir/assets/DUMMY_SOFTWARE_VERSIONS.yml", checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_SOFTWARE_DETAILS.yml", checkIfExists: true)
                 ]
                 """
             }

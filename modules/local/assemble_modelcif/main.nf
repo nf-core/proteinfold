@@ -6,7 +6,7 @@ process ASSEMBLE_MODELCIF {
     container 'ghcr.io/keiran-rowell-unsw/proteinfold-modelcif:1.7'
 
     input:
-    tuple val(meta), path(structs), path(msa), path(plddt), path(pae), path(ptm), path(iptm), path(versions_yml, stageAs: 'versions_input/versions.yml')
+    tuple val(meta), path(structs), path(msa), path(plddt), path(pae), path(ptm), path(iptm), path(versions_yml, stageAs: 'versions_input/versions.yml'), path(software_details)
 
     output:
     tuple val(meta), path("*.mmcif"), emit: modelcif
@@ -18,7 +18,7 @@ process ASSEMBLE_MODELCIF {
     """
     mkdir pae
     cp ${pae} pae/
-    populate_modelcif.py --structs ${structs} --msa ${msa} --plddt ${plddt} --pae pae/*.tsv --ptm ${ptm} --iptm ${iptm} --name ${meta.id} --prog ${meta.model} --versions_yml ${versions_yml} --msa_tool ${meta.msa_tool ?: 'None'} $args
+    populate_modelcif.py --structs ${structs} --msa ${msa} --plddt ${plddt} --pae pae/*.tsv --ptm ${ptm} --iptm ${iptm} --name ${meta.id} --prog ${meta.model} --versions_yml ${versions_yml} --msa_tool ${meta.msa_tool ?: 'None'} --software_details ${software_details} $args
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
