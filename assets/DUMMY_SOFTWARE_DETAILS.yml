@@ -48,8 +48,8 @@ programs:
     protocol:
       template_search_step:
         name: template search
-        details: PDB template identification from the sequence database
-        step_details: Structural templates retrieved by sequence similarity
+        details: PDB template identification from the structure database
+        step_details: Structural templates retrieval
         use_main_software: false
         use_execution_software: false
         template_search_software:
@@ -62,12 +62,12 @@ programs:
     protocol:
       template_search_step:
         name: template search
-        details: PDB and AFDB templates from the AlphaFold3 data pipeline
-        step_details: Structural templates retrieved by sequence similarity
+        details: PDB template identification from the structure database
+        step_details: Structural templates retrieval
         use_main_software: false
         use_execution_software: false
         template_search_software:
-          name: mmseqs2
+          name: hmmsearch
 
   boltz:
     modeling_software:
