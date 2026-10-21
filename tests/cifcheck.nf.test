@@ -43,12 +43,12 @@ nextflow_process {
         }
     }
 
-    test("PDBx fixture validates with both ModelArchive and PDBx dictionaries") {
+    test("PDBx fixture validates with the PDBx dictionary") {
 
         when {
             process {
                 """
-                input[0] = [ [ id: 'pdbx' ], file("$projectDir/assets/DUMMY_PDBX.mmcif", checkIfExists: true) ]
+                input[0] = [ [ id: 'pdbx', validation_dictionary: 'PDBx' ], file("$projectDir/assets/DUMMY_PDBX.mmcif", checkIfExists: true) ]
                 """
             }
         }
