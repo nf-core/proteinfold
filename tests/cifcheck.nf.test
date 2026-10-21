@@ -43,6 +43,21 @@ nextflow_process {
         }
     }
 
+    test("PDBx fixture validates with both ModelArchive and PDBx dictionaries") {
+
+        when {
+            process {
+                """
+                input[0] = [ [ id: 'pdbx' ], file("$projectDir/assets/DUMMY_PDBX.mmcif", checkIfExists: true) ]
+                """
+            }
+        }
+
+        then {
+            assert process.success
+        }
+    }
+
     test("rejects invalid mmcif") {
 
         when {
