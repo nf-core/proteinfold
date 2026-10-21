@@ -4,6 +4,7 @@
 import argparse
 import csv
 import os
+import re
 import sys
 import yaml
 
@@ -40,7 +41,7 @@ def parse_args(args=None):
                         help='Input structure files (PDB or mmCIF), one per rank in rank order.')
     parser.add_argument('--msa',     required=True, help='*_msa.tsv from extract_metrics.py.')
     parser.add_argument('--plddt',   required=True, help='*_plddt.tsv from extract_metrics.py.')
-    parser.add_argument('--pae',     required=True, help='*_pae.tsv from extract_metrics.py.')
+    parser.add_argument('--pae',     required=True, nargs='+', help='Per-rank *_<rank>_pae.tsv files from extract_metrics.py, one per rank.')
     parser.add_argument('--pae-embed', action='store_true', help='Embed PAE as local-pairwise QA metrics in the primary modelCIF instead of as an associated file.')
     parser.add_argument('--ptm',     required=True, help='*_ptm.tsv from extract_metrics.py.')
     parser.add_argument('--iptm',    required=True, help='*_iptm.tsv from extract_metrics.py.')
@@ -143,6 +144,8 @@ def _read_ranked_score_tsv(tsv_file):
     scores = {}
     with open(tsv_file) as fh:
         for row in csv.reader(fh, delimiter='\t'):
+            if not row or (len(row) == 1 and not row[0].strip()):
+                continue
             if len(row) < 2:
                 raise ValueError(f"Malformed row in {tsv_file}: {row!r}")
             rank, value = row[0].strip(), row[1].strip()
@@ -152,12 +155,69 @@ def _read_ranked_score_tsv(tsv_file):
                 try:
                     rank = f"rank_{int(rank)}"
                 except ValueError:
-                    continue
+                    raise ValueError(f"Unrecognised rank label in {tsv_file}: {row!r}")
             try:
                 scores[rank] = float(value)
             except ValueError:
-                continue
+                raise ValueError(f"Malformed score in {tsv_file}: {row!r}")
     return scores
+
+
+def _rank_from_pae_filename(pae_file):
+    match = re.search(r'(\d+)_pae\.tsv$', os.path.basename(pae_file))
+    return int(match.group(1)) if match else None
+
+
+def _map_pae_files_to_ranks(pae_files, num_structs):
+    """Map PAE files to model ranks by filename, rejecting gaps, duplicates
+    and unparseable names.  A single arbitrarily-named file (e.g. DUMMY_PAE.tsv)
+    is accepted when there is exactly one model."""
+    pae_by_rank = {}
+    for pae_file in pae_files:
+        rank = _rank_from_pae_filename(pae_file)
+        if rank is None:
+            if num_structs == 1 and len(pae_files) == 1:
+                rank = 0
+            else:
+                raise ValueError(
+                    f"Cannot infer model rank from PAE filename: {pae_file}; "
+                    "expected '<name>_<rank>_pae.tsv'"
+                )
+        if rank in pae_by_rank:
+            raise ValueError(
+                f"Multiple PAE files map to rank {rank}: "
+                f"{os.path.basename(pae_by_rank[rank])} and {os.path.basename(pae_file)}"
+            )
+        pae_by_rank[rank] = pae_file
+    expected = set(range(num_structs))
+    got = set(pae_by_rank)
+    if got != expected:
+        raise ValueError(
+            f"PAE ranks {sorted(got)} do not match model ranks {sorted(expected)}; "
+            f"missing: {sorted(expected - got)}, unexpected: {sorted(got - expected)}"
+        )
+    return pae_by_rank
+
+
+def _check_ranked_scores(scores, struct_ranks, label, tsv_file):
+    """Explicit missing-scores policy: an empty file means the metric is
+    absent for every rank (e.g. monomer runs without ipTM); a partially
+    populated file is a rank mismatch and is an error."""
+    if not scores:
+        print(
+            f'No {label} scores found in {tsv_file}; '
+            f'omitting {label} QA metrics from all models',
+            file=sys.stderr,
+        )
+        return False
+    missing = set(struct_ranks) - set(scores)
+    extra = set(scores) - set(struct_ranks)
+    if missing or extra:
+        raise ValueError(
+            f"{label} ranks in {tsv_file} do not match structure ranks; "
+            f"missing: {sorted(missing)}, unexpected: {sorted(extra)}"
+        )
+    return True
 
 
 def _read_pae_tsv(pae_tsv):
@@ -240,7 +300,7 @@ def build_modelcif(
     struct_files,
     plddt_file,
     msa_file,
-    pae_file,
+    pae_files,
     ptm_file,
     iptm_file,
     name,
@@ -261,8 +321,8 @@ def build_modelcif(
         Path to *_plddt.tsv from extract_metrics.py.
     msa_file : str
         Path to *_msa.tsv from extract_metrics.py.
-    pae_file : str
-        Path to *_pae.tsv from extract_metrics.py.
+    pae_files : list[str]
+        Paths to per-rank *_<rank>_pae.tsv files from extract_metrics.py.
     ptm_file : str
         Path to *_ptm.tsv from extract_metrics.py.
     iptm_file : str
@@ -290,9 +350,16 @@ def build_modelcif(
             f'Expected one pLDDT rank per structure: got {len(biopy_structs)} '
             f'structures and {len(plddt_by_rank)} ranks'
         )
+    struct_ranks = list(plddt_by_rank.keys())
+    pae_by_rank = _map_pae_files_to_ranks(pae_files, len(biopy_structs))
+    pae_matrices = (
+        {rank: _read_pae_tsv(f) for rank, f in pae_by_rank.items()}
+        if pae_embed else None
+    )
     ptm_by_rank = _read_ptm_tsv(ptm_file)
     iptm_by_rank = _read_iptm_tsv(iptm_file)
-    pae_matrix = _read_pae_tsv(pae_file) if pae_embed else None
+    has_ptm = _check_ranked_scores(ptm_by_rank, struct_ranks, 'pTM', ptm_file)
+    has_iptm = _check_ranked_scores(iptm_by_rank, struct_ranks, 'ipTM', iptm_file)
     msa_num_seqs, msa_length = _read_msa_tsv(msa_file)
 
     system = modelcif.System(title=f'{name} predicted by {prog}')
@@ -414,6 +481,7 @@ def build_modelcif(
                     seq_id += 1
 
             num_res = len(model_residues)
+            pae_matrix = pae_matrices[int(rank_key.split('_', 1)[1])]
             if len(pae_matrix) != num_res or len(pae_matrix[0]) != num_res:
                 raise ValueError(
                     f"PAE matrix shape {len(pae_matrix)}x{len(pae_matrix[0])} does not match "
@@ -426,9 +494,9 @@ def build_modelcif(
                         LocalPairwisePAE(residue_i, residue_j, pae_matrix[i][j])
                     )
 
-        if rank_key in ptm_by_rank:
+        if has_ptm:
             model.qa_metrics.append(GlobalPTM(ptm_by_rank[rank_key]))
-        if rank_key in iptm_by_rank:
+        if has_iptm:
             model.qa_metrics.append(GlobalIpTM(iptm_by_rank[rank_key]))
 
         models.append(model)
@@ -465,18 +533,22 @@ def build_modelcif(
     system.protocols.append(protocol)
 
     if not pae_embed:
-        pae_data = modelcif.data.Data(
-            'Predicted aligned error matrix',
-            details='Per-rank PAE matrices exported as TSV from extract_metrics.py',
-        )
-        system.data.append(pae_data)
-        pae_associated = modelcif.associated.QAMetricsFile(
-            path=os.path.basename(pae_file),
-            details='Predicted aligned error (PAE) values for this entry',
-            data=pae_data,
-        )
+        associated_files = []
+        for rank in sorted(pae_by_rank):
+            pae_data = modelcif.data.Data(
+                f'Predicted aligned error matrix (rank_{rank})',
+                details='Predicted aligned error (PAE) values for this rank, exported as TSV by extract_metrics.py',
+            )
+            system.data.append(pae_data)
+            associated_files.append(
+                modelcif.associated.File(
+                    path=os.path.join('pae', os.path.basename(pae_by_rank[rank])),
+                    details=f'Predicted aligned error (PAE) matrix for rank_{rank}',
+                    data=pae_data,
+                )
+            )
         system.repositories.append(
-            modelcif.associated.Repository(url_root=None, files=[pae_associated])
+            modelcif.associated.Repository(url_root=None, files=associated_files)
         )
 
     return system

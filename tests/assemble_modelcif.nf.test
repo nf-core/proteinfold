@@ -9,18 +9,25 @@ nextflow_process {
                 outdir = "$outputDir"
             }
             process {
-                def plddt = new File(outputDir, 'one_rank_plddt.tsv')
+                (0..1).each { rank ->
+                    new File(outputDir, "rank_${rank}.mmcif").text = new File(projectDir, 'assets/DUMMY_MODELCIF.mmcif').text
+                    new File(outputDir, "rank_${rank}_pae.tsv").text = new File(projectDir, 'assets/DUMMY_PAE.tsv').text
+                }
+                def plddt = new File(outputDir, 'two_rank_plddt.tsv')
                 plddt.text = new File(projectDir, 'assets/DUMMY_PLDDT.tsv').readLines()
-                    .collect { it.split('\t')[0..1].join('\t') }.join('\n') + '\n'
+                    .collect { it.split('\t')[0..2].join('\t') }.join('\n') + '\n'
+                def scores = 'rank_0\t0.5\nrank_1\t0.6\n'
+                new File(outputDir, 'ptm.tsv').text = scores
+                new File(outputDir, 'iptm.tsv').text = scores
                 """
                 input[0] = [
                     [id: 'test', model: 'alphafold2', msa_tool: 'jackhmmer'],
-                    file("$projectDir/assets/DUMMY_MODELCIF.mmcif", checkIfExists: true),
+                    [file("$outputDir/rank_0.mmcif"), file("$outputDir/rank_1.mmcif")],
                     file("$projectDir/assets/DUMMY_MSA.tsv", checkIfExists: true),
-                    file("$outputDir/one_rank_plddt.tsv", checkIfExists: true),
-                    file("$projectDir/assets/DUMMY_PAE.tsv", checkIfExists: true),
-                    file("$projectDir/assets/DUMMY_PTM.tsv", checkIfExists: true),
-                    file("$projectDir/assets/DUMMY_IPTM.tsv", checkIfExists: true),
+                    file("$outputDir/two_rank_plddt.tsv", checkIfExists: true),
+                    [file("$outputDir/rank_0_pae.tsv"), file("$outputDir/rank_1_pae.tsv")],
+                    file("$outputDir/ptm.tsv", checkIfExists: true),
+                    file("$outputDir/iptm.tsv", checkIfExists: true),
                     file("$projectDir/assets/NO_FILE", checkIfExists: true)
                 ]
                 """
@@ -31,6 +38,12 @@ nextflow_process {
             def outputFile = path(process.out.modelcif[0][1])
             assert outputFile.text.contains('_ma_qa_metric')
             assert outputFile.text.contains('_ma_protocol_step')
+            (0..1).each { rank ->
+                def relativePath = "pae/rank_${rank}_pae.tsv"
+                assert outputFile.text.contains("model ${relativePath} file other other")
+                assert java.nio.file.Files.isRegularFile(outputFile.parent.resolve(relativePath))
+            }
+            assert process.out.pae[0].size() == 2
             assert path(process.out.versions[0]).getFileName().toString() == 'versions.yml'
         }
     }
@@ -40,18 +53,26 @@ nextflow_process {
 
         when {
             process {
-                def plddt = new File(outputDir, 'one_rank_plddt.tsv')
+                (0..1).each { rank ->
+                    new File(outputDir, "rank_${rank}.mmcif").text = new File(projectDir, 'assets/DUMMY_MODELCIF.mmcif').text
+                    new File(outputDir, "rank_${rank}_pae.tsv").text = new File(projectDir, 'assets/DUMMY_PAE.tsv').text
+                        .replaceFirst('0\\.2601', rank == 0 ? '0.2601' : '1.2601')
+                }
+                def plddt = new File(outputDir, 'two_rank_plddt.tsv')
                 plddt.text = new File(projectDir, 'assets/DUMMY_PLDDT.tsv').readLines()
-                    .collect { it.split('\t')[0..1].join('\t') }.join('\n') + '\n'
+                    .collect { it.split('\t')[0..2].join('\t') }.join('\n') + '\n'
+                def scores = 'rank_0\t0.5\nrank_1\t0.6\n'
+                new File(outputDir, 'ptm.tsv').text = scores
+                new File(outputDir, 'iptm.tsv').text = scores
                 """
                 input[0] = [
                     [id: 'test_embed', model: 'alphafold2', msa_tool: 'jackhmmer'],
-                    file("$projectDir/assets/DUMMY_MODELCIF.mmcif", checkIfExists: true),
+                    [file("$outputDir/rank_0.mmcif"), file("$outputDir/rank_1.mmcif")],
                     file("$projectDir/assets/DUMMY_MSA.tsv", checkIfExists: true),
-                    file("$outputDir/one_rank_plddt.tsv", checkIfExists: true),
-                    file("$projectDir/assets/DUMMY_PAE.tsv", checkIfExists: true),
-                    file("$projectDir/assets/DUMMY_PTM.tsv", checkIfExists: true),
-                    file("$projectDir/assets/DUMMY_IPTM.tsv", checkIfExists: true),
+                    file("$outputDir/two_rank_plddt.tsv", checkIfExists: true),
+                    [file("$outputDir/rank_0_pae.tsv"), file("$outputDir/rank_1_pae.tsv")],
+                    file("$outputDir/ptm.tsv", checkIfExists: true),
+                    file("$outputDir/iptm.tsv", checkIfExists: true),
                     file("$projectDir/assets/NO_FILE", checkIfExists: true)
                 ]
                 """
@@ -61,6 +82,7 @@ nextflow_process {
             assert process.success
             def outputFile = path(process.out.modelcif[0][1])
             assert outputFile.text.contains('_ma_qa_metric_local_pairwise')
+            assert outputFile.text.contains('1.260')
             assert !outputFile.text.contains('_ma_entry_associated_files')
             assert path(process.out.versions[0]).getFileName().toString() == 'versions.yml'
         }
