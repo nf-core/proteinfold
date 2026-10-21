@@ -180,6 +180,11 @@ def build_modelcif(struct_files, plddt_file, name, prog, sw_version=None):
     """
     biopy_structs = [_parse_structure(f) for f in struct_files]
     plddt_by_rank = _read_plddt_tsv(plddt_file)
+    if len(biopy_structs) != len(plddt_by_rank):
+        raise ValueError(
+            f'Expected one pLDDT rank per structure: got {len(biopy_structs)} '
+            f'structures and {len(plddt_by_rank)} ranks'
+        )
 
     system = modelcif.System(title=f'{name} predicted by {prog}')
 
@@ -237,12 +242,16 @@ def build_modelcif(struct_files, plddt_file, name, prog, sw_version=None):
 
     # ---- One model per ranked structure ---------------------------------
     # Pair each struct file with the matching rank_N column from the TSV.
-    # zip() stops at the shorter of the two, so a mismatch never raises.
     models = []
     for biopy_struct, (rank_key, plddt_values) in zip(
         biopy_structs, plddt_by_rank.items()
     ):
         bp_model_i = next(biopy_struct.get_models())
+        residue_count = sum(
+            1 for chain in bp_model_i for res in chain if res.id[0] == ' '
+        )
+        if len(plddt_values) != residue_count:
+            raise ValueError(f'{rank_key}: expected {residue_count} pLDDT values, got {len(plddt_values)}')
         model = _StructureModel(
             assembly=assembly,
             asym_map=asym_map,

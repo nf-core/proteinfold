@@ -9,11 +9,14 @@ nextflow_process {
                 outdir = "$outputDir"
             }
             process {
+                def plddt = new File(outputDir, 'one_rank_plddt.tsv')
+                plddt.text = new File(projectDir, 'assets/DUMMY_PLDDT.tsv').readLines()
+                    .collect { it.split('\t')[0..1].join('\t') }.join('\n') + '\n'
                 """
                 input[0] = [
                     [id: 'test', model: 'alphafold2'],
                     file("$projectDir/assets/DUMMY_MODELCIF.mmcif", checkIfExists: true),
-                    file("$projectDir/assets/DUMMY_PLDDT.tsv", checkIfExists: true)
+                    file("$outputDir/one_rank_plddt.tsv", checkIfExists: true)
                 ]
                 """
             }
@@ -24,6 +27,23 @@ nextflow_process {
             assert outputFile.text.contains('_ma_model_list')
             assert outputFile.text.contains('_ma_protocol_step')
             assert path(process.out.versions[0]).getFileName().toString() == 'versions.yml'
+        }
+    }
+
+    test("rejects a mismatch between structures and pLDDT ranks") {
+        when {
+            process {
+                """
+                input[0] = [
+                    [id: 'test', model: 'alphafold2'],
+                    file("$projectDir/assets/DUMMY_MODELCIF.mmcif", checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_PLDDT.tsv", checkIfExists: true)
+                ]
+                """
+            }
+        }
+        then {
+            assert process.failed
         }
     }
 }
