@@ -1,0 +1,19 @@
+{
+    "creates deterministic AlphaFold2 features with micro databases": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "T1026"
+                    },
+                    "features.pkl:md5,de7a8555c90b1f4608fc33654fd157cb"
+                ]
+            ]
+        ],
+        "timestamp": "2026-09-22T15:53:46.412527305",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.6"
+        }
+    }
+}

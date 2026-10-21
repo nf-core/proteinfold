@@ -1,0 +1,35 @@
+nextflow_workflow {
+
+    name "Test collectMultiqcMetrics reporting channel"
+    script "subworkflows/local/utils_nfcore_proteinfold_pipeline/tests/collect_multiqc_metrics_probe.nf"
+    workflow "COLLECT_MULTIQC_METRICS_PROBE"
+    tag "pipeline"
+    tag "multiqc"
+    tag "channel_shape"
+
+    test("folds metric emits into one non-empty tuple per prediction mode") {
+
+        when {
+            params {
+                probe_mode = "boltz"
+            }
+        }
+
+        then {
+            def metrics = workflow.out.metrics
+            assert metrics != null: "collectMultiqcMetrics emitted nothing - MULTIQC would receive no input"
+            assert metrics.size() == 1: "expected exactly one tuple for the mode, got ${metrics.size()}"
+
+            def meta = metrics[0][0]
+            def files = metrics[0][1]
+            assert meta == [id: "boltz", model: "boltz"]: "unexpected task meta: ${meta}"
+
+            def names = files.collect { it.toString().tokenize('/').last() }.sort()
+            assert names == [
+                "S1_iptm.tsv", "S1_msa.tsv", "S1_plddt.tsv", "S1_ptm.tsv",
+                "S2_iptm.tsv", "S2_msa.tsv", "S2_plddt.tsv", "S2_ptm.tsv",
+            ], "unexpected metric files: ${names}"
+            assert !names.any { it.endsWith(".png") }, "trailing emit fields must not leak into the MultiQC input"
+        }
+    }
+}

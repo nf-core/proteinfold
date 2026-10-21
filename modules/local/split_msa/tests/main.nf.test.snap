@@ -15,7 +15,11 @@
                     ]
                 ],
                 "1": [
-                    "versions.yml:md5,d68ad4d16c6dbfe3f799e7983057aa64"
+                    [
+                        "SPLIT_MSA",
+                        "python",
+                        "3.14.0"
+                    ]
                 ],
                 "boltz_data": [
                     [
@@ -29,16 +33,20 @@
                         ]
                     ]
                 ],
-                "versions": [
-                    "versions.yml:md5,d68ad4d16c6dbfe3f799e7983057aa64"
+                "versions_python": [
+                    [
+                        "SPLIT_MSA",
+                        "python",
+                        "3.14.0"
+                    ]
                 ]
             }
         ],
+        "timestamp": "2026-09-22T17:03:30.88743186",
         "meta": {
-            "nf-test": "0.9.2",
-            "nextflow": "25.10.4"
-        },
-        "timestamp": "2026-06-07T16:00:25.556454737"
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.6"
+        }
     },
     "splits msa from af3 json with renamed chains using yaml template": {
         "content": [
@@ -57,7 +65,11 @@
                     ]
                 ],
                 "1": [
-                    "versions.yml:md5,d68ad4d16c6dbfe3f799e7983057aa64"
+                    [
+                        "SPLIT_MSA",
+                        "python",
+                        "3.14.0"
+                    ]
                 ],
                 "boltz_data": [
                     [
@@ -72,15 +84,19 @@
                         ]
                     ]
                 ],
-                "versions": [
-                    "versions.yml:md5,d68ad4d16c6dbfe3f799e7983057aa64"
+                "versions_python": [
+                    [
+                        "SPLIT_MSA",
+                        "python",
+                        "3.14.0"
+                    ]
                 ]
             }
         ],
+        "timestamp": "2026-09-22T17:03:41.579716347",
         "meta": {
-            "nf-test": "0.9.2",
-            "nextflow": "25.10.4"
-        },
-        "timestamp": "2026-06-07T16:00:30.862429279"
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.6"
+        }
     }
 }

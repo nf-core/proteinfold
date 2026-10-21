@@ -28,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[#576](https://github.com/nf-core/proteinfold/issues/576)] - Preserve native metric rank numbering and sort rank-derived outputs numerically.
 - [[PR #633](https://github.com/nf-core/proteinfold/pull/633)] - Fix comparison reports with esmfold for multirow samplesheets.
 - [[PR #634](https://github.com/nf-core/proteinfold/pull/634)] - Add support for outputs in cif format.
+- [[#580](https://github.com/nf-core/proteinfold/issues/580)], [[#579](https://github.com/nf-core/proteinfold/issues/579)], [[#584](https://github.com/nf-core/proteinfold/issues/584)], [[#588](https://github.com/nf-core/proteinfold/issues/588)], [[#590](https://github.com/nf-core/proteinfold/issues/590)] - `ASSEMBLE_MODELCIF` (not yet wired into workflows): `populate_modelcif.py` gained `--plddt-scale` (PLDDT/PLDDT01/PLDDTAllAtom/PLDDTAllAtom01), strict `rank_X` validation in pLDDT TSVs, per-model and shared random-seed reporting (`--seed` TSV/int, filename inference), `--container_image` (`task.container`) and per-program model parameters (`uses_templates`, `has_recycling`) plus `--param KEY=VALUE` overrides as modelCIF `SoftwareParameter`s, and an optional `TemplateSearchStep` ahead of the coevolution MSA.
 - [[PR #636](https://github.com/nf-core/proteinfold/pull/636)] - Resolve alphafold2 `ext.args` in closure.
 - [[#365](https://github.com/nf-core/proteinfold/issues/365)] - Run nf-tests with module containers so captured versions match.
 - [[PR #640](https://github.com/nf-core/proteinfold/pull/640)] - Fix ro-crate with correct path to the metro map file.
@@ -37,6 +38,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[PR #644](https://github.com/nf-core/proteinfold/pull/644)] - Update pipeline template to [nf-core/tools 4.0.3](https://github.com/nf-core/tools/releases/tag/4.0.3).
 - [[PR #645](https://github.com/nf-core/proteinfold/pull/645)] - Update image version for alphafold3 modules and `colabfold_batch`.
 - [[PR #647](https://github.com/nf-core/proteinfold/pull/647)] - Fix missing X character in AF3 and Boltz fasta processing.
+- [[PR #51](https://github.com/Australian-Structural-Biology-Computing/proteinfold/pull/51)] - Remove the deprecated AlphaFold2 standard mode; AlphaFold2 now always runs separate MSA generation and prediction steps.
+- [[PR #52](https://github.com/Australian-Structural-Biology-Computing/proteinfold/pull/52)] - Add modular CPU, GPU, and per-mode scientific nf-tests with deterministic fixtures and independently runnable stages.
 
 | Old parameter              | New parameter   |
 | -------------------------- | --------------- |

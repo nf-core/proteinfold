@@ -115,15 +115,25 @@ output:
           description: Predicted aligned error matrices representing pairwise uncertainty
           pattern: "*.npz"
 
+  versions_boltz:
+    - - "${task.process}":
+          type: string
+          description: Name of the executed process
+      - "boltz":
+          type: string
+          description: The tool name
+      - 'pip list | grep -i boltz | awk ''{print $2}'' 2>/dev/null || echo "unknown"':
+          type: eval
+          description: The expression to obtain the version of Boltz
+
+topics:
   versions:
     - - "${task.process}":
           type: string
           description: Name of the executed process
       - "boltz":
           type: string
-          description: Version of Boltz used
-
-authors:
-  - "@sblaizerwize"
-maintainers:
-  - "@JoseEspinosa"
+          description: The tool name
+      - 'pip list | grep -i boltz | awk ''{print $2}'' 2>/dev/null || echo "unknown"':
+          type: eval
+          description: The expression to obtain the version of Boltz

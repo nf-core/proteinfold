@@ -12,7 +12,7 @@ process BOLTZ_FASTA {
 
     output:
     tuple val(meta), path ("*.yaml"), emit: boltz_yaml
-    path "versions.yml"                                      , emit: versions
+    tuple val("${task.process}"), val('python'), eval("python3 --version | sed 's/Python //g'"), emit: versions_python, topic: versions
 
     when:
     task.ext.when == null || task.ext.when
@@ -21,20 +21,10 @@ process BOLTZ_FASTA {
     def args = task.ext.args ?: ''
     """
     fasta_to_boltz.py ${fasta} ${meta.id} --yaml_out ${meta.id}.yaml
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        python: \$(python3 --version | sed 's/Python //g')
-    END_VERSIONS
     """
 
     stub:
     """
     touch "${meta.id}.yaml"
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        python: \$(python3 --version | sed 's/Python //g')
-    END_VERSIONS
     """
 }

@@ -26,7 +26,10 @@ process RUN_ALPHAFOLD2_MSA {
     output:
     path ("raw/**")                           , emit: raw
     tuple val(meta), path ("raw/features.pkl"), emit: features
-    path "versions.yml"                       , emit: versions
+    tuple val("${task.process}"), val('python'), eval("python3 --version 2>/dev/null | sed 's/Python //g' || echo \"unknown\""), emit: versions_python, topic: versions
+    tuple val("${task.process}"), val('alphafold2'), eval("cd /app/alphafold && git rev-parse HEAD 2>/dev/null || echo \"unknown\""), emit: versions_alphafold2, topic: versions
+    tuple val("${task.process}"), val('numpy'), eval("python3 -c \"import numpy; print(numpy.__version__)\" 2>/dev/null || echo \"unknown\""), emit: versions_numpy, topic: versions
+    tuple val("${task.process}"), val('biopython'), eval("python3 -c \"import Bio; print(Bio.__version__)\" 2>/dev/null || echo \"unknown\""), emit: versions_biopython, topic: versions
 
     when:
     task.ext.when == null || task.ext.when
@@ -65,27 +68,11 @@ process RUN_ALPHAFOLD2_MSA {
 
     # Can't use fasta.baseName to batch outputs in publishDir
     mv "${fasta.baseName}" raw/
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        python: \$(python3 --version 2>/dev/null | sed 's/Python //g' || echo "unknown")
-        alphafold2: \$(cd /app/alphafold && git rev-parse HEAD 2>/dev/null || echo "unknown")
-        numpy: \$(python3 -c "import numpy; print(numpy.__version__)" 2>/dev/null || echo "unknown")
-        biopython: \$(python3 -c "import Bio; print(Bio.__version__)" 2>/dev/null || echo "unknown")
-    END_VERSIONS
     """
 
     stub:
     """
     mkdir ./raw
     touch ./raw/features.pkl
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        python: \$(python3 --version | sed 's/Python //g')
-        alphafold2: \$(cd /app/alphafold && git rev-parse HEAD 2>/dev/null || echo "unknown")
-        numpy: \$(python3 -c "import numpy; print(numpy.__version__)" 2>/dev/null || echo "unknown")
-        biopython: \$(python3 -c "import Bio; print(Bio.__version__)" 2>/dev/null || echo "unknown")
-    END_VERSIONS
     """
 }

@@ -67,8 +67,20 @@ If you have added new functionality, ensure you update the test assertions in th
 Update the snapshots with the following command:
 
 ```bash
-nf-test test --tag test --profile +docker --verbose --update-snapshots
+nf-test test --tag test --profile +docker --verbose --update-snapshot
 ```
+
+### ProteinFold test data
+
+The CPU integration tests use the shared ProteinFold microDBs from S3 by default. Developers can use a local mirror instead:
+
+```bash
+export PROTEINFOLD_TEST_DB=/path/to/proteinfold_microdbs
+```
+
+The mirror must have the same directory layout as `s3://proteinfold-dataset/test-data/mini_dbs`.
+
+GPU tests use validated CPU outputs from the ProteinFold branch of `test-datasets`. These inputs can be overridden locally with `PROTEINFOLD_AF2_FEATURES` and `PROTEINFOLD_AF3_DATA_JSON`. AlphaFold3 model parameters can be provided with `PROTEINFOLD_AF3_PARAMS`.
 
 When you create a pull request with changes, GitHub Actions will run automatic tests.
 Pull requests are typically reviewed when these tests are passing.

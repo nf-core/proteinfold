@@ -1,0 +1,48 @@
+name: "split_msa"
+description: Split multiple sequence alignment data into Boltz input files.
+tools: []
+input:
+  - - meta:
+        type: map
+        description: Groovy Map containing sample information.
+    - msa:
+        type: file
+        description: Multiple sequence alignment input.
+    - template_yaml:
+        type: file
+        description: Boltz template YAML input.
+        pattern: "*.yaml"
+output:
+  boltz_data:
+    - - meta:
+          type: map
+          description: Groovy Map containing sample information.
+      - "output_msa/*.yaml":
+          type: file
+          description: Split Boltz YAML files.
+          pattern: "output_msa/*.yaml"
+      - "output_msa/*.csv":
+          type: file
+          description: Split alignment CSV files.
+          pattern: "output_msa/*.csv"
+  versions_python:
+    - - "${task.process}":
+          type: string
+          description: The process the versions were collected from.
+      - python:
+          type: string
+          description: The tool name.
+      - "python3 --version | sed 's/Python //g'":
+          type: eval
+          description: The expression to obtain the version of the tool.
+topics:
+  versions:
+    - - "${task.process}":
+          type: string
+          description: The process the versions were collected from.
+      - python:
+          type: string
+          description: The tool name.
+      - "python3 --version | sed 's/Python //g'":
+          type: eval
+          description: The expression to obtain the version of the tool.

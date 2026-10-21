@@ -1,0 +1,72 @@
+name: "compare_structures"
+description: Generate an HTML comparison report for predicted structures and their multiple sequence alignments.
+tools: []
+input:
+  - - meta:
+        type: map
+        description: Groovy Map containing sample information.
+    - pdb:
+        type: file
+        description: Predicted structure files to compare.
+    - meta_msa:
+        type: map
+        description: Groovy Map containing MSA sample information.
+    - msa:
+        type: file
+        description: Multiple sequence alignment files to compare.
+    - all_files:
+        type: file
+        description: Additional files required by the comparison report.
+    - template:
+        type: file
+        description: HTML report template.
+        pattern: "*.html"
+output:
+  report:
+    - - meta:
+          type: map
+          description: Groovy Map containing sample information.
+      - "*report.html":
+          type: file
+          description: HTML structure comparison report.
+          pattern: "*report.html"
+  versions_python:
+    - - "${task.process}":
+          type: string
+          description: The process the versions were collected from.
+      - python:
+          type: string
+          description: The tool name.
+      - "python3 --version | sed 's/Python //g'":
+          type: eval
+          description: The expression to obtain the Python version.
+  versions_generate_comparison_report:
+    - - "${task.process}":
+          type: string
+          description: The process the versions were collected from.
+      - generate_comparison_report.py:
+          type: string
+          description: The tool name.
+      - "python3 --version | sed 's/Python //g'":
+          type: eval
+          description: The expression to obtain the script runtime version.
+topics:
+  versions:
+    - - "${task.process}":
+          type: string
+          description: The process the versions were collected from.
+      - python:
+          type: string
+          description: The tool name.
+      - "python3 --version | sed 's/Python //g'":
+          type: eval
+          description: The expression to obtain the Python version.
+    - - "${task.process}":
+          type: string
+          description: The process the versions were collected from.
+      - generate_comparison_report.py:
+          type: string
+          description: The tool name.
+      - "python3 --version | sed 's/Python //g'":
+          type: eval
+          description: The expression to obtain the script runtime version.

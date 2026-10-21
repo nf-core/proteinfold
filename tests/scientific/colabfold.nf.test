@@ -1,0 +1,37 @@
+nextflow_pipeline {
+
+    name "Scientific validation: ColabFold with local MSA"
+    script "../../main.nf"
+    tag "scientific"
+    tag "output_validation"
+    tag "structure_validation"
+    tag "colabfold"
+    profile "test_full_colabfold_local,gpu"
+
+    test("ColabFold: validate structures and metrics") {
+        options "--mode colabfold --use_gpu"
+
+        when {
+            params {
+                outdir     = "$outputDir"
+                input      = 'https://raw.githubusercontent.com/nf-core/test-datasets/proteinfold/testdata/samplesheet/v2.0/samplesheet.csv'
+                colabfold_db = System.getenv("PROTEINFOLD_TEST_DB") ?: 's3://proteinfold-dataset/test-data/mini_dbs'
+            }
+        }
+
+        then {
+            assert workflow.success: "ColabFold workflow failed (exit ${workflow.exitStatus})"
+            def validator = new File("tests/scientific/validate_outputs.py").absolutePath
+            def command = ["python3", validator, "--mode", "colabfold", "--display-name", "ColabFold",
+                           "--extension", ".pdb", "--outdir", params.outdir.toString(),
+                           "--samplesheet", params.input.toString()]
+            def process = command.execute()
+            def stdout = new StringBuffer()
+            def stderr = new StringBuffer()
+            process.consumeProcessOutput(stdout, stderr)
+            assert process.waitFor() == 0: "${stdout}\n${stderr}"
+            println stdout
+            assert file("${params.outdir}/pipeline_info/nf_core_proteinfold_software_mqc_versions.yml").size() > 0
+        }
+    }
+}

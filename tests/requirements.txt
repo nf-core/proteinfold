@@ -1,4 +1,4 @@
-# Python dependencies for scientific_validation.nf.test
+# Python dependencies for tests/scientific/*.nf.test
 # Validation runs on the HOST - not inside pipeline containers.
 # ESMFold, AlphaFold3 and others do not ship BioPython.
 biopython>=1.83

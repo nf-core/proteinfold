@@ -19,7 +19,8 @@ nextflow_process {
                 dbDir.mkdirs()
                 file('db/dummy.db').text = 'x'
 
-                def uniref30Dir = file('s3://proteinfold-dataset/test-data/mini_dbs/colabfold_uniref30/*', checkIfExists: true)
+                def db = System.getenv('PROTEINFOLD_TEST_DB') ?: 's3://proteinfold-dataset/test-data/mini_dbs'
+                def uniref30Dir = file(db + '/colabfold_uniref30/*', checkIfExists: true)
 
                 input[0] = [
                     [ id: 'mixed' ],

@@ -1,0 +1,30 @@
+name: "zstd_decompress"
+description: Decompress a Zstandard archive.
+tools: []
+input:
+  - - meta:
+        type: map
+        description: Groovy Map containing sample information.
+    - archive:
+        type: file
+        description: Zstandard-compressed input archive.
+        pattern: "*.zst"
+output:
+  decompressed:
+    - - meta:
+          type: map
+          description: Groovy Map containing sample information.
+      - "$prefix":
+          type: file
+          description: Decompressed output file.
+  versions_zstd:
+    - - "${task.process}": { type: string, description: The process the versions were collected from. }
+      - zstd: { type: string, description: The tool name. }
+      - 'zstd --version 2>&1 | grep -oP "v\\d+\\.\\d+\\.\\d+"':
+          { type: eval, description: The expression to obtain the version of the tool. }
+topics:
+  versions:
+    - - "${task.process}": { type: string, description: The process the versions were collected from. }
+      - zstd: { type: string, description: The tool name. }
+      - 'zstd --version 2>&1 | grep -oP "v\\d+\\.\\d+\\.\\d+"':
+          { type: eval, description: The expression to obtain the version of the tool. }

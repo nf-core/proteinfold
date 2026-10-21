@@ -39,8 +39,6 @@ workflow PIPELINE_INITIALISATION {
 
     main:
 
-    ch_versions = channel.empty()
-
     //
     // Print version and exit if required and dump pipeline parameters to JSON file
     //
@@ -136,7 +134,6 @@ ${colors.purple}  nf-core/proteinfold ${workflow.manifest.version}${colors.reset
 
     emit:
     samplesheet  = ch_samplesheet
-    versions     = ch_versions
 }
 
 /*
@@ -211,6 +208,55 @@ def modeChannel(ch, mode) {
         meta_clone.model = mode
         [ meta_clone, value ]
     }
+}
+
+//
+// Collect the per-model metric TSVs that the MultiQC custom content consumes.
+// `metric_channels` is a List of [name, channel] pairs. Each channel yields a
+// tuple whose [1] and [2] fields are the meta map and the metric file; pinning
+// that position is what makes this safe for emits with extra trailing fields
+// (boltz emits 5, alphafold2 4). The first non-empty channel seeds the fold and
+// the rest are mixed in one at a time, because mix() is a channel operator -- it
+// does not exist on ArrayList.
+//
+def collectMultiqcMetrics(model, metric_channels) {
+    def acc = null
+    metric_channels.each { entry ->
+        def ch = entry[1].map { it -> [ [id: model, model: model], it[1] ] }
+        acc = acc == null ? ch : acc.mix(ch)
+    }
+    if (acc == null) {
+        return channel.empty()
+    }
+    return acc
+        .unique { entry -> entry[1] }
+        .groupTuple()
+        .map { _model, paths ->
+            [ [id: model, model: model], paths.flatten() ]
+        }
+}
+
+// Join the common predictor outputs into the tuple consumed by ASSEMBLE_MODELCIF.
+// All metric channels are keyed by the same mode-annotated metadata map; the
+// software versions file is shared by every prediction in the run.
+def modelcifInput(structs, msa, plddt, pae, ptm, iptm, versions, msaTool) {
+    structs
+        .join(msa)
+        .join(plddt)
+        .join(pae)
+        .join(ptm)
+        .join(iptm)
+        .combine(versions)
+        .map { meta, structureFiles, msaFile, plddtFile, paeFile, ptmFile, iptmFile, versionsFile ->
+            def modelcifMeta = meta.clone()
+            modelcifMeta.msa_tool = msaTool
+            [modelcifMeta, structureFiles, msaFile, plddtFile, paeFile, ptmFile, iptmFile, versionsFile]
+        }
+}
+
+// Make a keyed placeholder metric for predictors that do not produce it.
+def modelcifDummyMetric(structs, dummyFile) {
+    structs.map { meta, _files -> [meta.clone(), dummyFile] }
 }
 
 def countMolecularEntitiesInFasta(fasta) {

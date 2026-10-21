@@ -25,7 +25,8 @@ nextflow_process {
                 def paramsAf = file('params/alphafold_params_2022-12-06')
                 paramsAf.mkdirs()
 
-                def src = file('s3://proteinfold-dataset/test-data/mini_dbs/params/alphafold_params_2022-12-06/params_model_3_ptm.npz', checkIfExists: true)
+                def db = System.getenv('PROTEINFOLD_TEST_DB') ?: 's3://proteinfold-dataset/test-data/mini_dbs'
+                def src = file(db + '/params/alphafold_params_2022-12-06/params_model_3_ptm.npz', checkIfExists: true)
                 def dst = file('params/alphafold_params_2022-12-06/params_model_3_ptm.npz')
                 dst.bytes = src.bytes
                 ['1', '2', '4', '5'].each { n ->
@@ -50,7 +51,7 @@ nextflow_process {
         then {
             assertAll(
                 { assert process.success },
-                { assert snapshot(process.out.versions).match('versions') }
+                { assert snapshot(process.out.versions_alphafold_colabfold, process.out.versions_colabfold_batch).match('versions') }
             )
         }
     }

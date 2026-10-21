@@ -1,6 +1,16 @@
 import importlib.util
+import re
 import numpy as np
 bio_is_installed = importlib.util.find_spec("Bio") is not None
+
+
+def infer_model_seed(file_path):
+    """Infer the random seed from a structure filename (AF3 'seed-N', AF2/CF '_seed_NNN')."""
+    for pattern in (r"seed[-_](\d+)", r"_model_(\d+)_seed"):
+        match = re.search(pattern, str(file_path).replace("\\", "/"))
+        if match:
+            return int(match.group(1))
+    return None
 
 def _convert_plddt_to_100(res_plddt):
     if (res_plddt < 1):  # Converting to a [0,100] range
@@ -94,7 +104,7 @@ def plddt_from_struct_b_factor_biopython(struct_file):
 
                 res_plddt = float(atom_plddt_tot / len(atom_list))
 
-                if (res_plddt < 1):  # RFAA the multiplication of mean isn't failing. Anyway covering to a [0,100] range for any structure file1
+                if (res_plddt < 1):
                     res_plddt *= 100
                 res_plddt = _convert_plddt_to_100(res_plddt)
 

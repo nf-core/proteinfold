@@ -15,6 +15,7 @@ repos:
               .*ro-crate-metadata.json$|
               modules/(?!local/).*|
               subworkflows/(?!local/).*|
+              tests/fixtures/cpu_outputs/.*|
               .*\.snap$
           )$
       - id: end-of-file-fixer
@@ -23,6 +24,7 @@ repos:
               .*ro-crate-metadata.json$|
               modules/(?!local/).*|
               subworkflows/(?!local/).*|
+              tests/fixtures/cpu_outputs/.*|
               .*\.snap$
           )$
   - repo: https://github.com/seqeralabs/nf-lint-pre-commit

@@ -1,0 +1,22 @@
+{
+    "generates mode-qualified general stats and rank rows (boltz shape)": {
+        "content": [
+            [
+                [
+                    {
+                        "model": "boltz"
+                    },
+                    [
+                        "proteinfold_boltz_generalstats_mqc.json:md5,ddcc57c69e643b124bfe9a204a8e9cb5",
+                        "proteinfold_boltz_plddt_lineplot_mqc.json:md5,894362b85cc84679cfeb5244d8677c3f"
+                    ]
+                ]
+            ]
+        ],
+        "timestamp": "2026-09-30T14:37:23.40929661",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "25.10.4"
+        }
+    }
+}

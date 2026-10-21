@@ -44,7 +44,7 @@ nextflow run nf-core/proteinfold \
    -profile <docker/singularity/.../institute> \
    --input samplesheet.csv \
    --outdir <OUTDIR> \
-   --mode <alphafold2/esmfold/colabfold/rosettafold2na/rosettafold-all-atom/alphafold3/boltz/helixfold3> \
+   --mode <alphafold2/alphafold3/esmfold/colabfold/boltz> \
    --db <DBDIR>
 ```
 
@@ -91,9 +91,7 @@ Each mode has specific reference data requirements. To support all modes the `--
 │   ├── esm2_t36_3B_UR50D-contact-regression.pt
 │   ├── esm2_t36_3B_UR50D.pt
 │   ├── esmfold_3B_v1.pt
-│   ├── HelixFold3-240814.pdparams
 │   ├── mols
-│   └── RFAA_paper_weights.pt
 ├── pdb100
 │   ├── LICENSE
 │   ├── pdb100_2021Mar03_a3m.ffdata
@@ -154,9 +152,6 @@ Alternatively, the required data layout for each of the individual modes is desc
 - [Boltz](./usage/boltz.md)
 - [ColabFold](./usage/colabfold.md)
 - [ESMFold](./usage/esmfold.md)
-- [HelixFold3](./usage/helixfold3.md)
-- [RoseTTAFold-All-Atom](./usage/rosettafold_all_atom.md)
-- [RoseTTAFold2NA](./usage/rosettafold2na.md)
 
 > Omitting the `--db` flag will allow the pipeline to download the reference data required to execute the selected modes.
 

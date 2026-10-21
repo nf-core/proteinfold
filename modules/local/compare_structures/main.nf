@@ -15,7 +15,8 @@ process COMPARE_STRUCTURES {
 
     output:
     tuple val(meta), path ("*report.html"), emit: report
-    path "versions.yml"        , emit: versions
+    tuple val("${task.process}"), val('python'), eval("python3 --version | sed 's/Python //g'"), emit: versions_python, topic: versions
+    tuple val("${task.process}"), val('generate_comparison_report.py'), eval("python3 --version | sed 's/Python //g'"), emit: versions_generate_comparison_report, topic: versions
 
     when:
     task.ext.when == null || task.ext.when
@@ -31,12 +32,6 @@ process COMPARE_STRUCTURES {
         --output_dir ./ \\
         --name ${meta.id} \\
         $args
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        python: \$(python3 --version | sed 's/Python //g')
-        generate_comparison_report.py: \$(python3 --version)
-    END_VERSIONS
     """
 
     stub:

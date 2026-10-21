@@ -1,0 +1,69 @@
+name: generate_multiqc_contents
+description: Generate MultiQC custom-content JSON (general statistics and per-residue pLDDT line plot) from proteinfold metric TSVs
+keywords:
+  - multiqc
+  - custom content
+  - quality control
+tools:
+  - python:
+      description: |
+        The Python standard library is used to convert the pipeline metric TSVs
+        into self-contained MultiQC custom-content JSON files.
+      homepage: https://www.python.org/
+      documentation: https://docs.python.org/3/library/index.html
+      licence:
+        - "PSF-2.0"
+input:
+  - - meta:
+        type: map
+        description: |
+          Groovy map with `id` and `model` set to the prediction mode. The
+          `model` value (e.g. alphafold2, boltz) qualifies every sample name.
+  - metric_files:
+      type: file
+      description: |
+        Routed metric TSVs written by bin/extract_metrics.py for one
+        prediction mode: `<id>_plddt.tsv`, `<id>[_<mode>]_msa.tsv`,
+        `<id>_ptm.tsv` and `<id>_iptm.tsv`. PAE, ipSAE and chainwise files
+        are deliberately not routed here.
+  - generator_script:
+      type: file
+      description: The generate_multiqc_contents.py script to execute.
+output:
+  - mqc_json:
+      - - meta:
+            type: map
+            description: |
+              Groovy map with the prediction-mode provenance (passthrough).
+        - "*_mqc.json":
+            type: file
+            description: |
+              Self-contained MultiQC custom-content JSON files: a generalstats
+              file (mean pLDDT, MSA depth, pTM, ipTM) and a linegraph file
+              (per-residue pLDDT with one switcher dataset per prediction and
+              one series per ranked model).
+  - versions_python:
+      - - ${task.process}:
+            type: string
+            description: The process the versions were collected from
+      - python:
+          type: string
+          description: The tool name
+      - python3 --version | sed 's/Python //g':
+          type: eval
+          description: The expression to obtain the version of the tool
+  - versions_generator:
+      - - ${task.process}:
+            type: string
+            description: The process the versions were collected from
+      - generate_multiqc_contents.py:
+          type: string
+          description: The tool name
+      - python3 --version | sed 's/Python //g':
+          type: eval
+          description: The expression to obtain the version of the tool
+authors:
+  - "@keiran-rowell-unsw"
+maintainers:
+  - "@keiran-rowell-unsw"
+  - "@jscgh"

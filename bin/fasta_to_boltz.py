@@ -1,15 +1,53 @@
 #!/usr/bin/env python3
+from __future__ import annotations
 
-import sys
 import argparse
 import string
-import re
+import sys
+from collections.abc import Sequence
+
+ENTITY_TYPES = ("protein", "ccd", "smiles", "dna", "rna")
+_NUCLEIC, _DNA, _RNA = set("ACGTUN"), set("ACGTN"), set("ACGUN")
+_PROTEIN = set("ACDEFGHIKLMNPQRSTVWYBXZJUO")
 
 
-ENTITY_TYPES = ["protein", "ccd", "smiles", "dna", "rna"]
+class EntityTypeError(ValueError):
+    pass
 
 
-def parse_args(args=None):
+def infer_entity_type(header: str, sequence: str) -> str:
+    fields = header.split("|")
+    explicit = fields[1].strip().lower() if len(fields) > 1 else None
+    seq = "".join(sequence.split()).upper()
+    if not seq:
+        raise EntityTypeError(f"empty sequence for header {header!r}")
+    letters = set(seq)
+    if explicit:
+        if explicit not in ENTITY_TYPES:
+            explicit = None
+        else:
+            valid = {
+                "protein": letters <= _PROTEIN,
+                "dna": letters <= _DNA,
+                "rna": letters <= _RNA,
+                "ccd": True,
+                "smiles": True,
+            }[explicit]
+            if not valid:
+                raise EntityTypeError(f"sequence for explicit {explicit} entity contains invalid characters")
+            return explicit
+    if letters <= _RNA and "U" in letters:
+        return "rna"
+    if letters <= _DNA and "T" in letters:
+        return "dna"
+    if letters <= _NUCLEIC:
+        raise EntityTypeError(f"ambiguous unannotated sequence in header {header!r}; use an explicit |dna or |rna annotation")
+    if letters <= _PROTEIN:
+        return "protein"
+    raise EntityTypeError(f"unrecognised or malformed sequence in header {header!r}")
+
+
+def parse_args(args: Sequence[str] | None = None) -> argparse.Namespace:
     """
     Parse command line arguments for the script.
 
@@ -40,38 +78,6 @@ def parse_args(args=None):
 
     return parser.parse_args(args)
 
-
-def infer_entity_type(header, sequence):
-    """
-    Infer the entity type from the FASTA header and sequence.
-
-    Args:
-        header (str): FASTA header line
-        sequence (str): Sequence string
-
-    Returns:
-        str: Entity type (protein, dna, rna, smiles, ccd, or unknown)
-    """
-    header_lower = header.lower()
-    for entity in ENTITY_TYPES:
-        if len(header_lower.split("|"))>1 and entity == header_lower.split("|")[1]:
-            return entity
-    seq = sequence.strip()
-    seq_set = set(seq)
-    # RNA: only A,C,U,G,N
-    if len(seq_set - set("ACUGN")) == 0:
-        return "rna"
-    # DNA: only A,C,T,G,N
-    if len(seq_set - set("ACTGN")) == 0:
-        return "dna"
-    # Protein: only 20 AA, not just A,C,T,G,U,N
-    protein_letters = set("ACDEFGHIKLMNPQRSTVWYX")
-    if len(seq_set - protein_letters) == 0 and not (seq_set <= set("ACUGTN")):
-        return "protein"
-    # SMILES: fallback
-    if re.fullmatch(r"[A-Za-z0-9@+\-\[\]\(\)=#\$%]+", seq):
-        return "smiles"
-    return "unknown"
 
 
 def write_boltz_yaml(sample_id, entities, yaml_out):

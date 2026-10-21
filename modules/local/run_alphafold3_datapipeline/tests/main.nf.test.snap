@@ -1,0 +1,19 @@
+{
+    "creates populated AlphaFold3 data JSON with micro databases": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "T1026"
+                    },
+                    "T1026_data.json:md5,5d5d1a1748621d771db5162e84f973a5"
+                ]
+            ]
+        ],
+        "timestamp": "2026-09-22T15:58:41.835676297",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.6"
+        }
+    }
+}

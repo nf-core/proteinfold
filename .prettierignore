@@ -9,6 +9,7 @@ testing*
 *.pyc
 bin/
 .nf-test/
+tests/fixtures/cpu_outputs/
 ro-crate-metadata.json
 modules/nf-core/
 subworkflows/nf-core/
