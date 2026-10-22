@@ -40,6 +40,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[PR #51](https://github.com/Australian-Structural-Biology-Computing/proteinfold/pull/51)] - Remove the deprecated AlphaFold2 standard mode; AlphaFold2 now always runs separate MSA generation and prediction steps.
 - [[PR #52](https://github.com/Australian-Structural-Biology-Computing/proteinfold/pull/52)] - Add modular CPU, GPU, and per-mode scientific nf-tests with deterministic fixtures and independently runnable stages.
 - [[PR #59](https://github.com/Australian-Structural-Biology-Computing/proteinfold/pull/59)] - Add batching for local ColabFold MMseqs2 searches with `--msa_batch_size`.
+- [[PR #71](https://github.com/Australian-Structural-Biology-Computing/proteinfold/pull/71)] - Update and replace the CBCRG AlphaFold2 fork with upstream (DeepMind) AlphaFold2.
 
 | Old parameter              | New parameter   |
 | -------------------------- | --------------- |
