@@ -11,7 +11,9 @@ nextflow_pipeline {
         when {
             params {
                 outdir = "$outputDir"
-                input = "https://raw.githubusercontent.com/Australian-Structural-Biology-Computing/test-datasets/proteinfold/testdata/samplesheet/v2.0/colabfold_byo_msa.csv"
+                def sheet = file("$outputDir/../byo_msa.csv")
+                sheet.text = "id,fasta,msa\nH1065,https://raw.githubusercontent.com/Australian-Structural-Biology-Computing/test-datasets/proteinfold/testdata/sequences/H1065.fasta,${projectDir}/tests/fixtures/colabfold_byo_multimer.a3m\n"
+                input = sheet.toString()
                 mode = 'colabfold'
                 colabfold_db = "$projectDir/assets/dummy_db_dir"
             }
@@ -19,6 +21,12 @@ nextflow_pipeline {
 
         then {
             assert workflow.success
+            // This profile uses stubRun: snapshots check wiring, not prediction contents.
+            def a3m = file("$projectDir/tests/fixtures/colabfold_byo_multimer.a3m").text.readLines()
+            assert a3m[0] == '#127,98\t1,1'
+            assert a3m[1] == '>101\t102'
+            assert a3m[2].size() == 225
+            assert !a3m[2].contains(':')
             assert !file("${params.outdir}/multifasta").exists()
             assert file("${params.outdir}/multiqc/multiqc_report.html").exists()
             assert file("${params.outdir}/colabfold/top_ranked_structures/H1065.pdb").exists()

@@ -3,7 +3,7 @@ process COLABFOLD_BATCH {
     label 'process_medium'
     label 'process_gpu'
 
-    container "nf-core/proteinfold_colabfold:2.1.0"
+    container "ghcr.io/tlitfin/wisps-colabfold-batch:1.1"
 
     input:
     tuple val(meta), path(input), path('params/*')

@@ -103,7 +103,7 @@ nextflow_process {
             process {
                 """
                 def msa = file('multimer.a3m')
-                msa.text = '>query\\nMKTAYIAKQRQISFVKSHF:GILGFVFTLTVP\\n>paired_hit\\nMKTAYIAKQRQISFVKSHF:GILGFVFTLTVP\\n'
+                msa.text = '#19,12\\t1,1\\n>101\\t102\\nMKTAYIAKQRQISFVKSHFGILGFVFTLTVP\\n>hit_a\\thit_b\\nMKTAYIAKQRQISFVKSHAGILGFVFTLTVA\\n>unpaired_a\\nMKTAYIAKQRQISFVKSHF------------\\n>unpaired_b\\n-------------------GILGFVFTLTVP\\n'
 
                 def paramsDir = file('params')
                 paramsDir.mkdirs()
@@ -111,15 +111,10 @@ nextflow_process {
                 paramsAf.mkdirs()
 
                 def db = System.getenv('PROTEINFOLD_TEST_DB') ?: 's3://proteinfold-dataset/test-data/mini_dbs'
-                def src = file(db + '/params/alphafold_params_2022-12-06/params_model_3_ptm.npz', checkIfExists: true)
-                def dst = file('params/alphafold_params_2022-12-06/params_model_3_ptm.npz')
-                dst.bytes = src.bytes
-                ['1', '2', '4', '5'].each { n ->
-                    def link = file('params/alphafold_params_2022-12-06/params_model_' + n + '_ptm.npz')
-                    java.nio.file.Files.createSymbolicLink(
-                        java.nio.file.Paths.get(link.toString()),
-                        java.nio.file.Paths.get(dst.getName())
-                    )
+                (1..5).each { n ->
+                    def filename = 'params_model_' + n + '_multimer_v3.npz'
+                    def src = file(db + '/params/alphafold_params_2022-12-06/' + filename, checkIfExists: true)
+                    file('params/alphafold_params_2022-12-06/' + filename).bytes = src.bytes
                 }
                 def paramsFiles = files('params/alphafold_params_2022-12-06/*', checkIfExists: true)
 
@@ -135,6 +130,8 @@ nextflow_process {
 
         then {
             assert process.success
+            assert process.out.msa[0][1].size() > 0
+            assert process.out.top_ranked_pdb[0][1].size() > 0
         }
     }
 
