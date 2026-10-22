@@ -47,6 +47,7 @@ nextflow_process {
             assert process.out.pae[0].size() == 2
             assert path(process.out.versions[0]).getFileName().toString() == 'versions.yml'
             assert outputFile.text.contains('nf-core/proteinfold')
+            assert outputFile.text.contains('2.3.2')
         }
     }
 
