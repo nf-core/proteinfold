@@ -20,42 +20,6 @@ input:
       type: directory
       description: AlphaFold2 parameter files.
       pattern: "params/*"
-  - bfd:
-      type: directory
-      description: BFD database files.
-      pattern: "bfd/*"
-  - small_bfd:
-      type: directory
-      description: Small BFD database files.
-      pattern: "small_bfd/*"
-  - mgnify:
-      type: directory
-      description: MGnify database files.
-      pattern: "mgnify/*"
-  - pdb70:
-      type: directory
-      description: PDB70 database files.
-      pattern: "pdb70/*"
-  - pdb_mmcif:
-      type: directory
-      description: PDB mmCIF database files.
-      pattern: "pdb_mmcif/*"
-  - uniref30:
-      type: directory
-      description: UniRef30 database files.
-      pattern: "uniref30/*"
-  - uniref90:
-      type: directory
-      description: UniRef90 database files.
-      pattern: "uniref90/*"
-  - pdb_seqres:
-      type: directory
-      description: PDB sequence-resolution database files.
-      pattern: "pdb_seqres/*"
-  - uniprot:
-      type: directory
-      description: UniProt database files.
-      pattern: "uniprot/*"
 output:
   raw:
     - "raw/**":
@@ -68,13 +32,27 @@ output:
       - "${meta.id}_alphafold2.pdb":
           type: file
           description: Top-ranked predicted structure.
+  top_ranked_mmcif:
+    - - meta:
+          type: map
+          description: Groovy Map containing sample information.
+      - "raw/ranked_0.cif":
+          type: file
+          description: Top-ranked predicted structure in mmCIF format.
   pdb:
     - - meta:
           type: map
           description: Groovy Map containing sample information.
       - "raw/ranked*.pdb":
           type: file
-          description: Ranked predicted structures.
+          description: Ranked predicted structures in PDB format.
+  mmcif:
+    - - meta:
+          type: map
+          description: Groovy Map containing sample information.
+      - "raw/ranked*.cif":
+          type: file
+          description: Ranked predicted structures in mmCIF format.
   msa:
     - - meta:
           type: map

@@ -44,9 +44,9 @@ workflow ALPHAFOLD2 {
     ch_uniprot              // channel: path(uniprot)
 
     main:
-    ch_pdb            = channel.empty()
-    ch_top_ranked_pdb = channel.empty()
-    ch_msa            = channel.empty()
+    ch_pdb               = channel.empty()
+    ch_top_ranked_pdb    = channel.empty()
+    ch_msa               = channel.empty()
     ch_pae            = channel.empty()
     ch_iptm           = channel.empty()
     ch_ipsae          = channel.empty()
@@ -91,17 +91,7 @@ workflow ALPHAFOLD2 {
 
     RUN_ALPHAFOLD2_PRED (
         ch_fasta_features,
-        ch_alphafold2_params,
-        ch_bfd,
-        ch_small_bfd,
-        ch_mgnify,
-        ch_pdb70,
-        ch_pdb_mmcif,
-        ch_pdb_obsolete,
-        ch_uniref30,
-        ch_uniref90,
-        ch_pdb_seqres,
-        ch_uniprot
+        ch_alphafold2_params
     )
 
     // Hand MultiQC every metric this model actually produces, not just pLDDT.
@@ -112,8 +102,8 @@ workflow ALPHAFOLD2 {
         [ 'iptms', RUN_ALPHAFOLD2_PRED.out.iptms ]
     ])
 
-    ch_top_ranked_pdb = ch_top_ranked_pdb.mix(RUN_ALPHAFOLD2_PRED.out.top_ranked_pdb)
-    ch_pdb            = ch_pdb.mix(RUN_ALPHAFOLD2_PRED.out.pdb)
+    ch_top_ranked_pdb    = ch_top_ranked_pdb.mix(RUN_ALPHAFOLD2_PRED.out.top_ranked_pdb)
+    ch_pdb               = ch_pdb.mix(RUN_ALPHAFOLD2_PRED.out.pdb)
     ch_msa            = ch_msa.mix(RUN_ALPHAFOLD2_PRED.out.msa)
     ch_pae            = ch_pae.mix(RUN_ALPHAFOLD2_PRED.out.pae)
     ch_iptm           = ch_iptm.mix(RUN_ALPHAFOLD2_PRED.out.iptms)

@@ -5,7 +5,7 @@ process RUN_ALPHAFOLD2_MSA {
     tag   "$meta.id"
     label 'process_medium'
 
-    container "nf-core/proteinfold_alphafold2_pred:2.0.0"
+    container "ghcr.io/jscgh/proteinfold_alphafold2_msa:2.1.0dev"
 
     input:
     tuple val(meta), path(fasta), val(alphafold2_model_preset)
