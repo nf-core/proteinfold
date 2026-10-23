@@ -220,8 +220,8 @@ nextflow_process {
                 def generator = ['python3', "$projectDir/tests/generate_ranked_modelcif.py", "$projectDir/assets/DUMMY_MMCIF_rank_0.mmcif", "$outputDir/ranked"].execute()
                 assert generator.waitFor() == 0 : generator.err.text
                 (0..4).each { rank ->
-                    new File(outputDir, "rank_${rank}_pae.tsv").text =
-                        new File(projectDir, 'assets/DUMMY_PAE.tsv').text
+                    new File("$outputDir/rank_\${rank}_pae.tsv").text =
+                        new File("$projectDir/assets/DUMMY_PAE.tsv").text
                 }
                 input[0] = [
                     [ id: 'test_multi_default', model: 'alphafold2', msa_tool: 'jackhmmer' ],
@@ -269,8 +269,8 @@ nextflow_process {
                 def generator = ['python3', "$projectDir/tests/generate_ranked_modelcif.py", "$projectDir/assets/DUMMY_MMCIF_rank_0.mmcif", "$outputDir/ranked"].execute()
                 assert generator.waitFor() == 0 : generator.err.text
                 (0..4).each { rank ->
-                    new File(outputDir, "rank_${rank}_pae.tsv").text =
-                        new File(projectDir, 'assets/DUMMY_PAE.tsv').text
+                    new File("$outputDir/rank_\${rank}_pae.tsv").text =
+                        new File("$projectDir/assets/DUMMY_PAE.tsv").text
                 }
                 input[0] = [
                     [ id: 'test_multi', model: 'alphafold2', msa_tool: 'jackhmmer' ],
