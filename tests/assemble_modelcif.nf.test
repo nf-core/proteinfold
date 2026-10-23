@@ -47,7 +47,7 @@ nextflow_process {
                 if (expectEmbeddedPAE) {
                     assert mmcif.contains("PAE")
                 } else {
-                    assert (mmcif =~ /\S+\.tsv[^\n]*QA metrics/).find()
+                    assert (mmcif =~ /\S+\.tsv[^\n]*file other other/).find()
                 }
             },
 
@@ -169,7 +169,8 @@ nextflow_process {
                     file("$projectDir/assets/DUMMY_PAE.tsv",         checkIfExists: true),
                     file("$projectDir/assets/DUMMY_PTM.tsv",         checkIfExists: true),
                     file("$projectDir/assets/DUMMY_IPTM.tsv",        checkIfExists: true),
-                    file("$projectDir/assets/NO_FILE",               checkIfExists: true)
+                    file("$projectDir/assets/NO_FILE",               checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_SOFTWARE_DETAILS.yml", checkIfExists: true)
                 ]
                 """
             }
@@ -185,16 +186,22 @@ nextflow_process {
 
         when {
             process {
+                def plddt = new File(outputDir, 'one_rank_plddt.tsv')
+                plddt.text = new File(projectDir, 'assets/DUMMY_PLDDT.tsv').readLines()
+                    .collect { it.split('\t')[0..1].join('\t') }.join('\n') + '\n'
+                new File(outputDir, 'ptm.tsv').text = 'rank_0\t0.5\n'
+                new File(outputDir, 'iptm.tsv').text = 'rank_0\t0.6\n'
                 """
                 input[0] = [
                     [ id: 'test_binary', model: 'alphafold2', msa_tool: 'jackhmmer' ],
                     file("$projectDir/assets/DUMMY_MODELCIF.mmcif", checkIfExists: true),
                     file("$projectDir/assets/DUMMY_MSA.tsv",         checkIfExists: true),
-                    file("$projectDir/assets/DUMMY_PLDDT.tsv",       checkIfExists: true),
+                    file("$outputDir/one_rank_plddt.tsv",           checkIfExists: true),
                     file("$projectDir/assets/DUMMY_PAE.tsv",         checkIfExists: true),
-                    file("$projectDir/assets/DUMMY_PTM.tsv",         checkIfExists: true),
-                    file("$projectDir/assets/DUMMY_IPTM.tsv",        checkIfExists: true),
-                    file("$projectDir/assets/NO_FILE",               checkIfExists: true)
+                    file("$outputDir/ptm.tsv",                       checkIfExists: true),
+                    file("$outputDir/iptm.tsv",                      checkIfExists: true),
+                    file("$projectDir/assets/NO_FILE",               checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_SOFTWARE_DETAILS.yml", checkIfExists: true)
                 ]
                 """
             }
@@ -212,6 +219,10 @@ nextflow_process {
                 """
                 def generator = ['python3', "$projectDir/tests/generate_ranked_modelcif.py", "$projectDir/assets/DUMMY_MMCIF_rank_0.mmcif", "$outputDir/ranked"].execute()
                 assert generator.waitFor() == 0 : generator.err.text
+                (0..4).each { rank ->
+                    new File(outputDir, "rank_${rank}_pae.tsv").text =
+                        new File(projectDir, 'assets/DUMMY_PAE.tsv').text
+                }
                 input[0] = [
                     [ id: 'test_multi_default', model: 'alphafold2', msa_tool: 'jackhmmer' ],
                     [
@@ -223,10 +234,11 @@ nextflow_process {
                     ],
                     file("$projectDir/assets/DUMMY_MSA.tsv",         checkIfExists: true),
                     file("$projectDir/assets/DUMMY_PLDDT.tsv",       checkIfExists: true),
-                    file("$projectDir/assets/DUMMY_PAE.tsv",         checkIfExists: true),
+                    file("$outputDir/rank_*_pae.tsv",               checkIfExists: true),
                     file("$projectDir/assets/DUMMY_PTM.tsv",         checkIfExists: true),
                     file("$projectDir/assets/DUMMY_IPTM.tsv",        checkIfExists: true),
-                    file("$projectDir/assets/NO_FILE",               checkIfExists: true)
+                    file("$projectDir/assets/NO_FILE",               checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_SOFTWARE_DETAILS.yml", checkIfExists: true)
                 ]
                 """
             }
@@ -256,6 +268,10 @@ nextflow_process {
                 """
                 def generator = ['python3', "$projectDir/tests/generate_ranked_modelcif.py", "$projectDir/assets/DUMMY_MMCIF_rank_0.mmcif", "$outputDir/ranked"].execute()
                 assert generator.waitFor() == 0 : generator.err.text
+                (0..4).each { rank ->
+                    new File(outputDir, "rank_${rank}_pae.tsv").text =
+                        new File(projectDir, 'assets/DUMMY_PAE.tsv').text
+                }
                 input[0] = [
                     [ id: 'test_multi', model: 'alphafold2', msa_tool: 'jackhmmer' ],
                     [
@@ -267,10 +283,11 @@ nextflow_process {
                     ],
                     file("$projectDir/assets/DUMMY_MSA.tsv",         checkIfExists: true),
                     file("$projectDir/assets/DUMMY_PLDDT.tsv",       checkIfExists: true),
-                    file("$projectDir/assets/DUMMY_PAE.tsv",         checkIfExists: true),
+                    file("$outputDir/rank_*_pae.tsv",               checkIfExists: true),
                     file("$projectDir/assets/DUMMY_PTM.tsv",         checkIfExists: true),
                     file("$projectDir/assets/DUMMY_IPTM.tsv",        checkIfExists: true),
-                    file("$projectDir/assets/NO_FILE",               checkIfExists: true)
+                    file("$projectDir/assets/NO_FILE",               checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_SOFTWARE_DETAILS.yml", checkIfExists: true)
                 ]
                 """
             }
@@ -301,7 +318,8 @@ nextflow_process {
                 def generator = ['python3', "$projectDir/tests/generate_ranked_modelcif.py", "$projectDir/assets/DUMMY_MMCIF_rank_0.mmcif", "$outputDir/ranked"].execute()
                 assert generator.waitFor() == 0 : generator.err.text
                 input[0] = [
-                    [ id: 'test_scale', model: 'alphafold2', msa_tool: 'jackhmmer' ],
+                    [ id: 'test_scale', model: 'alphafold2', msa_tool: 'jackhmmer',
+                      missing_metrics: ['pae'] ],
                     [
                         file("$projectDir/assets/DUMMY_MMCIF_rank_0.mmcif", checkIfExists: true),
                         file("$outputDir/ranked/DUMMY_MMCIF_rank_1.mmcif", checkIfExists: true),
@@ -314,7 +332,8 @@ nextflow_process {
                     file("$projectDir/assets/DUMMY_PAE.tsv",         checkIfExists: true),
                     file("$projectDir/assets/DUMMY_PTM.tsv",         checkIfExists: true),
                     file("$projectDir/assets/DUMMY_IPTM.tsv",        checkIfExists: true),
-                    file("$projectDir/assets/NO_FILE",               checkIfExists: true)
+                    file("$projectDir/assets/NO_FILE",               checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_SOFTWARE_DETAILS.yml", checkIfExists: true)
                 ]
                 """
             }
@@ -339,7 +358,8 @@ nextflow_process {
                 def generator = ['python3', "$projectDir/tests/generate_ranked_modelcif.py", "$projectDir/assets/DUMMY_MMCIF_rank_0.mmcif", "$outputDir/ranked"].execute()
                 assert generator.waitFor() == 0 : generator.err.text
                 input[0] = [
-                    [ id: 'test_seed', model: 'alphafold2', msa_tool: 'jackhmmer' ],
+                    [ id: 'test_seed', model: 'alphafold2', msa_tool: 'jackhmmer',
+                      missing_metrics: ['pae'] ],
                     [
                         file("$projectDir/assets/DUMMY_MMCIF_rank_0.mmcif", checkIfExists: true),
                         file("$outputDir/ranked/DUMMY_MMCIF_rank_1.mmcif", checkIfExists: true),
@@ -352,7 +372,8 @@ nextflow_process {
                     file("$projectDir/assets/DUMMY_PAE.tsv",         checkIfExists: true),
                     file("$projectDir/assets/DUMMY_PTM.tsv",         checkIfExists: true),
                     file("$projectDir/assets/DUMMY_IPTM.tsv",        checkIfExists: true),
-                    file("$projectDir/assets/NO_FILE",               checkIfExists: true)
+                    file("$projectDir/assets/NO_FILE",               checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_SOFTWARE_DETAILS.yml", checkIfExists: true)
                 ]
                 """
             }
@@ -377,7 +398,8 @@ nextflow_process {
                 def generator = ['python3', "$projectDir/tests/generate_ranked_modelcif.py", "$projectDir/assets/DUMMY_MMCIF_rank_0.mmcif", "$outputDir/ranked"].execute()
                 assert generator.waitFor() == 0 : generator.err.text
                 input[0] = [
-                    [ id: 'test_cw', model: 'alphafold2', msa_tool: 'jackhmmer' ],
+                    [ id: 'test_cw', model: 'alphafold2', msa_tool: 'jackhmmer',
+                      missing_metrics: ['pae'] ],
                     [
                         file("$projectDir/assets/DUMMY_MMCIF_rank_0.mmcif", checkIfExists: true),
                         file("$outputDir/ranked/DUMMY_MMCIF_rank_1.mmcif", checkIfExists: true),
@@ -390,7 +412,8 @@ nextflow_process {
                     file("$projectDir/assets/DUMMY_PAE.tsv",         checkIfExists: true),
                     file("$projectDir/assets/DUMMY_PTM.tsv",         checkIfExists: true),
                     file("$projectDir/assets/DUMMY_IPTM.tsv",        checkIfExists: true),
-                    file("$projectDir/assets/NO_FILE",               checkIfExists: true)
+                    file("$projectDir/assets/NO_FILE",               checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_SOFTWARE_DETAILS.yml", checkIfExists: true)
                 ]
                 """
             }
@@ -413,7 +436,8 @@ nextflow_process {
                 def generator = ['python3', "$projectDir/tests/generate_ranked_modelcif.py", "$projectDir/assets/DUMMY_MMCIF_rank_0.mmcif", "$outputDir/ranked"].execute()
                 assert generator.waitFor() == 0 : generator.err.text
                 input[0] = [
-                    [ id: 'test_tpl', model: 'alphafold2', msa_tool: 'jackhmmer' ],
+                    [ id: 'test_tpl', model: 'alphafold2', msa_tool: 'jackhmmer',
+                      missing_metrics: ['pae'] ],
                     [
                         file("$projectDir/assets/DUMMY_MMCIF_rank_0.mmcif", checkIfExists: true),
                         file("$outputDir/ranked/DUMMY_MMCIF_rank_1.mmcif", checkIfExists: true),
@@ -426,7 +450,8 @@ nextflow_process {
                     file("$projectDir/assets/DUMMY_PAE.tsv",         checkIfExists: true),
                     file("$projectDir/assets/DUMMY_PTM.tsv",         checkIfExists: true),
                     file("$projectDir/assets/DUMMY_IPTM.tsv",        checkIfExists: true),
-                    file("$projectDir/assets/NO_FILE",               checkIfExists: true)
+                    file("$projectDir/assets/NO_FILE",               checkIfExists: true),
+                    file("$projectDir/assets/DUMMY_SOFTWARE_DETAILS.yml", checkIfExists: true)
                 ]
                 """
             }

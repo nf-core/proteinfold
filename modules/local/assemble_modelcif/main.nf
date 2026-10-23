@@ -14,7 +14,7 @@ process ASSEMBLE_MODELCIF {
 
     output:
     tuple val(meta), path("*.{mmcif,bcif}"), emit: modelcif
-    path "pae/*.tsv", emit: pae
+    path "pae/*.tsv", optional: true, emit: pae
     path "versions.yml", emit: versions
 
     when:
@@ -27,24 +27,28 @@ process ASSEMBLE_MODELCIF {
     // BinaryCIF output: pass --write_binary via task.ext.args.
     script:
     def args = task.ext.args ?: ''
-    def container = task.container ?: 'None'
     def no_template_search = meta.no_template_search ? '--no-template-search' : ''
+    def missing_metrics = meta.missing_metrics ? "--missing-metrics ${meta.missing_metrics.join(',')}" : ''
+    def prediction_container = meta.prediction_container ? "--container_image ${meta.prediction_container}" : ''
+    def stage_pae = meta.missing_metrics?.contains('pae') ? '' : "mkdir -p pae && cp ${pae} pae/"
+    def pae_inputs = meta.missing_metrics?.contains('pae') ? "${pae}" : 'pae/*.tsv'
     """
-    mkdir pae
-    cp ${pae} pae/
+    ${stage_pae}
+
     populate_modelcif.py \\
         --structs ${structs} \\
         --msa ${msa} \\
         --plddt ${plddt} \\
-        --pae pae/*.tsv \\
+        --pae ${pae_inputs} \\
         --ptm ${ptm} \\
         --iptm ${iptm} \\
         --name ${meta.id} \\
         --prog ${meta.model} \\
         --versions_yml ${versions_yml} \\
-        --container_image ${container} \\
         --msa_tool ${meta.msa_tool ?: 'None'} \\
         --software_details ${software_details} \\
+        ${prediction_container} \\
+        ${missing_metrics} \\
         ${no_template_search} \\
         $args
 
