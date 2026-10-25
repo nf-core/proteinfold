@@ -71,7 +71,7 @@ process RUN_ALPHAFOLD3_INFERENCE {
     done
 
     extract_metrics.py --name ${prefix} \\
-        --jsons ${af3_id}/${af3_id}_data.json ${af3_id}/${af3_id}_summary_confidences.json ${af3_id}/${af3_id}_confidences.json \\
+        --jsons "\${name}/\${name}_data.json" "\${name}/\${name}_summary_confidences.json" "\${name}/\${name}_confidences.json" \\
         --structs raw/*ranked_*.cif
 
     touch "${prefix}_iptm.tsv" "${prefix}_ipsae.tsv" "${prefix}_chainwise_iptm.tsv" "${prefix}_chainwise_ipsae.tsv"
