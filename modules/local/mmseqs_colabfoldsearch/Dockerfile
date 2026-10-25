@@ -1,6 +1,6 @@
-ARG COLABFOLD_REF=c35de0221f4d297a39edf4cf292ba2832e321edc
+ARG COLABFOLD_REF=v1.6.3
 ARG MMSEQS2_REPOSITORY=https://github.com/jscgh/MMseqs2.git
-ARG MMSEQS2_REF=c0434b5a5951987fa025d279af64b298d20f27ff
+ARG MMSEQS2_REF=48f2a22d5f68f595afdfb5e601ca11721cf17449
 
 FROM --platform=linux/amd64 ghcr.io/steineggerlab/build-containers:main-x86_64 AS mmseqs-builder
 
