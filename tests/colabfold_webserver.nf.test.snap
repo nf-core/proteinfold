@@ -4,8 +4,10 @@
             7,
             {
                 "COLABFOLD_BATCH": {
-                    "alphafold_colabfold": "2.3.10",
-                    "colabfold_batch": "1.5.5"
+                    "alphafold_colabfold": "2.3.20",
+                    "colabfold_batch": "1.6.3",
+                    "colabfold_binaries": "0.1.0",
+                    "colabfold_legacy_kernels": "0.2.0"
                 },
                 "GENERATE_REPORT": {
                     "python": "3.12.7",
@@ -99,10 +101,10 @@
                 "T1026_colabfold_report.html:md5,d41d8cd98f00b204e9800998ecf8427e"
             ]
         ],
-        "timestamp": "2026-05-29T12:03:19.488094161",
+        "timestamp": "2026-10-26T14:19:41.629063486",
         "meta": {
-            "nf-test": "0.9.5",
-            "nextflow": "26.04.0"
+            "nf-test": "0.9.4",
+            "nextflow": "26.04.6"
         }
     }
 }

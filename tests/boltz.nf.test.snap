@@ -14,8 +14,8 @@
                     "generate_report.py": "Python 3.12.7"
                 },
                 "MMSEQS_COLABFOLDSEARCH": {
-                    "colabfold_search": "1.6.1",
-                    "mmseqs": "74c9370d45ba10446fe049c3603bf5f877817e95"
+                    "colabfold_search": "1.6.3",
+                    "mmseqs": "48f2a22d5f68f595afdfb5e601ca11721cf17449"
                 },
                 "RUN_BOLTZ": {
                     "boltz": "2.2.1"
@@ -121,10 +121,10 @@
                 "T1026.yaml:md5,d41d8cd98f00b204e9800998ecf8427e"
             ]
         ],
-        "timestamp": "2026-05-29T12:02:37.248096039",
+        "timestamp": "2026-10-26T12:19:24.315484125",
         "meta": {
-            "nf-test": "0.9.5",
-            "nextflow": "26.04.0"
+            "nf-test": "0.9.4",
+            "nextflow": "26.04.6"
         }
     }
 }
