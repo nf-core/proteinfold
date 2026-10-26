@@ -56,11 +56,6 @@ jobs:
           max_shards: ${{ github.repository_owner == 'nf-core' && 15 || 8 }}
           group_by_image: true
 
-      - name: debug
-        run: |
-          echo '${{ steps.set-shards.outputs.matrix }}'
-          echo ${{ steps.set-shards.outputs.total_shards }}
-
   nf-test:
     name: "${{ matrix.profile }} | ${{ matrix.NXF_VER }} | ${{ matrix.tag.label }}"
     needs: [nf-test-changes]
@@ -106,6 +101,7 @@ jobs:
           shard: 1
           total_shards: 1
           tags: ${{ matrix.tag.tag }}
+          paths: ${{ matrix.tag.paths }}
 
       - name: Report test status
         if: ${{ always() }}

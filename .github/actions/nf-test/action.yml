@@ -11,8 +11,9 @@ inputs:
     description: "Total number of test shards(NOT the total number of matrix jobs)"
     required: true
   paths:
-    description: "Test paths"
+    description: "Selected test files to run instead of --changed-since"
     required: false
+    default: "[]"
   tags:
     description: "Tags to pass as argument for nf-test --tag parameter"
     required: false
@@ -60,12 +61,16 @@ runs:
       shell: bash
       env:
         NFT_WORKDIR: ${{ env.NFT_WORKDIR }}
+        TEST_PATHS: ${{ inputs.paths }}
       run: |
+        mapfile -t test_paths < <(jq -r '.[]' <<< "$TEST_PATHS")
+        if [[ "$TEST_PATHS" != '[]' && ${#test_paths[@]} -eq 0 ]]; then exit 1; fi
+        if (( ${#test_paths[@]} == 0 )); then test_paths=(--changed-since HEAD^); fi
         nf-test test \
           --profile=+${{ inputs.profile }} \
           $(if [ -n "${{ inputs.tags }}" ]; then echo "--tag ${{ inputs.tags }}"; fi) \
           --ci \
-          --changed-since HEAD^ \
+          "${test_paths[@]}" \
           --verbose \
           --tap=test.tap \
           --shard ${{ inputs.shard }}/${{ inputs.total_shards }}

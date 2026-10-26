@@ -70,21 +70,27 @@ runs:
             with open(sys.argv[1], newline='') as handle:
                 files = {row['filename'] for row in csv.DictReader(handle)}
         tags = set()
+        other = []
         for filename in files:
             with open(filename) as handle:
                 matches = re.findall(r'^    tag "(ci_img_[^"]+)"\s*$', handle.read(), re.MULTILINE)
-            if len(matches) != 1:
-                print('::warning::Image tags missing or ambiguous; running all tests together', file=sys.stderr)
-                print('[{"tag":"","label":"1/1 | all"}]')
+            if len(matches) > 1:
+                print('::warning::Ambiguous image tags; running all tests together', file=sys.stderr)
+                print('[{"tag":"","paths":"[]","label":"1/1 | all"}]')
                 sys.exit(0)
-            tags.add(matches[0])
-        if len(tags) > int(sys.argv[2]):
+            if matches:
+                tags.add(matches[0])
+            else:
+                other.append(os.path.relpath(filename))
+        groups = [(tag, '[]') for tag in sorted(tags)]
+        if other:
+            groups.append(('', json.dumps(sorted(other))))
+        if len(groups) > int(sys.argv[2]):
             print('::warning::Image groups exceed max_shards; running all tests together', file=sys.stderr)
-            print('[{"tag":"","label":"1/1 | all"}]')
+            print('[{"tag":"","paths":"[]","label":"1/1 | all"}]')
             sys.exit(0)
-        names = sorted(tags)
-        matrix = [{'tag': tag, 'label': f'{index}/{len(names)} | {tag.removeprefix("ci_img_")}'}
-                  for index, tag in enumerate(names, 1)]
+        matrix = [{'tag': tag, 'paths': paths, 'label': f'{index}/{len(groups)} | {tag.removeprefix("ci_img_") if tag else "other"}'}
+                  for index, (tag, paths) in enumerate(groups, 1)]
         print(json.dumps(matrix, separators=(',', ':')))
         PY
           ) || { echo "Cannot assign image groups"; exit 1; }
