@@ -71,8 +71,10 @@ process COLABFOLD_BATCH {
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        alphafold_colabfold: \$(pip list | grep "^alphafold-colabfold" | awk '{print \$2}' 2>/dev/null || echo "unknown")
-        colabfold_batch: \$(pip list | grep "^colabfold" | awk '{print \$2}' 2>/dev/null || echo "unknown")
+        alphafold_colabfold: \$(pip list | awk '\$1 == "alphafold-colabfold" {print \$2}' 2>/dev/null || echo "unknown")
+        colabfold_batch: \$(pip list | awk '\$1 == "colabfold" {print \$2}' 2>/dev/null || echo "unknown")
+        colabfold_binaries: \$(pip list | awk '\$1 == "colabfold-binaries" {print \$2}' 2>/dev/null || echo "unknown")
+        colabfold_legacy_kernels: \$(pip list | awk '\$1 == "colabfold-legacy-kernels" {print \$2}' 2>/dev/null || echo "unknown")
     END_VERSIONS
     """
 
@@ -106,8 +108,10 @@ process COLABFOLD_BATCH {
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        alphafold_colabfold: \$(pip list | grep "^alphafold-colabfold" | awk '{print \$2}' 2>/dev/null || echo "unknown")
-        colabfold_batch: \$(pip list | grep "^colabfold" | awk '{print \$2}' 2>/dev/null || echo "unknown")
+        alphafold_colabfold: \$(pip list | awk '\$1 == "alphafold-colabfold" {print \$2}' 2>/dev/null || echo "unknown")
+        colabfold_batch: \$(pip list | awk '\$1 == "colabfold" {print \$2}' 2>/dev/null || echo "unknown")
+        colabfold_binaries: \$(pip list | awk '\$1 == "colabfold-binaries" {print \$2}' 2>/dev/null || echo "unknown")
+        colabfold_legacy_kernels: \$(pip list | awk '\$1 == "colabfold-legacy-kernels" {print \$2}' 2>/dev/null || echo "unknown")
     END_VERSIONS
     """
 }
