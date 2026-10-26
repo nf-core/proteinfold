@@ -3,6 +3,7 @@ nextflow_pipeline {
     name "Test colabfold webserver mode stub"
     script "../main.nf"
     tag "pipeline"
+    tag "ci_img_cf"
     tag "test_colabfold_webserver"
     profile "test_colabfold_webserver"
 

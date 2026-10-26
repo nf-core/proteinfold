@@ -5,6 +5,7 @@ nextflow_process {
     process "SPLIT_MSA"
 
     tag "modules"
+    tag "ci_img_misc"
     tag "modules_local"
     tag "split_msa"
     profile "test_nostub"

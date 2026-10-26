@@ -6,6 +6,7 @@ nextflow_process {
     config "./nextflow.config"
 
     tag "modules"
+    tag "ci_img_af2"
     tag "modules_local"
     tag "run_alphafold2_msa"
     profile "test_nostub"

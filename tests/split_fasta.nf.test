@@ -3,6 +3,7 @@ nextflow_pipeline {
     name "Test split_fasta mode stub"
     script "../main.nf"
     tag "pipeline"
+    tag "ci_img_misc"
     tag "test_split_fasta"
     profile "test_split_fasta"
 

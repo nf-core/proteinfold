@@ -5,6 +5,7 @@ nextflow_process {
     process "BOLTZ_YAML_TO_COLABFOLD_FASTA"
 
     tag "modules"
+    tag "ci_img_boltz"
     tag "modules_local"
     tag "boltz_yaml_to_colabfold_fasta"
     profile "test_nostub"

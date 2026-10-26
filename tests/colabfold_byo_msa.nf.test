@@ -3,6 +3,7 @@ nextflow_pipeline {
     name "Test ColabFold BYO A3M input"
     script "../main.nf"
     tag "pipeline"
+    tag "ci_img_cf"
     tag "test_colabfold_byo_msa"
     profile "test_colabfold_local"
 

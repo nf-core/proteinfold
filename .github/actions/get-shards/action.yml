@@ -10,6 +10,10 @@ inputs:
   tags:
     description: "Tags to pass as argument for nf-test --tag parameter"
     required: false
+  group_by_image:
+    description: "Use one image-affinity matrix entry per selected tag"
+    required: false
+    default: "false"
 outputs:
   shard:
     description: "Array of shard numbers"
@@ -17,6 +21,9 @@ outputs:
   total_shards:
     description: "Total number of shards"
     value: ${{ steps.shards.outputs.total_shards }}
+  matrix:
+    description: "Image-affinity matrix entries"
+    value: ${{ steps.shards.outputs.matrix }}
 runs:
   using: "composite"
   steps:
@@ -28,41 +35,81 @@ runs:
       id: shards
       shell: bash
       run: |
-        # Run nf-test with dynamic parameter
-        nftest_output=$(nf-test test \
-          --profile +docker \
-          $(if [ -n "${{ inputs.tags }}" ]; then echo "--tag ${{ inputs.tags }}"; fi) \
-          --dry-run \
-          --ci \
-          --changed-since HEAD^) || {
-            echo "nf-test command failed with exit code $?"
-            echo "Full output: $nftest_output"
-            exit 1
-        }
-        echo "nf-test dry-run output: $nftest_output"
-
-        # Default values for shard and total_shards
         shard="[]"
         total_shards=0
+        matrix="[]"
 
-        # Check if there are related tests
-        if echo "$nftest_output" | grep -q 'No tests to execute'; then
-          echo "No related tests found."
+        run_dry() {
+          args=(--profile +docker --dry-run --ci --changed-since HEAD^)
+          if [[ -n "$1" ]]; then args+=(--tag "$1"); fi
+          if [[ -n "${2:-}" ]]; then args+=(--csv "$2"); fi
+          nf-test test "${args[@]}"
+        }
+        count_tests() {
+          sed -n 's|.*Executed \([0-9]*\) tests.*|\1|p' | tail -1
+        }
+
+        if [[ "${{ inputs.group_by_image }}" == "true" ]]; then
+          reports="$RUNNER_TEMP/nf-test-image-groups"
+          mkdir -p "$reports"
+          selected_output=$(run_dry '' "$reports/all.csv") || { echo "nf-test dry-run failed"; exit 1; }
+          selected_count=$(printf '%s\n' "$selected_output" | count_tests)
+          if (( ${selected_count:-0} > 0 )) && [[ ! -f "$reports/all.csv" ]]; then
+            echo "nf-test selected tests but did not write a CSV report"
+            exit 1
+          fi
+          matrix=$(python - "$reports/all.csv" "${{ inputs.max_shards }}" <<'PY'
+        import csv
+        import json
+        import os
+        import re
+        import sys
+
+        files = set()
+        if os.path.exists(sys.argv[1]):
+            with open(sys.argv[1], newline='') as handle:
+                files = {row['filename'] for row in csv.DictReader(handle)}
+        tags = set()
+        other = []
+        for filename in files:
+            with open(filename) as handle:
+                matches = re.findall(r'^    tag "(ci_img_[^"]+)"\s*$', handle.read(), re.MULTILINE)
+            if len(matches) > 1:
+                print('::warning::Ambiguous image tags; running all tests together', file=sys.stderr)
+                print('[{"tag":"","paths":"[]","label":"1/1 | all"}]')
+                sys.exit(0)
+            if matches:
+                tags.add(matches[0])
+            else:
+                other.append(os.path.relpath(filename))
+        groups = [(tag, '[]') for tag in sorted(tags)]
+        if other:
+            groups.append(('', json.dumps(sorted(other))))
+        if len(groups) > int(sys.argv[2]):
+            print('::warning::Image groups exceed max_shards; running all tests together', file=sys.stderr)
+            print('[{"tag":"","paths":"[]","label":"1/1 | all"}]')
+            sys.exit(0)
+        matrix = [{'tag': tag, 'paths': paths, 'label': f'{index}/{len(groups)} | {tag.removeprefix("ci_img_") if tag else "other"}'}
+                  for index, (tag, paths) in enumerate(groups, 1)]
+        print(json.dumps(matrix, separators=(',', ':')))
+        PY
+          ) || { echo "Cannot assign image groups"; exit 1; }
+          shard='["1"]'
+          total_shards=$(jq length <<< "$matrix")
         else
-          # Extract the number of related tests
-          number_of_shards=$(echo "$nftest_output" | sed -n 's|.*Executed \([0-9]*\) tests.*|\1|p')
+          nftest_output=$(run_dry "${{ inputs.tags }}") || { echo "nf-test command failed"; exit 1; }
+          number_of_shards=$(printf '%s\n' "$nftest_output" | count_tests)
           if [[ -n "$number_of_shards" && "$number_of_shards" -gt 0 ]]; then
-            shards_to_run=$(( $number_of_shards < ${{ inputs.max_shards }} ? $number_of_shards : ${{ inputs.max_shards }} ))
+            shards_to_run=$(( number_of_shards < ${{ inputs.max_shards }} ? number_of_shards : ${{ inputs.max_shards }} ))
             shard=$(seq 1 "$shards_to_run" | jq -R . | jq -c -s .)
             total_shards="$shards_to_run"
-          else
-            echo "Unexpected output format. Falling back to default values."
           fi
         fi
 
         # Write to GitHub Actions outputs
         echo "shard=$shard" >> $GITHUB_OUTPUT
         echo "total_shards=$total_shards" >> $GITHUB_OUTPUT
+        echo "matrix=$matrix" >> $GITHUB_OUTPUT
 
         # Debugging output
         echo "Final shard array: $shard"

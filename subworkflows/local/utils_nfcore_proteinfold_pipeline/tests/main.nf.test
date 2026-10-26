@@ -4,6 +4,7 @@ nextflow_workflow {
     script "subworkflows/local/utils_nfcore_proteinfold_pipeline/tests/collect_multiqc_metrics_probe.nf"
     workflow "COLLECT_MULTIQC_METRICS_PROBE"
     tag "pipeline"
+    tag "ci_img_misc"
     tag "multiqc"
     tag "channel_shape"
 

@@ -5,6 +5,7 @@ nextflow_process {
     process "ASSEMBLE_MODELCIF"
 
     tag "modelcif_sw_entries"
+    tag "ci_img_misc"
     config "./assemble_modelcif_software.config"
 
     test("dummy inputs include model software and software groups") {

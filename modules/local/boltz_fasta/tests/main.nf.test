@@ -5,6 +5,7 @@ nextflow_process {
     process "BOLTZ_FASTA"
 
     tag "modules"
+    tag "ci_img_boltz"
     tag "modules_local"
     tag "boltz_fasta"
     profile "test_nostub"
