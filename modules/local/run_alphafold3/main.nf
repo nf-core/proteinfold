@@ -80,8 +80,9 @@ process RUN_ALPHAFOLD3 {
         --output_dir="\$PWD" \\
         ${args}
 
-    # AlphaFold3 output directory/name from the input JSON
-    name=\$(jq -r '.name' ${json})
+    # AlphaFold3 output directory/name from the input JSON.
+    # AlphaFold3 writes outputs under the sanitised (lowercased) job name.
+    name=\$(jq -r '.name' ${json} | tr '[:upper:] ' '[:lower:]_' | tr -cd 'a-z0-9_.-')
 
     if [[ -z "\$name" || "\$name" == "null" ]]; then
         echo "ERROR: Could not read .name from input JSON: ${json}"
