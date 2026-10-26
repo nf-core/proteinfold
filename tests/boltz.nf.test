@@ -3,6 +3,7 @@ nextflow_pipeline {
     name "Test boltz mode stub"
     script "../main.nf"
     tag "pipeline"
+    tag "ci_img_boltz"
     tag "test_boltz"
     profile "test_boltz"
 

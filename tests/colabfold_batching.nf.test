@@ -3,6 +3,7 @@ nextflow_pipeline {
     name "Test ColabFold MSA batching"
     script "../main.nf"
     tag "pipeline"
+    tag "ci_img_cf"
     tag "test_colabfold_batching"
     profile "test_colabfold_local"
 

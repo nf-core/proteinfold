@@ -5,6 +5,7 @@ nextflow_process {
     process "GENERATE_MULTIQC_CONTENTS"
 
     tag "modules"
+    tag "ci_img_misc"
     tag "modules_local"
     tag "generate_multiqc_contents"
     tag "multiqc"

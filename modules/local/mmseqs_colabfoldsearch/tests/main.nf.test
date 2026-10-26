@@ -6,6 +6,7 @@ nextflow_process {
     config "./nextflow.config"
 
     tag "modules"
+    tag "ci_img_cf"
     tag "modules_local"
     tag "mmseqs_colabfoldsearch"
     profile "test_nostub"

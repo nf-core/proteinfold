@@ -3,6 +3,7 @@ nextflow_pipeline {
     name "Test colabfold_download mode stub"
     script "../main.nf"
     tag "pipeline"
+    tag "ci_img_cf"
     tag "test_colabfold_download"
     profile "test_colabfold_download"
 

@@ -6,6 +6,7 @@ nextflow_process {
     profile "test"
 
     tag "modules"
+    tag "ci_img_cf"
     tag "modules_local"
     tag "mmseqs_colabfoldsearch"
 

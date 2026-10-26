@@ -3,6 +3,7 @@ nextflow_process {
     name "Test metrics are inserted properly by ASSEMBLE_MODELCIF process"
     script "../modules/local/assemble_modelcif/main.nf"
     process "ASSEMBLE_MODELCIF"
+    tag "ci_img_misc"
 
     tag "assemble_modelcif"
     config "./assemble_modelcif_software.config"

@@ -4,6 +4,7 @@ nextflow_process {
     script "../main.nf"
     process "RUN_ALPHAFOLD3_DATAPIPELINE"
     tag "modules"
+    tag "ci_img_af3"
     tag "modules_local"
     tag "run_alphafold3_datapipeline"
     profile "test_nostub"

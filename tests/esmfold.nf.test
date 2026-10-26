@@ -3,6 +3,7 @@ nextflow_pipeline {
     name "Test esmfold mode stub"
     script "../main.nf"
     tag "pipeline"
+    tag "ci_img_esmfold"
     tag "test_esmfold"
     profile "test_esmfold"
 
