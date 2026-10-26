@@ -11,7 +11,7 @@ process FASTA_TO_ALPHAFOLD3_JSON {
     tuple val(meta), path(fasta)
 
     output:
-    tuple val(meta), path("*.json"), emit: json
+    tuple val(meta), path("*.json", includeInputs: true), emit: json    
     path "versions.yml"            , emit: versions
 
     when:
