@@ -523,12 +523,20 @@ def read_json(name, json_files, struct_files=None):
                 # Can't just used format_msa_rows since there's FASTA headers in the json content
                 unpaired_msa_rows = []
                 for chain in data['sequences']:
-                    unpaired_MSA = chain['protein']['unpairedMsa']
+                    # Ligands and DNA have no MSA; RNA MSAs are stored under 'rna'
+                    entity = chain.get('protein') or chain.get('rna')
+                    if entity is None:
+                        continue
+                    unpaired_MSA = entity.get('unpairedMsa') or ''
                     unpaired_msa_lines = [''.join(c for c in line if not c.islower()) for line in unpaired_MSA.split("\n") if line.strip() and not line.startswith(">")]
                     unpaired_msa_rows.append([[str(AA_to_int.get(residue, 20)) for residue in line] for line in unpaired_msa_lines])
 
-                chains = len(data['sequences'])
+                chains = len(unpaired_msa_rows)
                 final_rows = []
+                if chains == 0:
+                    write_tsv(f"{name}_msa.tsv", final_rows)
+                    continue
+
                 # Exclude the paired block for now; use the unpaired MSA only.
                 msa_widths = [len(unpaired_msa_rows[chain][0]) if unpaired_msa_rows[chain] else 0 for chain in range(chains)]
                 msa_heights = [len(unpaired_msa_rows[chain]) for chain in range(chains)]
