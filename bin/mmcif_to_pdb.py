@@ -38,6 +38,12 @@ def mmcif_to_pdb(mmcif_file, pdb_file):
     parser = PDB.MMCIFParser(QUIET=True)
     structure = parser.get_structure("structure", mmcif_file)
 
+    # PDB residue names are limited to 3 characters. AlphaFold3 names SMILES
+    # ligands LIG_<chain>, which would shift the PDB columns, so truncate them.
+    for residue in structure.get_residues():
+        if len(residue.resname) > 3:
+            residue.resname = residue.resname[:3]
+
     # Write to PDB format
     io = PDB.PDBIO()
     io.set_structure(structure)

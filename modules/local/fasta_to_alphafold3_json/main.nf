@@ -11,7 +11,7 @@ process FASTA_TO_ALPHAFOLD3_JSON {
     tuple val(meta), path(fasta)
 
     output:
-    tuple val(meta), path("*.json"), emit: json
+    tuple val(meta), path("*.json", includeInputs: true), emit: json    
     path "versions.yml"            , emit: versions
 
     when:
@@ -21,10 +21,16 @@ process FASTA_TO_ALPHAFOLD3_JSON {
     def args    = task.ext.args ?: ''
     def prefix  = task.ext.prefix ?: "${meta.id}"
     """
-    fasta_to_alphafold3_json.py \\
-        ${fasta} \\
-        ${prefix} \\
-        $args
+    if [[ "${fasta}" == *.json ]]; then
+        cp -L "${fasta}" input.tmp
+        rm "${fasta}"
+        mv input.tmp "${prefix}.json"
+    else
+        fasta_to_alphafold3_json.py \\
+            ${fasta} \\
+            ${prefix} \\
+            $args
+    fi
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
