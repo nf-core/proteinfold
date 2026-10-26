@@ -1,13 +1,18 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import pickle
 import os
 import argparse
 import json
+import subprocess
+import sys
+import tempfile
+import warnings
 #import torch moved to a conditional import since too bulky import if not used
 import numpy as np
 import csv
 import string
+import re
 from utils import plddt_from_struct_b_factor, get_chain_ids
 
 # TODO: Issue #309, make into a proper separate process, it its own module so that dependencies can be managed better
@@ -82,16 +87,30 @@ def format_iptm_rows(chain_pair_entries, chain_ids=None):
                 break
         return result
 
+    sorted_entries = sorted(chain_pair_entries.items(), key=lambda item: sort_model_label(item[0]))
+
     if chain_ids:
         #would be better with some model_id sorting
-        iptm_rows = [[""]+[f"{chain_ids[idx[0]]}:{chain_ids[idx[1]]}" for idx, val in next(iter(chain_pair_entries.values()))]]
+        iptm_rows = [[""]+[f"{chain_ids[idx[0]]}:{chain_ids[idx[1]]}" for idx, val in sorted_entries[0][1]]]
     else:
-        iptm_rows = [[""]+[f"{idx_to_letter(idx[0])}:{idx_to_letter(idx[1])}" for idx, val in next(iter(chain_pair_entries.values()))]]
+        iptm_rows = [[""]+[f"{idx_to_letter(idx[0])}:{idx_to_letter(idx[1])}" for idx, val in sorted_entries[0][1]]]
 
-    for model_idx, chain_pair_entries_values in chain_pair_entries.items():
+    for model_idx, chain_pair_entries_values in sorted_entries:
         iptm_rows.append([model_idx]+[f"{val:.4f}" for idx, val in chain_pair_entries_values])
 
     return [list(row) for row in zip(*iptm_rows)]
+
+
+def format_pair_score_rows(pair_score_entries, pair_labels=None):
+    if pair_labels is None:
+        pair_labels = sorted({label for score_values in pair_score_entries.values() for label, _ in score_values})
+
+    rows = [[""] + pair_labels]
+    for model_idx, score_values in sorted(pair_score_entries.items(), key=lambda item: sort_model_label(item[0])):
+        score_map = {label: value for label, value in score_values}
+        rows.append([model_idx] + [f"{score_map[label]:.4f}" if label in score_map else "n/a" for label in pair_labels])
+
+    return [list(row) for row in zip(*rows)]
 
 
 def chain_iptm_matrix_to_pairs(iptm_matrix):
@@ -112,30 +131,173 @@ def write_tsv(file_path, rows):
         writer = csv.writer(out_f, delimiter='\t')
         writer.writerows(rows)
 
+def sort_model_label(label):
+    try:
+        return (0, int(label))
+    except (TypeError, ValueError):
+        return (1, str(label))
+
+def infer_model_rank(file_path):
+    normalized_path = file_path.replace(os.sep, "/")
+    rank_patterns = [
+        r"ranked_(\d+)",
+        r"_rank_(\d+)",
+        r"-rank(\d+)(?:/|$)",
+        r"_model_(\d+)",
+    ]
+
+    for pattern in rank_patterns:
+        match = re.search(pattern, normalized_path)
+        if match:
+            return int(match.group(1))
+
+    return None
+
+
+def sort_paths_by_rank(paths):
+    def sort_key(path):
+        rank = infer_model_rank(path)
+        if rank is None:
+            warnings.warn(f"Unable to infer model rank from path: {path}; falling back to basename sort")
+            return (1, os.path.basename(path))
+        return (0, rank, os.path.basename(path))
+
+    return sorted(paths, key=sort_key)
+
+
+def build_struct_map(struct_files):
+    struct_map = {}
+    for idx, struct_file in enumerate(sort_paths_by_rank(struct_files)):
+        rank = infer_model_rank(struct_file)
+        if rank is None:
+            warnings.warn(f"Unable to infer model rank from path: {struct_file}; falling back to index {idx}")
+        struct_map[rank if rank is not None else idx] = struct_file
+    return struct_map
+
+
+def resolve_struct_for_model(struct_map, model_id):
+    if model_id in struct_map:
+        return struct_map[model_id]
+    try:
+        numeric_model_id = int(model_id)
+    except (TypeError, ValueError):
+        return None
+    return struct_map.get(numeric_model_id)
+
+
+def parse_ipsae_text_report(report_path):
+    pair_iptm_scores = []
+    pair_ipsae_scores = []
+    max_iptm = None
+    max_ipsae = None
+
+    with open(report_path) as handle:
+        for line in handle:
+            fields = line.split()
+            if len(fields) < 10 or fields[4] != "max":
+                continue
+
+            pair_label = f"{fields[0]}:{fields[1]}"
+            ipsae_score = float(fields[5])
+            iptm_score = float(fields[9])
+
+            pair_iptm_scores.append((pair_label, iptm_score))
+            pair_ipsae_scores.append((pair_label, ipsae_score))
+            max_iptm = iptm_score if max_iptm is None else max(max_iptm, iptm_score)
+            max_ipsae = ipsae_score if max_ipsae is None else max(max_ipsae, ipsae_score)
+
+    if max_iptm is None or max_ipsae is None:
+        return None
+
+    return round(max_iptm, 3), pair_iptm_scores, round(max_ipsae, 3), pair_ipsae_scores
+
+
+def derive_interface_scores(pae_matrix, struct_file, source_label):
+    try:
+        if len(get_chain_ids(struct_file)) < 2:
+            print(f"Skipping derived interface scores for {source_label}: fewer than 2 chains in {struct_file}")
+            return None
+    except Exception as e:
+        print(f"Skipping derived interface scores for {source_label}: failed to inspect chains in {struct_file}: {e}")
+        return None
+
+    try:
+        with tempfile.TemporaryDirectory(prefix="ipsae_") as temp_dir:
+            struct_basename = os.path.basename(struct_file)
+            staged_struct = os.path.join(temp_dir, struct_basename)
+            pae_json = os.path.join(temp_dir, "pae.json")
+
+            try:
+                os.symlink(os.path.abspath(struct_file), staged_struct)
+            except OSError:
+                with open(struct_file, "rb") as src, open(staged_struct, "wb") as dst:
+                    dst.write(src.read())
+
+            with open(pae_json, "w") as handle:
+                json.dump({"pae": np.asarray(pae_matrix).tolist()}, handle)
+
+            subprocess.run(
+                [
+                    sys.executable,
+                    os.path.join(os.path.dirname(__file__), "ipsae.py"),
+                    pae_json,
+                    staged_struct,
+                    "10",
+                    "15",
+                ],
+                check=True,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.PIPE,
+                text=True,
+            )
+
+            report_path = os.path.join(
+                temp_dir,
+                f"{os.path.splitext(struct_basename)[0]}_10_15.txt",
+            )
+            return parse_ipsae_text_report(report_path)
+    except subprocess.CalledProcessError as e:
+        stderr = e.stderr.strip() if e.stderr else "no stderr"
+        print(f"Skipping derived interface scores for {source_label}: ipsae.py failed for {struct_file}: {stderr}")
+        return None
+    except (OSError, ValueError, json.JSONDecodeError) as e:
+        print(f"Skipping derived interface scores for {source_label}: {e}")
+        return None
+
 def extract_structs_plddt_to_tsv(name, structures):
     """
     Write out a tsv file contain pLDDTs for reading by MultiQC in nf-core/proteinfold
     Uses utils function with BioPython PDB package to extract residue pLDDT values from the b-factor column.
     """
-    plddt_cols = [plddt_from_struct_b_factor(structure) for structure in structures]
+    sorted_structures = sort_paths_by_rank(structures)
+    plddt_cols = [plddt_from_struct_b_factor(structure) for structure in sorted_structures]
     res_counts = [len(plddt_col) for plddt_col in plddt_cols]
 
     if len(set(res_counts)) != 1:
         raise ValueError("Not all structures have the same number of residues!")
 
-    rank_names = [f"rank_{i}" for i in range(len(structures))]
+    rank_names = []
+    for idx, structure in enumerate(sorted_structures):
+        rank = infer_model_rank(structure)
+        if rank is None:
+            warnings.warn(f"Unable to infer model rank from path: {structure}; falling back to index {idx}")
+        rank_names.append(f"rank_{rank}" if rank is not None else f"rank_{idx}")
     # Create header as the first row
     plddt_rows =  [["Positions"] + rank_names]
     res_id_col = list(range(len(plddt_cols[0])))
-    plddt_rows.extend(zip(res_id_col, *plddt_cols))  # Combine lists column-wise to make rows
+    plddt_rows.extend([list(row) for row in zip(res_id_col, *plddt_cols)])  # Combine lists column-wise to make rows
     write_tsv(f"{name}_plddt.tsv", plddt_rows)
 
-def read_pkl(name, pkl_files):
+def read_pkl(name, pkl_files, struct_files=None):
     """
     Adapted from the Galaxy AlphaFold tool (https://github.com/usegalaxy-au/tools-au/blob/de94df520c8dc7b8652aedb92e90f6ebb312f95f/tools/alphafold/scripts/outputs.py), originally authored by @neoformit and @graceahall and funded by Australian Biocommons and QCIF Australia.
     """
     ptm_data = {}
     iptm_data = {}
+    ipsae_data = {}
+    chainwise_iptm = {}
+    chainwise_ipsae = {}
+    struct_map = build_struct_map(struct_files) if struct_files else {}
     for pkl_file in pkl_files:
         print(f"Processing {pkl_file}")
         data = pickle.load(open(pkl_file, "rb"))
@@ -146,7 +308,7 @@ def read_pkl(name, pkl_files):
         elif pkl_file.endswith("features.pkl"): # AlphaFold2.3
             try:
                 N = data["num_alignments"][0] #monomer
-            except:
+            except (IndexError, KeyError, TypeError):
                 N = data["num_alignments"] #multimer
             write_tsv(f"{name}_msa.tsv", format_msa_rows(data["msa"][:N]))
         else:
@@ -167,6 +329,19 @@ def read_pkl(name, pkl_files):
 
             if 'iptm' in data:
                 iptm_data[model_id] = f"{np.round(data['iptm'],3)}\n"
+
+            struct_file = resolve_struct_for_model(struct_map, model_id)
+            if 'predicted_aligned_error' in data.keys() and struct_file:
+                derived_scores = derive_interface_scores(np.array(data['predicted_aligned_error']), struct_file, pkl_file)
+                if derived_scores:
+                    max_iptm, pair_iptm_scores, max_ipsae, pair_scores = derived_scores
+                    if pair_iptm_scores:
+                        chainwise_iptm[model_id] = pair_iptm_scores
+                    if model_id not in iptm_data and max_iptm > 0:
+                        iptm_data[model_id] = f"{max_iptm:.3f}\n"
+                    ipsae_data[model_id] = f"{max_ipsae:.3f}\n"
+                    if pair_scores:
+                        chainwise_ipsae[model_id] = pair_scores
     if ptm_data:
         ptm_rows = sorted([[k, v.strip()] for k, v in ptm_data.items()], key=lambda x: x[0])
         write_tsv(f"{name}_ptm.tsv", ptm_rows)
@@ -174,6 +349,16 @@ def read_pkl(name, pkl_files):
     if iptm_data:
         iptm_rows = sorted([[k, v.strip()] for k, v in iptm_data.items()], key=lambda x: x[0])
         write_tsv(f"{name}_iptm.tsv", iptm_rows)
+
+    if chainwise_iptm:
+        write_tsv(f"{name}_chainwise_iptm.tsv", format_pair_score_rows(chainwise_iptm))
+
+    if ipsae_data:
+        ipsae_rows = sorted([[k, v.strip()] for k, v in ipsae_data.items()], key=lambda x: x[0])
+        write_tsv(f"{name}_ipsae.tsv", ipsae_rows)
+
+    if chainwise_ipsae:
+        write_tsv(f"{name}_chainwise_ipsae.tsv", format_pair_score_rows(chainwise_ipsae))
 
 def read_paired_a3m(name, a3m_file):
     msa_rows = a3m_to_int(a3m_file)
@@ -219,20 +404,41 @@ def read_a3m(name, a3m_files):
 
     write_tsv(f"{name}_msa.tsv", format_msa_rows(final_rows))
 
-def read_npz(name, npz_files):
-   for idx, npz_file in enumerate(npz_files):
+def read_npz(name, npz_files, struct_files=None):
+    ipsae_rows = []
+    chainwise_ipsae = {}
+    struct_map = build_struct_map(struct_files) if struct_files else {}
+    for idx, npz_file in enumerate(npz_files):
         data = np.load(npz_file)
-       #Boltz PAE files if --write_full_pae is used
+        #Boltz PAE files if --write_full_pae is used
         if npz_file.split('/')[-1].startswith('pae') and npz_file.endswith('.npz'):
             model_id = os.path.basename(npz_file).split('_model_')[-1].split('.npz')[0]
             write_tsv(f"{name}_{model_id}_pae.tsv", format_pae_rows(data["pae"]))
+            struct_file = resolve_struct_for_model(struct_map, model_id)
+            if struct_file:
+                derived_scores = derive_interface_scores(np.array(data["pae"]), struct_file, npz_file)
+                if derived_scores:
+                    _, _, max_ipsae, pair_scores = derived_scores
+                    ipsae_rows.append((f"{model_id}", f"{max_ipsae:.3f}"))
+                    if pair_scores:
+                        chainwise_ipsae[int(model_id)] = pair_scores
+    if len(ipsae_rows) > 0:
+        write_tsv(f"{name}_ipsae.tsv", sorted(ipsae_rows, key=lambda x: int(x[0])))
+    if len(chainwise_ipsae) > 0:
+        write_tsv(f"{name}_chainwise_ipsae.tsv", format_pair_score_rows(dict(sorted(chainwise_ipsae.items(), key=lambda x: x[0]))))
 
 # Boltz MSA processing
 def read_csv(name, csv_files):
-    if not os.path.isfile(csv_files[0]): return #TODO: Fix temporary workaround
+    if not os.path.isfile(csv_files[0]):
+        return  # TODO: Fix temporary workaround
+
+    def _csv_msa_idx(csv_path):
+        base = os.path.basename(csv_path)
+        return base.rsplit("_", 1)[-1].replace(".csv", "")
+
     msa_rows = {}
     unpaired_msa_rows = {}
-    for csv_file in sorted(csv_files, key=lambda x: int(x.split('_')[-1].split('.csv')[0])):
+    for csv_file in sorted(csv_files, key=lambda x: int(_csv_msa_idx(x))):
         msa_lines = []
         unpaired_msa_lines = []
         with open(csv_file) as f:
@@ -242,36 +448,47 @@ def read_csv(name, csv_files):
                     unpaired_msa_lines.append(''.join(c for c in line.strip('\n').split(',')[1] if not c.islower()))
                 else:
                     msa_lines.append(''.join(c for c in line.strip('\n').split(',')[1] if not c.islower()))
-        msa_rows[csv_file.split('_')[-1].split('.csv')[0]] = [[str(AA_to_int.get(residue, 20)) for residue in line] for line in msa_lines]
-        unpaired_msa_rows[csv_file.split('_')[-1].split('.csv')[0]] = [[str(AA_to_int.get(residue, 20)) for residue in line] for line in unpaired_msa_lines]
+        idx = _csv_msa_idx(csv_file)
+        msa_rows[idx] = [[str(AA_to_int.get(residue, 20)) for residue in line] for line in msa_lines]
+        unpaired_msa_rows[idx] = [[str(AA_to_int.get(residue, 20)) for residue in line] for line in unpaired_msa_lines]
 
     # Get Chain to MSA mapping (ie non-redundant for homomers)
     # TODO: Make this explicit input
     with open(f'boltz_results_{name}/processed/manifest.json') as f:
         manifest = json.load(f)
 
+    chain_msa_ids = [chain["msa_id"].split("_")[-1] for chain in manifest["records"][0]["chains"] if chain["msa_id"] != -1]
+    available_chain_ids = [idx for idx in chain_msa_ids if idx in msa_rows]
+    if not available_chain_ids:
+        return
+
     final_rows = []
     # Paired
-    for i in range(len(msa_rows["0"])): #The number of paired lines is common to all MSAs
+    paired_row_count = min(len(msa_rows[idx]) for idx in available_chain_ids)
+    for i in range(paired_row_count): # conservatively use common paired depth across chains
         temp_row = []
         #This needs to be fixed if inference is batched in future.
         for chain in manifest["records"][0]["chains"]:
-            j = chain["msa_id"].split("_")[-1]
-            temp_row.extend(msa_rows[j][i])
+            if chain["msa_id"] != -1:
+                j = chain["msa_id"].split("_")[-1]
+                if j in msa_rows:
+                    temp_row.extend(msa_rows[j][i])
         final_rows.append(temp_row)
 
     # Un-paired
-    msa_widths = [len(msa_rows[chain["msa_id"].split("_")[-1]][0]) for chain in manifest["records"][0]["chains"]]
-    msa_heights = [len(unpaired_msa_rows[chain["msa_id"].split("_")[-1]]) for chain in manifest["records"][0]["chains"]]
+    msa_chain_ids = available_chain_ids
+    msa_widths = {idx: len(msa_rows[idx][0]) if len(msa_rows[idx]) > 0 else 0 for idx in msa_chain_ids}
+    msa_heights = [len(unpaired_msa_rows[idx]) for idx in msa_chain_ids]
 
     cum_total_rows = np.cumsum(msa_heights)
 
-    for row_idx in range(cum_total_rows[-1]):
+    total_unpaired_rows = int(cum_total_rows[-1]) if len(cum_total_rows) > 0 else 0
+    for row_idx in range(total_unpaired_rows):
         temp_row = []
 
-        for i, chain in enumerate(manifest["records"][0]["chains"]):
-            msa = unpaired_msa_rows[chain["msa_id"].split("_")[-1]]
-            width = msa_widths[i]
+        for i, idx in enumerate(msa_chain_ids):
+            msa = unpaired_msa_rows[idx]
+            width = msa_widths[idx]
             if i == 0:
                 minrow = 0
             else:
@@ -287,41 +504,33 @@ def read_csv(name, csv_files):
 
     write_tsv(f"{name}_msa.tsv", final_rows)
 
-def read_json(name, json_files):
+def read_json(name, json_files, struct_files=None):
     ptm_data = {}
     iptm_data = {}
+    ipsae_data = {}
+    chainwise_iptm = {}
+    chainwise_ipsae = {}
     chain_pair_iptm_data = {} # For iPTM data to be converted into formatted pairs with non-self elements
     chain_pair_entries = {}
     chainwise_ptms = {}
     chain_ids = []
+    struct_map = build_struct_map(struct_files) if struct_files else {}
 
     for idx, json_file in enumerate(json_files):
         with open(json_file, 'r') as f:
             data = json.load(f)
             if json_file.endswith("_data.json"): #AF3 output with MSA info
                 # Can't just used format_msa_rows since there's FASTA headers in the json content
-                paired_msa_rows = []
                 unpaired_msa_rows = []
                 for chain in data['sequences']:
                     unpaired_MSA = chain['protein']['unpairedMsa']
                     unpaired_msa_lines = [''.join(c for c in line if not c.islower()) for line in unpaired_MSA.split("\n") if line.strip() and not line.startswith(">")]
                     unpaired_msa_rows.append([[str(AA_to_int.get(residue, 20)) for residue in line] for line in unpaired_msa_lines])
-                    paired_MSA = chain['protein']['pairedMsa']
-                    paired_msa_lines = [''.join(c for c in line if not c.islower()) for line in paired_MSA.split("\n") if line.strip() and not line.startswith(">")]
-                    paired_msa_rows.append([[str(AA_to_int.get(residue, 20)) for residue in line] for line in paired_msa_lines])
 
                 chains = len(data['sequences'])
                 final_rows = []
-                # Paired
-                for i in range(len(paired_msa_rows[0])): #The number of paired lines is common to all MSAs
-                    temp_row = []
-                    #This needs to be fixed if inference is batched in future.
-                    for j in range(chains):
-                        temp_row.extend(paired_msa_rows[j][i])
-                    final_rows.append(temp_row)
-
-                # Un-paired
-                msa_widths = [len(paired_msa_rows[chain][0]) for chain in range(chains)]
+                # Exclude the paired block for now; use the unpaired MSA only.
+                msa_widths = [len(unpaired_msa_rows[chain][0]) if unpaired_msa_rows[chain] else 0 for chain in range(chains)]
                 msa_heights = [len(unpaired_msa_rows[chain]) for chain in range(chains)]
 
                 cum_total_rows = np.cumsum(msa_heights)
@@ -344,6 +553,8 @@ def read_json(name, json_files):
                             temp_row.extend(["21"] * width) #gap
                     final_rows.append(temp_row)
                 write_tsv(f"{name}_msa.tsv", final_rows)
+                continue  # _data.json contains only MSA; no PAE or score fields to process
+
             #AF3 output with PAE info, or HF3 PAE data. TODO: Need to make sure the workflow points to [protein]/[protein]_rank1/all_results.json
 
             # TODO: I think I need to capture model_id and inference_id  -- MUST FIX since this is so fragile and will be different for different programs.
@@ -378,6 +589,19 @@ def read_json(name, json_files):
                 if data['iptm']: #ie not null
                     iptm_data[model_id] = f"{np.round(data['iptm'],3)}\n"
 
+            struct_file = resolve_struct_for_model(struct_map, model_id)
+            if "pae" in data.keys() and struct_file:
+                derived_scores = derive_interface_scores(np.array(data['pae']), struct_file, json_file)
+                if derived_scores:
+                    max_iptm, pair_iptm_scores, max_ipsae, pair_scores = derived_scores
+                    if pair_iptm_scores and model_id not in chain_pair_entries:
+                        chainwise_iptm[model_id] = pair_iptm_scores
+                    if model_id not in iptm_data and max_iptm > 0:
+                        iptm_data[model_id] = f"{max_iptm:.3f}\n"
+                    ipsae_data[model_id] = f"{max_ipsae:.3f}\n"
+                    if pair_scores:
+                        chainwise_ipsae[model_id] = pair_scores
+
             if 'chain_pair_iptm' not in data.keys() and 'pair_chains_iptm' not in data.keys():
                 print(f"No chain-wise iPTM output in {json_file}, it was likely a monomer calculation")
             else:
@@ -391,6 +615,8 @@ def read_json(name, json_files):
                     basename = os.path.basename(json_file)
                     dirname = os.path.dirname(json_file)
                     pdb_name = ".".join(basename[11:].split('.')[:-1])+'.pdb' #TODO: Fix magic number
+                    if not os.path.isfile(pdb_name):
+                        pdb_name = ".".join(basename[11:].split('.')[:-1])+'.cif'
                     chain_ids = get_chain_ids(os.path.join(dirname,pdb_name))
                 else:
                     raise ValueError("No chain-wise iPTM data found in the JSON file.")
@@ -403,6 +629,8 @@ def read_json(name, json_files):
 
     if chain_pair_entries:
         write_tsv(f"{name}_chainwise_iptm.tsv", format_iptm_rows(chain_pair_entries, chain_ids=chain_ids))
+    elif chainwise_iptm:
+        write_tsv(f"{name}_chainwise_iptm.tsv", format_pair_score_rows(chainwise_iptm))
 
     if ptm_data:
         ptm_rows = [[k, v.strip()] for k, v in sorted(ptm_data.items(), key=lambda x: x[0])]
@@ -411,6 +639,13 @@ def read_json(name, json_files):
     if iptm_data:
         iptm_rows = [[k, v.strip()] for k, v in sorted(iptm_data.items(), key=lambda x: x[0])]
         write_tsv(f"{name}_iptm.tsv", iptm_rows)
+
+    if ipsae_data:
+        ipsae_rows = [[k, v.strip()] for k, v in sorted(ipsae_data.items(), key=lambda x: x[0])]
+        write_tsv(f"{name}_ipsae.tsv", ipsae_rows)
+
+    if chainwise_ipsae:
+        write_tsv(f"{name}_chainwise_ipsae.tsv", format_pair_score_rows(chainwise_ipsae))
 
 
 def read_pt(name, pt_files):
@@ -425,25 +660,47 @@ def read_pt(name, pt_files):
                 write_tsv(f"{name}_0_pae.tsv", format_pae_rows(np.squeeze(data["pae"].numpy())))
         break
 
-def read_colabfold_metrics(name, colabfold_metrics_fns):
+def read_colabfold_metrics(name, colabfold_metrics_files, struct_files=None):
     ptm_rows = []
     iptm_rows = []
-    for fn in colabfold_metrics_fns:
+    ipsae_rows = []
+    chainwise_iptm = {}
+    chainwise_ipsae = {}
+    struct_map = build_struct_map(struct_files) if struct_files else {}
+    for fn in colabfold_metrics_files:
         with open(fn) as f:
             data = json.load(f)
-        rank_id = int(fn.split("rank_")[1].split("_")[0])-1
-        model_id = int(fn.split("model_")[1].split("_")[0])
-        seed_id = int(fn.split("seed_")[1].split(".")[0])
+        rank_id = infer_model_rank(fn)
+        if rank_id is None:
+            raise ValueError(f"Unable to infer ColabFold rank from metrics filename: {fn}")
         if "pae" in data:
             write_tsv(f"{name}_{rank_id}_pae.tsv", format_pae_rows(data["pae"]))
         if "ptm" in data:
             ptm_rows.append((f"{rank_id}", data["ptm"]))
         if "iptm" in data:
             iptm_rows.append((f"{rank_id}", data["iptm"]))
+        struct_file = resolve_struct_for_model(struct_map, rank_id)
+        if "pae" in data and struct_file:
+            derived_scores = derive_interface_scores(np.array(data['pae']), struct_file, fn)
+            if derived_scores:
+                max_iptm, pair_iptm_scores, max_ipsae, pair_scores = derived_scores
+                if pair_iptm_scores:
+                    chainwise_iptm[rank_id] = pair_iptm_scores
+                if not any(row[0] == f"{rank_id}" for row in iptm_rows) and max_iptm > 0:
+                    iptm_rows.append((f"{rank_id}", f"{max_iptm:.3f}"))
+                ipsae_rows.append((f"{rank_id}", f"{max_ipsae:.3f}"))
+                if pair_scores:
+                    chainwise_ipsae[rank_id] = pair_scores
     if len(ptm_rows)>0:
         write_tsv(f"{name}_ptm.tsv", sorted(ptm_rows, key = lambda x: x[0]))
     if len(iptm_rows)>0:
         write_tsv(f"{name}_iptm.tsv", sorted(iptm_rows, key = lambda x: x[0]))
+    if len(chainwise_iptm)>0:
+        write_tsv(f"{name}_chainwise_iptm.tsv", format_pair_score_rows(dict(sorted(chainwise_iptm.items(), key=lambda x: x[0]))))
+    if len(ipsae_rows)>0:
+        write_tsv(f"{name}_ipsae.tsv", sorted(ipsae_rows, key = lambda x: x[0]))
+    if len(chainwise_ipsae)>0:
+        write_tsv(f"{name}_chainwise_ipsae.tsv", format_pair_score_rows(dict(sorted(chainwise_ipsae.items(), key=lambda x: x[0]))))
 
 def main():
     parser = argparse.ArgumentParser()
@@ -453,14 +710,14 @@ def main():
     parser.add_argument("--paired_a3m", dest="paired_a3m", required=False) # For reading the ColabFold MSA format
     parser.add_argument("--csvs", dest="csvs", required=False, nargs="+") # For reading boltz csvs
     parser.add_argument("--jsons", dest="jsons", required=False, nargs="+") # For reading the AF3 MSA & PAE, HF3 PAE
-    parser.add_argument("--colabfold_metrics_fns", required=False, nargs="+")
+    parser.add_argument("--colabfold_metrics_files", required=False, nargs="+")
     parser.add_argument("--pts", dest="pts", required=False, nargs="+") # For read RFAA pytorch model to get PAE data
     parser.add_argument("--structs", dest="structs", required=False, nargs="+")
     parser.add_argument("--name", default="untitled", dest="name") # might need a --name $meta.id
     args = parser.parse_args()
 
     if args.pkls:
-        read_pkl(args.name, args.pkls)
+        read_pkl(args.name, args.pkls, args.structs)
     if args.a3ms:
         read_a3m(args.name, args.a3ms)
     if args.paired_a3m:
@@ -468,15 +725,15 @@ def main():
     if args.csvs:
         read_csv(args.name, args.csvs)
     if args.npzs:
-        read_npz(args.name, args.npzs)
+        read_npz(args.name, args.npzs, args.structs)
     if args.jsons:
-        read_json(args.name, args.jsons)
+        read_json(args.name, args.jsons, args.structs)
     if args.pts:
         read_pt(args.name, args.pts)
     if args.structs:
         extract_structs_plddt_to_tsv(args.name, args.structs)
-    if args.colabfold_metrics_fns:
-        read_colabfold_metrics(args.name, args.colabfold_metrics_fns)
+    if args.colabfold_metrics_files:
+        read_colabfold_metrics(args.name, args.colabfold_metrics_files, args.structs)
 
 if __name__ == "__main__":
     main()
