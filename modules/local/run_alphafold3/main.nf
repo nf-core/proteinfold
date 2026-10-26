@@ -183,7 +183,7 @@ PY
 
     extract_metrics.py --name ${prefix} \\
         --jsons "\$data_json" "\$summary_confidences_json" "\$confidences_json" \\
-        --structs raw/*ranked_*.pdb
+        --structs raw/*ranked_*.cif
 
     mv "${prefix}_msa.tsv" "${meta.id}_alphafold3_msa.tsv"
 
