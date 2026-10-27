@@ -136,17 +136,7 @@ workflow ALPHAFOLD2 {
 
         RUN_ALPHAFOLD2_PRED (
             ch_fasta_features,
-            ch_alphafold2_params,
-            ch_bfd,
-            ch_small_bfd,
-            ch_mgnify,
-            ch_pdb70,
-            ch_pdb_mmcif,
-            ch_pdb_obsolete,
-            ch_uniref30,
-            ch_uniref90,
-            ch_pdb_seqres,
-            ch_uniprot
+            ch_alphafold2_params
         )
 
         RUN_ALPHAFOLD2_PRED

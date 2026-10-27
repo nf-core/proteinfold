@@ -168,13 +168,13 @@
                 },
                 "RUN_ALPHAFOLD2_MSA": {
                     "python": "3.11.14",
-                    "alphafold2": "1b3170e9409472ec8ad044f9935c92bedd7b4674",
+                    "alphafold2": "2.3.2",
                     "numpy": "1.24.3",
                     "biopython": 1.79
                 },
                 "RUN_ALPHAFOLD2_PRED": {
                     "python": "3.11.14",
-                    "alphafold2": "1b3170e9409472ec8ad044f9935c92bedd7b4674",
+                    "alphafold2": "2.3.2",
                     "jax": "0.4.26",
                     "jaxlib": "0.4.26",
                     "numpy": "1.24.3",

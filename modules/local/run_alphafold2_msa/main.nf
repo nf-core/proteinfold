@@ -5,7 +5,7 @@ process RUN_ALPHAFOLD2_MSA {
     tag   "$meta.id"
     label 'process_medium'
 
-    container "nf-core/proteinfold_alphafold2_pred:2.0.0"
+    container "ghcr.io/jscgh/proteinfold_alphafold2_msa:2.1.0dev"
 
     input:
     tuple val(meta), path(fasta), val(alphafold2_model_preset)
@@ -69,7 +69,7 @@ process RUN_ALPHAFOLD2_MSA {
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         python: \$(python3 --version 2>/dev/null | sed 's/Python //g' || echo "unknown")
-        alphafold2: \$(cd /app/alphafold && git rev-parse HEAD 2>/dev/null || echo "unknown")
+        alphafold2: \$(python3 -c 'import ast; print(next(n.value.value for n in ast.parse(open("/app/alphafold/alphafold/version.py").read()).body if isinstance(n, ast.Assign) and any(isinstance(t, ast.Name) and t.id == "__version__" for t in n.targets)))')
         numpy: \$(python3 -c "import numpy; print(numpy.__version__)" 2>/dev/null || echo "unknown")
         biopython: \$(python3 -c "import Bio; print(Bio.__version__)" 2>/dev/null || echo "unknown")
     END_VERSIONS
@@ -83,7 +83,7 @@ process RUN_ALPHAFOLD2_MSA {
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         python: \$(python3 --version | sed 's/Python //g')
-        alphafold2: \$(cd /app/alphafold && git rev-parse HEAD 2>/dev/null || echo "unknown")
+        alphafold2: \$(python3 -c 'import ast; print(next(n.value.value for n in ast.parse(open("/app/alphafold/alphafold/version.py").read()).body if isinstance(n, ast.Assign) and any(isinstance(t, ast.Name) and t.id == "__version__" for t in n.targets)))')
         numpy: \$(python3 -c "import numpy; print(numpy.__version__)" 2>/dev/null || echo "unknown")
         biopython: \$(python3 -c "import Bio; print(Bio.__version__)" 2>/dev/null || echo "unknown")
     END_VERSIONS
