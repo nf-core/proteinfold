@@ -6,26 +6,18 @@ process RUN_ALPHAFOLD2_PRED {
     label 'process_medium'
     label 'process_gpu'
 
-    container "nf-core/proteinfold_alphafold2_pred:2.0.0"
+    container "ghcr.io/jscgh/proteinfold_alphafold2_pred:2.1.0dev"
 
     input:
     tuple val(meta), path(fasta), path(features), val(alphafold2_model_preset)
     path ('params/*')
-    path ('bfd/*')
-    path ('small_bfd/*')
-    path ('mgnify/*')
-    path ('pdb70/*')
-    path ('pdb_mmcif/mmcif_files')
-    path ('pdb_mmcif/*')
-    path ('uniref30/*')
-    path ('uniref90/*')
-    path ('pdb_seqres/*')
-    path ('uniprot/*')
 
     output:
     path ("raw/**")                                        , emit: raw
     tuple val(meta), path ("${meta.id}_alphafold2.pdb")    , emit: top_ranked_pdb
+    tuple val(meta), path ("raw/ranked_0.cif")             , emit: top_ranked_mmcif
     tuple val(meta), path ("raw/ranked*.pdb")              , emit: pdb
+    tuple val(meta), path ("raw/ranked*.cif")              , emit: mmcif
     tuple val(meta), path ("${meta.id}_alphafold2_msa.tsv"), emit: msa
     tuple val(meta), path ("${meta.id}_plddt_mqc.tsv")     , emit: multiqc
     //Note: alphafold2_model_preset == "monomer" the pae file won't exist.
@@ -71,7 +63,7 @@ process RUN_ALPHAFOLD2_PRED {
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         python: \$(python3 --version 2>/dev/null | sed 's/Python //g' || echo "unknown")
-        alphafold2: \$(cd /app/alphafold && git rev-parse HEAD 2>/dev/null || echo "unknown")
+        alphafold2: \$(python3 -c 'import ast; print(next(n.value.value for n in ast.parse(open("/app/alphafold/alphafold/version.py").read()).body if isinstance(n, ast.Assign) and any(isinstance(t, ast.Name) and t.id == "__version__" for t in n.targets)))')
         jax: \$(python3 -c "import jax; print(jax.__version__)" 2>/dev/null || echo "unknown")
         jaxlib: \$(python3 -c "import jaxlib; print(jaxlib.__version__)" 2>/dev/null || echo "unknown")
         numpy: \$(python3 -c "import numpy; print(numpy.__version__)" 2>/dev/null || echo "unknown")
@@ -96,11 +88,16 @@ process RUN_ALPHAFOLD2_PRED {
     touch "raw/ranked_2.pdb"
     touch "raw/ranked_3.pdb"
     touch "raw/ranked_4.pdb"
+    touch "raw/ranked_0.cif"
+    touch "raw/ranked_1.cif"
+    touch "raw/ranked_2.cif"
+    touch "raw/ranked_3.cif"
+    touch "raw/ranked_4.cif"
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         python: \$(python3 --version | sed 's/Python //g')
-        alphafold2: \$(cd /app/alphafold && git rev-parse HEAD 2>/dev/null || echo "unknown")
+        alphafold2: \$(python3 -c 'import ast; print(next(n.value.value for n in ast.parse(open("/app/alphafold/alphafold/version.py").read()).body if isinstance(n, ast.Assign) and any(isinstance(t, ast.Name) and t.id == "__version__" for t in n.targets)))')
         jax: \$(python3 -c "import jax; print(jax.__version__)" 2>/dev/null || echo "unknown")
         jaxlib: \$(python3 -c "import jaxlib; print(jaxlib.__version__)" 2>/dev/null || echo "unknown")
         numpy: \$(python3 -c "import numpy; print(numpy.__version__)" 2>/dev/null || echo "unknown")
