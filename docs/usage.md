@@ -6,61 +6,214 @@
 
 ## Introduction
 
-<!-- TODO nf-core: Add documentation about anything specific to running your pipeline. For general topics, please point to (and add to) the main nf-core website. -->
-
 ## Samplesheet input
 
-You will need to create a samplesheet with information about the samples you would like to analyse before running the pipeline. Use this parameter to specify its location. It has to be a comma-separated file with 3 columns, and a header row as shown in the examples below.
+You will need to create a samplesheet with information about the sequences you would like to analyse before running the pipeline. Use this parameter to specify its location. It has to be a comma-separated file with 2 columns, and a header row as shown in the examples below.
 
 ```bash
 --input '[path to samplesheet file]'
 ```
 
-### Multiple runs of the same sample
-
-The `sample` identifiers have to be the same when you have re-sequenced the same sample more than once e.g. to increase sequencing depth. The pipeline will concatenate the raw reads before performing any downstream analysis. Below is an example for the same sample sequenced across 3 lanes:
-
-```csv title="samplesheet.csv"
-sample,fastq_1,fastq_2
-CONTROL_REP1,AEG588A1_S1_L002_R1_001.fastq.gz,AEG588A1_S1_L002_R2_001.fastq.gz
-CONTROL_REP1,AEG588A1_S1_L003_R1_001.fastq.gz,AEG588A1_S1_L003_R2_001.fastq.gz
-CONTROL_REP1,AEG588A1_S1_L004_R1_001.fastq.gz,AEG588A1_S1_L004_R2_001.fastq.gz
-```
-
 ### Full samplesheet
 
-The pipeline will auto-detect whether a sample is single- or paired-end using the information provided in the samplesheet. The samplesheet can have as many columns as you desire, however, there is a strict requirement for the first 3 columns to match those defined in the table below.
-
-A final samplesheet file consisting of both single- and paired-end data may look something like the one below. This is for 6 samples, where `TREATMENT_REP3` has been sequenced twice.
+A sample of the final samplesheet file for two sequences is shown below:
 
 ```csv title="samplesheet.csv"
-sample,fastq_1,fastq_2
-CONTROL_REP1,AEG588A1_S1_L002_R1_001.fastq.gz,AEG588A1_S1_L002_R2_001.fastq.gz
-CONTROL_REP2,AEG588A2_S2_L002_R1_001.fastq.gz,AEG588A2_S2_L002_R2_001.fastq.gz
-CONTROL_REP3,AEG588A3_S3_L002_R1_001.fastq.gz,AEG588A3_S3_L002_R2_001.fastq.gz
-TREATMENT_REP1,AEG588A4_S4_L003_R1_001.fastq.gz,
-TREATMENT_REP2,AEG588A5_S5_L003_R1_001.fastq.gz,
-TREATMENT_REP3,AEG588A6_S6_L003_R1_001.fastq.gz,
-TREATMENT_REP3,AEG588A6_S6_L004_R1_001.fastq.gz,
+id,fasta
+T1024,https://raw.githubusercontent.com/nf-core/test-datasets/proteinfold/testdata/sequences/T1024.fasta
+T1026,https://raw.githubusercontent.com/nf-core/test-datasets/proteinfold/testdata/sequences/T1026.fasta
 ```
 
-| Column    | Description                                                                                                                                                                            |
-| --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `sample`  | Custom sample name. This entry will be identical for multiple sequencing libraries/runs from the same sample. Spaces in sample names are automatically converted to underscores (`_`). |
-| `fastq_1` | Full path to FastQ file for Illumina short reads 1. File has to be gzipped and have the extension ".fastq.gz" or ".fq.gz".                                                             |
-| `fastq_2` | Full path to FastQ file for Illumina short reads 2. File has to be gzipped and have the extension ".fastq.gz" or ".fq.gz".                                                             |
+The samplesheet can have as many columns as you desire, however, there is a strict requirement for the first 2 columns to match those defined in the table below:
+
+| Column  | Description                                                                                          |
+| ------- | ---------------------------------------------------------------------------------------------------- |
+| `id`    | Custom sequence name. Spaces in sequence names are automatically converted to underscores (`_`).     |
+| `fasta` | Full path to fasta file for the provided sequence. File has to have the extension ".fasta" or ".fa". |
 
 An [example samplesheet](../assets/samplesheet.csv) has been provided with the pipeline.
 
+To provide a FASTA file with multiple sequences for individual folding, use one or more FASTA files with the `--split_fasta` parameter. This will treat each sequence in the FASTA file as a separate entry, folding them individually and in parallel, as if each sequence were listed separately in the samplesheet.
+
 ## Running the pipeline
 
-The typical command for running the pipeline is as follows:
+The typical command for running the pipeline is shown below.
 
 ```bash
-nextflow run nf-core/proteinfold --input ./samplesheet.csv --outdir ./results  -profile docker
+nextflow run nf-core/proteinfold \
+   -profile <docker/singularity/.../institute> \
+   --input samplesheet.csv \
+   --outdir <OUTDIR> \
+   --mode <alphafold2/esmfold/colabfold/rosettafold2na/rosettafold-all-atom/alphafold3/boltz/helixfold3> \
+   --db <DBDIR>
 ```
 
-This will launch the pipeline with the `docker` configuration profile. See below for more information about profiles.
+> You can run any combination of the models by providing them to the `--mode` parameter separated by a comma. For example: `--mode alphafold2,esmfold,colabfold` will run the three models in parallel.
+
+Each mode has specific reference data requirements. To support all modes the `--db` directory should conform to the following file structure:
+
+<details markdown="1">
+<summary>Directory structure</summary>
+
+```
+<db>/
+├── bfd
+│   ├── bfd_metaclust_clu_complete_id30_c90_final_seq.sorted_opt_a3m.ffdata
+│   ├── bfd_metaclust_clu_complete_id30_c90_final_seq.sorted_opt_a3m.ffindex
+│   ├── bfd_metaclust_clu_complete_id30_c90_final_seq.sorted_opt_cs219.ffdata
+│   ├── bfd_metaclust_clu_complete_id30_c90_final_seq.sorted_opt_cs219.ffindex
+│   ├── bfd_metaclust_clu_complete_id30_c90_final_seq.sorted_opt_hhm.ffdata
+│   └── bfd_metaclust_clu_complete_id30_c90_final_seq.sorted_opt_hhm.ffindex
+├── colabfold_envdb
+│   ├── colabfold_envdb_202108_db
+│   ├── colabfold_envdb_202108_db_aln
+│   ├── colabfold_envdb_202108_db_aln.dbtype
+│   └── ...
+├── colabfold_uniref30
+│   ├── uniref30_2302_db
+│   ├── uniref30_2302_db_aln
+│   ├── uniref30_2302_db_aln.dbtype
+│   └── ...
+├── maxit-v11.200-prod-src
+│   ├── annotation-v1.0
+│   └── ...
+├── mgnify
+│   └── mgy_clusters.fa
+├── params
+│   ├── af3.bin
+│   ├── alphafold_params_2021-07-14
+│   ├── alphafold_params_2022-12-06
+│   ├── boltz1_conf.ckpt
+│   ├── boltz2_aff.ckpt
+│   ├── boltz2_conf.ckpt
+│   ├── ccd.pkl
+│   ├── ccd_preprocessed_etkdg.pkl.gz
+│   ├── esm2_t36_3B_UR50D-contact-regression.pt
+│   ├── esm2_t36_3B_UR50D.pt
+│   ├── esmfold_3B_v1.pt
+│   ├── HelixFold3-240814.pdparams
+│   ├── mols
+│   └── RFAA_paper_weights.pt
+├── pdb100
+│   ├── LICENSE
+│   ├── pdb100_2021Mar03_a3m.ffdata
+│   ├── pdb100_2021Mar03_a3m.ffindex
+│   ├── pdb100_2021Mar03_cs219.ffdata
+│   ├── pdb100_2021Mar03_cs219.ffindex
+│   ├── pdb100_2021Mar03_hhm.ffdata
+│   ├── pdb100_2021Mar03_hhm.ffindex
+│   ├── pdb100_2021Mar03_pdb.ffdata
+│   └── pdb100_2021Mar03_pdb.ffindex
+├── pdb70
+│   ├── md5sum
+│   ├── pdb70_a3m.ffdata
+│   ├── pdb70_a3m.ffindex
+│   ├── pdb70_clu.tsv
+│   ├── pdb70_cs219.ffdata
+│   ├── pdb70_cs219.ffindex
+│   ├── pdb70_hhm.ffdata
+│   ├── pdb70_hhm.ffindex
+│   └── pdb_filter.dat
+├── pdb_mmcif
+│   ├── mmcif_files
+│   └── obsolete.dat
+├── pdb_seqres
+│   └── pdb_seqres.txt
+├── rfam
+│   └── Rfam-14.9_rep_seq.fasta
+├── RNA
+│   ├── Rfam.full_region
+│   ├── Rfam.cm.*
+│   ├── id_mapping.tsv.gz
+│   ├── rfam_annotations.tsv.gz
+│   ├── rnacentral.fasta.*
+│   ├── nt.*
+│   └── ...
+├── small_bfd
+│   └── bfd-first_non_consensus_sequences.fasta
+├── uniprot
+│   └── uniprot.fasta
+├── uniref30
+│   ├── UniRef30_2023_02_a3m.ffdata
+│   ├── UniRef30_2023_02_a3m.ffindex
+│   ├── UniRef30_2023_02_cs219.ffdata
+│   ├── UniRef30_2023_02_cs219.ffindex
+│   ├── UniRef30_2023_02_hhm.ffdata
+│   ├── UniRef30_2023_02_hhm.ffindex
+│   └── UniRef30_2023_02.md5sums
+└── uniref90
+    └── uniref90.fasta
+```
+
+</details>
+
+Alternatively, the required data layout for each of the individual modes is described in the mode-specific usage documentation:
+
+- [AlphaFold2](./usage/alphafold2.md)
+- [AlphaFold3](./usage/alphafold3.md)
+- [Boltz](./usage/boltz.md)
+- [ColabFold](./usage/colabfold.md)
+- [ESMFold](./usage/esmfold.md)
+- [HelixFold3](./usage/helixfold3.md)
+- [RoseTTAFold-All-Atom](./usage/rosettafold_all_atom.md)
+- [RoseTTAFold2NA](./usage/rosettafold2na.md)
+
+> Omitting the `--db` flag will allow the pipeline to download the reference data required to execute the selected modes.
+
+## Random Seeds
+
+The pipeline-wide `--random_seed` parameter can be used to set the same seed for `alphafold2`, `boltz`, and `colabfold` modes only.
+
+If no seed is explicitly provided, each mode keeps its native default behaviour:
+
+- `alphafold2`: AlphaFold2 generates a random seed internally.
+- `boltz`: Boltz leaves the seed unset (`--seed` is not passed).
+- `colabfold`: ColabFold defaults to `--random-seed 0`.
+
+For reproducible results between runs, it is recommended to set an explicit seed.
+
+## Foldseek structural similarity search
+
+The pipeline can run an optional Foldseek `easy-search` step on the top-ranked structure for each input/mode combination.
+
+Foldseek is disabled by default (`--skip_foldseek true`). To enable it, set:
+
+```bash
+--skip_foldseek false
+--foldseek_db <DATABASE_ID>
+--foldseek_db_path <PATH/TO/FOLDSEEK_DATABASE_DIR>
+```
+
+The database is resolved as:
+
+```bash
+<foldseek_db_path>/<foldseek_db>
+```
+
+For example:
+
+```bash
+nextflow run nf-core/proteinfold \
+   -profile <docker/singularity/.../institute> \
+   --input samplesheet.csv \
+   --outdir <OUTDIR> \
+   --mode alphafold2,colabfold \
+   --skip_foldseek false \
+   --foldseek_db pdb100 \
+   --foldseek_db_path /data/foldseek_db
+```
+
+By default, results are written in HTML format (`--format-mode 3`) to:
+
+```bash
+<OUTDIR>/foldseek_easysearch/
+```
+
+You can override Foldseek arguments with:
+
+```bash
+--foldseek_easysearch_arg "<custom args>"
+```
 
 Note that the pipeline will create the following files in your working directory:
 
@@ -193,6 +346,18 @@ In most cases, you will only need to create a custom config as a one-off but if 
 See the main [Nextflow documentation](https://www.nextflow.io/docs/latest/config.html) for more information about creating your own configuration files.
 
 If you have any questions or issues please send us a message on [Slack](https://nf-co.re/join/slack) on the [`#configs` channel](https://nfcore.slack.com/channels/configs).
+
+## Use of shared file systems
+
+Given that the AlphaFold2 and the ColabFold modes (except for the ColabFold webserver option) rely on huge databases to infer the predictions, the execution of the pipeline is recommended to take place on shared file systems so as to avoid high latency caused during staging this data. For instance, if you work on AWS, you might consider using an Amazon FSx file system.
+
+## Azure Resource Requests
+
+To be used with the `azurebatch` profile by specifying the `-profile azurebatch`.
+We recommend providing a compute `params.vm_type` of `Standard_D16_v3` VMs by default but these options can be changed if required.
+
+Note that the choice of VM size depends on your quota and the overall workload during the analysis.
+For a thorough list, please refer the [Azure Sizes for virtual machines in Azure](https://docs.microsoft.com/en-us/azure/virtual-machines/sizes).
 
 ## Running in the background
 

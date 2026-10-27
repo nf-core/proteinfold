@@ -12,7 +12,7 @@ inputs:
     required: true
   paths:
     description: "Test paths"
-    required: true
+    required: false
   tags:
     description: "Tags to pass as argument for nf-test --tag parameter"
     required: false

@@ -1,0 +1,35 @@
+{
+    "converts mixed fasta to boltz yaml": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "mixed_sample"
+                        },
+                        "mixed_sample.yaml:md5,52bdd0470032c2e6c93b886b50906c09"
+                    ]
+                ],
+                "1": [
+                    "versions.yml:md5,0d82efa297b86ccb1ae14852c66f16ab"
+                ],
+                "boltz_yaml": [
+                    [
+                        {
+                            "id": "mixed_sample"
+                        },
+                        "mixed_sample.yaml:md5,52bdd0470032c2e6c93b886b50906c09"
+                    ]
+                ],
+                "versions": [
+                    "versions.yml:md5,0d82efa297b86ccb1ae14852c66f16ab"
+                ]
+            }
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "25.10.4"
+        },
+        "timestamp": "2026-05-27T18:09:17.307872399"
+    }
+}

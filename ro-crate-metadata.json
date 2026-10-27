@@ -1,26 +1,41 @@
 {
-    "@context": ["https://w3id.org/ro/crate/1.3/context", "https://w3id.org/ro/terms/test"],
+    "@context": [
+        "https://w3id.org/ro/crate/1.2/context",
+        {
+            "GithubService": "https://w3id.org/ro/terms/test#GithubService",
+            "JenkinsService": "https://w3id.org/ro/terms/test#JenkinsService",
+            "PlanemoEngine": "https://w3id.org/ro/terms/test#PlanemoEngine",
+            "TestDefinition": "https://w3id.org/ro/terms/test#TestDefinition",
+            "TestInstance": "https://w3id.org/ro/terms/test#TestInstance",
+            "TestService": "https://w3id.org/ro/terms/test#TestService",
+            "TestSuite": "https://w3id.org/ro/terms/test#TestSuite",
+            "TravisService": "https://w3id.org/ro/terms/test#TravisService",
+            "definition": "https://w3id.org/ro/terms/test#definition",
+            "engineVersion": "https://w3id.org/ro/terms/test#engineVersion",
+            "instance": "https://w3id.org/ro/terms/test#instance",
+            "resource": "https://w3id.org/ro/terms/test#resource",
+            "runsOn": "https://w3id.org/ro/terms/test#runsOn"
+        }
+    ],
     "@graph": [
         {
             "@id": "./",
             "@type": "Dataset",
-            "conformsTo": [
-                {
-                    "@id": "https://w3id.org/workflowhub/workflow-ro-crate/1.1"
-                },
-                {
-                    "@id": "https://w3id.org/ro/wftest/0.2"
-                }
-            ],
             "creativeWorkStatus": "InProgress",
-            "datePublished": "2026-10-26T16:05:31+00:00",
-            "description": "<h1>\n  <picture>\n    <source media=\"(prefers-color-scheme: dark)\" srcset=\"docs/images/nf-core-proteinfold_logo_dark.png\">\n    <img alt=\"nf-core/proteinfold\" src=\"docs/images/nf-core-proteinfold_logo_light.png\">\n  </picture>\n</h1>\n\n[![Open in GitHub Codespaces](https://img.shields.io/badge/Open_In_GitHub_Codespaces-black?labelColor=grey&logo=github)](https://github.com/codespaces/new/nf-core/proteinfold)\n[![GitHub Actions CI Status](https://github.com/nf-core/proteinfold/actions/workflows/nf-test.yml/badge.svg)](https://github.com/nf-core/proteinfold/actions/workflows/nf-test.yml)\n[![GitHub Actions Linting Status](https://github.com/nf-core/proteinfold/actions/workflows/linting.yml/badge.svg)](https://github.com/nf-core/proteinfold/actions/workflows/linting.yml)[![AWS CI](https://img.shields.io/badge/CI%20tests-full%20size-FF9900?labelColor=000000&logo=Amazon%20AWS)](https://nf-co.re/proteinfold/results)[![Cite with Zenodo](http://img.shields.io/badge/DOI-10.5281/zenodo.XXXXXXX-1073c8?labelColor=000000)](https://doi.org/10.5281/zenodo.XXXXXXX)\n[![nf-test](https://img.shields.io/badge/unit_tests-nf--test-337ab7.svg)](https://www.nf-test.com)\n\n[![Nextflow](https://img.shields.io/badge/version-%E2%89%A525.10.4-green?style=flat&logo=nextflow&logoColor=white&color=%230DC09D&link=https%3A%2F%2Fnextflow.io)](https://www.nextflow.io/)\n[![nf-core template version](https://img.shields.io/badge/nf--core_template-4.2.1-green?style=flat&logo=nfcore&logoColor=white&color=%2324B064&link=https%3A%2F%2Fnf-co.re)](https://github.com/nf-core/tools/releases/tag/4.2.1)\n[![run with conda](http://img.shields.io/badge/run%20with-conda-3EB049?labelColor=000000&logo=anaconda)](https://docs.conda.io/en/latest/)\n[![run with docker](https://img.shields.io/badge/run%20with-docker-0db7ed?labelColor=000000&logo=docker)](https://www.docker.com/)\n[![run with singularity](https://img.shields.io/badge/run%20with-singularity-1d355c.svg?labelColor=000000)](https://sylabs.io/docs/)\n[![Launch on Seqera Platform](https://img.shields.io/badge/Launch%20%F0%9F%9A%80-Seqera%20Platform-%234256e7)](https://cloud.seqera.io/launch?pipeline=https://github.com/nf-core/proteinfold)\n\n[![Get help on Slack](http://img.shields.io/badge/slack-nf--core%20%23proteinfold-4A154B?labelColor=000000&logo=slack)](https://nfcore.slack.com/channels/proteinfold)[![Follow on Bluesky](https://img.shields.io/badge/bluesky-%40nf__core-1185fe?labelColor=000000&logo=bluesky)](https://bsky.app/profile/nf-co.re)[![Follow on Mastodon](https://img.shields.io/badge/mastodon-nf__core-6364ff?labelColor=FFFFFF&logo=mastodon)](https://mstdn.science/@nf_core)[![Watch on YouTube](http://img.shields.io/badge/youtube-nf--core-FF0000?labelColor=000000&logo=youtube)](https://www.youtube.com/c/nf-core)\n\n## Introduction\n\n**nf-core/proteinfold** is a bioinformatics pipeline that ...\n\n<!-- TODO nf-core:\n   Complete this sentence with a 2-3 sentence summary of what types of data the pipeline ingests, a brief overview of the\n   major pipeline sections and the types of output it produces. You're giving an overview to someone new\n   to nf-core here, in 15-20 seconds. For an example, see https://github.com/nf-core/rnaseq/blob/master/README.md#introduction\n-->\n\n<!-- TODO nf-core: Include a figure that guides the user through the major workflow steps. Many nf-core\n     workflows use the \"tube map\" design for that. See https://nf-co.re/docs/community/brand/workflow-schematics#examples for examples.   -->\n<!-- TODO nf-core: Fill in short bullet-pointed list of the default steps in the pipeline -->2. Present QC for raw reads ([`MultiQC`](http://multiqc.info/))\n\n## Usage\n\n> [!NOTE]\n> If you are new to Nextflow and nf-core, please refer to [this page](https://nf-co.re/docs/get_started/environment_setup/overview) on how to set-up Nextflow. Make sure to [test your setup](https://nf-co.re/docs/get_started/run-your-first-pipeline) with `-profile test` before running the workflow on actual data.\n\n<!-- TODO nf-core: Describe the minimum required steps to execute the pipeline, e.g. how to prepare samplesheets.\n     Explain what rows and columns represent. For instance (please edit as appropriate):\n\nFirst, prepare a samplesheet with your input data that looks as follows:\n\n`samplesheet.csv`:\n\n```csv\nsample,fastq_1,fastq_2\nCONTROL_REP1,AEG588A1_S1_L002_R1_001.fastq.gz,AEG588A1_S1_L002_R2_001.fastq.gz\n```\n\nEach row represents a fastq file (single-end) or a pair of fastq files (paired end).\n\n-->\n\nNow, you can run the pipeline using:\n\n<!-- TODO nf-core: update the following command to include all required parameters for a minimal example -->\n\n```bash\nnextflow run nf-core/proteinfold \\\n   -profile <docker/singularity/.../institute> \\\n   --input samplesheet.csv \\\n   --outdir <OUTDIR>\n```\n\n> [!WARNING]\n> Please provide pipeline parameters via the CLI or Nextflow `-params-file` option. Custom config files including those provided by the `-c` Nextflow option can be used to provide any configuration _**except for parameters**_; see [docs](https://nf-co.re/docs/running/run-pipelines#using-parameter-files).\n\nFor more details and further functionality, please refer to the [usage documentation](https://nf-co.re/proteinfold/usage) and the [parameter documentation](https://nf-co.re/proteinfold/parameters).\n\n## Pipeline output\n\nTo see the results of an example test run with a full size dataset refer to the [results](https://nf-co.re/proteinfold/results) tab on the nf-core website pipeline page.\nFor more details about the output files and reports, please refer to the\n[output documentation](https://nf-co.re/proteinfold/output).\n\n## Credits\n\nnf-core/proteinfold was originally written by Athanasios Baltzis, Jose Espinosa-Carrasco, Harshil Patel.\n\nWe thank the following people for their extensive assistance in the development of this pipeline:\n\n<!-- TODO nf-core: If applicable, make list of people who have also contributed -->\n\n## Contributions and Support\n\nIf you would like to contribute to this pipeline, please see the [contributing guidelines](docs/CONTRIBUTING.md).\n\nFor further information or help, don't hesitate to get in touch on the [Slack `#proteinfold` channel](https://nfcore.slack.com/channels/proteinfold) (you can join with [this invite](https://nf-co.re/join/slack)).\n\n## Citations\n\n<!-- TODO nf-core: Add citation for pipeline after first release. Uncomment lines below and update Zenodo doi and badge at the top of this file. -->\n<!-- If you use nf-core/proteinfold for your analysis, please cite it using the following doi: [10.5281/zenodo.XXXXXX](https://doi.org/10.5281/zenodo.XXXXXX) -->\n\n<!-- TODO nf-core: Add bibliography of tools and data used in your pipeline -->\n\nAn extensive list of references for the tools used by the pipeline can be found in the [`CITATIONS.md`](CITATIONS.md) file.\n\nYou can cite the `nf-core` publication as follows:\n\n> **The nf-core framework for community-curated bioinformatics pipelines.**\n>\n> Philip Ewels, Alexander Peltzer, Sven Fillinger, Harshil Patel, Johannes Alneberg, Andreas Wilm, Maxime Ulysse Garcia, Paolo Di Tommaso & Sven Nahnsen.\n>\n> _Nat Biotechnol._ 2020 Feb 13. doi: [10.1038/s41587-020-0439-x](https://dx.doi.org/10.1038/s41587-020-0439-x).\n",
+            "datePublished": "2026-09-01T12:58:55+00:00",
+            "description": "<h1>\n  <picture>\n    <source media=\"(prefers-color-scheme: dark)\" srcset=\"docs/images/nf-core-proteinfold_logo_dark.png\">\n    <img alt=\"nf-core/proteinfold\" src=\"docs/images/nf-core-proteinfold_logo_light.png\">\n  </picture>\n</h1>\n\n[![Open in GitHub Codespaces](https://img.shields.io/badge/Open_In_GitHub_Codespaces-black?labelColor=grey&logo=github)](https://github.com/codespaces/new/nf-core/proteinfold)\n[![GitHub Actions CI Status](https://github.com/nf-core/proteinfold/actions/workflows/nf-test.yml/badge.svg)](https://github.com/nf-core/proteinfold/actions/workflows/nf-test.yml)\n[![GitHub Actions Linting Status](https://github.com/nf-core/proteinfold/actions/workflows/linting.yml/badge.svg)](https://github.com/nf-core/proteinfold/actions/workflows/linting.yml)[![AWS CI](https://img.shields.io/badge/CI%20tests-full%20size-FF9900?labelColor=000000&logo=Amazon%20AWS)](https://nf-co.re/proteinfold/results)[![Cite with Zenodo](http://img.shields.io/badge/DOI-10.5281/zenodo.XXXXXXX-1073c8?labelColor=000000)](https://doi.org/10.5281/zenodo.XXXXXXX)\n[![nf-test](https://img.shields.io/badge/unit_tests-nf--test-337ab7.svg)](https://www.nf-test.com)\n\n[![Nextflow](https://img.shields.io/badge/version-%E2%89%A525.10.4-green?style=flat&logo=nextflow&logoColor=white&color=%230DC09D&link=https%3A%2F%2Fnextflow.io)](https://www.nextflow.io/)\n[![nf-core template version](https://img.shields.io/badge/nf--core_template-4.1.0-green?style=flat&logo=nfcore&logoColor=white&color=%2324B064&link=https%3A%2F%2Fnf-co.re)](https://github.com/nf-core/tools/releases/tag/4.1.0)\n[![run with conda](http://img.shields.io/badge/run%20with-conda-3EB049?labelColor=000000&logo=anaconda)](https://docs.conda.io/en/latest/)\n[![run with docker](https://img.shields.io/badge/run%20with-docker-0db7ed?labelColor=000000&logo=docker)](https://www.docker.com/)\n[![run with singularity](https://img.shields.io/badge/run%20with-singularity-1d355c.svg?labelColor=000000)](https://sylabs.io/docs/)\n[![Launch on Seqera Platform](https://img.shields.io/badge/Launch%20%F0%9F%9A%80-Seqera%20Platform-%234256e7)](https://cloud.seqera.io/launch?pipeline=https://github.com/nf-core/proteinfold)\n\n[![Get help on Slack](http://img.shields.io/badge/slack-nf--core%20%23proteinfold-4A154B?labelColor=000000&logo=slack)](https://nfcore.slack.com/channels/proteinfold)[![Follow on Bluesky](https://img.shields.io/badge/bluesky-%40nf__core-1185fe?labelColor=000000&logo=bluesky)](https://bsky.app/profile/nf-co.re)[![Follow on Mastodon](https://img.shields.io/badge/mastodon-nf__core-6364ff?labelColor=FFFFFF&logo=mastodon)](https://mstdn.science/@nf_core)[![Watch on YouTube](http://img.shields.io/badge/youtube-nf--core-FF0000?labelColor=000000&logo=youtube)](https://www.youtube.com/c/nf-core)\n\n## Introduction\n\n**nf-core/proteinfold** is a bioinformatics pipeline that ...\n\n<!-- TODO nf-core:\n   Complete this sentence with a 2-3 sentence summary of what types of data the pipeline ingests, a brief overview of the\n   major pipeline sections and the types of output it produces. You're giving an overview to someone new\n   to nf-core here, in 15-20 seconds. For an example, see https://github.com/nf-core/rnaseq/blob/master/README.md#introduction\n-->\n\n<!-- TODO nf-core: Include a figure that guides the user through the major workflow steps. Many nf-core\n     workflows use the \"tube map\" design for that. See https://nf-co.re/docs/community/brand/workflow-schematics#examples for examples.   -->\n<!-- TODO nf-core: Fill in short bullet-pointed list of the default steps in the pipeline -->2. Present QC for raw reads ([`MultiQC`](http://multiqc.info/))\n\n## Usage\n\n> [!NOTE]\n> If you are new to Nextflow and nf-core, please refer to [this page](https://nf-co.re/docs/get_started/environment_setup/overview) on how to set-up Nextflow. Make sure to [test your setup](https://nf-co.re/docs/get_started/run-your-first-pipeline) with `-profile test` before running the workflow on actual data.\n\n<!-- TODO nf-core: Describe the minimum required steps to execute the pipeline, e.g. how to prepare samplesheets.\n     Explain what rows and columns represent. For instance (please edit as appropriate):\n\nFirst, prepare a samplesheet with your input data that looks as follows:\n\n`samplesheet.csv`:\n\n```csv\nsample,fastq_1,fastq_2\nCONTROL_REP1,AEG588A1_S1_L002_R1_001.fastq.gz,AEG588A1_S1_L002_R2_001.fastq.gz\n```\n\nEach row represents a fastq file (single-end) or a pair of fastq files (paired end).\n\n-->\n\nNow, you can run the pipeline using:\n\n<!-- TODO nf-core: update the following command to include all required parameters for a minimal example -->\n\n```bash\nnextflow run nf-core/proteinfold \\\n   -profile <docker/singularity/.../institute> \\\n   --input samplesheet.csv \\\n   --outdir <OUTDIR>\n```\n\n> [!WARNING]\n> Please provide pipeline parameters via the CLI or Nextflow `-params-file` option. Custom config files including those provided by the `-c` Nextflow option can be used to provide any configuration _**except for parameters**_; see [docs](https://nf-co.re/docs/running/run-pipelines#using-parameter-files).\n\nFor more details and further functionality, please refer to the [usage documentation](https://nf-co.re/proteinfold/usage) and the [parameter documentation](https://nf-co.re/proteinfold/parameters).\n\n## Pipeline output\n\nTo see the results of an example test run with a full size dataset refer to the [results](https://nf-co.re/proteinfold/results) tab on the nf-core website pipeline page.\nFor more details about the output files and reports, please refer to the\n[output documentation](https://nf-co.re/proteinfold/output).\n\n## Credits\n\nnf-core/proteinfold was originally written by Athanasios Baltzis, Jose Espinosa-Carrasco, Harshil Patel.\n\nWe thank the following people for their extensive assistance in the development of this pipeline:\n\n<!-- TODO nf-core: If applicable, make list of people who have also contributed -->\n\n## Contributions and Support\n\nIf you would like to contribute to this pipeline, please see the [contributing guidelines](docs/CONTRIBUTING.md).\n\nFor further information or help, don't hesitate to get in touch on the [Slack `#proteinfold` channel](https://nfcore.slack.com/channels/proteinfold) (you can join with [this invite](https://nf-co.re/join/slack)).\n\n## Citations\n\n<!-- TODO nf-core: Add citation for pipeline after first release. Uncomment lines below and update Zenodo doi and badge at the top of this file. -->\n<!-- If you use nf-core/proteinfold for your analysis, please cite it using the following doi: [10.5281/zenodo.XXXXXX](https://doi.org/10.5281/zenodo.XXXXXX) -->\n\n<!-- TODO nf-core: Add bibliography of tools and data used in your pipeline -->\n\nAn extensive list of references for the tools used by the pipeline can be found in the [`CITATIONS.md`](CITATIONS.md) file.\n\nYou can cite the `nf-core` publication as follows:\n\n> **The nf-core framework for community-curated bioinformatics pipelines.**\n>\n> Philip Ewels, Alexander Peltzer, Sven Fillinger, Harshil Patel, Johannes Alneberg, Andreas Wilm, Maxime Ulysse Garcia, Paolo Di Tommaso & Sven Nahnsen.\n>\n> _Nat Biotechnol._ 2020 Feb 13. doi: [10.1038/s41587-020-0439-x](https://dx.doi.org/10.1038/s41587-020-0439-x).\n",
             "hasPart": [
                 {
                     "@id": "main.nf"
                 },
                 {
+                    "@id": "docs/images/nf-core-proteinfold_metro_map_2.1.0.png"
+                },
+                {
                     "@id": "assets/"
+                },
+                {
+                    "@id": "bin/"
                 },
                 {
                     "@id": "conf/"
@@ -33,6 +48,9 @@
                 },
                 {
                     "@id": "modules/"
+                },
+                {
+                    "@id": "modules/local/"
                 },
                 {
                     "@id": "modules/nf-core/"
@@ -90,7 +108,7 @@
             },
             "mentions": [
                 {
-                    "@id": "#82a6c13c-bcb2-4a36-b5ae-e14a6c3c32aa"
+                    "@id": "#d25b0253-e92a-437f-b974-99d158aad762"
                 }
             ],
             "name": "nf-core/proteinfold"
@@ -101,14 +119,23 @@
             "about": {
                 "@id": "./"
             },
-            "conformsTo": {
-                "@id": "https://w3id.org/ro/crate/1.3"
-            }
+            "conformsTo": [
+                {
+                    "@id": "https://w3id.org/ro/crate/1.2"
+                },
+                {
+                    "@id": "https://w3id.org/workflowhub/workflow-ro-crate/1.0"
+                }
+            ]
         },
         {
             "@id": "main.nf",
-            "@type": ["File", "SoftwareSourceCode", "ComputationalWorkflow"],
-            "contributor": [
+            "@type": [
+                "File",
+                "SoftwareSourceCode",
+                "ComputationalWorkflow"
+            ],
+            "author": [
                 {
                     "@id": "https://orcid.org/0000-0002-7495-1218"
                 },
@@ -116,12 +143,56 @@
                     "@id": "https://orcid.org/0000-0002-1541-042X"
                 },
                 {
-                    "@id": "#5483d411-761a-4038-bb40-9017270efb7e"
+                    "@id": "https://orcid.org/0000-0002-5992-0771"
+                },
+                {
+                    "@id": "https://orcid.org/0000-0001-8442-9709"
+                }
+            ],
+            "contributor": [
+                {
+                    "@id": "https://orcid.org/0000-0002-5992-0771"
+                },
+                {
+                    "@id": "https://orcid.org/0000-0001-8442-9709"
+                },
+                {
+                    "@id": "https://orcid.org/0000-0003-2707-7940"
+                },
+                {
+                    "@id": "https://orcid.org/0000-0002-9374-0969"
+                },
+                {
+                    "@id": "https://orcid.org/0000-0001-6955-1167"
+                },
+                {
+                    "@id": "https://orcid.org/0000-0001-7034-3744"
+                },
+                {
+                    "@id": "https://orcid.org/0000-0002-4863-3865"
+                },
+                {
+                    "@id": "https://orcid.org/0000-0002-4032-5331"
+                },
+                {
+                    "@id": "#b5f01813-e5de-4d8d-9ab1-3903fac2fe95"
+                },
+                {
+                    "@id": "https://orcid.org/0000-0001-9132-8981"
+                },
+                {
+                    "@id": "https://orcid.org/0000-0001-6104-9260"
+                },
+                {
+                    "@id": "https://orcid.org/0000-0003-0662-9101"
                 }
             ],
             "dateCreated": "",
-            "dateModified": "2026-10-26T16:05:31Z",
+            "dateModified": "2026-07-09T11:56:45Z",
             "dct:conformsTo": "https://bioschemas.org/profiles/ComputationalWorkflow/1.0-RELEASE/",
+            "image": {
+                "@id": "docs/images/nf-core-proteinfold_metro_map_2.1.0.png"
+            },
             "keywords": [
                 "nf-core",
                 "nextflow",
@@ -133,16 +204,45 @@
                 "protein-sequences",
                 "protein-structure"
             ],
-            "license": ["MIT"],
-            "name": ["nf-core/proteinfold"],
+            "license": [
+                "MIT"
+            ],
+            "maintainer": [
+                {
+                    "@id": "https://orcid.org/0000-0002-7495-1218"
+                },
+                {
+                    "@id": "https://orcid.org/0000-0002-1541-042X"
+                },
+                {
+                    "@id": "https://orcid.org/0000-0002-9374-0969"
+                },
+                {
+                    "@id": "https://orcid.org/0000-0001-6955-1167"
+                },
+                {
+                    "@id": "https://orcid.org/0000-0001-7034-3744"
+                },
+                {
+                    "@id": "https://orcid.org/0000-0002-4863-3865"
+                }
+            ],
+            "name": [
+                "nf-core/proteinfold"
+            ],
             "programmingLanguage": {
                 "@id": "https://w3id.org/workflowhub/workflow-ro-crate#nextflow"
             },
             "sdPublisher": {
                 "@id": "https://nf-co.re/"
             },
-            "url": ["https://github.com/nf-core/proteinfold", "https://nf-co.re/proteinfold/dev/"],
-            "version": ["2.1.0dev"]
+            "url": [
+                "https://github.com/nf-core/proteinfold",
+                "https://nf-co.re/proteinfold/dev/"
+            ],
+            "version": [
+                "2.1.0dev"
+            ]
         },
         {
             "@id": "https://w3id.org/workflowhub/workflow-ro-crate#nextflow",
@@ -157,17 +257,19 @@
             "version": "!>=25.10.4"
         },
         {
-            "@id": "https://w3id.org/workflowhub/workflow-ro-crate/1.1",
-            "@type": ["CreativeWork", "Profile"],
-            "name": "Workflow RO-Crate",
-            "version": "1.1"
+            "@id": "docs/images/nf-core-proteinfold_metro_map_2.1.0.png",
+            "@type": [
+                "File",
+                "ImageObject"
+            ],
+            "name": "Workflow diagram"
         },
         {
-            "@id": "#82a6c13c-bcb2-4a36-b5ae-e14a6c3c32aa",
+            "@id": "#ac8bc02e-6a57-4023-be25-ea6c7e2d70ea",
             "@type": "TestSuite",
             "instance": [
                 {
-                    "@id": "#cee6cf64-9939-4051-9d64-a08f632b6fc9"
+                    "@id": "#54d1c5d5-bf72-4b6a-9992-e6716af44c74"
                 }
             ],
             "mainEntity": {
@@ -176,13 +278,7 @@
             "name": "Test suite for nf-core/proteinfold"
         },
         {
-            "@id": "https://w3id.org/ro/wftest/0.2",
-            "@type": ["CreativeWork", "Profile"],
-            "name": "Workflow Testing RO-Crate",
-            "version": "0.2"
-        },
-        {
-            "@id": "#cee6cf64-9939-4051-9d64-a08f632b6fc9",
+            "@id": "#bcfe22ac-7d31-49e9-94c0-39d0c901bc09",
             "@type": "TestInstance",
             "name": "GitHub Actions workflow for testing nf-core/proteinfold",
             "resource": "repos/nf-core/proteinfold/actions/workflows/nf-test.yml",
@@ -205,6 +301,11 @@
             "description": "Additional files"
         },
         {
+            "@id": "bin/",
+            "@type": "Dataset",
+            "description": "Scripts that must be callable from a pipeline process"
+        },
+        {
             "@id": "conf/",
             "@type": "Dataset",
             "description": "Configuration files"
@@ -223,6 +324,11 @@
             "@id": "modules/",
             "@type": "Dataset",
             "description": "Modules used by the pipeline"
+        },
+        {
+            "@id": "modules/local/",
+            "@type": "Dataset",
+            "description": "Pipeline-specific modules"
         },
         {
             "@id": "modules/nf-core/",
@@ -313,18 +419,117 @@
         {
             "@id": "https://orcid.org/0000-0002-7495-1218",
             "@type": "Person",
-            "name": "Athanasios Baltzis"
+            "affiliation": "Centre for Genomic Regulation, Spain",
+            "email": "baltzis.athanasios@gmail.com",
+            "name": "Athanasios Baltzis",
+            "url": "https://github.com/athbaltzis"
         },
         {
             "@id": "https://orcid.org/0000-0002-1541-042X",
             "@type": "Person",
-            "name": "Jose Espinosa-Carrasco"
+            "affiliation": "Centre for Genomic Regulation, Spain",
+            "email": "kadomu@gmail.com",
+            "name": "Jose Espinosa-Carrasco",
+            "url": "https://github.com/joseespinosa"
         },
         {
-            "@id": "#5483d411-761a-4038-bb40-9017270efb7e",
+            "@id": "https://orcid.org/0000-0002-5992-0771",
             "@type": "Person",
+            "affiliation": "Centre for Genomic Regulation, Spain",
+            "email": "luisa.santus95@gmail.com",
+            "name": "Luisa Santus",
+            "url": "https://github.com/luisas"
+        },
+        {
+            "@id": "https://orcid.org/0000-0001-8442-9709",
+            "@type": "Person",
+            "affiliation": "Centre for Genomic Regulation, Spain",
+            "email": "48998340+l-mansouri@users.noreply.github.com",
+            "name": "Leila Mansouri",
+            "url": "https://github.com/l-mansouri"
+        },
+        {
+            "@id": "https://orcid.org/0000-0003-2707-7940",
+            "@type": "Person",
+            "affiliation": "Seqera",
             "email": "drpatelhh@gmail.com",
-            "name": "Harshil Patel"
+            "name": "Harshil Patel",
+            "url": "https://github.com/drpatelh"
+        },
+        {
+            "@id": "https://orcid.org/0000-0002-9374-0969",
+            "@type": "Person",
+            "affiliation": "UNSW Structural Biology Facility, Australia",
+            "name": "Joshua Caley",
+            "url": "https://github.com/jscgh"
+        },
+        {
+            "@id": "https://orcid.org/0000-0001-6955-1167",
+            "@type": "Person",
+            "affiliation": "UNSW Structural Biology Facility, Australia",
+            "email": "54380465+keiran-rowell-unsw@users.noreply.github.com",
+            "name": "Keiran Rowell",
+            "url": "https://github.com/keiran-rowell-unsw"
+        },
+        {
+            "@id": "https://orcid.org/0000-0001-7034-3744",
+            "@type": "Person",
+            "affiliation": "Pompeu Fabra University, Spain",
+            "email": "petrislp@gmail.com",
+            "name": "Patricia Bota",
+            "url": "https://github.com/abotlp"
+        },
+        {
+            "@id": "https://orcid.org/0000-0002-4863-3865",
+            "@type": "Person",
+            "affiliation": [
+                "UNSW Structural Biology Facility, Australia",
+                "Australian BioCommons"
+            ],
+            "email": "t.litfin@unsw.edu.au",
+            "name": "Thomas Litfin",
+            "url": "https://github.com/tlitfin"
+        },
+        {
+            "@id": "https://orcid.org/0000-0002-4032-5331",
+            "@type": "Person",
+            "affiliation": "Australian BioCommons",
+            "email": "ziadbkh@users.noreply.github.com",
+            "name": "Ziad Al-Bkhetan",
+            "url": "https://github.com/ziadbkh"
+        },
+        {
+            "@id": "#b5f01813-e5de-4d8d-9ab1-3903fac2fe95",
+            "@type": "Person",
+            "affiliation": "UNSW Structural Biology Facility, Australia",
+            "email": "n.glades@unsw.edu.au",
+            "name": "Nathan Glades",
+            "url": "https://github.com/nbtm-sh"
+        },
+        {
+            "@id": "https://orcid.org/0000-0001-9132-8981",
+            "@type": "Person",
+            "affiliation": "EMBL-EBI, UK",
+            "email": "32259775+vagkaratzas@users.noreply.github.com",
+            "name": "Evangelos Karatzas",
+            "url": "https://github.com/vagkaratzas"
+        },
+        {
+            "@id": "https://orcid.org/0000-0001-6104-9260",
+            "@type": "Person",
+            "affiliation": "Centre for Genomic Regulation, Spain",
+            "name": "Júlia Mir-Pedrol",
+            "url": "https://github.com/mirpedrol"
+        },
+        {
+            "@id": "https://orcid.org/0000-0003-0662-9101",
+            "@type": "Person",
+            "affiliation": [
+                "Sydney Informatics Hub, The University of Sydney, Australia",
+                "Australian BioCommons"
+            ],
+            "name": "Mitchell J O Brien",
+            "url": "https://github.com/mitchob"
         }
     ]
 }

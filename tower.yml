@@ -1,5 +1,23 @@
 reports:
-  multiqc_report.html:
-    display: "MultiQC HTML report"
+  esmfold_multiqc_report.html:
+    display: "ESMFOLD - MultiQC HTML report"
+  alphafold2_multiqc_report.html:
+    display: "ALPHAFOLD2 - MultiQC HTML report"
+  colabfold_multiqc_report.html:
+    display: "COLABFOLD - MultiQC HTML report"
   samplesheet.csv:
     display: "Auto-created samplesheet with collated metadata and FASTQ paths"
+  "*_alphafold2_report.html":
+    display: "ALPHAFOLD2 - Predicted structures"
+  "*_esmfold_report.html":
+    display: "ESMFOLD - Predicted structures"
+  "*_colabfold_report.html":
+    display: "COLABFOLD - Predicted structures"
+  "*_colabfold_foldseek.html":
+    display: "COLABFOLD - Foldseek output"
+  "*_alphafold2_foldseek.html":
+    display: "ALPHAFOLD2 - Foldseek output"
+  "*_esmfold_foldseek.html":
+    display: "ESMFOLD - Foldseek output"
+  "*_comparison_report.html":
+    display: "Structure comparison"
