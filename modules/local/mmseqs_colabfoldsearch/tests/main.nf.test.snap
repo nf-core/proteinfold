@@ -1,0 +1,51 @@
+{
+    "runs mmseqs colabfoldsearch": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "mixed"
+                        },
+                        "ubq.a3m:md5,48af8d06679fa8d083df615c1bbdafb4"
+                    ]
+                ],
+                "1": [
+                    [
+                        {
+                            "id": "mixed"
+                        },
+                        "ubq.json:md5,1d038ed924926e239647485dc3219dae"
+                    ]
+                ],
+                "2": [
+                    "versions.yml:md5,4655c25b6d38ecaeb0960ba8d95c2a35"
+                ],
+                "a3m": [
+                    [
+                        {
+                            "id": "mixed"
+                        },
+                        "ubq.a3m:md5,48af8d06679fa8d083df615c1bbdafb4"
+                    ]
+                ],
+                "json": [
+                    [
+                        {
+                            "id": "mixed"
+                        },
+                        "ubq.json:md5,1d038ed924926e239647485dc3219dae"
+                    ]
+                ],
+                "versions": [
+                    "versions.yml:md5,4655c25b6d38ecaeb0960ba8d95c2a35"
+                ]
+            }
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "25.10.4"
+        },
+        "timestamp": "2026-05-30T13:54:01.899878117"
+    }
+}

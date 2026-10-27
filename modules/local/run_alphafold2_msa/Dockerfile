@@ -1,0 +1,1 @@
+../run_alphafold2_pred/Dockerfile

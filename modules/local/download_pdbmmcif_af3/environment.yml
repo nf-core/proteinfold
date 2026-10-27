@@ -1,0 +1,6 @@
+name: download_pdbmmcif_af3
+channels:
+  - conda-forge
+dependencies:
+  - conda-forge::zstd=1.5.6
+  - conda-forge::wget=1.21.4

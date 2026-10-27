@@ -1,0 +1,108 @@
+{
+    "-profile test_alphafold3_standard": {
+        "content": [
+            9,
+            {
+                "FASTA_TO_ALPHAFOLD3_JSON": {
+                    "python": "3.13.7"
+                },
+                "GENERATE_REPORT": {
+                    "python": "3.12.7",
+                    "generate_report.py": "Python 3.12.7"
+                },
+                "RUN_ALPHAFOLD3_DATAPIPELINE": {
+                    "python": "3.12.3",
+                    "alphafold3": "8a84535f4f5caeb01a5a1b3fc7ee03251c6035cd",
+                    "hmmer": 3.4
+                },
+                "RUN_ALPHAFOLD3_INFERENCE": {
+                    "python": "3.12.3",
+                    "alphafold3": "8a84535f4f5caeb01a5a1b3fc7ee03251c6035cd",
+                    "jax": "0.10.2",
+                    "jaxlib": "0.10.2",
+                    "numpy": "2.4.1",
+                    "biopython": 1.87,
+                    "rdkit": "2025.09.4"
+                },
+                "Workflow": {
+                    "nf-core/proteinfold": "v2.1.0dev"
+                }
+            },
+            [
+                "alphafold3",
+                "alphafold3/T1024",
+                "alphafold3/T1024/T1024_alphafold3_msa.tsv",
+                "alphafold3/T1024/T1024_chainwise_ipsae.tsv",
+                "alphafold3/T1024/T1024_chainwise_iptm.tsv",
+                "alphafold3/T1024/T1024_data.json",
+                "alphafold3/T1024/T1024_ipsae.tsv",
+                "alphafold3/T1024/T1024_iptm.tsv",
+                "alphafold3/T1024/T1024_plddt.tsv",
+                "alphafold3/T1024/T1024_ptm.tsv",
+                "alphafold3/T1024/paes",
+                "alphafold3/T1024/paes/T1024_0_pae.tsv",
+                "alphafold3/T1026",
+                "alphafold3/T1026/T1026_alphafold3_msa.tsv",
+                "alphafold3/T1026/T1026_chainwise_ipsae.tsv",
+                "alphafold3/T1026/T1026_chainwise_iptm.tsv",
+                "alphafold3/T1026/T1026_data.json",
+                "alphafold3/T1026/T1026_ipsae.tsv",
+                "alphafold3/T1026/T1026_iptm.tsv",
+                "alphafold3/T1026/T1026_plddt.tsv",
+                "alphafold3/T1026/T1026_ptm.tsv",
+                "alphafold3/T1026/paes",
+                "alphafold3/T1026/paes/T1026_0_pae.tsv",
+                "alphafold3/top_ranked_structures",
+                "alphafold3/top_ranked_structures/T1024.cif",
+                "alphafold3/top_ranked_structures/T1026.cif",
+                "fasta",
+                "fasta/T1024.json",
+                "fasta/T1026.json",
+                "multiqc",
+                "multiqc/multiqc_data",
+                "multiqc/multiqc_data/.stub",
+                "multiqc/multiqc_plots",
+                "multiqc/multiqc_plots/.stub",
+                "multiqc/multiqc_report.html",
+                "pipeline_info",
+                "pipeline_info/nf_core_proteinfold_software_mqc_versions.yml",
+                "reports",
+                "reports/T1024_alphafold3_report.html",
+                "reports/T1026_alphafold3_report.html"
+            ],
+            [
+                "T1024_alphafold3_msa.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1024_chainwise_ipsae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1024_chainwise_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1024_data.json:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1024_ipsae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1024_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1024_plddt.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1024_ptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1024_0_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1026_alphafold3_msa.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1026_chainwise_ipsae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1026_chainwise_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1026_data.json:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1026_ipsae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1026_iptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1026_plddt.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1026_ptm.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1026_0_pae.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1024.cif:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1026.cif:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1024.json:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1026.json:md5,d41d8cd98f00b204e9800998ecf8427e",
+                ".stub:md5,d41d8cd98f00b204e9800998ecf8427e",
+                ".stub:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1024_alphafold3_report.html:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "T1026_alphafold3_report.html:md5,d41d8cd98f00b204e9800998ecf8427e"
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.3",
+            "nextflow": "25.10.4"
+        },
+        "timestamp": "2026-07-28T09:04:45.824405833"
+    }
+}
